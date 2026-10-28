@@ -62,6 +62,34 @@ b,strong{font-weight:700}
 @keyframes saluda{0%,60%,100%{transform:rotate(0)}15%,45%{transform:rotate(-14deg)}30%{transform:rotate(8deg)}}
 @keyframes sura{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
 @keyframes parpella{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
+/* FR-4C de la portada: moviments a l'atzar */
+.rob-portada{position:relative;cursor:pointer;display:inline-block;-webkit-tap-highlight-color:transparent}
+.rob-portada>svg{transform-origin:50% 60%}
+.rob-portada .fx{position:absolute;pointer-events:none;font-weight:900;color:#f26b1d;font-size:1.6rem;animation:fxpuja 1.4s ease-out forwards}
+@keyframes fxpuja{0%{opacity:0;transform:translate(0,10px) scale(.5)}20%{opacity:1}100%{opacity:0;transform:translate(var(--dx,0),-60px) scale(1.2)}}
+.rob-portada.m-saluda .brac{transform-origin:92px 128px;animation:saluda 1s ease-in-out 3}
+.rob-portada.m-gir>svg{animation:fxgir 1.3s cubic-bezier(.4,0,.3,1)}
+@keyframes fxgir{0%{transform:rotate(0)}80%{transform:rotate(375deg)}90%{transform:rotate(355deg)}100%{transform:rotate(360deg)}}
+.rob-portada.m-tomb>svg{animation:fxtomb 1.2s ease-in-out}
+@keyframes fxtomb{0%{transform:translateY(0) rotate(0)}15%{transform:translateY(8px) scaleY(.9)}55%{transform:translateY(-70px) rotate(-200deg)}80%{transform:translateY(0) rotate(-360deg)}88%{transform:translateY(0) rotate(-360deg) scaleY(.88)}100%{transform:rotate(-360deg)}}
+.rob-portada.m-antena .antena circle{animation:fxllum .5s ease-in-out 3}
+@keyframes fxllum{0%,100%{fill:#f26b1d;filter:none}50%{fill:#fff6b0;filter:drop-shadow(0 0 10px #ff8a1d) drop-shadow(0 0 4px #ffd400)}}
+.rob-portada.m-antena .antena{animation:none}
+.rob-portada.m-ullet .ulls{animation:fxparp .9s}
+.rob-portada.m-ullet .ulls>:nth-child(2){transform-box:fill-box;transform-origin:center;animation:fxullet 1.8s .9s}
+@keyframes fxparp{0%,20%,40%,100%{transform:scaleY(1)}10%,30%{transform:scaleY(.1)}}
+@keyframes fxullet{0%,100%{transform:scaleY(1)}20%,70%{transform:scaleY(.12)}}
+.rob-portada.m-mira .ulls{animation:fxmira 2.6s ease-in-out}
+@keyframes fxmira{0%,100%{transform:translateX(0)}20%,75%{transform:translate(7px,3px)}}
+.rob-portada.m-pensa .ulls{animation:fxmira2 2.4s ease-in-out}
+@keyframes fxmira2{0%,100%{transform:translate(0)}20%,80%{transform:translate(-4px,-5px)}}
+.rob-portada.m-ball>svg{animation:fxball .5s ease-in-out 5 alternate}
+@keyframes fxball{from{transform:rotate(-9deg) translateX(-6px)}to{transform:rotate(9deg) translateX(6px) translateY(-6px)}}
+.rob-portada.m-salt>svg{animation:fxsalt .7s ease-out}
+.rob-portada.m-salt .brac{transform-origin:92px 128px;animation:fxbrac .7s ease-out}
+@keyframes fxsalt{0%,100%{transform:translateY(0)}15%{transform:translateY(6px) scaleY(.92)}50%{transform:translateY(-34px)}}
+@keyframes fxbrac{50%{transform:rotate(-40deg)}}
+@media (prefers-reduced-motion:reduce){.rob-portada *,.rob-portada>svg{animation:none!important}}
 @keyframes antena{0%,100%{transform:rotate(-6deg)}50%{transform:rotate(6deg)}}
 .bafarada{position:relative;background:var(--paper);border:2px solid var(--tinta);border-radius:16px;padding:12px 16px;font-weight:600;max-width:360px;text-align:left}
 .bafarada::before{content:"";position:absolute;left:-12px;top:22px;border:10px solid transparent;border-right-color:var(--tinta);border-left:0}
@@ -3285,7 +3313,7 @@ function pantallaPortada() {
   const llista = Object.entries(S.alumnes).sort(ordenaNoms);
   const sel = $('#sel-alumne')?.value || '';
   vista.innerHTML = `<section class="pantalla centrat"><div class="portada">
-    <div style="display:flex;align-items:center;justify-content:center;gap:14px">${robot(190, 'normal', true)}<div class="bafarada">Hola! Sóc <b>FR-4C</b>. Avui superarem objectius de matemàtiques.</div></div>
+    <div style="display:flex;align-items:center;justify-content:center;gap:14px"><div class="rob-portada" id="rob-portada" title="Toca'm!">${robot(190, 'normal', true)}</div><div class="bafarada">Hola! Sóc <b>FR-4C</b>. Avui superarem objectius de matemàtiques.</div></div>
     <div style="text-align:left">
       <h1 class="titol-portada">MATEMÀTIQUES <span style="white-space:nowrap">4t ESO</span></h1>
       <p class="sub portada-sub"><b>Grup flexible</b><br>Ins Júlia Minguell</p>
@@ -3300,6 +3328,7 @@ function pantallaPortada() {
       <p style="margin-top:22px;display:flex;align-items:center;gap:18px;flex-wrap:wrap"><button class="boto-petit" id="btn-fs-portada">⛶ ${esPantallaCompleta() ? 'Surt de la pantalla completa' : 'Pantalla completa'}</button><button class="enllac" id="btn-credits">Crèdits</button></p>
     </div></div></section>`;
   $('#btn-credits').onclick = mostraCredits;
+  animaPortada();
   $('#btn-fs-portada').onclick = commutaPantallaCompleta;
   const f = $('#f-entra');
   if (f) f.onsubmit = e => {
@@ -3325,6 +3354,7 @@ function mostraCredits() {
     <p style="font-size:1.1rem"><b>Ins Júlia Minguell</b> · Matemàtiques 4t ESO · Grup Flexible</p>
     <p style="margin-top:14px">Ideat per <b>J. Alcolea</b></p>
     <p style="color:var(--gris)">Desenvolupat amb Claude</p>
+    <p style="color:var(--gris);margin-top:10px">Versió 3.1</p>
     <div class="accions"><button class="boto" data-tanca-modal>D'acord</button></div>`);
 }
 function entraAlumne(id) {
@@ -4334,6 +4364,39 @@ $$('.finestra').forEach(f => {
   cap.addEventListener('pointermove', e => { if (!ini) return; f.style.left = Math.max(0, Math.min(innerWidth - 80, e.clientX - ini.x)) + 'px'; f.style.top = Math.max(0, Math.min(innerHeight - 40, e.clientY - ini.y)) + 'px'; f.style.right = 'auto'; });
   cap.addEventListener('pointerup', () => { ini = null; });
 });
+// ---------- FR-4C de la portada: moviments a l'atzar ----------
+const MOVS_PORTADA = ['saluda', 'gir', 'tomb', 'antena', 'ullet', 'mira', 'pensa', 'ball', 'salt'];
+const DURADA_MOV = { saluda: 3100, gir: 1400, tomb: 1300, antena: 1600, ullet: 2800, mira: 2700, pensa: 2500, ball: 2600, salt: 800 };
+let tPortada = null, movAnterior = null, movOcupat = false;
+function fxPortada(w, txts, n, x0, y0) {
+  for (let i = 0; i < n; i++) setTimeout(() => {
+    if (!w.isConnected) return;
+    const e = document.createElement('span'); e.className = 'fx'; e.textContent = txts[i % txts.length];
+    e.style.left = (x0 + (Math.random() * 60 - 30)) + 'px'; e.style.top = (y0 + Math.random() * 20) + 'px'; e.style.setProperty('--dx', (Math.random() * 50 - 25) + 'px');
+    w.appendChild(e); setTimeout(() => e.remove(), 1500);
+  }, i * 280);
+}
+function movPortada(forçat) {
+  const w = $('#rob-portada'); if (!w || movOcupat) return;
+  const mou = MOVS_PORTADA.filter(m => m !== movAnterior); const m = forçat || tria(mou); movAnterior = m; movOcupat = true;
+  const svg = w.querySelector('svg'); svg.classList.remove('saluda');
+  w.classList.add('m-' + m);
+  if (m === 'pensa') fxPortada(w, ['•', '•', '•'], 3, 150, 0);
+  if (m === 'ball') fxPortada(w, ['♪', '♫', '♪', '♫'], 4, 100, 10);
+  if (m === 'salt') fxPortada(w, ['✦', '★', '✦', '★', '✦'], 5, 95, 40);
+  setTimeout(() => { w.classList.remove('m-' + m); movOcupat = false; }, DURADA_MOV[m]);
+}
+function animaPortada() {
+  clearTimeout(tPortada);
+  const w = $('#rob-portada'); if (!w) return;
+  const quiet = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const svg = w.querySelector('svg');
+  setTimeout(() => svg.classList.remove('saluda'), 3600);
+  w.onclick = () => { if (movOcupat) return; so('pas'); movPortada(); };
+  if (quiet) return;
+  const prog = () => { tPortada = setTimeout(() => { if (!$('#rob-portada')) return; movPortada(); prog(); }, 6000 + Math.random() * 4000); };
+  prog();
+}
 // pantalla completa (tota l'app)
 function esPantallaCompleta() { return !!(document.fullscreenElement || document.webkitFullscreenElement); }
 function commutaPantallaCompleta() {
