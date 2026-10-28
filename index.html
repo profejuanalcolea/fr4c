@@ -291,6 +291,23 @@ small.anul-txt{display:block;font-size:.68rem}
 .th-taller.plegat{width:30px;min-width:30px;padding:4px 2px!important}.th-taller.plegat .plega{padding:4px 3px}
 .c-plegat{background:#f5f1fd;width:30px;min-width:30px;padding:0!important}
 #e-fs.activa{background:var(--tinta);color:#fff}
+.llibreta.seguiment{width:auto;min-width:480px}
+.seguiment th,.seguiment td{text-align:center}
+.seguiment .seg-dia{cursor:pointer;white-space:nowrap;background:#7c5cd6!important}
+.seguiment .seg-dia:hover{background:var(--ko)!important}
+.seguiment .seg-sub{font-size:.75rem;font-weight:600;padding:3px 6px}
+.seguiment .seg-resum{background:#3a3a3a!important}
+.seguiment .seg-buit{font-weight:500;opacity:.8}
+.seguiment .seg-r{background:#fafafa;font-size:.9rem;min-width:38px}
+.seguiment .seg-r.seg-mal{color:var(--ko);font-weight:800}
+.seguiment td.seg-t,.seguiment td.seg-p{cursor:pointer;min-width:48px;height:44px;font-weight:800;font-size:1.15rem;user-select:none;position:relative}
+.seguiment td.seg-t:hover,.seguiment td.seg-p:hover{outline:2px solid #7c5cd6;outline-offset:-2px}
+.seg-t.tF{background:#3a3a3a;color:#fff;font-size:1rem}.seg-t.tFJ{background:#e4e4e4;color:#555;font-size:.95rem}
+.seg-t.t1{background:#fde2dc}.seg-t.t2{background:#fff1c7}.seg-t.t3{background:#d8f2df}
+.seg-cara{font-size:1.35rem;line-height:1}
+.seg-inc{position:absolute;right:3px;top:3px;width:13px;height:13px;border-radius:50%;border:2px solid #ccc;background:#fff;padding:0;cursor:pointer}
+.seg-inc.on{background:var(--ko);border-color:var(--ko);box-shadow:0 0 0 2px #fff,0 0 0 3px var(--ko)}
+.seg-inc:hover{border-color:var(--ko)}
 .xip{border:2px solid #7c5cd6;background:#fff;color:#7c5cd6;border-radius:999px;padding:3px 10px;font-weight:800;font-size:.85rem;cursor:pointer;margin-left:4px}
 .xip.on{background:#7c5cd6;color:#fff}
 .sec-taller{border:2px solid #e7defc;border-radius:12px;padding:10px 12px;margin:10px 0}
@@ -594,7 +611,9 @@ const FIREBASE_CONFIG = {
   appId: "1:1053556859545:web:7579cffa90f47139c40e08"
 };
 const ARREL = 'objectius';
-const CONTRASENYA = '1314';
+const CONTRASENYA = '1314'; // només per al mode de prova (?local=1)
+const UID_PROFE = 'TpDDC5JGByWItmZM5TyfFKh0kOD2';
+const DOMINI_PROFE = 'fr4c.app'; // l'usuari «profe» entra com a profe@fr4c.app
 const FB_VER = '10.12.2';
 const TOTAL_EX = 8;
 
@@ -622,7 +641,8 @@ async function connectaFirebase() {
   ]);
   const app = appM.initializeApp(FIREBASE_CONFIG);
   const auth = authM.getAuth(app);
-  await authM.signInAnonymously(auth);
+  try { await auth.authStateReady(); } catch (e) { await new Promise(r => { const u = authM.onAuthStateChanged(auth, () => { u(); r(); }); }); }
+  if (!auth.currentUser) await authM.signInAnonymously(auth);
   const db = dbM.getDatabase(app);
   const r = p => dbM.ref(db, p);
   return {
@@ -633,7 +653,14 @@ async function connectaFirebase() {
     push: async (p, v) => { const k = dbM.push(r(p)); await vigila(dbM.set(k, v), p); return k.key; },
     remove: p => vigila(dbM.remove(r(p)), p),
     get: p => dbM.get(r(p)).then(s => s.val()),
-    onConn: cb => dbM.onValue(r('.info/connected'), s => cb(!!s.val()))
+    onConn: cb => dbM.onValue(r('.info/connected'), s => cb(!!s.val())),
+    esProfe: () => !!auth.currentUser && auth.currentUser.uid === UID_PROFE,
+    entraProfe: async (usuari, pw) => {
+      const u = usuari.trim(); const correu = u.includes('@') ? u : `${u}@${DOMINI_PROFE}`;
+      const cred = await authM.signInWithEmailAndPassword(auth, correu, pw);
+      if (cred.user.uid !== UID_PROFE) { await authM.signOut(auth); location.reload(); throw { code: 'fr4c/no-profe' }; }
+    },
+    surtProfe: async () => { await authM.signOut(auth); location.reload(); }
   };
 }
 function connectaLocal() {
@@ -662,7 +689,8 @@ function connectaLocal() {
     push: async (p, v) => { const k = Date.now().toString(36) + Math.random().toString(36).slice(2, 6); escriu(p + '/' + k, v); avisa(); return k; },
     remove: async p => { escriu(p, null); avisa(); },
     get: async p => copia(llegeix(p)),
-    onConn: cb => cb(true)
+    onConn: cb => cb(true),
+    esProfe: () => false
   };
 }
 
@@ -685,6 +713,7 @@ const S = {
   alumnes: {},
   resMeu: {},
   resTots: {},
+  seg: {},
   alumne: null,
   vista: 'portada',
   ronda: null,
@@ -3927,6 +3956,7 @@ function confirma(html, ok = 'Sí') {
    ===================================================================== */
 $('#btn-profe').ondblclick = () => {
   if (S.profe) return obrePanell();
+  if (!DB.local) return accesProfe();
   const m = obreModal(`<h3>Accés del professor</h3><form id="f-pw" class="formulari"><input class="camp" id="pw" type="password" inputmode="numeric" placeholder="Contrasenya" autocomplete="off"><p class="missatge-error" id="pw-err"></p>
     <div class="accions"><button type="button" class="boto sec" data-tanca-modal>Cancel·la</button><button class="boto" type="submit">Entra</button></div></form>`);
   $('#pw', m).focus();
@@ -3936,20 +3966,38 @@ $('#btn-profe').ondblclick = () => {
     else { $('#pw-err', m).textContent = 'Contrasenya incorrecta.'; $('#pw', m).value = ''; const f = $('#f-pw', m); f.classList.remove('tremola'); void f.offsetWidth; f.classList.add('tremola'); }
   };
 };
+const ERR_PROFE = { 'auth/invalid-credential': 'Usuari o contrasenya incorrectes.', 'auth/wrong-password': 'Usuari o contrasenya incorrectes.', 'auth/user-not-found': 'Usuari o contrasenya incorrectes.', 'auth/invalid-email': 'Aquest usuari no és vàlid.',
+  'auth/too-many-requests': 'Massa intents seguits. Espera uns minuts i torna-ho a provar.', 'auth/network-request-failed': 'No hi ha connexió amb Firebase.', 'auth/operation-not-allowed': 'Cal activar «Email/Password» a Firebase (Authentication · Sign-in method).', 'fr4c/no-profe': 'Aquest usuari no és el del professor.' };
+function accesProfe() {
+  if (DB.esProfe()) { S.profe = true; return obrePanell(); }
+  const m = obreModal(`<h3>Accés del professor</h3><form id="f-pw" class="formulari"><input class="camp" id="pw-u" placeholder="Usuari" autocomplete="username" autocapitalize="off" spellcheck="false">
+    <input class="camp" id="pw" type="password" placeholder="Contrasenya" autocomplete="current-password"><p class="missatge-error" id="pw-err"></p>
+    <div class="accions"><button type="button" class="boto sec" data-tanca-modal>Cancel·la</button><button class="boto" type="submit" id="pw-ok">Entra</button></div></form>`);
+  $('#pw-u', m).focus();
+  $('#f-pw', m).onsubmit = async e => {
+    e.preventDefault(); const u = $('#pw-u', m).value, p = $('#pw', m).value; if (!u.trim() || !p) return;
+    $('#pw-ok', m).disabled = true; $('#pw-err', m).textContent = 'Entrant…';
+    try { await DB.entraProfe(u, p); tancaModal(); S.profe = true; obrePanell(); }
+    catch (er) { console.error(er); $('#pw-ok', m).disabled = false; $('#pw-err', m).textContent = ERR_PROFE[er.code] || `No s'ha pogut entrar (${er.code || er.message}).`; $('#pw', m).value = ''; const f = $('#f-pw', m); f.classList.remove('tremola'); void f.offsetWidth; f.classList.add('tremola'); }
+  };
+}
 function obrePanell() {
   const p = $('#panell'); p.classList.remove('ocult');
   if (!S.desubsTots) S.desubsTots = DB.on(`${ARREL}/resultats`, v => { S.resTots = v || {}; refrescaPanell(); });
   p.innerHTML = `<div class="panell-cap"><div class="marca" style="color:#fff">FR<span>-4C</span> · Professor</div>
     ${[['llibreta', 'Llibreta'], ['alumnes', 'Alumnes'], ['demo', 'Demostració'], ['config', 'Configuració']].map(([k, t]) => `<button class="pestanya ${S.pestanya === k ? 'activa' : ''}" data-p="${k}">${t}</button>`).join('')}
-    <span style="flex:1"></span><button class="boto-petit" id="p-surt" style="background:#fff;color:var(--tinta)">Tanca el panell</button></div>
+    <span style="flex:1"></span>${DB.local ? '' : `<button class="boto-petit" id="p-sessio" style="background:transparent;color:#fff;border-color:#fff;margin-right:8px" title="Tanca la sessió del professor en aquest ordinador">Tanca la sessió</button>`}<button class="boto-petit" id="p-surt" style="background:#fff;color:var(--tinta)">Tanca el panell</button></div>
     <div class="panell-cos" id="panell-cos"></div>`;
   $$('.pestanya', p).forEach(b => b.onclick = () => { S.pestanya = b.dataset.p; obrePanell(); });
   $('#p-surt').onclick = tancaPanell;
+  const ps = $('#p-sessio'); if (ps) ps.onclick = async () => { if (!await confirma(`Es tancarà la sessió del professor en aquest ordinador i l'app es tornarà a carregar.`, 'Tanca la sessió')) return; tancaPanell(); DB.surtProfe(); };
+  if (!S.desubsSeg) S.desubsSeg = DB.on(`${ARREL}/seguiment`, v => { S.seg = v || {}; if (S.pestanya === 'llibreta' && S.unitatProfe === 'seg') pintaLlibreta(); });
   pintaPestanya();
 }
 function tancaPanell() {
   $('#panell').classList.add('ocult'); S.profe = false;
   if (S.desubsTots) { S.desubsTots(); S.desubsTots = null; }
+  if (S.desubsSeg) { S.desubsSeg(); S.desubsSeg = null; }
 }
 function refrescaPanell() {
   if (!S.profe || $('#panell').classList.contains('ocult')) return;
@@ -4010,10 +4058,11 @@ function teFora(r) { return Object.values(r?.historial || {}).some(h => h.foraN)
 function teAnulat(r) { return Object.values(r?.historial || {}).some(h => h.anulat || h.entregaForcada); }
 function pintaLlibreta() {
   const c = $('#llib'); if (!c) return;
+  if (S.unitatProfe === 'seg') return pintaSeguiment(c);
   const u = UNITATS[S.unitatProfe] || UNITATS.f; const OBJS = u.obj;
   const llista = Object.entries(S.alumnes).sort(ordenaNoms);
   const minimAS = minimDe(u);
-  const barra = `<div class="fila-form llib-barra"><span class="segment" id="l-unitats">${LLISTA_UNITATS.map(k => `<button data-u="${k}" class="${k === u.id ? 'activa' : ''}">${UNITATS[k].nom}</button>`).join('')}</span>
+  const barra = `<div class="fila-form llib-barra">${segmentLlibreta(u.id)}
     ${u.id === PC.unitat ? `<span class="grup-barra"><b>Competències:</b><span class="segment petit" id="l-comp"><button data-v="0" class="${S.config?.provaC === true ? '' : 'activa'}">Tancada</button><button data-v="1" class="${S.config?.provaC === true ? 'activa' : ''}">Oberta</button></span></span>` : ''}
     ${tallersU(u).length ? `<span class="grup-barra"><b>Tallers:</b><span id="l-tallers">${tallersU(u).map(t => `<button class="xip ${tallerObert(t) ? 'on' : ''}" data-t="${t.id}" title="${esc(t.titol)} · ${tallerObert(t) ? 'obert: clica per tancar-lo' : 'tancat: clica per obrir-lo'}">${t.ic} ${t.curt}${tallerObert(t) ? '' : ' 🔒'}</button>`).join('')}</span></span>` : ''}
     ${unitatCompleta(u) ? `<span class="grup-barra"><b>Prova final:</b><span class="segment petit" id="l-prova"><button data-v="0" class="${provaOberta(u) ? '' : 'activa'}">Tancada</button><button data-v="1" class="${provaOberta(u) ? 'activa' : ''}">Oberta</button></span></span>` : ''}</div>`;
@@ -4052,6 +4101,73 @@ function pintaLlibreta() {
   });
   const ci = $('#cb-i-cap', c); if (ci) ci.onclick = e => { e.stopPropagation(); obreModal(CB_INFO + `<div class="accions"><button class="boto" data-tanca-modal>Entesos</button></div>`, 'ample'); };
   $$('.casella', c).forEach(td => td.onclick = () => td.dataset.o === PC.id ? detallComp(td.dataset.a) : td.dataset.o === 'tallers' ? detallTallers(td.dataset.a) : esProva(td.dataset.o) ? detallProva(td.dataset.a, td.dataset.o) : detallCasella(td.dataset.a, td.dataset.o));
+}
+/* =====================================================================
+   SEGUIMENT DIARI (només el professor): treball 1-3, participació, incident
+   objectius/seguiment/{AAAA-MM-DD} = { creat, a: { idAlumne: { t: 1|2|3, p: 'a'|'p'|'n', i: true } } }
+   ===================================================================== */
+const PARTIC = { a: { e: '😊', t: 'Participa activament' }, p: { e: '😐', t: 'Passiu' }, n: { e: '😠', t: 'Participació negativa' } };
+const CICLE_P = ['a', 'p', 'n', null], CICLE_T = [1, 2, 3, 'F', 'FJ', null];
+const segmentLlibreta = actiu => `<span class="segment" id="l-unitats">${LLISTA_UNITATS.map(k => `<button data-u="${k}" class="${k === actiu ? 'activa' : ''}">${UNITATS[k].nom}</button>`).join('')}<button data-u="seg" class="${actiu === 'seg' ? 'activa' : ''}">📋 Seguiment</button></span>`;
+const avuiISO = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
+const dataSeg = iso => { const [y, m, d] = iso.split('-').map(Number); const dt = new Date(y, m - 1, d); return { dia: dt.toLocaleDateString('ca-ES', { weekday: 'short' }).replace('.', ''), num: `${String(d).padStart(2, '0')}/${String(m).padStart(2, '0')}`, llarg: dt.toLocaleDateString('ca-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) }; };
+const diesSeg = () => Object.keys(S.seg || {}).filter(k => /^\d{4}-\d{2}-\d{2}$/.test(k)).sort().reverse();
+function resumSeg(id) {
+  const r = { n: 0, suma: 0, a: 0, p: 0, nn: 0, i: 0, f: 0, fj: 0 };
+  for (const d of diesSeg()) { const x = S.seg[d]?.a?.[id]; if (!x) continue; if (typeof x.t === 'number') { r.n++; r.suma += x.t; } if (x.t === 'F') r.f++; if (x.t === 'FJ') r.fj++; if (x.p === 'a') r.a++; if (x.p === 'p') r.p++; if (x.p === 'n') r.nn++; if (x.i) r.i++; }
+  r.mitjana = r.n ? r.suma / r.n : null; return r;
+}
+function pintaSeguiment(c) {
+  if (!DB.local && !DB.esProfe()) { c.innerHTML = `<div class="fila-form llib-barra">${segmentLlibreta('seg')}</div><div class="seccio"><h3>Cal entrar com a professor</h3><p class="ajuda">El seguiment només es pot veure amb l'usuari del professor.</p></div>`; enllacaSeg(c); return; }
+  const llista = Object.entries(S.alumnes).sort(ordenaNoms); const dies = diesSeg();
+  const barra = `<div class="fila-form llib-barra">${segmentLlibreta('seg')}<span class="grup-barra"><button class="boto taronja" id="seg-nou">＋ Nou dia</button></span>
+    <span style="margin-left:auto;color:var(--gris);font-size:.9rem">Toca una casella per canviar-la · Treball: 1 → 2 → 3 → F → FJ → buit · Participació: 😊 → 😐 → 😠 → buit · 🔴 incident</span></div>`;
+  if (!llista.length) { c.innerHTML = barra + `<div class="seccio"><h3>Encara no hi ha alumnes</h3></div>`; enllacaSeg(c); return; }
+  const cap1 = dies.map(d => { const f = dataSeg(d); return `<th colspan="2" class="seg-dia" data-dia="${d}" title="${f.llarg} · clica per esborrar el dia">${f.dia} ${f.num}</th>`; }).join('');
+  const cap2 = dies.map(() => `<th class="seg-sub">Treb.</th><th class="seg-sub">Part.</th>`).join('');
+  c.innerHTML = barra + `<div class="taula-caixa"><table class="llibreta seguiment"><thead>
+      <tr><th class="nom" rowspan="2">Alumne</th><th colspan="7" class="seg-resum">Resum</th>${cap1 || '<th rowspan="2" class="seg-buit">Clica «＋ Nou dia» per començar</th>'}</tr>
+      <tr><th class="seg-sub" title="Mitjana de treball (sense comptar les faltes)">Treb.</th><th class="seg-sub" title="Faltes">F</th><th class="seg-sub" title="Faltes justificades">FJ</th><th class="seg-sub">😊</th><th class="seg-sub">😐</th><th class="seg-sub">😠</th><th class="seg-sub">🔴</th>${cap2}</tr></thead><tbody>
+      ${llista.map(([id, a]) => { const r = resumSeg(id);
+        return `<tr><td class="nom" title="${esc(a.nom)}">${esc(a.nom)}</td>
+          <td class="seg-r"><b>${r.mitjana == null ? '—' : r.mitjana.toFixed(1).replace('.', ',')}</b></td><td class="seg-r ${r.f ? 'seg-mal' : ''}">${r.f || ''}</td><td class="seg-r">${r.fj || ''}</td><td class="seg-r">${r.a || ''}</td><td class="seg-r">${r.p || ''}</td><td class="seg-r ${r.nn ? 'seg-mal' : ''}">${r.nn || ''}</td><td class="seg-r ${r.i ? 'seg-mal' : ''}">${r.i || ''}</td>
+          ${dies.map(d => { const x = S.seg[d]?.a?.[id] || {};
+            return ` <td class="seg-t t${x.t || 0}" title="${x.t === 'F' ? 'Falta' : x.t === 'FJ' ? 'Falta justificada' : ''}" data-d="${d}" data-a="${id}" data-c="t">${x.t || ''}</td><td class="seg-p" data-d="${d}" data-a="${id}" data-c="p"><span class="seg-cara">${x.p ? PARTIC[x.p].e : ''}</span><button class="seg-inc ${x.i ? 'on' : ''}" data-d="${d}" data-a="${id}" title="${x.i ? 'Treu l\'incident' : 'Marca un incident (mal comportament)'}"></button></td>`; }).join('')}</tr>`; }).join('')}
+    </tbody></table></div>
+    <p class="ajuda" style="margin-top:8px">El seguiment no compta per a cap nota de l'app i només el veu el professor.</p>`;
+  enllacaSeg(c);
+  $$('td[data-c]', c).forEach(td => td.onclick = e => {
+    if (e.target.closest('.seg-inc')) return;
+    const { d, a: id, c: camp } = td.dataset; const x = S.seg[d]?.a?.[id] || {};
+    const cicle = camp === 't' ? CICLE_T : CICLE_P; const nou = cicle[(cicle.indexOf(x[camp] ?? null) + 1) % cicle.length];
+    canviaSeg(d, id, camp, nou);
+  });
+  $$('.seg-inc', c).forEach(b => b.onclick = e => { e.stopPropagation(); const { d, a: id } = b.dataset; canviaSeg(d, id, 'i', S.seg[d]?.a?.[id]?.i ? null : true); });
+  $$('.seg-dia', c).forEach(th => th.onclick = async () => {
+    const f = dataSeg(th.dataset.dia);
+    if (await confirma(`S'esborrarà tot el seguiment del <b>${f.llarg}</b>.`, 'Esborra el dia')) DB.remove(`${ARREL}/seguiment/${th.dataset.dia}`);
+  });
+}
+function canviaSeg(d, id, camp, v) {
+  // canvi local immediat (per no esperar Firebase) i després es desa
+  S.seg[d] = S.seg[d] || { creat: Date.now() }; S.seg[d].a = S.seg[d].a || {}; const x = S.seg[d].a[id] = S.seg[d].a[id] || {};
+  if (v == null) delete x[camp]; else x[camp] = v;
+  pintaLlibreta();
+  DB.set(`${ARREL}/seguiment/${d}/a/${id}/${camp}`, v ?? null);
+}
+function enllacaSeg(c) {
+  $$('#l-unitats button', c).forEach(b => b.onclick = () => { S.unitatProfe = b.dataset.u; pintaLlibreta(); });
+  const bn = $('#seg-nou', c); if (bn) bn.onclick = () => {
+    const m = obreModal(`<h3>Nou dia de seguiment</h3><form id="f-seg" class="formulari"><label for="seg-data">Data</label><input class="camp" type="date" id="seg-data" value="${avuiISO()}" required><p class="missatge-error" id="seg-err"></p>
+      <div class="accions"><button type="button" class="boto sec" data-tanca-modal>Cancel·la</button><button class="boto taronja" type="submit">Afegeix</button></div></form>`);
+    $('#f-seg', m).onsubmit = async e => {
+      e.preventDefault(); const d = $('#seg-data', m).value;
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(d)) return;
+      if (S.seg?.[d]) { $('#seg-err', m).textContent = 'Aquest dia ja té columna.'; return; }
+      S.seg[d] = { creat: Date.now() }; tancaModal(); pintaLlibreta();
+      await DB.set(`${ARREL}/seguiment/${d}/creat`, Date.now());
+    };
+  };
 }
 function enllacaBarra(c, u) {
   $$('#l-unitats button', c).forEach(b => b.onclick = () => { S.unitatProfe = b.dataset.u; pintaLlibreta(); });
@@ -4256,6 +4372,17 @@ function dadesExport() {
   for (const [id, a] of llista) { const r = S.resTots[id]?.[PC.id]; if (!r) continue;
     cbF.push([a.nom, r.estat === 'lliurada' ? (r.entregaForcada ? 'Lliurada (sortida de pestanya)' : 'Lliurada') : r.estat === 'fent' ? 'Fent' : 'Reoberta', CB_NOM[r.nivellCB] || '', r.estat === 'lliurada' ? r.nota : '', r.a1 ?? '', r.a2 ?? '', r.a3 ?? '', r.temps ? Math.round(r.temps / 60) : '', dataExcel(r.fi), r.foraN || 0, ...CB_ITEMS.map(it => r.resp?.['i' + it.n]?.pts ?? '')]); }
   fulls.push(['Competències', cbF]);
+  const dies = diesSeg();
+  if (dies.length) {
+    const segR = [['Alumne', 'Treball (mitjana)', 'Dies amb treball', 'Faltes', 'Faltes justificades', 'Participació activa 😊', 'Passiu 😐', 'Negativa 😠', 'Incidents 🔴']];
+    const segD = [['Alumne', 'Data', 'Treball (1-3, F, FJ)', 'Participació', 'Incident']];
+    for (const [id, a] of llista) {
+      const r = resumSeg(id); segR.push([a.nom, r.mitjana == null ? '' : Math.round(r.mitjana * 100) / 100, r.n, r.f, r.fj, r.a, r.p, r.nn, r.i]);
+      for (const d of [...dies].reverse()) { const x = S.seg[d]?.a?.[id]; if (!x || (!x.t && !x.p && !x.i)) continue;
+        segD.push([a.nom, d.split('-').reverse().join('/'), x.t || '', x.p ? PARTIC[x.p].t : '', x.i ? 'Sí' : '']); }
+    }
+    fulls.push(['Seguiment resum', segR], ['Seguiment per dies', segD]);
+  }
   return fulls;
 }
 async function exportaExcel(msg) {
