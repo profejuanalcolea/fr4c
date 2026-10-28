@@ -262,6 +262,7 @@ small.anul-txt{display:block;font-size:.68rem}
 .plega{border:0;background:rgba(255,255,255,.25);color:#fff;border-radius:6px;font-weight:800;cursor:pointer;padding:0 6px;line-height:1.3}
 .th-taller.plegat{width:30px;min-width:30px;padding:4px 2px!important}.th-taller.plegat .plega{padding:4px 3px}
 .c-plegat{background:#f5f1fd;width:30px;min-width:30px;padding:0!important}
+#e-fs.activa{background:var(--tinta);color:#fff}
 .xip{border:2px solid #7c5cd6;background:#fff;color:#7c5cd6;border-radius:999px;padding:3px 10px;font-weight:800;font-size:.85rem;cursor:pointer;margin-left:4px}
 .xip.on{background:#7c5cd6;color:#fff}
 .sec-taller{border:2px solid #e7defc;border-radius:12px;padding:10px 12px;margin:10px 0}
@@ -498,6 +499,7 @@ table.simple{border-collapse:collapse;width:100%;font-size:.95rem}
   <div id="cap-context"></div>
   <span id="conn" title="Connexió"></span>
   <div class="eines">
+    <button class="eina" id="e-fs" title="Pantalla completa" aria-label="Pantalla completa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
     <button class="eina" id="e-calc" title="Calculadora"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"/><rect x="7" y="5" width="10" height="4"/><path d="M8 13h.01M12 13h.01M16 13h.01M8 17h.01M12 17h.01M16 17h.01" stroke-linecap="round" stroke-width="3"/></svg></button>
     <button class="eina" id="e-esb" title="Esborrany"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 20l4-1L19 8l-3-3L5 16z"/><path d="M14 7l3 3"/></svg></button>
     <button class="eina" id="e-temps" title="Temporitzador"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M9 2h6"/></svg><span id="e-temps-txt"></span></button>
@@ -3295,9 +3297,10 @@ function pantallaPortada() {
         <p class="missatge-error" id="err-entra"></p>
         <button class="boto taronja" type="submit">Entra →</button>
       </form>` : `<p class="bafarada" style="max-width:420px">Encara no hi ha cap alumne a la llista. El professor ha d'afegir-los des del seu panell.</p>`}
-      <p style="margin-top:22px"><button class="enllac" id="btn-credits">Crèdits</button></p>
+      <p style="margin-top:22px;display:flex;align-items:center;gap:18px;flex-wrap:wrap"><button class="boto-petit" id="btn-fs-portada">⛶ ${esPantallaCompleta() ? 'Surt de la pantalla completa' : 'Pantalla completa'}</button><button class="enllac" id="btn-credits">Crèdits</button></p>
     </div></div></section>`;
   $('#btn-credits').onclick = mostraCredits;
+  $('#btn-fs-portada').onclick = commutaPantallaCompleta;
   const f = $('#f-entra');
   if (f) f.onsubmit = e => {
     e.preventDefault();
@@ -4331,6 +4334,26 @@ $$('.finestra').forEach(f => {
   cap.addEventListener('pointermove', e => { if (!ini) return; f.style.left = Math.max(0, Math.min(innerWidth - 80, e.clientX - ini.x)) + 'px'; f.style.top = Math.max(0, Math.min(innerHeight - 40, e.clientY - ini.y)) + 'px'; f.style.right = 'auto'; });
   cap.addEventListener('pointerup', () => { ini = null; });
 });
+// pantalla completa (tota l'app)
+function esPantallaCompleta() { return !!(document.fullscreenElement || document.webkitFullscreenElement); }
+function commutaPantallaCompleta() {
+  const d = document, el = d.documentElement;
+  const avisa = () => { const m = obreModal(`<h3>Pantalla completa</h3><p>Aquest navegador no deixa posar l'app a pantalla completa des d'aquí (passa sovint dins el Google Sites).</p><p>Pots obrir-la en una pestanya nova i fer-hi pantalla completa, o prémer <b>F11</b>.</p><div class="accions"><button class="boto sec" data-tanca-modal>D'acord</button><button class="boto taronja" id="fs-nova">Obre en una pestanya nova</button></div>`); $('#fs-nova', m).onclick = () => { window.open(location.href, '_blank'); tancaModal(); }; };
+  try {
+    if (esPantallaCompleta()) { (d.exitFullscreen || d.webkitExitFullscreen).call(d); return; }
+    const req = el.requestFullscreen || el.webkitRequestFullscreen;
+    if (!req || d.fullscreenEnabled === false) return avisa();
+    const r = req.call(el); if (r && r.catch) r.catch(avisa);
+  } catch (e) { avisa(); }
+}
+function pintaBotoFs() {
+  const on = esPantallaCompleta();
+  const b = $('#e-fs'); if (b) { b.title = on ? 'Surt de la pantalla completa' : 'Pantalla completa'; b.classList.toggle('activa', on); }
+  const bp = $('#btn-fs-portada'); if (bp) bp.textContent = on ? '⛶ Surt de la pantalla completa' : '⛶ Pantalla completa';
+}
+$('#e-fs').onclick = commutaPantallaCompleta;
+document.addEventListener('fullscreenchange', pintaBotoFs);
+document.addEventListener('webkitfullscreenchange', pintaBotoFs);
 // calculadora
 function calcula(expr) {
   const s = expr.replace(/×/g, '*').replace(/÷/g, '/').replace(/−/g, '-').replace(/\s/g, '').replace(/,/g, '.');
