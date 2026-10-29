@@ -187,6 +187,57 @@ input:disabled{background:var(--suau)}
 .divisio .q{border-left:4px solid var(--tinta);color:var(--taronja)}
 .divisio .r{color:var(--taronja)}
 .recta-zona{cursor:pointer}
+.apartats{display:flex;flex-direction:column;gap:10px;margin:4px 0}
+.ap{display:flex;gap:10px;align-items:flex-start;border:2px solid var(--linia);border-radius:12px;padding:8px 12px;background:var(--paper)}
+.ap.ok{border-color:var(--ok);background:var(--ok-suau)}.ap.ko{border-color:var(--ko);background:#fdecec}
+.ap-l{font-weight:900;color:var(--gris);min-width:22px;padding-top:6px}
+.ap-cos{flex:1;display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px}
+.ap-num .enter-gran{font-size:1.6rem}
+.ap-signes{display:flex;gap:6px}
+.ap-cicle{width:62px;height:52px;border-radius:10px;border:3px solid var(--taronja);background:#fff;font-size:1.9rem;font-weight:900;cursor:pointer;line-height:1;flex:none}.ap-cicle i{font-style:normal;color:var(--taronja);font-size:1.5rem;opacity:.8}.ap-cicle:not(:disabled):hover{background:#fff3ea}.ap-cicle.ple{border-color:var(--tinta);background:#fff}.ap-cicle:focus-visible{outline:3px solid var(--taronja);outline-offset:2px}.ap-cicle:disabled{cursor:default}
+.ap-signes button,.ap-ops button{min-width:48px;height:44px;border-radius:10px;border:2px solid var(--tinta);background:#fff;font-size:1.35rem;font-weight:900;padding:0 10px}
+.ap-ops{display:flex;gap:6px;flex-wrap:wrap}.ap-ops button{font-size:1.05rem;font-weight:800}
+.ap-signes button.triat,.ap-ops button.triat,.ap-ord-pool button.triat{background:var(--tinta);color:#fff!important}
+.ap-expr{font-size:1.35rem;font-weight:800;white-space:nowrap}
+.ap-ent{display:flex;align-items:center;gap:6px}.ap-ent .signes{display:flex;gap:4px}
+.ap-ent .signes button{width:40px;height:40px;border-radius:9px;border:2px solid var(--tinta);font-size:1.4rem;font-weight:900;background:#fff;line-height:1}
+.ap-ent .signes button.activa{background:var(--tinta);color:#fff}
+.ap-ent input{width:76px;height:44px;border:2px solid var(--tinta);border-radius:10px;font-size:1.4rem;font-weight:800;text-align:center}
+.ap-text{font-size:1.05rem;font-weight:600;flex:1 1 260px;line-height:1.35}
+.comp-sims{display:flex;flex-direction:column;gap:10px;align-items:center;font-size:2rem;font-weight:900}.comp-sims span{color:var(--tinta);margin:0 10px}
+.regla-s{display:flex;flex-direction:column;gap:8px;align-items:center;font-size:1.4rem;font-weight:700;background:#fff;border:2px solid var(--linia);border-radius:14px;padding:16px 26px}.regla-s .res{font-size:2.6rem;font-weight:900}
+.taula-signes{display:grid;grid-template-columns:1fr 1fr;gap:10px 30px;font-size:1.6rem;font-weight:700;background:#fff;border:2px solid var(--linia);border-radius:14px;padding:18px 28px}
+.ap-uni{font-weight:700;color:var(--gris)}
+.ap-ord{width:100%}.ap-ord-cap{font-weight:700;margin-bottom:6px}
+.ap-ord-fila{display:flex;align-items:center;gap:4px;flex-wrap:wrap;min-height:48px}
+.ap-ord-fila i{font-style:normal;font-weight:900;color:var(--gris)}
+.ap-ord-fila .buit{width:54px;height:42px;border:2px dashed var(--linia);border-radius:10px;display:inline-block}
+.ap-ord-fila button,.ap-ord-pool button,.ap-ord-pool .usat{min-width:54px;height:42px;border-radius:10px;border:2px solid var(--tinta);background:#fff;font-size:1.2rem;font-weight:900;padding:0 8px}
+.ap-ord-pool{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.ap-ord-pool .usat{display:inline-flex;align-items:center;justify-content:center;opacity:.25;border-style:dashed}
+.ap-bona{width:100%;font-size:.95rem;color:#1d6b3f;font-weight:700}
+.ap-buit{display:inline-block;min-width:34px;text-align:center;border-bottom:3px solid var(--tinta);font-weight:900}
+.ap-corr-llista{display:inline-flex;flex-direction:column;gap:2px}
+.previ-nav{display:flex;align-items:center;gap:6px;margin-left:10px}.previ-nav b{min-width:34px;text-align:center}
+#banda-previ{position:fixed;left:50%;transform:translateX(-50%);bottom:10px;z-index:90;background:#7c5cd6;color:#fff;border-radius:999px;padding:6px 8px 6px 16px;font-size:.9rem;display:flex;align-items:center;gap:10px;box-shadow:0 6px 18px rgba(0,0,0,.2)}
+#banda-previ button{border:0;background:#fff;color:#5a3fb0;border-radius:999px;padding:4px 12px;font-weight:800;cursor:pointer}
+.retorn.previ{background:#f2edfd;border:2px solid #7c5cd6}.previ-sol{margin:4px 0 4px 18px;padding:0}
+.ronda-demo{display:flex;flex-direction:column;gap:14px}
+.rd-ex{border:2px solid var(--linia);border-radius:14px;background:var(--paper);overflow:hidden}
+.rd-cap{display:flex;gap:10px;align-items:center;background:#f4f2ee;padding:6px 12px;font-size:.85rem;color:var(--gris)}
+.rd-cap b{background:var(--tinta);color:#fff;border-radius:50%;width:24px;height:24px;display:inline-flex;align-items:center;justify-content:center}
+.rd-pista{margin-left:auto;color:#8a6d00;font-weight:700}
+.rd-cos{display:grid;grid-template-columns:1.4fr 1fr;gap:14px;padding:12px}
+.rd-preg .visual{margin:8px 0}.rd-preg .visual svg{max-width:100%;height:auto}
+.rd-sol{border-left:2px dashed var(--linia);padding-left:12px;font-size:.95rem}.rd-sol ol{margin:4px 0 0 18px;padding:0}
+.punts i.salt{background:#cfcac2;border-color:#cfcac2}
+#rectaz-int{width:100%;max-width:560px;display:block;margin:0 auto;touch-action:manipulation}
+.ovelles{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.ovelles .ov{display:flex;flex-direction:column;align-items:center;gap:4px}.ovelles .ov span{font-size:3rem;line-height:1}.ovelles .ov b{font-size:1.6rem;color:var(--taronja)}
+.ovelles .ov.buit span{opacity:.6}
+.conj-txt{text-align:center;font-size:1.35rem;font-weight:800;margin-top:10px;letter-spacing:.02em}
+.lletra-conj{font-size:1.7rem;font-weight:900;font-family:'Cambria Math','STIX Two Math','Times New Roman',serif}
+.xips-z{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}.xips-z span{border:2px solid var(--linia);border-radius:12px;padding:6px 14px;font-size:1.5rem;font-weight:900;background:#fff;min-width:54px;text-align:center}
 #recta-int{width:100%;max-width:530px;display:block;margin:0 auto;touch-action:manipulation}
 .transf{display:flex;align-items:center;gap:14px}
 .transf .fl{display:flex;flex-direction:column;align-items:center;font-weight:800;color:var(--taronja);font-size:1.2rem;line-height:1.5}
@@ -239,10 +290,27 @@ small.anul-txt{display:block;font-size:.68rem}
 .modal-fora h3{margin-bottom:6px}.modal-fora p{margin-top:6px}
 .llib-barra{margin-bottom:10px}
 .c-prova{background:#efeafe}
+.fitxes{display:flex;flex-direction:column;gap:10px;width:100%;max-width:580px;margin:0 auto}
+.fx-obre{align-self:center;display:inline-flex;align-items:center;gap:8px;border:3px solid var(--tinta);background:#fff;border-radius:14px;padding:12px 20px;font-size:1.2rem;font-weight:800;cursor:pointer}.fx-obre:hover{background:#fff3ea}
+.fx-cap{font-size:1rem;color:var(--tinta)}.fx-lleg{font-size:1rem;color:var(--gris);text-align:center}
+.fx-tabs{display:flex;gap:6px;flex-wrap:wrap}.fx-tabs button{border:2px solid var(--linia);background:#fff;border-radius:10px;padding:5px 10px;font-weight:800;font-size:1rem;cursor:pointer}.fx-tabs button.activa{border-color:var(--tinta);background:var(--tinta);color:#fff}
+.fx-tauler{display:grid;grid-template-columns:30px 1fr;gap:12px 8px;align-items:center;background:#fff;border:2px solid var(--linia);border-radius:14px;padding:14px 12px}
+.fx-fila{display:flex;flex-wrap:wrap;gap:8px;padding:6px;border-radius:999px;border:3px solid transparent;width:max-content;max-width:100%;transition:border-color .3s}
+.fx-sg{font-size:1.5rem;font-weight:900;text-align:center}.fx-sg.p{color:var(--taronja)}.fx-sg.n{color:#2a6fd6}.fx-cap0{color:var(--gris);font-style:italic;padding:8px}
+.fx{width:46px;height:46px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:900;font-size:1.35rem;color:#fff;border:0;position:relative;cursor:pointer;transition:transform .15s,opacity .25s;padding:0}
+.fx.p{background:var(--taronja);box-shadow:inset 0 -3px 0 rgba(0,0,0,.18)}.fx.n{background:#2a6fd6;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18)}
+.fx:not(:disabled):hover{transform:scale(1.08)}.fx.sel{outline:4px solid var(--tinta);outline-offset:3px;transform:scale(1.1)}
+.fx.tatxada{opacity:.35;cursor:default}.fx.tatxada::after{content:'';position:absolute;left:-4px;right:-4px;top:50%;height:4px;background:#1b1b1b;border-radius:2px;transform:rotate(-40deg)}
+.fx.queda{cursor:default;opacity:1;outline:3px dashed var(--tinta);outline-offset:4px;animation:pop .4s both}.fx:disabled{cursor:default}
+.fx.tremola{animation:fxTremola .35s}@keyframes fxTremola{0%,100%{translate:0}25%{translate:-5px}75%{translate:5px}}
+.fx.mini{width:22px;height:22px;font-size:.9rem;vertical-align:middle;cursor:default;box-shadow:none}
+.fx-acc{display:flex;gap:8px;justify-content:center}
+.fx-msg{min-height:1.4em;text-align:center;font-size:1.1rem}
 .entrada-enter{display:flex;align-items:center;justify-content:center;gap:12px;margin:12px auto 4px;font-size:1.4rem;font-weight:700}
 .entrada-enter .signes{display:flex;flex-direction:column;gap:6px}
 .entrada-enter .signes button{width:54px;height:44px;border-radius:10px;border:2px solid var(--tinta);font-size:1.8rem;font-weight:900;line-height:1;background:var(--paper)}
 .entrada-enter .signes button.activa{background:var(--tinta);color:#fff}
+.ap-ent input.escrit{width:96px}.entrada-enter input.escrit,.ap-ent input.escrit{letter-spacing:.02em}.entrada-enter input.escrit::placeholder,.ap-ent input.escrit::placeholder{color:#c9c4bc}
 .entrada-enter input{width:150px;text-align:center;font-size:2.4rem;font-weight:800;padding:8px;border:2px solid var(--tinta);border-radius:12px}
 .ajuda-enter{text-align:center;color:var(--gris);font-size:.85rem}
 .enter-gran{font-size:1.5em;font-weight:900}
@@ -308,6 +376,48 @@ small.anul-txt{display:block;font-size:.68rem}
 .seg-inc{position:absolute;right:3px;top:3px;width:13px;height:13px;border-radius:50%;border:2px solid #ccc;background:#fff;padding:0;cursor:pointer}
 .seg-inc.on{background:var(--ko);border-color:var(--ko);box-shadow:0 0 0 2px #fff,0 0 0 3px var(--ko)}
 .seg-inc:hover{border-color:var(--ko)}
+.asc-capa{display:flex;align-items:stretch;justify-content:center;overflow:auto}
+#asc{width:100%;max-width:1280px;padding:14px 18px}
+.asc-inici{max-width:760px;margin:20px auto;display:flex;flex-direction:column;gap:16px}
+.asc-tit{display:flex;gap:18px;align-items:center}.asc-tit h2{font-size:2rem;margin:0 0 6px}
+.asc-jug{display:flex;align-items:center;gap:14px;flex-wrap:wrap}.asc-jug>b{min-width:90px}
+.asc-jug>div:not(.segment){display:flex;gap:8px}.asc-jug>div button{font-size:1.8rem;width:58px;height:58px;border-radius:14px;border:2px solid var(--linia);background:#fff}
+.asc-jug>div button.activa{border-color:var(--tinta);box-shadow:0 0 0 3px var(--taronja)}.asc-jug>div button:disabled{opacity:.25}
+.asc-joc{display:grid;grid-template-columns:minmax(280px,42%) 1fr;gap:18px;height:calc(100vh - 28px)}
+.asc-esq{display:flex;align-items:center;justify-content:center}.asc-edifici{width:100%;height:100%;max-height:calc(100vh - 40px)}
+.asc-dre{display:flex;flex-direction:column;gap:10px;min-width:0}
+.asc-cap{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.asc-torn{border:3px solid;border-radius:999px;padding:4px 14px;font-size:1.15rem}
+.asc-punts{border:2px solid var(--linia);border-radius:999px;padding:2px 10px;font-weight:800}.asc-punts.ara{border-color:var(--tinta)}
+.asc-n{margin-left:auto;color:var(--gris);font-size:.9rem}
+.asc-timer{height:8px;border-radius:8px;background:#eee;overflow:hidden}.asc-timer i{display:block;height:100%;background:var(--taronja);transform-origin:left;transition:transform .25s linear}
+.asc-bocadill{background:#fff;border:3px solid var(--tinta);border-radius:18px;padding:14px 20px;font-size:1.85rem;line-height:1.25;font-weight:600;position:relative}
+.asc-conserge{display:flex;gap:10px;align-items:center;background:#f4f2ee;border-radius:14px;padding:8px 12px;font-size:1.05rem;min-height:70px}
+.asc-be{color:#1d6b3f;font-weight:800}.asc-mal{color:#b03030;font-weight:700}
+.asc-panell{display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto 1fr;gap:10px;margin-top:auto}
+.asc-mov{grid-column:1/-1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;background:#1b1b1b;color:#fff;border-radius:14px;min-height:84px;padding:6px 10px}
+.asc-op{display:flex;align-items:baseline;justify-content:center;gap:14px;font-size:2.5rem;font-weight:900;line-height:1.1}
+.asc-op i{color:#6d6a66;font-style:normal}.asc-sg.amunt{color:#ffb27a}.asc-sg.avall{color:#8fb8ff}
+.asc-r{min-width:1.6em;text-align:center}.asc-r.bo{color:#7be0a0}.asc-r.mal{color:#ff8a8a}
+.asc-par{color:#cfcac2;font-size:1.05rem;font-weight:700}.asc-hist{color:#a9a49c;font-size:.9rem;font-weight:700}
+.asc-sons{position:absolute;top:14px;right:14px;display:flex;gap:6px}.asc-cap .asc-sons{position:static}
+.asc-so{font-size:1.4rem;background:#fff;border:2px solid var(--linia);border-radius:12px;width:46px;height:42px;cursor:pointer;position:relative}.asc-so.off{opacity:.45}.asc-so.off::after{content:'';position:absolute;left:8px;right:8px;top:50%;height:3px;background:#b03030;transform:rotate(-35deg);border-radius:2px}
+.asc-cap .asc-so{width:40px;height:36px;font-size:1.15rem}.asc-inici{position:relative}
+.asc-torn small{font-size:.75rem;color:var(--gris);font-weight:700}
+.asc-edifici .asc-pop{animation:ascPop .4s both;transform-box:fill-box;transform-origin:center}
+.asc-edifici .asc-ara{animation:ascBot 1.1s ease-in-out infinite;transform-box:fill-box;transform-origin:center bottom}
+.asc-edifici .asc-entra{animation:ascEntra .7s ease-in both}
+.asc-edifici .asc-surt{animation:ascSurt .8s ease-out both}.asc-edifici .asc-surt.curt{animation:ascSurtC .5s ease-out both}
+@keyframes ascPop{0%{transform:scale(0);opacity:0}70%{transform:scale(1.25);opacity:1}100%{transform:scale(1)}}
+@keyframes ascBot{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+@keyframes ascEntra{0%{transform:translate(var(--dx),0)}25%{transform:translate(calc(var(--dx)*.75),-4px)}50%{transform:translate(calc(var(--dx)*.5),0)}75%{transform:translate(calc(var(--dx)*.25),-4px)}100%{transform:translate(0,0)}}
+@keyframes ascSurt{0%{transform:translate(0,0);opacity:1}35%{transform:translate(calc(var(--dx)*.4),-4px)}70%{transform:translate(calc(var(--dx)*.8),0);opacity:1}100%{transform:translate(var(--dx),0);opacity:0}}
+@keyframes ascSurtC{0%{transform:translate(0,0);opacity:1}100%{transform:translate(calc(var(--dx)*.5),0);opacity:0}}
+.asc-dir{display:flex;flex-direction:column;gap:8px}.asc-dir button{width:110px;flex:1;border-radius:14px;border:3px solid var(--tinta);background:#fff;font-size:2rem;font-weight:900;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1}
+.asc-dir button small{font-size:.8rem;font-weight:700}.asc-dir button b{font-size:2.4rem;line-height:1}.asc-dir button.activa{background:var(--tinta);color:#fff}
+.asc-tecles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.asc-tecles button{height:56px;border-radius:12px;border:2px solid var(--linia);background:#fff;font-size:1.5rem;font-weight:900}
+.asc-tecles button.ok{background:var(--taronja);color:#fff;border-color:var(--taronja)}.asc-tecles button.ok:disabled{opacity:.45}
+.asc-resum{border-collapse:collapse;font-size:1.15rem}.asc-resum th,.asc-resum td{padding:8px 16px;border-bottom:1px solid #eee;text-align:center}.asc-resum td:first-child{text-align:left;font-weight:800}
 .xip{border:2px solid #7c5cd6;background:#fff;color:#7c5cd6;border-radius:999px;padding:3px 10px;font-weight:800;font-size:.85rem;cursor:pointer;margin-left:4px}
 .xip.on{background:#7c5cd6;color:#fff}
 .sec-taller{border:2px solid #e7defc;border-radius:12px;padding:10px 12px;margin:10px 0}
@@ -376,6 +486,7 @@ h3 .cb-i{border:2px solid #0b2a5b;vertical-align:middle}
 #avis-db code{background:rgba(255,255,255,.2);padding:0 4px;border-radius:4px}
 #avis-db button{color:#fff;font-weight:900;margin-left:8px}
 .mini-sol{margin-top:6px}.mini-sol svg{max-width:240px;max-height:100px;height:auto;width:auto}
+.mini-sol svg.rectaz{max-width:100%;max-height:none;width:100%}
 .tria-d{display:flex;gap:6px;flex-wrap:wrap;align-items:center;justify-content:center;font-weight:700;margin-bottom:6px}
 .tria-d button{width:40px;height:38px;border-radius:9px;border:2px solid var(--tinta);font-weight:800;background:var(--paper)}
 .tria-d button.activa{background:var(--tinta);color:#fff}
@@ -739,15 +850,17 @@ const OBJ_FRACCIONS = [
 ];
 const OBJ_ENTERS = [
   { id: 'e1', num: '1', titol: 'El significat d\'un nombre enter', curt: 'Significat' },
-  { id: 'e2', num: '2', titol: 'Els enters a la recta numèrica', curt: 'Recta' },
-  { id: 'e3', num: '3', titol: 'Comparar nombres enters', curt: 'Comparar' },
-  { id: 'e4', num: '4', titol: 'Sumes i restes amb enters', curt: 'Sumes i restes' },
-  { id: 'e5', num: '5', titol: 'Multiplicació i divisió d\'enters', curt: 'Mult. i div.' },
-  { id: 'e6', num: '6', titol: 'Problemes de la vida quotidiana', curt: 'Problemes' }
+  { id: 'eN', num: '2', titol: 'Naturals, enters i oposats', curt: 'Naturals i enters' },
+  { id: 'e2', num: '3', titol: 'Els enters a la recta numèrica', curt: 'Recta' },
+  { id: 'e3', num: '4', titol: 'Comparar nombres enters', curt: 'Comparar' },
+  { id: 'e4', num: '5', titol: 'Sumes i restes amb enters', curt: 'Sumes i restes' },
+  { id: 'e5', num: '6', titol: 'Multiplicació i divisió d\'enters', curt: 'Mult. i div.' },
+  { id: 'e6', num: '7', titol: 'Problemes de la vida quotidiana', curt: 'Problemes' },
+  { id: 'e7', num: '8', titol: 'Operacions combinades', curt: 'Combinades' }
 ];
 const UNITATS = {
   f: { id: 'f', nom: 'Fraccions', obj: OBJ_FRACCIONS, prova: 'pf', minimKey: 'minimAS', minimDef: 6, provaKey: 'provaF' },
-  e: { id: 'e', nom: 'Enters', obj: OBJ_ENTERS, prova: 'pe', minimKey: 'minimASe', minimDef: 4, provaKey: 'provaE' }
+  e: { id: 'e', nom: 'Enters', obj: OBJ_ENTERS, prova: 'pe', minimKey: 'minimASe', minimDef: 6, provaKey: 'provaE' }
 };
 const LLISTA_UNITATS = ['f', 'e'];
 const unitatDe = oId => UNITATS[LLISTA_UNITATS.find(k => UNITATS[k].obj.some(o => o.id === oId) || UNITATS[k].prova === oId) || 'f'];
@@ -2673,6 +2786,924 @@ TEMES.e1 = {
 };
 
 /* =====================================================================
+   EXERCICIS AMB APARTATS (mode «apartats»): un exercici amb diversos apartats;
+   només és correcte si tots els apartats estan bé.
+   Tipus d'apartat: signe (< = >), enter (resultat amb signe), tria (botons),
+   ordena (tocar en ordre) i marca (tocar tots els que compleixen).
+   ===================================================================== */
+const LLETRES_AP = 'abcdefgh';
+const ordenats = it => [...it.nums].sort((x, y) => it.ordre === 'asc' ? x - y : y - x);
+function apCorrHtml(it) {
+  if (it.tipus === 'signe') return `${fz(it.a)} <b>${it.correcta}</b> ${fz(it.b)}`;
+  if (it.tipus === 'enter') return it.llarg ? `<b>${fz(it.valor)}${it.unitat ? ' ' + it.unitat : ''}</b>` : `${it.html} = <b>${fz(it.valor)}</b>${it.unitat ? ' ' + it.unitat : ''}`;
+  if (it.tipus === 'tria') return `<b>${it.opcions.find(o => o.val === it.correcta).html}</b>`;
+  if (it.tipus === 'ordena') return ordenats(it).map(fz).join(it.ordre === 'asc' ? ' &lt; ' : ' &gt; ');
+  if (it.tipus === 'marca') return it.nums.filter((_, i) => it.bons.includes(i)).map(fz).join(', ');
+}
+const apCorrTxt = it => textPla(apCorrHtml(it));
+// llegeix un enter escrit: accepta − o -, + opcional i espais («- 3», «+3», «3»)
+function llegeixEnter(t) {
+  const m = String(t ?? '').replace(/[−–—]/g, '-').replace(/\s+/g, '').match(/^([+-]?)(\d{1,4})$/);
+  if (!m) return null; const n = Number(m[2]); return { v: m[1] === '-' ? -n : n, signe: m[1] };
+}
+const netejaEnter = v => v.replace(/[-–—]/g, '−').replace(/[^0-9+−\s]/g, '').slice(0, 6);
+function apartats(items, extra = {}) {
+  return {
+    resposta: { mode: 'apartats', items },
+    correctaHtml: `<span class="ap-corr-llista">${items.map((it, k) => `<span>${LLETRES_AP[k]}) ${apCorrHtml(it)}</span>`).join('')}</span>`,
+    correctaTxt: items.map((it, k) => `${LLETRES_AP[k]}) ${apCorrTxt(it)}`).join(' · '), ...extra
+  };
+}
+function apHtml(it, k, st, actiu) {
+  const dis = actiu ? '' : 'disabled';
+  if (it.tipus === 'signe') return `<span class="ap-num">${enterGran(it.a)}</span><button type="button" class="ap-cicle ${st.v ? 'ple' : ''}" data-k="${k}" data-cic="1" ${dis} title="Toca per canviar: &lt; → &gt; → = (o escriu-lo amb el teclat)" aria-label="Signe de l'apartat ${LLETRES_AP[k]}: ${st.v ? esc(st.v) : 'buit'}">${st.v ? esc(st.v) : '<i>?</i>'}</button><span class="ap-num">${enterGran(it.b)}</span>`;
+  if (it.tipus === 'enter' && it.escrit) return `<span class="${it.llarg ? 'ap-text' : 'ap-expr'}">${it.html}${it.llarg ? '' : ' ='}</span><span class="ap-ent"><input class="escrit" data-k="${k}" data-esc="1" inputmode="text" maxlength="6" autocomplete="off" spellcheck="false" value="${esc(st.n ?? '')}" ${dis} aria-label="Resultat de l'apartat ${LLETRES_AP[k]} (amb el signe)" placeholder="±">${it.unitat ? `<span class="ap-uni">${it.unitat}</span>` : ''}</span>`;
+  if (it.tipus === 'enter') return `<span class="${it.llarg ? 'ap-text' : 'ap-expr'}">${it.html}${it.llarg ? '' : ' ='}</span><span class="ap-ent"><span class="signes"><button type="button" data-k="${k}" data-sg="1" class="${st.sg === 1 ? 'activa' : ''}" ${dis}>+</button><button type="button" data-k="${k}" data-sg="-1" class="${st.sg === -1 ? 'activa' : ''}" ${dis}>−</button></span><input data-k="${k}" inputmode="numeric" maxlength="4" autocomplete="off" value="${st.n ?? ''}" ${dis} aria-label="Resultat de l'apartat ${LLETRES_AP[k]}">${it.unitat ? `<span class="ap-uni">${it.unitat}</span>` : ''}</span>`;
+  if (it.tipus === 'tria') return `<span class="${it.llarg || it.html.length > 60 ? 'ap-text' : 'ap-expr'}">${it.html}</span><span class="ap-ops">${it.opcions.map(o => `<button data-k="${k}" data-t="${esc(o.val)}" class="${st.v === o.val ? 'triat' : ''}" ${dis}>${o.html}</button>`).join('')}</span>`;
+  if (it.tipus === 'ordena') {
+    const seq = st.seq || [];
+    return `<div class="ap-ord"><div class="ap-ord-cap">${it.html || `Ordena de més ${it.ordre === 'asc' ? 'petit a més gran' : 'gran a més petit'}`}:</div>
+      <div class="ap-ord-fila">${it.nums.map((_, p) => seq[p] != null ? `<button data-k="${k}" data-tr="${p}" style="color:${colZ(it.nums[seq[p]])}" ${dis}>${fz(it.nums[seq[p]])}</button>` : `<span class="buit"></span>`).join(`<i>${it.ordre === 'asc' ? '&lt;' : '&gt;'}</i>`)}</div>
+      <div class="ap-ord-pool">${it.nums.map((v, i) => seq.includes(i) ? `<span class="usat">${fz(v)}</span>` : `<button data-k="${k}" data-po="${i}" style="color:${colZ(v)}" ${dis}>${fz(v)}</button>`).join('')}</div></div>`;
+  }
+  if (it.tipus === 'marca') return `<div class="ap-ord"><div class="ap-ord-cap">${it.html}</div><div class="ap-ord-pool">${it.nums.map((v, i) => `<button data-k="${k}" data-mc="${i}" class="${st.sel?.has(i) ? 'triat' : ''}" style="color:${colZ(v)}" ${dis}>${fz(v)}</button>`).join('')}</div></div>`;
+  return '';
+}
+const apFet = (it, st) => it.tipus === 'signe' || it.tipus === 'tria' ? st.v != null
+  : it.tipus === 'enter' ? (it.escrit ? !!llegeixEnter(st.n) : (st.n !== '' && st.n != null && (Number(st.n) === 0 || !!st.sg)))
+  : it.tipus === 'ordena' ? (st.seq || []).length === it.nums.length
+  : it.tipus === 'marca' ? (st.sel?.size || 0) > 0 : false;
+function apOk(it, st) {
+  if (it.tipus === 'signe' || it.tipus === 'tria') return st.v === it.correcta;
+  if (it.tipus === 'enter') { if (it.escrit) return llegeixEnter(st.n)?.v === it.valor; const n = Number(st.n); return (n === 0 ? 0 : st.sg * n) === it.valor; }
+  if (it.tipus === 'ordena') { const o = ordenats(it); return st.seq.every((i, p) => it.nums[i] === o[p]); }
+  if (it.tipus === 'marca') return st.sel.size === it.bons.length && it.bons.every(i => st.sel.has(i));
+}
+function apTxt(it, st) {
+  if (it.tipus === 'signe') return `${fz(it.a)} ${st.v} ${fz(it.b)}`;
+  if (it.tipus === 'enter') { const n = Number(st.n); const r = fz(it.escrit ? llegeixEnter(st.n)?.v ?? 0 : n === 0 ? 0 : st.sg * n) + (it.unitat ? ' ' + it.unitat : ''); return it.llarg ? r : `${textPla(it.html)} = ${r}`; }
+  if (it.tipus === 'tria') return textPla(it.opcions.find(o => o.val === st.v)?.html || st.v);
+  if (it.tipus === 'ordena') return st.seq.map(i => fz(it.nums[i])).join(it.ordre === 'asc' ? ' < ' : ' > ');
+  if (it.tipus === 'marca') return [...st.sel].sort((a, b) => a - b).map(i => fz(it.nums[i])).join(', ');
+}
+const apFila = (it, k, st, actiu, estat) => `<div class="ap ${estat || ''} ap-${it.tipus}" data-fila="${k}"><span class="ap-l">${LLETRES_AP[k]})</span><div class="ap-cos">${apHtml(it, k, st, actiu)}${estat === 'ko' ? `<div class="ap-bona">Correcte: ${apCorrHtml(it)}</div>` : ''}</div></div>`;
+function apartatsHtml(rp, R, actiu, estats = []) { return `${actiu && rp.items.some(it => it.escrit) ? '<p class="ajuda-enter" style="margin:0 0 8px">Escriu cada resultat amb el signe: per exemple <b>−7</b> o <b>+4</b>. El 0 no porta signe.</p>' : ''}<div class="apartats">${rp.items.map((it, k) => apFila(it, k, R.ap[k], actiu, estats[k])).join('')}</div>`; }
+function enllacaApartats(R, rp, btn) {
+  const zona = $('#zona-resp');
+  const actualitza = () => { btn.disabled = !rp.items.every((it, k) => apFet(it, R.ap[k])); };
+  const repintaFila = k => { const f = $(`[data-fila="${k}"]`, zona); if (f) f.outerHTML = apFila(rp.items[k], k, R.ap[k], true); };
+  zona.onclick = e => {
+    if (R.respost) return; const b = e.target.closest('button[data-k]'); if (!b) return;
+    const k = Number(b.dataset.k), st = R.ap[k], it = rp.items[k];
+    if (b.dataset.cic != null) { const C = [null, '<', '>', '=']; st.v = C[(C.indexOf(st.v ?? null) + 1) % 4]; }
+    else if (b.dataset.s != null) st.v = b.dataset.s;
+    else if (b.dataset.t != null) st.v = b.dataset.t;
+    else if (b.dataset.sg != null) { st.sg = Number(b.dataset.sg); }
+    else if (b.dataset.po != null) { (st.seq = st.seq || []).push(Number(b.dataset.po)); }
+    else if (b.dataset.tr != null) { st.seq.splice(Number(b.dataset.tr), 1); }
+    else if (b.dataset.mc != null) { st.sel = st.sel || new Set(); const i = Number(b.dataset.mc); st.sel.has(i) ? st.sel.delete(i) : st.sel.add(i); }
+    so('pas'); repintaFila(k);
+    if (it.tipus === 'enter') { const inp = $(`input[data-k="${k}"]`, zona); if (inp) { inp.focus(); const v = inp.value; inp.value = ''; inp.value = v; } }
+    if (b.dataset.cic != null) $(`button[data-cic][data-k="${k}"]`, zona)?.focus();
+    actualitza();
+  };
+  // al quadre del signe també es pot escriure <, > o = amb el teclat
+  zona.addEventListener('keydown', e => {
+    const b = e.target.closest?.('button[data-cic]'); if (!b || R.respost || !['<', '>', '='].includes(e.key)) return;
+    e.preventDefault(); e.stopPropagation(); const k = Number(b.dataset.k); R.ap[k].v = e.key; so('pas'); repintaFila(k);
+    $(`button[data-cic][data-k="${k}"]`, zona)?.focus(); actualitza();
+  }, true);
+  zona.oninput = e => { const inp = e.target.closest('input[data-k]'); if (!inp) return; inp.value = inp.dataset.esc ? netejaEnter(inp.value) : inp.value.replace(/[^0-9]/g, ''); R.ap[Number(inp.dataset.k)].n = inp.value; actualitza(); };
+  zona.onkeydown = e => {
+    const inp = e.target.closest('input[data-k]'); if (!inp) return; const k = Number(inp.dataset.k);
+    if (!inp.dataset.esc && (e.key === '-' || e.key === '+')) { e.preventDefault(); R.ap[k].sg = e.key === '-' ? -1 : 1; const v = inp.value; repintaFila(k); const n = $(`input[data-k="${k}"]`, zona); n.value = v; n.focus(); actualitza(); return; }
+    if (e.key === 'Enter') { e.preventDefault(); if (!btn.disabled) btn.click(); else { const ins = $$('input[data-k]', zona); const p = ins.indexOf(inp); if (p < ins.length - 1) ins[p + 1].focus(); } }
+  };
+  actualitza();
+  const primer = $('input[data-k]', zona); if (primer) primer.focus();
+}
+function demoApartatsHtml(rp, resolt) {
+  return `<div class="apartats">${rp.items.map((it, k) => `<div class="ap ${resolt ? 'ok' : ''}"><span class="ap-l">${LLETRES_AP[k]})</span><div class="ap-cos">${resolt ? apCorrHtml(it)
+    : it.tipus === 'signe' ? `${enterGran(it.a)} <span class="ap-buit">?</span> ${enterGran(it.b)}`
+    : it.tipus === 'enter' ? `${it.html} = <span class="ap-buit">?</span>`
+    : it.tipus === 'tria' ? `${it.html} <span style="color:var(--gris)">(${it.opcions.map(o => textPla(o.html)).join(' / ')})</span>`
+    : `${it.html || (it.ordre === 'asc' ? 'Ordena de més petit a més gran' : 'Ordena de més gran a més petit')}: ${it.nums.map(fz).join(', ')}`}</div></div>`).join('')}</div>`;
+}
+
+/* =====================================================================
+   ENTERS · RECTA NUMÈRICA D'ENTERS (dibuix i mode de resposta «rectaZ»)
+   ===================================================================== */
+const RZ = { x0: 34, x1: 526, y: 64, W: 560 };
+const rzX = (v, min, max) => RZ.x0 + (v - min) * (RZ.x1 - RZ.x0) / (max - min);
+function rzEtiqueta(labels, v) {
+  if (typeof labels === 'function') return labels(v);
+  if (labels === 'totes') return true;
+  if (labels === 'parells') return v % 2 === 0;
+  if (labels === 'cinc') return v % 5 === 0;
+  if (labels === 'zero') return v === 0;
+  if (labels === 'pos') return v >= 0;
+  return false;
+}
+function rectaZCos({ min = -6, max = 6, ticks = true, labels = 'totes', punts = [], fletxes = [], salts = null, banda = null, claus = false, zero = true, anim = false }) {
+  const { y } = RZ; const X = v => rzX(v, min, max); let s = '';
+  if (banda) s += `<rect x="${X(banda.de) - 4}" y="${y - 12}" width="${X(banda.a) - X(banda.de) + 8}" height="24" rx="12" fill="${banda.col || '#ffe2c9'}" ${anim ? 'class="pop"' : ''}/>`;
+  s += `<line x1="${RZ.x0 - 22}" y1="${y}" x2="${RZ.x1 + 22}" y2="${y}" stroke="#1b1b1b" stroke-width="3"/>`;
+  s += `<path d="M ${RZ.x1 + 20} ${y - 8} L ${RZ.x1 + 32} ${y} L ${RZ.x1 + 20} ${y + 8} Z" fill="#1b1b1b"/><path d="M ${RZ.x0 - 20} ${y - 8} L ${RZ.x0 - 32} ${y} L ${RZ.x0 - 20} ${y + 8} Z" fill="#1b1b1b"/>`;
+  if (ticks) for (let v = min; v <= max; v++) {
+    const x = X(v), z = v === 0 && zero;
+    s += `<line x1="${x}" y1="${y - (z ? 18 : 10)}" x2="${x}" y2="${y + (z ? 18 : 10)}" stroke="#1b1b1b" stroke-width="${z ? 4 : 2.2}" ${anim ? `class="pop" style="animation-delay:${(v - min) * .04}s"` : ''}/>`;
+    if (rzEtiqueta(labels, v) || z) s += `<text x="${x}" y="${y + 42}" text-anchor="middle" font-size="${z ? 22 : (max - min > 16 ? 15 : 18)}" font-weight="${z ? 900 : 800}" fill="${colZ(v)}">${v === 0 ? '0' : fz(v)}</text>`;
+  } else if (zero) s += `<line x1="${X(0)}" y1="${y - 18}" x2="${X(0)}" y2="${y + 18}" stroke="#1b1b1b" stroke-width="4"/><text x="${X(0)}" y="${y + 42}" text-anchor="middle" font-size="22" font-weight="900" fill="#8f8a82">0</text>`;
+  if (claus) {
+    const yb = y + 56;
+    if (min < 0) s += `<path d="M ${X(min)} ${yb} q 0 8 8 8 H ${(X(min) + X(-1)) / 2 - 8} q 8 0 8 8 q 0 -8 8 -8 H ${X(-1) - 8} q 8 0 8 -8" fill="none" stroke="${BLAU}" stroke-width="2.5"/><text x="${(X(min) + X(-1)) / 2}" y="${yb + 34}" text-anchor="middle" font-size="15" font-weight="800" fill="${BLAU}">negatius</text>`;
+    if (max > 0) s += `<path d="M ${X(1)} ${yb} q 0 8 8 8 H ${(X(1) + X(max)) / 2 - 8} q 8 0 8 8 q 0 -8 8 -8 H ${X(max) - 8} q 8 0 8 -8" fill="none" stroke="${T}" stroke-width="2.5"/><text x="${(X(1) + X(max)) / 2}" y="${yb + 34}" text-anchor="middle" font-size="15" font-weight="800" fill="${T}">positius</text>`;
+  }
+  if (salts) {
+    const { de, a } = salts, pas = a > de ? 1 : -1;
+    for (let k = de, n = 1; k !== a; k += pas, n++) {
+      const xa = X(k), xb = X(k + pas);
+      s += `<path d="M ${xa} ${y - 6} Q ${(xa + xb) / 2} ${y - 34} ${xb} ${y - 6}" fill="none" stroke="${salts.col || T}" stroke-width="3" ${anim ? `class="traca" style="animation-delay:${n * .3}s"` : ''}/>`;
+      if (salts.num !== false) s += `<text x="${(xa + xb) / 2}" y="${y - 27}" text-anchor="middle" font-size="13" font-weight="800" fill="${salts.col || T}" ${anim ? `class="pop" style="animation-delay:${n * .3 + .15}s"` : ''}>${n}</text>`;
+    }
+  }
+  for (const f of fletxes) {
+    const xa = X(f.de), xb = X(f.a), alt = Math.min(46, 14 + Math.abs(xb - xa) / 5), col = f.col || colZ(f.a), id = 'rzf' + (++idFl);
+    s += `<defs><marker id="${id}" markerUnits="userSpaceOnUse" markerWidth="14" markerHeight="14" refX="11" refY="7" orient="auto"><path d="M0 0 L14 7 L0 14 Z" fill="${col}"/></marker></defs>`;
+    s += `<path d="M ${xa} ${y - 8} Q ${(xa + xb) / 2} ${y - 8 - alt * 2} ${xb} ${y - 10}" fill="none" stroke="${col}" stroke-width="3.5" marker-end="url(#${id})" ${anim ? `class="traca" style="animation-delay:${f.delay || 0}s"` : ''}/>`;
+    if (f.etiq) s += `<text x="${(xa + xb) / 2}" y="${y - 12 - alt}" text-anchor="middle" font-size="15" font-weight="800" fill="${col}">${f.etiq}</text>`;
+  }
+  for (const p of punts) {
+    const x = X(p.v);
+    s += `<g ${p.anim != null ? `class="pop" style="animation-delay:${p.anim}s"` : ''}><circle cx="${x}" cy="${y}" r="10" fill="${p.col || T}" stroke="#1b1b1b" stroke-width="2.5"/>${p.etiq ? `<text x="${x}" y="${y - 20}" text-anchor="middle" font-size="18" font-weight="900" fill="#1b1b1b" stroke="#fff" stroke-width="4" paint-order="stroke">${p.etiq}</text>` : ''}</g>`;
+  }
+  return s;
+}
+const rectaZSVG = o => `<svg class="dib rectaz" viewBox="0 ${o.dalt ? -30 : 0} ${RZ.W} ${(o.claus ? 160 : 116) + (o.dalt ? 30 : 0)}" width="${RZ.W}">${rectaZCos(o)}</svg>`;
+function rectaZHtml(rp, st, actiu) {
+  const punts = [];
+  if (st.sel != null) punts.push({ v: st.sel, col: actiu ? T : (st.sel === rp.valor ? '#2c9a58' : '#d64242') });
+  if (!actiu && st.sel !== rp.valor) punts.push({ v: rp.valor, col: '#2c9a58', etiq: fz(rp.valor) });
+  return `<svg id="rectaz-int" viewBox="0 -10 ${RZ.W} 126" class="${actiu ? 'recta-zona' : ''}">${rectaZCos({ min: rp.min, max: rp.max, labels: rp.labels, punts })}<rect x="0" y="0" width="${RZ.W}" height="110" fill="transparent"/></svg>
+    <p class="pint-compte" style="text-align:center">${st.sel == null ? 'Toca la recta on va el nombre.' : actiu ? 'Has marcat un punt. Si no és bo, toca un altre lloc.' : ''}</p>`;
+}
+const nz = v => v < 0 ? `−${-v}` : String(v);
+const natGran = v => `<span class="enter-gran" style="color:${colZ(v)}">${nz(v)}</span>`;
+const xips = ll => `<div class="xips-z">${ll.map(v => `<span style="color:${colZ(v)}">${fz(v)}</span>`).join('')}</div>`;
+const diferents = (n, gen) => { const s = new Set(); let g = 0; while (s.size < n && g++ < 400) s.add(gen()); return [...s]; };
+
+/* ---------- OBJECTIU 2 · NATURALS, ENTERS I OPOSATS ---------- */
+const PISTA_NAT = { completa: `Els <b>naturals</b> són els nombres per comptar: <b>0, 1, 2, 3…</b> Els <b>negatius</b> (amb signe −) no són naturals, però sí que són <b>enters</b>.`, mitja: `Porta el signe −?` };
+const PISTA_OP = { completa: `L'<b>oposat</b> té el mateix número però el <b>signe contrari</b>. És a la mateixa distància del 0, a l'altra banda de la recta.`, mitja: `Canvia el signe.` };
+const EN = {};
+EN.esNatural = (nv) => {
+  const v = rnd(0, nv === 1 ? 10 : 25);
+  const negs = diferents(2, () => -rnd(1, nv === 1 ? 10 : 25));
+  return {
+    sig: `en-nat-${v}-${negs.join('_')}`, enunciat: `Quin d'aquests nombres és un nombre <b>natural</b>?`, visual: null, pista: PISTA_NAT,
+    resposta: { mode: 'opcions', opcions: barreja([v, ...negs]).map(x => ({ html: natGran(x), val: String(x), txt: nz(x) })), correcta: String(v) },
+    correctaHtml: `<b>${nz(v)}</b>`, correctaTxt: nz(v),
+    explicacio: v === 0 ? `El <b>0</b> és natural: és el que compten quan no hi ha res. Els altres porten signe −.` : `El <b>${v}</b> serveix per comptar: és natural. Els altres porten signe − i no són naturals.`,
+    solucio: [`Els naturals són 0, 1, 2, 3…`, `Els que porten signe − no són naturals.`, `El natural és el <b>${nz(v)}</b>.`]
+  };
+};
+EN.siNo = (nv, { t = 'nat' } = {}) => {
+  const tipus = t === 'mix' ? tria(['nat', 'ent']) : t;
+  const r = Math.random(); const v = r < .15 ? 0 : r < .6 ? -rnd(1, nv === 1 ? 9 : 40) : rnd(1, nv === 1 ? 9 : 40);
+  const si = tipus === 'ent' ? true : v >= 0;
+  const quin = tipus === 'ent' ? 'enter' : 'natural';
+  return {
+    sig: `en-sn-${tipus}-${v}`, enunciat: `El nombre ${natGran(v)} és un nombre <b>${quin}</b>?`, visual: null, pista: PISTA_NAT,
+    resposta: { mode: 'sino', correcta: si ? 'si' : 'no' },
+    correctaHtml: `<b>${si ? 'Sí' : 'No'}</b>`, correctaTxt: si ? 'Sí' : 'No',
+    explicacio: tipus === 'ent' ? `<b>Sí.</b> Tots els naturals i els seus oposats són enters: ${nz(v)} és enter.` : v >= 0 ? `<b>Sí.</b> ${nz(v)} és un nombre per comptar${v === 0 ? ' (el zero també compta com a natural)' : ''}.` : `<b>No.</b> ${nz(v)} porta signe −: és enter, però no natural.`,
+    solucio: tipus === 'ent' ? [`Els enters són tots: els negatius, el 0 i els positius.`, `${nz(v)} hi és: <b>Sí</b>.`] : [`Els naturals són 0, 1, 2, 3…`, v >= 0 ? `${nz(v)} hi és: <b>Sí</b>.` : `${nz(v)} porta signe −: <b>No</b>.`]
+  };
+};
+EN.classifica = (nv) => {
+  const r = Math.random(); const v = r < .12 ? 0 : r < .58 ? -rnd(1, 30) : rnd(1, 30);
+  const ops = [{ html: 'Natural i enter', val: 'ne' }, { html: 'Enter, però no natural', val: 'e' }, { html: 'Natural, però no enter', val: 'n' }];
+  const c = v >= 0 ? 'ne' : 'e';
+  return {
+    sig: `en-cl-${v}`, enunciat: `El nombre ${natGran(v)} és…`, visual: null, pista: PISTA_NAT,
+    resposta: { mode: 'opcions', opcions: ops.map(o => ({ ...o, txt: o.html })), correcta: c },
+    correctaHtml: `<b>${ops.find(o => o.val === c).html.toLowerCase()}</b>`, correctaTxt: ops.find(o => o.val === c).html,
+    explicacio: v >= 0 ? `${nz(v)} és natural, i tots els naturals també són enters.` : `${nz(v)} és negatiu: és enter, però no natural. <i>Cap</i> natural deixa de ser enter.`,
+    solucio: [`Els enters inclouen tots els naturals.`, v >= 0 ? `${nz(v)} no porta signe −: és natural.` : `${nz(v)} porta signe −: no és natural.`, `És <b>${ops.find(o => o.val === c).html.toLowerCase()}</b>.`]
+  };
+};
+EN.oposat = (nv, { vis = false } = {}) => {
+  const lim = nv === 1 ? 8 : nv === 2 ? 30 : 150; let a = rnd(1, lim) * (Math.random() < .5 ? -1 : 1);
+  if (nv === 3 && Math.random() < .12) a = 0;
+  const pot = vis && Math.abs(a) <= 8;
+  return {
+    sig: `en-op-${a}`, enunciat: `Quin és l'<b>oposat</b> de ${enterGran(a)}?`,
+    visual: pot ? (p => rectaZSVG({ min: -9, max: 9, labels: 'totes', punts: [{ v: a, etiq: fz(a) }], fletxes: p ? [{ de: 0, a: -a, col: '#2c9a58' }] : [], dalt: true })) : null,
+    pista: PISTA_OP, resposta: { mode: 'enter', valor: -a },
+    correctaHtml: `<b>${fz(-a)}</b>`, correctaTxt: fz(-a),
+    explicacio: a === 0 ? `El 0 és el seu propi oposat: no té signe.` : `Mateix número, signe contrari: l'oposat de ${fz(a)} és <b>${fz(-a)}</b>.`,
+    solucio: a === 0 ? [`El 0 no té signe.`, `L'oposat del 0 és el <b>0</b>.`] : [`Mantinc el número: <b>${Math.abs(a)}</b>.`, `Canvio el signe: ${a > 0 ? '+ → −' : '− → +'}.`, `L'oposat és <b>${fz(-a)}</b>.`]
+  };
+};
+EN.oposatRecta = (nv) => {
+  let v; do { v = rnd(-7, 7); } while (v === 0);
+  const labels = nv === 1 ? 'totes' : nv === 2 ? 'parells' : 'cinc';
+  const ops = [-v, v, -v + (v > 0 ? -1 : 1)];
+  return {
+    sig: `en-or-${v}-${labels}`, enunciat: `Quin nombre és l'<b>oposat</b> del punt marcat a la recta?`,
+    visual: p => rectaZSVG({ min: -8, max: 8, labels, punts: [{ v }], fletxes: p ? [{ de: 0, a: v, col: '#8f8a82' }] : [], dalt: true }), pista: PISTA_OP,
+    resposta: { mode: 'opcions', opcions: barreja(ops).map(x => ({ html: enterGran(x), val: String(x), txt: fz(x) })), correcta: String(-v) },
+    correctaHtml: `<b>${fz(-v)}</b>`, correctaTxt: fz(-v),
+    explicacio: `El punt marcat és el ${fz(v)}. El seu oposat és a la mateixa distància del 0, a l'altra banda: <b>${fz(-v)}</b>.`,
+    solucio: [`Llegeixo el punt: és el <b>${fz(v)}</b>.`, `Està a ${Math.abs(v)} unitats del 0, a la ${v > 0 ? 'dreta' : 'esquerra'}.`, `L'oposat és a ${Math.abs(v)} unitats a la ${v > 0 ? 'esquerra' : 'dreta'}: <b>${fz(-v)}</b>.`],
+    dibuixSolucio: rectaZSVG({ min: -8, max: 8, labels: 'totes', punts: [{ v }, { v: -v, col: '#2c9a58' }] })
+  };
+};
+EN.quantsNat = (nv, { llarg = false } = {}) => {
+  const n = llarg ? 7 : 5, lim = nv === 1 ? 9 : 20;
+  let ll; do { ll = diferents(n, () => rnd(-lim, lim)); } while (ll.filter(x => x >= 0).length === 0 || ll.filter(x => x < 0).length === 0);
+  if (llarg && !ll.includes(0)) ll[rnd(0, n - 1)] = 0;
+  const q = ll.filter(x => x >= 0).length;
+  return {
+    sig: `en-qn-${ll.join('_')}`, enunciat: `Quants d'aquests nombres són <b>naturals</b>?`, visual: () => `<div class="xips-z">${ll.map(v => `<span style="color:${colZ(v)}">${nz(v)}</span>`).join('')}</div>`, pista: PISTA_NAT,
+    resposta: { mode: 'numero', valor: q },
+    correctaHtml: `<b>${q}</b>`, correctaTxt: String(q),
+    explicacio: `Són naturals: ${ll.filter(x => x >= 0).map(nz).join(', ')}${ll.includes(0) ? ' (el 0 també compta)' : ''}.`,
+    solucio: [`Trec els que porten signe −: ${ll.filter(x => x < 0).map(nz).join(', ')}.`, `Queden ${ll.filter(x => x >= 0).map(nz).join(', ')}.`, `En total: <b>${q}</b>.`]
+  };
+};
+EN.parella = (nv) => {
+  const a = rnd(2, nv === 2 ? 15 : 60) * (Math.random() < .5 ? -1 : 1);
+  const bona = [a, -a], d1 = [a, a], d2 = [a, -(a + Math.sign(a))];
+  const p = q => `${fz(q[0])} i ${fz(q[1])}`;
+  return {
+    sig: `en-pa-${a}`, enunciat: `Quina parella està formada per dos nombres <b>oposats</b>?`, visual: null, pista: PISTA_OP,
+    resposta: { mode: 'opcions', opcions: barreja([bona, d1, d2]).map(q => ({ html: `<span style="font-size:1.25rem;font-weight:800">${p(q)}</span>`, val: p(q), txt: p(q) })), correcta: p(bona) },
+    correctaHtml: `<b>${p(bona)}</b>`, correctaTxt: p(bona),
+    explicacio: `${p(bona)}: mateix número i signe contrari.`,
+    solucio: [`Els oposats tenen el <b>mateix número</b>…`, `…i el <b>signe contrari</b>.`, `És <b>${p(bona)}</b>.`]
+  };
+};
+EN.simbol = (nv) => {
+  const q = tria(['ent', 'nat']);
+  const ops = [{ html: '<span class="lletra-conj">ℕ</span>', val: 'N', txt: 'ℕ' }, { html: '<span class="lletra-conj">ℤ</span>', val: 'Z', txt: 'ℤ' }, { html: '<span class="lletra-conj">ℰ</span>', val: 'E', txt: 'ℰ' }];
+  const c = q === 'ent' ? 'Z' : 'N';
+  return {
+    sig: `en-sb-${q}`, enunciat: `Amb quina lletra es representa el conjunt dels nombres <b>${q === 'ent' ? 'enters' : 'naturals'}</b>?`, visual: null,
+    pista: { completa: `Els naturals es diuen amb la <b>ℕ</b> i els enters, amb la <b>ℤ</b> (de l'alemany <i>Zahlen</i>, «nombres»).`, mitja: `Els enters no fan servir la E.` },
+    resposta: { mode: 'opcions', opcions: ops, correcta: c },
+    correctaHtml: `<b>${c === 'Z' ? 'ℤ' : 'ℕ'}</b>`, correctaTxt: c === 'Z' ? 'ℤ' : 'ℕ',
+    explicacio: q === 'ent' ? `Els enters es representen amb la <b>ℤ</b>, de l'alemany <i>Zahlen</i>. No és la E de «enters».` : `Els naturals es representen amb la <b>ℕ</b>.`,
+    solucio: [`ℕ: naturals (0, 1, 2, 3…).`, `ℤ: enters (…, −2, −1, 0, +1, +2, …).`, `La resposta és <b>${c === 'Z' ? 'ℤ' : 'ℕ'}</b>.`]
+  };
+};
+EN.oposatOposat = (nv) => {
+  const a = rnd(2, 40) * (Math.random() < .5 ? -1 : 1);
+  return {
+    sig: `en-oo-${a}`, enunciat: `Quin és l'oposat de l'<b>oposat</b> de ${enterGran(a)}?`, visual: null,
+    pista: { completa: `Fes-ho en dos passos: primer l'oposat de ${fz(a)} i després l'oposat d'aquest resultat.`, mitja: `Canvia el signe dues vegades.` },
+    resposta: { mode: 'enter', valor: a },
+    correctaHtml: `<b>${fz(a)}</b>`, correctaTxt: fz(a),
+    explicacio: `L'oposat de ${fz(a)} és ${fz(-a)}, i l'oposat de ${fz(-a)} torna a ser <b>${fz(a)}</b>.`,
+    solucio: [`Oposat de ${fz(a)}: ${fz(-a)}.`, `Oposat de ${fz(-a)}: <b>${fz(a)}</b>.`, `Canviar el signe dues vegades ens torna al nombre inicial.`]
+  };
+};
+EN.distOrigen = (nv) => {
+  const a = rnd(3, 25) * (Math.random() < .5 ? -1 : 1);
+  return {
+    sig: `en-do-${a}`, enunciat: `Quin altre nombre enter està a la <b>mateixa distància del 0</b> que ${enterGran(a)}?`, visual: null, pista: PISTA_OP,
+    resposta: { mode: 'enter', valor: -a },
+    correctaHtml: `<b>${fz(-a)}</b>`, correctaTxt: fz(-a),
+    explicacio: `${fz(a)} és a ${Math.abs(a)} unitats del 0. A l'altra banda, també a ${Math.abs(a)} unitats, hi ha el seu oposat: <b>${fz(-a)}</b>.`,
+    solucio: [`${fz(a)} és a ${Math.abs(a)} unitats del 0.`, `L'altre nombre a ${Math.abs(a)} unitats és a l'altra banda.`, `És l'oposat: <b>${fz(-a)}</b>.`]
+  };
+};
+EN.comptaEnters = (nv) => {
+  const a = -rnd(2, 5), b = rnd(1, 4), q = b - a + 1;
+  return {
+    sig: `en-ce-${a}-${b}`, enunciat: `Quants nombres enters hi ha des del ${fz(a)} fins al ${fz(b)}, comptant-los tots dos?`,
+    visual: p => p ? rectaZSVG({ min: -6, max: 6, labels: 'totes', banda: { de: a, a: b } }) : null,
+    pista: { completa: `Escriu-los tots en ordre: ${fz(a)}, ${fz(a + 1)}, … fins al ${fz(b)}. No t'oblidis del 0!`, mitja: `No t'oblidis del 0.` },
+    resposta: { mode: 'numero', valor: q },
+    correctaHtml: `<b>${q}</b>`, correctaTxt: String(q),
+    explicacio: `${Array.from({ length: q }, (_, i) => fz(a + i)).join(', ')}: en total <b>${q}</b>.`,
+    solucio: [`Els escric en ordre: ${Array.from({ length: q }, (_, i) => fz(a + i)).join(', ')}.`, `Compte: el <b>0</b> també hi és.`, `En total: <b>${q}</b>.`]
+  };
+};
+TEMES.eN = {
+  gen: EN,
+  sequencia: {
+    1: [['esNatural'], ['oposat', { vis: true }], ['siNo', { t: 'nat' }], ['classifica'], ['oposatRecta'], ['quantsNat'], ['siNo', { t: 'ent' }], ['oposat', { vis: true }]],
+    2: [['classifica'], ['oposat'], ['siNo', { t: 'ent' }], ['quantsNat'], ['simbol'], ['oposatRecta'], ['parella'], ['siNo', { t: 'nat' }]],
+    3: [['classifica'], ['distOrigen'], ['oposatOposat'], ['quantsNat', { llarg: true }], ['comptaEnters'], ['simbol'], ['parella'], ['siNo', { t: 'mix' }]]
+  },
+  explicacio: [
+    { text: `<p>Per <b class="parpelleja">comptar</b> coses fem servir els nombres <b>naturals</b>.</p><p class="petit">Una ovella, dues ovelles, tres ovelles…</p>`,
+      vis: () => `<div class="ovelles">${[1, 2, 3, 4, 5].map((n, i) => `<div class="ov pop" style="animation-delay:${i * .45}s"><span>🐑</span><b>${n}</b></div>`).join('')}</div>` },
+    { text: `<p>Si no hi ha cap ovella, en tenim <b class="parpelleja">0</b>.</p><p>El <b>0</b> també és un nombre natural.</p><p class="petit">Naturals: 0, 1, 2, 3, 4… i no s'acaben mai.</p>`,
+      vis: () => `<div class="ovelles"><div class="ov buit"><span>🌾</span><b>0</b></div></div><div class="conj-txt">ℕ = { 0, 1, 2, 3, 4, … }</div>` },
+    { text: `<p>Però ha nevat i la temperatura ha baixat <b>per sota del zero</b>.</p><p>Per explicar-ho ens calen els nombres <b class="parpelleja" style="color:${BLAU}">negatius</b>: −3 °C.</p>`,
+      vis: () => termometreSVG({ v: -3, min: -6, max: 6 }) },
+    { text: `<p>Cada nombre té el seu <b class="parpelleja">oposat</b>: el mateix número amb el signe contrari.</p><p>L'oposat de <b style="color:${T}">+3</b> és <b style="color:${BLAU}">−3</b>. Estan a la mateixa distància del 0.</p>`,
+      vis: () => rectaZSVG({ min: -6, max: 6, labels: 'totes', punts: [{ v: 3, anim: .2 }, { v: -3, anim: 1 }], fletxes: [{ de: 0, a: 3, delay: .2 }, { de: 0, a: -3, delay: 1 }], anim: true, dalt: true }) },
+    { text: `<p>Els <b>naturals</b> i els seus <b>oposats</b> formen els nombres <b class="parpelleja">enters</b>.</p><p>Es representen amb la lletra <b class="lletra-conj">ℤ</b>.</p>`,
+      vis: () => rectaZSVG({ min: -6, max: 6, labels: 'totes', claus: true, anim: true }) + `<div class="conj-txt">ℤ = { …, −3, −2, −1, 0, +1, +2, +3, … }</div>` },
+    { text: `<p><b>Resum</b>: tots els naturals són enters, però <b class="parpelleja">no</b> tots els enters són naturals.</p><p class="petit">Els negatius són enters, però no naturals.</p>`,
+      vis: () => conjuntsSVG() }
+  ],
+  exemple: (nv) => {
+    if (nv === 1) return {
+      enunciat: `El nombre <b>−4</b> és un nombre natural?`,
+      passos: [
+        { text: `Els naturals són els nombres per comptar: 0, 1, 2, 3…`, vis: `<div class="conj-txt">ℕ = { 0, 1, 2, 3, 4, … }</div>` },
+        { text: `El −4 porta el signe <b>−</b>: és negatiu.`, vis: `<div>${enterGran(-4)}</div>` },
+        { text: `Resposta: <b>No</b>, no és natural. Però sí que és un nombre <b>enter</b>. <span class="marca-ok">✓</span>`, vis: conjuntsSVG(-4) }
+      ]
+    };
+    if (nv === 2) return {
+      enunciat: `Quin és l'oposat de <b>+7</b>?`,
+      passos: [
+        { text: `Busco el +7 a la recta: és a 7 unitats a la dreta del 0.`, vis: rectaZSVG({ min: -8, max: 8, labels: 'totes', punts: [{ v: 7, etiq: '+7' }], dalt: true }) },
+        { text: `L'oposat és a la mateixa distància, a l'<b>altra banda</b>.`, vis: rectaZSVG({ min: -8, max: 8, labels: 'totes', punts: [{ v: 7 }, { v: -7, etiq: '−7', col: '#2c9a58' }], fletxes: [{ de: 0, a: 7 }, { de: 0, a: -7, col: '#2c9a58' }], dalt: true }) },
+        { text: `Mateix número i signe contrari: <b style="color:${BLAU}">−7</b>. <span class="marca-ok">✓</span>`, vis: `<div>${enterGran(-7)}</div>` }
+      ]
+    };
+    return {
+      enunciat: `Quants nombres naturals hi ha en aquesta llista: −2, 0, 5, −7, 3?`,
+      passos: [
+        { text: `Trec els que porten signe −: −2 i −7.`, vis: `<div class="xips-z"><span style="color:${BLAU};text-decoration:line-through">−2</span><span>0</span><span style="color:${T}">5</span><span style="color:${BLAU};text-decoration:line-through">−7</span><span style="color:${T}">3</span></div>` },
+        { text: `Queden el 0, el 5 i el 3. El 0 també és natural.`, vis: `<div class="xips-z"><span>0</span><span style="color:${T}">5</span><span style="color:${T}">3</span></div>` },
+        { text: `Resultat: <b>3</b> naturals. <span class="marca-ok">✓</span>`, vis: `<div class="enter-gran">3</div>` }
+      ]
+    };
+  }
+};
+function conjuntsSVG(marca = null) {
+  const pos = [[170, 132, '0'], [215, 128, '1'], [260, 142, '2'], [196, 176, '3'], [252, 186, '25']];
+  const neg = [[72, 118, '−1'], [84, 192, '−5'], [338, 92, '−12'], [348, 196, '−3'], [214, 246, '−40']];
+  let s = `<ellipse cx="200" cy="148" rx="185" ry="118" fill="#eaf1fc" stroke="${BLAU}" stroke-width="3"/><text x="14" y="36" font-size="30" font-weight="900" fill="${BLAU}">ℤ</text><text x="40" y="34" font-size="15" font-weight="800" fill="${BLAU}">enters</text>`;
+  s += `<ellipse cx="210" cy="140" rx="98" ry="66" fill="#fff1e4" stroke="${T}" stroke-width="3"/><text x="156" y="104" font-size="24" font-weight="900" fill="${T}">ℕ</text><text x="178" y="101" font-size="13" font-weight="800" fill="${T}">naturals</text>`;
+  pos.forEach(([x, y, t]) => s += `<text x="${x}" y="${y}" text-anchor="middle" font-size="22" font-weight="800" fill="#1b1b1b">${t}</text>`);
+  neg.forEach(([x, y, t]) => s += `<text x="${x}" y="${y}" text-anchor="middle" font-size="22" font-weight="800" fill="${BLAU}">${t}</text>`);
+  if (marca != null) { const p = neg.find(q => q[2] === nz(marca)); if (p) s += `<circle cx="${p[0]}" cy="${p[1] - 8}" r="22" fill="none" stroke="${T}" stroke-width="4"/>`; }
+  return `<svg class="dib" viewBox="0 0 400 275" width="400">${s}</svg>`;
+}
+
+/* ---------- OBJECTIU 3 · ELS ENTERS A LA RECTA NUMÈRICA (dossier p. 18) ---------- */
+const PISTA_RZ = { completa: `Els <b>positius</b> van a la <b>dreta</b> del 0 i els <b>negatius</b>, a l'<b>esquerra</b>. Compta les marques des del 0.`, mitja: `Compta des del 0.` };
+const rangRZ = nv => nv === 1 ? { min: -6, max: 6, labels: 'parells' } : nv === 2 ? { min: -10, max: 10, labels: 'cinc' } : { min: -12, max: 12, labels: 'zero' };
+function valorRZ(nv) {
+  const { min, max, labels } = rangRZ(nv); let v;
+  do { v = rnd(min + 1, max - 1); } while (v === 0 || (rzEtiqueta(labels, v) && Math.random() < .85));
+  return v;
+}
+const ER = {};
+ER.costat = (nv) => {
+  const r = Math.random(); const v = r < .1 ? 0 : r < .55 ? -rnd(1, 9) : rnd(1, 9);
+  const ops = [{ html: 'A la <b>dreta</b> del 0', val: 'd' }, { html: 'A l\'<b>esquerra</b> del 0', val: 'e' }, { html: 'Just al 0', val: 'z' }];
+  const c = v > 0 ? 'd' : v < 0 ? 'e' : 'z';
+  return {
+    sig: `rz-co-${v}`, enunciat: `On va el ${enterGran(v)} a la recta numèrica?`, visual: p => p ? rectaZSVG({ min: -9, max: 9, labels: 'zero', claus: true }) : null, pista: PISTA_RZ,
+    resposta: { mode: 'opcions', opcions: ops.map(o => ({ ...o, txt: textPla(o.html) })), correcta: c },
+    correctaHtml: `<b>${textPla(ops.find(o => o.val === c).html)}</b>`, correctaTxt: textPla(ops.find(o => o.val === c).html),
+    explicacio: v === 0 ? `El 0 és l'origen de la recta.` : `${fz(v)} és ${v > 0 ? 'positiu: va a la <b>dreta</b>' : 'negatiu: va a l\'<b>esquerra</b>'} del 0.`,
+    solucio: [`Positius → dreta. Negatius → esquerra.`, v === 0 ? `És el 0: l'origen.` : `${fz(v)} és ${v > 0 ? 'positiu' : 'negatiu'}.`, `Va ${textPla(ops.find(o => o.val === c).html).toLowerCase()}.`],
+    dibuixSolucio: rectaZSVG({ min: -9, max: 9, labels: 'zero', punts: [{ v, col: '#2c9a58', etiq: fz(v) }] })
+  };
+};
+ER.marca = (nv) => {
+  const R = rangRZ(nv), v = valorRZ(nv);
+  return {
+    sig: `rz-ma-${v}-${nv}`, enunciat: `Marca el ${enterGran(v)} a la recta.`, visual: null, pista: PISTA_RZ,
+    resposta: { mode: 'rectaZ', ...R, valor: v },
+    correctaHtml: `<b>${fz(v)}</b>`, correctaTxt: `punt a ${fz(v)}`,
+    explicacio: `${fz(v)} és ${v > 0 ? 'positiu' : 'negatiu'}: des del 0, ${Math.abs(v)} ${Math.abs(v) === 1 ? 'salt' : 'salts'} cap a la ${v > 0 ? 'dreta' : 'esquerra'}.`,
+    solucio: [`Començo al 0.`, `${fz(v)} és ${v > 0 ? 'positiu → dreta' : 'negatiu → esquerra'}.`, `Faig ${Math.abs(v)} ${Math.abs(v) === 1 ? 'salt' : 'salts'} i marco el punt.`],
+    dibuixSolucio: rectaZSVG({ ...R, salts: { de: 0, a: v }, punts: [{ v, col: '#2c9a58', etiq: fz(v) }], dalt: true })
+  };
+};
+ER.llegeix = (nv) => {
+  const R = rangRZ(nv), v = valorRZ(nv);
+  return {
+    sig: `rz-ll-${v}-${nv}`, enunciat: `Quin nombre enter hi ha marcat a la recta?`,
+    visual: p => rectaZSVG({ ...R, punts: [{ v }], salts: p ? { de: 0, a: v, num: true } : null, dalt: true }), pista: PISTA_RZ,
+    resposta: { mode: 'enter', valor: v },
+    correctaHtml: `<b>${fz(v)}</b>`, correctaTxt: fz(v),
+    explicacio: `El punt és a ${Math.abs(v)} ${Math.abs(v) === 1 ? 'marca' : 'marques'} a la ${v > 0 ? 'dreta' : 'esquerra'} del 0: <b>${fz(v)}</b>.`,
+    solucio: [`Començo al 0.`, `Compto les marques fins al punt: ${Math.abs(v)} cap a la ${v > 0 ? 'dreta' : 'esquerra'}.`, `És el <b>${fz(v)}</b>.`],
+    dibuixSolucio: rectaZSVG({ ...R, salts: { de: 0, a: v }, punts: [{ v, col: '#2c9a58', etiq: fz(v) }], dalt: true })
+  };
+};
+ER.seguent = (nv) => {
+  const dreta = Math.random() < .55; let v = nv === 1 ? rnd(-6, 2) : rnd(-15, 3); if (!dreta && v === 0 && Math.random() < .5) v = -rnd(1, 5);
+  const r = dreta ? v + 1 : v - 1;
+  return {
+    sig: `rz-se-${v}-${dreta ? 'd' : 'e'}`, enunciat: `Quin nombre enter hi ha <b>just a la ${dreta ? 'dreta' : 'esquerra'}</b> del ${enterGran(v)} a la recta?`,
+    visual: p => p && Math.abs(v) <= 9 ? rectaZSVG({ min: Math.min(-9, v - 2), max: Math.max(9, v + 2), labels: 'totes', punts: [{ v }], dalt: true }) : null,
+    pista: { completa: `A la recta, cap a la <b>dreta</b> els nombres es fan més grans: −3, −2, −1, 0, +1… Cap a l'<b>esquerra</b>, més petits.`, mitja: `Pensa en la recta: −3, −2, −1, 0…` },
+    resposta: { mode: 'enter', valor: r },
+    correctaHtml: `<b>${fz(r)}</b>`, correctaTxt: fz(r),
+    explicacio: `Just a la ${dreta ? 'dreta' : 'esquerra'} del ${fz(v)} hi ha el <b>${fz(r)}</b>${v < 0 && dreta ? `. Compte: a la dreta del ${fz(v)} ve el ${fz(r)}, no el ${fz(v - 1)}` : ''}.`,
+    solucio: [`A la recta: …, ${fz(v - 1)}, <b>${fz(v)}</b>, ${fz(v + 1)}, …`, `Un pas a la ${dreta ? 'dreta' : 'esquerra'}.`, `És el <b>${fz(r)}</b>.`]
+  };
+};
+ER.entre = (nv) => {
+  let a, b;
+  if (nv === 2) { const k = rnd(3, 7); [a, b] = Math.random() < .5 ? [-k, 0] : [0, k]; } else { a = -rnd(2, 6); b = rnd(2, 6); }
+  const q = b - a - 1;
+  return {
+    sig: `rz-en-${a}-${b}`, enunciat: `Quants nombres enters hi ha <b>entre</b> el ${enterGran(a)} i el ${enterGran(b)}? <span class="petit">(Sense comptar-los a ells.)</span>`,
+    visual: p => p ? rectaZSVG({ min: -8, max: 8, labels: 'totes', punts: [{ v: a, col: '#fff' }, { v: b, col: '#fff' }], banda: { de: a + 1, a: b - 1 } }) : null,
+    pista: { completa: `Escriu-los en ordre entre els dos, sense comptar el ${fz(a)} ni el ${fz(b)}.${a < 0 && b > 0 ? ' I no t\'oblidis del 0!' : ''}`, mitja: `No comptis els extrems.` },
+    resposta: { mode: 'numero', valor: q },
+    correctaHtml: `<b>${q}</b>`, correctaTxt: String(q),
+    explicacio: `Entre ${fz(a)} i ${fz(b)} hi ha ${Array.from({ length: q }, (_, i) => fz(a + 1 + i)).join(', ')}: <b>${q}</b>.`,
+    solucio: [`No compto el ${fz(a)} ni el ${fz(b)}.`, `Entre els dos: ${Array.from({ length: q }, (_, i) => fz(a + 1 + i)).join(', ')}.`, `En total: <b>${q}</b>.`]
+  };
+};
+ER.lluny = (nv, { proper = false } = {}) => {
+  let ll, obj;
+  for (let k = 0; k < 200; k++) {
+    ll = diferents(4, () => rnd(-12, 12)).filter(x => x !== 0).slice(0, 3); if (ll.length < 3) continue;
+    const ab = ll.map(Math.abs); const ext = proper ? Math.min(...ab) : Math.max(...ab);
+    if (ab.filter(x => x === ext).length !== 1) continue;
+    obj = ll[ab.indexOf(ext)];
+    if (!proper && obj > 0 && Math.random() < .7) continue;   // sovint el més llunyà és un negatiu (no és el «més gran»)
+    break;
+  }
+  return {
+    sig: `rz-ll${proper ? 'p' : 'l'}-${ll.join('_')}`, enunciat: `Quin d'aquests nombres està més <b>${proper ? 'a prop' : 'lluny'}</b> de l'origen (el 0)?`, visual: null,
+    pista: { completa: `La distància al 0 és el número sense el signe: el −9 és a 9 unitats del 0, i el +4 és a 4 unitats.`, mitja: `Mira el número sense el signe.` },
+    resposta: { mode: 'opcions', opcions: barreja(ll).map(x => ({ html: enterGran(x), val: String(x), txt: fz(x) })), correcta: String(obj) },
+    correctaHtml: `<b>${fz(obj)}</b>`, correctaTxt: fz(obj),
+    explicacio: `Distàncies al 0: ${ll.map(x => `${fz(x)} → ${Math.abs(x)}`).join(', ')}. El més ${proper ? 'a prop' : 'lluny'} és el <b>${fz(obj)}</b>.`,
+    solucio: [`Miro cada número sense el signe: ${ll.map(x => `${fz(x)} → ${Math.abs(x)}`).join(', ')}.`, `El ${proper ? 'més petit' : 'més gran'} d'aquests és el de ${fz(obj)}.`, `El més ${proper ? 'a prop' : 'lluny'} del 0 és el <b>${fz(obj)}</b>.`],
+    dibuixSolucio: rectaZSVG({ min: -13, max: 13, labels: 'zero', punts: ll.map(x => ({ v: x, col: x === obj ? '#2c9a58' : '#bbb', etiq: fz(x) })), dalt: true })
+  };
+};
+ER.termo = (nv) => {
+  const mn = -rnd(2, 8), mx = rnd(1, 8);
+  let x; const r = Math.random();
+  if (r < .45) x = rnd(mn, mx); else if (r < .75) x = mn - rnd(1, 3); else x = mx + rnd(1, 3);
+  const si = x >= mn && x <= mx;
+  return {
+    sig: `rz-te-${mn}-${mx}-${x}`, enunciat: `Un dia, la temperatura <b>mínima</b> va ser de ${fzT(mn)} i la <b>màxima</b>, de ${fzT(mx)}. Es va poder marcar <b>${fzT(x)}</b>?`,
+    visual: p => p ? rectaZSVG({ min: -11, max: 11, labels: v => v === mn || v === mx || v === 0, banda: { de: mn, a: mx }, punts: [{ v: mn, col: BLAU }, { v: mx, col: '#e23b3b' }] }) : null,
+    pista: { completa: `Totes les temperatures entre la mínima i la màxima s'han pogut marcar. Mira si ${fzT(x)} hi és.`, mitja: `Està entre la mínima i la màxima?` },
+    resposta: { mode: 'sino', correcta: si ? 'si' : 'no' },
+    correctaHtml: `<b>${si ? 'Sí' : 'No'}</b>`, correctaTxt: si ? 'Sí' : 'No',
+    explicacio: si ? `<b>Sí</b>: ${fzT(x)} està entre ${fzT(mn)} i ${fzT(mx)}.` : `<b>No</b>: ${fzT(x)} és ${x < mn ? 'més fred que la mínima' : 'més calent que la màxima'}.`,
+    solucio: [`La temperatura va anar de ${fzT(mn)} a ${fzT(mx)}.`, `${fzT(x)} ${si ? 'hi és' : 'queda fora'}.`, `Resposta: <b>${si ? 'Sí' : 'No'}</b>.`],
+    dibuixSolucio: rectaZSVG({ min: -11, max: 11, labels: v => v === mn || v === mx || v === 0 || v === x, banda: { de: mn, a: mx }, punts: [{ v: x, col: si ? '#2c9a58' : '#d64242' }] })
+  };
+};
+ER.distancia = (nv) => {
+  const a = -rnd(1, 6), b = rnd(1, 6), d = b - a;
+  return {
+    sig: `rz-di-${a}-${b}`, enunciat: `Quantes unitats hi ha del ${enterGran(a)} al ${enterGran(b)} a la recta?`,
+    visual: p => p ? rectaZSVG({ min: -7, max: 7, labels: 'totes', punts: [{ v: a }, { v: b }], salts: { de: a, a: b }, dalt: true }) : rectaZSVG({ min: -7, max: 7, labels: 'zero', punts: [{ v: a, etiq: fz(a) }, { v: b, etiq: fz(b) }], dalt: true }),
+    pista: { completa: `Compta els salts: primer del ${fz(a)} fins al 0, i després del 0 fins al ${fz(b)}.`, mitja: `Passa pel 0.` },
+    resposta: { mode: 'numero', valor: d, unitat: 'unitats' },
+    correctaHtml: `<b>${d}</b> unitats`, correctaTxt: String(d),
+    explicacio: `Del ${fz(a)} al 0 hi ha ${-a} i del 0 al ${fz(b)} hi ha ${b}: ${-a} + ${b} = <b>${d}</b>.`,
+    solucio: [`Del ${fz(a)} al 0: ${-a} ${-a === 1 ? 'salt' : 'salts'}.`, `Del 0 al ${fz(b)}: ${b} ${b === 1 ? 'salt' : 'salts'}.`, `En total: ${-a} + ${b} = <b>${d}</b>.`],
+    dibuixSolucio: rectaZSVG({ min: -7, max: 7, labels: 'totes', salts: { de: a, a: b }, dalt: true })
+  };
+};
+TEMES.e2 = {
+  gen: ER,
+  sequencia: {
+    1: [['costat'], ['marca'], ['llegeix'], ['seguent'], ['marca'], ['costat'], ['llegeix'], ['marca']],
+    2: [['marca'], ['llegeix'], ['seguent'], ['entre'], ['lluny'], ['marca'], ['termo'], ['llegeix']],
+    3: [['marca'], ['llegeix'], ['lluny', { proper: true }], ['distancia'], ['termo'], ['seguent'], ['entre'], ['marca']]
+  },
+  explicacio: [
+    { text: `<p>Ja coneixem la recta dels naturals. Ara hi posarem <b class="parpelleja">tots els enters</b>.</p><p><b>1r</b> Dibuixem una recta.</p>`,
+      vis: () => rectaZSVG({ min: -6, max: 6, ticks: false, zero: false }) },
+    { text: `<p><b>2n</b> Marquem l'<b class="parpelleja">origen</b>: el <b>0</b>.</p>`,
+      vis: () => rectaZSVG({ min: -6, max: 6, ticks: false }) },
+    { text: `<p><b>3r</b> Dividim la recta en <b class="parpelleja">trossos iguals</b> (unitats), a la dreta i a l'esquerra del 0.</p>`,
+      vis: () => rectaZSVG({ min: -6, max: 6, labels: 'cap', anim: true }) },
+    { text: `<p><b>4t</b> A la <b class="parpelleja">dreta</b> del 0 hi posem els <b style="color:${T}">positius</b>.</p>`,
+      vis: () => rectaZSVG({ min: -6, max: 6, labels: 'pos' }) },
+    { text: `<p><b>5è</b> A l'<b class="parpelleja">esquerra</b> del 0 hi posem els <b style="color:${BLAU}">negatius</b>.</p>`,
+      vis: () => rectaZSVG({ min: -6, max: 6, labels: 'totes', claus: true }) },
+    { text: `<p>Per situar el <b style="color:${BLAU}">−4</b>: des del 0, fem <b class="parpelleja">4 salts</b> cap a l'esquerra.</p>`,
+      vis: () => rectaZSVG({ min: -6, max: 6, labels: 'totes', salts: { de: 0, a: -4, col: BLAU }, punts: [{ v: -4, col: BLAU, anim: 1.5 }], anim: true, dalt: true }) },
+    { text: `<p>La <b class="parpelleja">distància al 0</b> és el número sense el signe.</p><p class="petit">El −4 i el +4 estan tots dos a 4 unitats del 0.</p>`,
+      vis: () => rectaZSVG({ min: -6, max: 6, labels: 'totes', salts: { de: 0, a: 4 }, punts: [{ v: 4 }, { v: -4, col: BLAU }], dalt: true }) }
+  ],
+  exemple: (nv) => {
+    if (nv === 1) return {
+      enunciat: `Marca el <b>−3</b> a la recta.`,
+      passos: [
+        { text: `Començo a l'origen, el 0.`, vis: rectaZSVG({ min: -6, max: 6, labels: 'parells', punts: [{ v: 0, col: '#fff' }] }) },
+        { text: `El −3 és <b>negatiu</b>: va a l'<b>esquerra</b> del 0.`, vis: rectaZSVG({ min: -6, max: 6, labels: 'parells', claus: true }) },
+        { text: `Faig <b>3 salts</b> cap a l'esquerra i marco el punt. <span class="marca-ok">✓</span>`, vis: rectaZSVG({ min: -6, max: 6, labels: 'parells', salts: { de: 0, a: -3 }, punts: [{ v: -3, col: '#2c9a58', etiq: '−3' }], dalt: true }) }
+      ]
+    };
+    if (nv === 2) return {
+      enunciat: `Quin nombre hi ha marcat a la recta?`,
+      passos: [
+        { text: `Només hi ha escrits el 0 i els de 5 en 5.`, vis: rectaZSVG({ min: -10, max: 10, labels: 'cinc', punts: [{ v: -7 }] }) },
+        { text: `El punt és a l'<b>esquerra</b> del −5: compto 2 marques més.`, vis: rectaZSVG({ min: -10, max: 10, labels: 'cinc', punts: [{ v: -7 }], salts: { de: -5, a: -7 }, dalt: true }) },
+        { text: `−5 i 2 més cap a l'esquerra: <b style="color:${BLAU}">−7</b>. <span class="marca-ok">✓</span>`, vis: `<div>${enterGran(-7)}</div>` }
+      ]
+    };
+    return {
+      enunciat: `Quantes unitats hi ha del <b>−3</b> al <b>+4</b>?`,
+      passos: [
+        { text: `Del −3 al 0: <b>3</b> salts.`, vis: rectaZSVG({ min: -6, max: 6, labels: 'totes', salts: { de: -3, a: 0 }, punts: [{ v: -3 }, { v: 4 }], dalt: true }) },
+        { text: `Del 0 al +4: <b>4</b> salts més.`, vis: rectaZSVG({ min: -6, max: 6, labels: 'totes', salts: { de: -3, a: 4 }, punts: [{ v: -3 }, { v: 4 }], dalt: true }) },
+        { text: `En total: 3 + 4 = <b>7 unitats</b>. <span class="marca-ok">✓</span>`, vis: `<div class="enter-gran">7</div>` }
+      ]
+    };
+  }
+};
+
+/* ---------- OBJECTIU 4 · COMPARAR NOMBRES ENTERS (dossier p. 19) ---------- */
+const limC = nv => nv === 1 ? 10 : nv === 2 ? 20 : 50;
+const signeDe = (a, b) => a < b ? '<' : a > b ? '>' : '=';
+const nzR = (lim, min = 1) => rnd(min, lim);
+function parellC(nv, tipus) {
+  const L = limC(nv); let a, b;
+  if (tipus === 'pn') { a = nzR(L); b = -nzR(L); }
+  else if (tipus === 'nn') { do { a = -nzR(L); b = -nzR(L); } while (a === b); }
+  else if (tipus === 'np') { a = -nzR(Math.min(L, 9)); b = a - rnd(1, 3); if (Math.random() < .5) b = a + rnd(1, Math.min(3, -a - 1) || 1); if (b >= 0) b = a - 1; }
+  else if (tipus === 'pp') { do { a = nzR(L); b = nzR(L); } while (a === b); }
+  else if (tipus === 'n0') { a = -nzR(L); b = 0; }
+  else if (tipus === 'p0') { a = nzR(L); b = 0; }
+  else { a = rnd(-L, L); b = a; }
+  if (tipus === 'np' && nv === 3) { a = -rnd(10, 50); b = a + (Math.random() < .5 ? -1 : 1) * rnd(1, 3); }
+  return Math.random() < .5 ? [a, b] : [b, a];
+}
+function raoC(a, b) {
+  if (a === b) return `són iguals`;
+  if (a === 0 || b === 0) { const x = a === 0 ? b : a; return x < 0 ? `el 0 és més gran que qualsevol negatiu` : `qualsevol positiu és més gran que el 0`; }
+  if ((a > 0) !== (b > 0)) return `un positiu sempre és més gran que un negatiu`;
+  if (a < 0) { const g = Math.max(a, b); return `entre negatius, és més gran el que està més a prop del 0: ${fz(g)}`; }
+  return `el ${fz(Math.max(a, b))} està més a la dreta`;
+}
+const PISTA_C = { completa: `És <b>més gran</b> el que està <b>més a la dreta</b> de la recta. Entre dos negatius, és més gran el que està <b>més a prop del 0</b>: −3 &gt; −8 (a −3 °C fa menys fred que a −8 °C).`, mitja: `Pensa en la recta: més a la dreta, més gran.` };
+const C = {};
+C.signes = (nv, { n = 3 } = {}) => {
+  const tipus = nv === 1 ? barreja(['pn', 'n0', 'pp', 'nn', 'pn']).slice(0, n) : nv === 2 ? barreja(['nn', 'nn', 'pn', 'n0', 'pp', 'np', 'eq']).slice(0, n) : barreja(['nn', 'np', 'nn', 'pn', 'np', 'eq', 'nn', 'p0']).slice(0, n);
+  const items = []; const vist = new Set();
+  for (const t of tipus) { let p, g = 0; do { p = parellC(nv, t); } while (vist.has(p.join()) && g++ < 30); vist.add(p.join()); items.push({ tipus: 'signe', a: p[0], b: p[1], correcta: signeDe(p[0], p[1]) }); }
+  return {
+    sig: `cs-${items.map(i => i.a + '_' + i.b).join('-')}`, enunciat: `Posa el signe que hi va entre cada parella: <b>&lt;</b>, <b>&gt;</b> o <b>=</b>.`,
+    visual: p => p && nv === 1 ? rectaZSVG({ min: -10, max: 10, labels: 'parells' }) : null, pista: PISTA_C, ...apartats(items),
+    explicacio: `Més a la dreta de la recta, més gran. Entre negatius, guanya el que està més a prop del 0.`,
+    solucio: items.map(it => `${fz(it.a)} ${esc(it.correcta)} ${fz(it.b)}: ${raoC(it.a, it.b)}.`)
+  };
+};
+C.ordena = (nv, { desc = null } = {}) => {
+  const q = nv === 1 ? 4 : nv === 2 ? 5 : 6, L = limC(nv) / (nv === 3 ? 2 : 1);
+  let nums; do { nums = diferents(q, () => rnd(-L, L)); } while (nums.filter(x => x < 0).length < (nv === 1 ? 2 : 3) || nums.filter(x => x > 0).length < 1);
+  if (nv >= 2 && !nums.includes(0) && Math.random() < .4) nums[nums.findIndex(x => x > 0)] = 0;
+  const ordre = desc ?? (nv === 1 ? 'asc' : nv === 2 ? tria(['asc', 'desc']) : tria(['desc', 'desc', 'asc'])) ;
+  const it = { tipus: 'ordena', nums, ordre: desc === true ? 'desc' : desc === false ? 'asc' : ordre };
+  const o = ordenats(it);
+  return {
+    sig: `co-${it.ordre}-${nums.join('_')}`, enunciat: `Ordena aquests nombres de més <b>${it.ordre === 'asc' ? 'petit a més gran' : 'gran a més petit'}</b>. Toca'ls en ordre; si t'equivoques, toca'l a la fila per treure'l.`,
+    visual: p => p ? rectaZSVG({ min: -Math.ceil(L), max: Math.ceil(L), labels: 'zero', punts: nums.map(v => ({ v, col: colZ(v) })) }) : null, pista: PISTA_C, ...apartats([it]),
+    explicacio: `${o.map(fz).join(it.ordre === 'asc' ? ' &lt; ' : ' &gt; ')}`,
+    solucio: [`Els negatius són els més petits: el més lluny del 0 és el més petit (${fz(Math.min(...nums))}).`, nums.includes(0) ? `Després ve el 0, i després els positius.` : `Després venen els positius.`, `Ordenats: <b>${o.map(fz).join(it.ordre === 'asc' ? ' &lt; ' : ' &gt; ')}</b>.`]
+  };
+};
+C.extrem = (nv, { n = 2 } = {}) => {
+  const L = limC(nv) / (nv === 3 ? 2 : 1); const items = [];
+  for (let k = 0; k < n; k++) {
+    let t; do { t = diferents(3, () => rnd(-L, L)); } while (t.filter(x => x < 0).length < (nv === 1 ? 1 : 2));
+    const gran = k % 2 === 0; const c = gran ? Math.max(...t) : Math.min(...t);
+    items.push({ tipus: 'tria', html: `El més <b>${gran ? 'gran' : 'petit'}</b>:`, opcions: barreja(t).map(v => ({ html: `<span style="color:${colZ(v)}">${fz(v)}</span>`, val: String(v) })), correcta: String(c) });
+  }
+  return {
+    sig: `ce-${items.map(i => i.opcions.map(o => o.val).join('_')).join('-')}`, enunciat: `Tria, a cada apartat, el nombre que et demanen.`, visual: null, pista: PISTA_C, ...apartats(items),
+    explicacio: `El més gran és el que està més a la dreta; el més petit, el que està més a l'esquerra.`,
+    solucio: items.map(it => `${textPla(it.html)} ${fz(Number(it.correcta))}.`)
+  };
+};
+C.certFals = (nv, { n = 3 } = {}) => {
+  const tipus = nv === 1 ? ['pn', 'nn', 'n0', 'pp'] : ['nn', 'nn', 'np', 'pn', 'n0'];
+  const items = barreja(tipus).slice(0, n).map(t => {
+    const [a, b] = parellC(nv, t); const s = tria(['<', '>']); const cert = signeDe(a, b) === s;
+    return { tipus: 'tria', html: `<span class="ap-expr">${fz(a)} ${esc(s)} ${fz(b)}</span>`, opcions: [{ html: 'Cert', val: 'c' }, { html: 'Fals', val: 'f' }], correcta: cert ? 'c' : 'f', a, b, s };
+  });
+  return {
+    sig: `cf-${items.map(i => `${i.a}${i.s}${i.b}`).join('-')}`, enunciat: `Cert o fals?`, visual: null, pista: PISTA_C, ...apartats(items),
+    explicacio: `Pensa sempre en la recta: més a la dreta, més gran.`,
+    solucio: items.map(it => `${fz(it.a)} ${esc(it.s)} ${fz(it.b)} és <b>${it.correcta === 'c' ? 'cert' : 'fals'}</b>: ${raoC(it.a, it.b)}.`)
+  };
+};
+C.marca = (nv, { entre = false } = {}) => {
+  const L = nv === 1 ? 9 : 15; let nums, bons, html, g = 0;
+  do {
+    nums = diferents(nv === 1 ? 6 : 8, () => rnd(-L, L));
+    if (entre) { const a = -rnd(3, 6), b = rnd(1, 4); bons = nums.map((v, i) => v > a && v < b ? i : -1).filter(i => i >= 0); html = `Toca tots els nombres <b>més grans que ${fz(a)}</b> i <b>més petits que ${fz(b)}</b>:`; }
+    else { const x = nv === 1 ? tria([0, 2, -1]) : -rnd(2, 6); const mes = nv === 1 ? Math.random() < .5 : tria([true, true, false]); bons = nums.map((v, i) => (mes ? v > x : v < x) ? i : -1).filter(i => i >= 0); html = `Toca tots els nombres <b>més ${mes ? 'grans' : 'petits'} que ${fz(x)}</b>:`; }
+  } while ((bons.length < 2 || bons.length > nums.length - 2) && g++ < 100);
+  const it = { tipus: 'marca', nums, bons, html };
+  return {
+    sig: `cm-${nums.join('_')}-${textPla(html)}`, enunciat: `Fixa't bé en la condició i toca tots els nombres que la compleixen.`, visual: p => p ? rectaZSVG({ min: -L - 1, max: L + 1, labels: 'cinc' }) : null, pista: PISTA_C, ...apartats([it]),
+    explicacio: `Compleixen la condició: ${bons.map(i => fz(nums[i])).join(', ')}.`,
+    solucio: [`Llegeixo la condició: ${textPla(html).replace(':', '')}.`, `Miro on queda cada nombre a la recta.`, `Són: <b>${bons.map(i => fz(nums[i])).join(', ')}</b>.`]
+  };
+};
+const VEINS = [['l\'Aisha', 'f'], ['en Pol', 'm'], ['la Mei', 'f'], ['en Bilal', 'm'], ['la Laia', 'f'], ['l\'Andrei', 'm'], ['la Yasmin', 'f'], ['en Wei', 'm'], ['la Núria', 'f'], ['en Hamza', 'm']];
+const majus = t => t[0].toUpperCase() + t.slice(1);
+C.context = (nv) => {
+  const tipus = nv === 1 ? tria(['temps', 'edifici']) : tria(['temps', 'edifici', 'diners']);
+  let items = [], vis = null, txt = '', sig;
+  if (tipus === 'temps') {
+    let cs; do { cs = tempsCat(5); } while (new Set(cs.map(c => c.t)).size < 5);
+    const fred = cs.reduce((a, b) => b.t < a.t ? b : a), calor = cs.reduce((a, b) => b.t > a.t ? b : a);
+    const ops = cs.map(c => ({ html: esc(c.nom), val: c.nom }));
+    items = [{ tipus: 'tria', html: 'On fa <b>més fred</b>?', opcions: ops, correcta: fred.nom }, { tipus: 'tria', html: 'On fa <b>més calor</b>?', opcions: ops, correcta: calor.nom }];
+    if (nv >= 2) { const [x, y] = barreja(cs.filter(c => c.t < 1)).slice(0, 2); if (x && y) items.push({ tipus: 'signe', a: x.t, b: y.t, correcta: signeDe(x.t, y.t), nota: `${x.nom} i ${y.nom}` }); }
+    vis = () => mapaCatSVG(cs); txt = `Mira el mapa del temps.`; sig = `cx-t-${cs.map(c => c.nom + c.t).join('_')}`;
+  } else if (tipus === 'edifici') {
+    const vs = barreja(VEINS).slice(0, nv === 1 ? 3 : 4); let ps; do { ps = diferents(vs.length, () => rnd(-5, 6)); } while (ps.filter(x => x < 0).length < 2);
+    const nom = i => vs[i][0]; const baix = ps.indexOf(Math.min(...ps)), dalt = ps.indexOf(Math.max(...ps));
+    const ops = vs.map((v, i) => ({ html: majus(v[0].replace(/^(en |la |l')/, '')), val: String(i) }));
+    items = [{ tipus: 'tria', html: 'Qui viu <b>més avall</b>?', opcions: ops, correcta: String(baix) }, { tipus: 'tria', html: 'Qui viu <b>més amunt</b>?', opcions: ops, correcta: String(dalt) }];
+    txt = `En un edifici, ${vs.map((v, i) => `${nom(i)} viu ${ps[i] < 0 ? `al soterrani <b>${fz(ps[i])}</b>` : ps[i] === 0 ? `a la planta baixa (<b>0</b>)` : `a la planta <b>${fz(ps[i])}</b>`}`).join(', ')}.`;
+    vis = p => p ? edificiSVG({ min: -5, max: 6, robotOn: false, colors: true }) : null; sig = `cx-e-${ps.join('_')}`;
+  } else {
+    const vs = barreja(VEINS).slice(0, 3); let ds; do { ds = diferents(3, () => rnd(-12, 6) * 5); } while (ds.filter(x => x < 0).length < 2 || ds.includes(0));
+    const ops = vs.map((v, i) => ({ html: majus(v[0].replace(/^(en |la |l')/, '')), val: String(i) }));
+    const mes = ds.indexOf(Math.max(...ds)), deu = ds.indexOf(Math.min(...ds));
+    items = [{ tipus: 'tria', html: 'Qui té <b>més diners</b>?', opcions: ops, correcta: String(mes) }, { tipus: 'tria', html: 'Qui <b>deu més</b> diners?', opcions: ops, correcta: String(deu) }];
+    txt = `Saldo del compte del banc: ${vs.map((v, i) => `${v[0]}, <b style="color:${ds[i] < 0 ? '#d64242' : '#2c9a58'}">${fz(ds[i])} €</b>`).join('; ')}.`;
+    sig = `cx-d-${ds.join('_')}`;
+  }
+  return {
+    sig, enunciat: `${txt} Respon els apartats.`, visual: vis, pista: PISTA_C, ...apartats(items),
+    explicacio: tipus === 'diners' ? `Qui deu més té el saldo <b>més petit</b> (el més negatiu).` : tipus === 'temps' ? `Més fred = temperatura més petita. Més calor = la més gran.` : `Més avall = el número més petit. Més amunt = el més gran.`,
+    solucio: items.map(it => it.tipus === 'signe' ? `${it.nota}: ${fz(it.a)} ${esc(it.correcta)} ${fz(it.b)}.` : `${textPla(it.html)} → ${textPla(it.opcions.find(o => o.val === it.correcta).html)}.`)
+  };
+};
+const termos2 = (a, b, na = '', nb = '') => `<div style="display:flex;gap:40px;justify-content:center;align-items:flex-end">${[[a, na], [b, nb]].map(([v, n]) => `<div style="text-align:center">${termometreSVG({ v, min: -10, max: 6, lab: 2, ample: 110 })}<div style="font-weight:900;font-size:1.3rem;color:${colZ(v)}">${fz(v)} °C</div>${n ? `<div class="petit">${n}</div>` : ''}</div>`).join('')}</div>`;
+TEMES.e3 = {
+  gen: C,
+  sequencia: {
+    1: [['signes', { n: 3 }], ['ordena'], ['extrem', { n: 2 }], ['certFals', { n: 3 }], ['context'], ['signes', { n: 3 }], ['marca'], ['ordena']],
+    2: [['signes', { n: 4 }], ['ordena'], ['marca'], ['certFals', { n: 4 }], ['extrem', { n: 3 }], ['context'], ['signes', { n: 4 }], ['ordena']],
+    3: [['signes', { n: 5 }], ['ordena'], ['marca', { entre: true }], ['context'], ['certFals', { n: 4 }], ['extrem', { n: 3 }], ['signes', { n: 6 }], ['ordena']]
+  },
+  explicacio: [
+    { text: `<p>A la recta, els enters estan <b class="parpelleja">ordenats</b>.</p><p>Com més a la <b>dreta</b>, més <b>gran</b>. Com més a l'<b>esquerra</b>, més <b>petit</b>.</p>`,
+      vis: () => rectaZSVG({ min: -6, max: 6, labels: 'totes', fletxes: [{ de: -5, a: 5, col: T, etiq: 'cada vegada més gran' }], anim: true, dalt: true }) },
+    { text: `<p>Qualsevol <b style="color:${T}">positiu</b> és <b class="parpelleja">més gran</b> que qualsevol <b style="color:${BLAU}">negatiu</b>.</p><p class="petit">+1 &gt; −100, encara que 100 sembli molt.</p>`,
+      vis: () => rectaZSVG({ min: -6, max: 6, labels: 'totes', claus: true, punts: [{ v: -5, col: BLAU, etiq: '−5' }, { v: 1, etiq: '+1' }], dalt: true }) },
+    { text: `<p>I entre dos <b>negatius</b>? Pensa en el termòmetre.</p><p>A <b style="color:${BLAU}">−8 °C</b> fa <b class="parpelleja">més fred</b> que a −3 °C. Per tant, <b>−8 és més petit</b>.</p>`,
+      vis: () => termos2(-8, -3, 'més fred', 'menys fred') },
+    { text: `<p>Entre dos negatius, és <b>més gran</b> el que està <b class="parpelleja">més a prop del 0</b>.</p><p class="petit">−3 és més a prop del 0 que −8: −3 &gt; −8.</p>`,
+      vis: () => rectaZSVG({ min: -9, max: 2, labels: 'totes', punts: [{ v: -8, col: BLAU, etiq: '−8' }, { v: -3, col: BLAU, etiq: '−3' }], salts: { de: 0, a: -3, col: BLAU }, dalt: true }) },
+    { text: `<p>Fem servir els símbols <b class="parpelleja">&gt;</b> (més gran que) i <b class="parpelleja">&lt;</b> (més petit que).</p><p>La part <b>oberta</b> del símbol sempre mira el nombre més gran.</p>`,
+      vis: () => `<div class="comp-sims"><div><b style="color:${T}">+5</b> <span>&gt;</span> <b style="color:${BLAU}">−3</b></div><div><b style="color:${BLAU}">−6</b> <span>&lt;</span> <b style="color:${BLAU}">−3</b></div><div><b style="color:${T}">+7</b> <span>&lt;</span> <b style="color:${T}">+11</b></div><div><b style="color:${BLAU}">−4</b> <span>&gt;</span> <b style="color:${BLAU}">−8</b></div></div>` },
+    { text: `<p><b>Resum</b>: els enters ordenats de més petit a més gran.</p>`,
+      vis: () => `<div class="conj-txt" style="font-size:1.25rem">…, −4 &lt; −3 &lt; −2 &lt; −1 &lt; <b>0</b> &lt; +1 &lt; +2 &lt; +3 &lt; +4, …</div>` + rectaZSVG({ min: -6, max: 6, labels: 'totes' }) }
+  ],
+  exemple: (nv) => {
+    if (nv === 1) return {
+      enunciat: `Posa el signe: <b>+2 ? −5</b>`,
+      passos: [
+        { text: `Busco els dos nombres a la recta.`, vis: rectaZSVG({ min: -6, max: 6, labels: 'totes', punts: [{ v: 2, etiq: '+2' }, { v: -5, col: BLAU, etiq: '−5' }], dalt: true }) },
+        { text: `El +2 està més a la <b>dreta</b>: és més gran.`, vis: rectaZSVG({ min: -6, max: 6, labels: 'totes', punts: [{ v: 2, col: '#2c9a58', etiq: '+2' }, { v: -5, col: BLAU, etiq: '−5' }], dalt: true }) },
+        { text: `Resultat: <b>+2 &gt; −5</b>. <span class="marca-ok">✓</span>`, vis: `<div class="comp-sims"><div><b style="color:${T}">+2</b> <span>&gt;</span> <b style="color:${BLAU}">−5</b></div></div>` }
+      ]
+    };
+    if (nv === 2) return {
+      enunciat: `Posa el signe: <b>−8 ? −3</b>`,
+      passos: [
+        { text: `Tots dos són negatius. Penso en el termòmetre.`, vis: termos2(-8, -3) },
+        { text: `A −8 °C fa més fred: <b>−8 és més petit</b>. També: −3 està més a prop del 0.`, vis: rectaZSVG({ min: -9, max: 1, labels: 'totes', punts: [{ v: -8, col: BLAU, etiq: '−8' }, { v: -3, col: '#2c9a58', etiq: '−3' }], dalt: true }) },
+        { text: `Resultat: <b>−8 &lt; −3</b>. <span class="marca-ok">✓</span>`, vis: `<div class="comp-sims"><div><b style="color:${BLAU}">−8</b> <span>&lt;</span> <b style="color:${BLAU}">−3</b></div></div>` }
+      ]
+    };
+    return {
+      enunciat: `Ordena de més gran a més petit: −4, +3, −9, 0, +1`,
+      passos: [
+        { text: `Primer els positius, de més gran a més petit: +3, +1.`, vis: `<div class="xips-z"><span style="color:${T}">+3</span><span style="color:${T}">+1</span></div>` },
+        { text: `Després el 0, i després els negatius: el que està més a prop del 0 primer (−4) i el més llunyà al final (−9).`, vis: rectaZSVG({ min: -10, max: 4, labels: 'totes', punts: [{ v: -9, col: BLAU }, { v: -4, col: BLAU }, { v: 0, col: '#8f8a82' }, { v: 1 }, { v: 3 }] }) },
+        { text: `Resultat: <b>+3 &gt; +1 &gt; 0 &gt; −4 &gt; −9</b>. <span class="marca-ok">✓</span>`, vis: `<div class="conj-txt">+3 &gt; +1 &gt; 0 &gt; −4 &gt; −9</div>` }
+      ]
+    };
+  }
+};
+
+/* ---------- OBJECTIU 5 · SUMES I RESTES AMB ENTERS (dossier p. 20) — sense calculadora ---------- */
+const exprPla = ts => ts.map((t, i) => i === 0 ? nz(t) : t < 0 ? ` − ${-t}` : ` + ${t}`).join('');
+const PISTA_S = { completa: `Pensa en l'<b>ascensor</b>: + puja, − baixa. O fes servir les regles: signes <b>iguals</b> → sumo i poso el mateix signe; signes <b>diferents</b> → resto i poso el signe del número més gran.`, mitja: `Signes iguals: sumo. Diferents: resto.` };
+function regla2(a, b) {
+  const r = a + b;
+  if (Math.sign(a) === Math.sign(b) || a === 0 || b === 0) return `Signes iguals: ${Math.abs(a)} + ${Math.abs(b)} = ${Math.abs(r)}, i poso el signe ${a < 0 || b < 0 ? '−' : '+'}: <b>${fz(r)}</b>`;
+  const g = Math.abs(a) > Math.abs(b) ? a : b, p = g === a ? b : a;
+  return `Signes diferents: ${Math.abs(g)} − ${Math.abs(p)} = ${Math.abs(r)}, i poso el signe del ${Math.abs(g)} (${g < 0 ? '−' : '+'}): <b>${fz(r)}</b>`;
+}
+function termesS(nv, { tres = false } = {}) {
+  const L = nv === 1 ? 6 : 20; let ts, g = 0;
+  do {
+    ts = Array.from({ length: tres ? 3 : 2 }, (_, i) => (Math.random() < .5 ? -1 : 1) * rnd(1, L));
+    if (!tres && nv === 1 && Math.random() < .3) ts[0] = rnd(1, L);
+  } while (g++ < 200 && (Math.abs(ts.reduce((a, b) => a + b, 0)) > (nv === 1 ? 8 : 30)));
+  return ts;
+}
+/* ---------- Fitxes positives i negatives (ajuda del nivell 1 de l'objectiu 5) ----------
+   Al principi només hi ha el botó «Ajuda't amb les fitxes». L'alumne toca una fitxa + i una −:
+   la parella es tatxa (val 0). Quan ja no es poden fer parelles, s'encerclen les fitxes que queden. */
+const FX = new WeakMap();
+function fitxesHtml(items) {
+  const dades = esc(JSON.stringify(items.map(i => ({ e: i.etiqueta, ts: i.ts }))));
+  return `<div class="fitxes" data-fx="${dades}"><button type="button" class="fx-obre" data-fx-act="obre"><span class="fx p mini">+</span><span class="fx n mini">−</span> Ajuda't amb les fitxes</button></div>`;
+}
+const fxComptes = it => ({ pos: it.ts.filter(t => t > 0).reduce((a, b) => a + b, 0), neg: -it.ts.filter(t => t < 0).reduce((a, b) => a + b, 0) });
+function fxEstat(c) {
+  let st = FX.get(c); if (st) return st;
+  const items = JSON.parse(c.dataset.fx); st = { items, k: 0, e: items.map(() => ({ xp: new Set(), xn: new Set(), sel: null })) }; FX.set(c, st); return st;
+}
+function fxAcabat(it, e) { const { pos, neg } = fxComptes(it); return e.xp.size === Math.min(pos, neg) && e.xn.size === Math.min(pos, neg); }
+function fxPinta(c, msg = '') {
+  const st = fxEstat(c), it = st.items[st.k], e = st.e[st.k]; const { pos, neg } = fxComptes(it); const fi = fxAcabat(it, e);
+  const fitxa = (cls, i) => { const x = (cls === 'p' ? e.xp : e.xn).has(i), sel = e.sel && e.sel.c === cls && e.sel.i === i;
+    return `<button type="button" class="fx ${cls}${x ? ' tatxada' : ''}${sel ? ' sel' : ''}${fi && !x ? ' queda' : ''}" data-fx-c="${cls}" data-fx-i="${i}" ${x || fi ? 'disabled' : ''} aria-label="fitxa ${cls === 'p' ? '+1' : '−1'}">${cls === 'p' ? '+' : '−'}</button>`; };
+  const fila = (n, cls) => n ? Array.from({ length: n }, (_, i) => fitxa(cls, i)).join('') : '<span class="fx-cap0">cap</span>';
+  const llegenda = it.ts.map(t => `<b style="color:${colZ(t)}">${fz(t)}</b> → ${Math.abs(t)} ${t > 0 ? (Math.abs(t) === 1 ? 'taronja' : 'taronges') : (Math.abs(t) === 1 ? 'blava' : 'blaves')}`).join(' · ');
+  const queden = pos + neg - e.xp.size - e.xn.size;
+  const txt = msg || (fi ? (queden ? `Ja no pots fer més parelles. <b>Compta les fitxes encerclades</b> i mira de quin color són.` : `Totes les fitxes s'han tatxat: no en queda cap.`)
+    : e.sel ? `Ara toca una fitxa <b>${e.sel.c === 'p' ? '−' : '+'}</b> per fer la parella.` : `Toca una fitxa <b>+</b> i una fitxa <b>−</b>: fan 0 i es tatxen.`);
+  c.innerHTML = `<div class="fx-cap">Cada <span class="fx p mini">+</span> val <b>+1</b> i cada <span class="fx n mini">−</span> val <b>−1</b>. Una de cada fan <b>0</b>.</div>
+    ${st.items.length > 1 ? `<div class="fx-tabs">${st.items.map((x, i) => `<button type="button" data-fx-tab="${i}" class="${i === st.k ? 'activa' : ''}">${LLETRES_AP[i]}) ${x.e}</button>`).join('')}</div>` : ''}
+    <div class="fx-tauler"><span class="fx-sg p">+</span><div class="fx-fila">${fila(pos, 'p')}</div><span class="fx-sg n">−</span><div class="fx-fila">${fila(neg, 'n')}</div></div>
+    <div class="fx-lleg">${llegenda}</div>
+    <div class="fx-msg">${txt}</div>
+    <div class="fx-acc"><button type="button" class="boto-petit" data-fx-act="reset">↺ Torna-hi</button><button type="button" class="boto-petit" data-fx-act="tanca">Amaga les fitxes</button></div>`;
+}
+document.addEventListener('click', ev => {
+  const b = ev.target.closest?.('[data-fx-tab],[data-fx-act],[data-fx-c]'); if (!b) return; const c = b.closest('.fitxes'); if (!c) return;
+  const st = fxEstat(c);
+  if (b.dataset.fxAct === 'obre') { so('pas'); return fxPinta(c); }
+  if (b.dataset.fxAct === 'tanca') { so('pas'); c.innerHTML = fitxesHtml([]).replace(/^<div[^>]*>|<\/div>$/g, ''); return; }
+  if (b.dataset.fxTab != null) { st.k = Number(b.dataset.fxTab); so('pas'); return fxPinta(c); }
+  const e = st.e[st.k];
+  if (b.dataset.fxAct === 'reset') { st.e[st.k] = { xp: new Set(), xn: new Set(), sel: null }; so('pas'); return fxPinta(c); }
+  const cls = b.dataset.fxC, i = Number(b.dataset.fxI);
+  if (!e.sel || (e.sel.c === cls && e.sel.i === i)) { e.sel = e.sel ? null : { c: cls, i }; so('pas'); return fxPinta(c); }
+  if (e.sel.c === cls) { // dues del mateix signe: no fan parella
+    e.sel = { c: cls, i }; so('ko'); fxPinta(c, `Dues fitxes <b>${cls === 'p' ? '+' : '−'}</b> no fan 0. Una parella ha de ser <b>una + i una −</b>.`);
+    $$('.fx.sel', c).forEach(f => f.classList.add('tremola')); return;
+  }
+  (cls === 'p' ? e.xp : e.xn).add(i); (e.sel.c === 'p' ? e.xp : e.xn).add(e.sel.i); e.sel = null;
+  so(fxAcabat(st.items[st.k], e) ? 'ok' : 'pas'); fxPinta(c);
+});
+const S5 = {};
+S5.ops = (nv, { n = 3, par = false, tres = false } = {}) => {
+  const items = []; const vist = new Set(); let creua = 0;
+  for (let k = 0; k < n; k++) {
+    let ts, html, val, g = 0;
+    do {
+      ts = termesS(nv, { tres }); val = ts.reduce((a, b) => a + b, 0);
+      if (par && !tres && k % 2 === 1) { const neg = nv === 3 && Math.random() < .5; const b = neg ? -ts[1] : ts[1]; html = `(${fz(ts[0])}) ${neg ? '−' : '+'} (${fz(b)})`; }
+      else html = exprPla(ts);
+    } while ((vist.has(html) || (nv === 1 && k === n - 1 && !creua && Math.sign(ts[0]) === Math.sign(val))) && g++ < 80);
+    if (Math.sign(ts[0]) !== Math.sign(val) && val !== 0) creua++;
+    vist.add(html); items.push({ tipus: 'enter', html, valor: val, ts });
+  }
+  return {
+    sig: `so-${items.map(i => i.html).join('|')}`, enunciat: `Calcula. ${nv === 1 ? 'Si et cal, fes servir les fitxes.' : ''}`,
+    visual: nv === 1 ? (() => fitxesHtml(items.map(it => ({ etiqueta: it.html, ts: it.ts })))) : null, fitxes: nv === 1, pista: PISTA_S, ...apartats(items),
+    explicacio: `Signes iguals: sumo i poso el mateix signe. Signes diferents: resto i poso el signe del número més gran.`,
+    solucio: items.map(it => it.ts.length === 2 ? `${it.html}: ${it.html.startsWith('(') ? `treus els parèntesis → ${exprPla([it.ts[0], it.valor - it.ts[0]])}. ` : ''}${regla2(it.ts[0], it.valor - it.ts[0])}.` : `${it.html}: ${exprPla(it.ts.slice(0, 2))} = ${fz(it.ts[0] + it.ts[1])}, i ${fz(it.ts[0] + it.ts[1])}${it.ts[2] < 0 ? ' − ' + (-it.ts[2]) : ' + ' + it.ts[2]} = <b>${fz(it.valor)}</b>.`)
+  };
+};
+S5.ascensor = (nv, { n = 3 } = {}) => {
+  const items = []; const vist = new Set();
+  for (let k = 0; k < n; k++) {
+    let f, m, g = 0; do { f = rnd(-5, 8); m = (Math.random() < .5 ? -1 : 1) * rnd(1, nv === 1 ? 6 : 9); } while ((f + m < -5 || f + m > 8 || m === 0 || vist.has(f + '_' + m) || (nv === 1 && k === 0 && Math.sign(f) === Math.sign(f + m))) && g++ < 200);
+    vist.add(f + '_' + m);
+    const on = f < 0 ? `al soterrani ${fz(f)}` : f === 0 ? `a la planta baixa (0)` : `a la planta ${fz(f)}`;
+    items.push({ tipus: 'enter', llarg: true, html: `Ets ${on} i ${m > 0 ? 'puges' : 'baixes'} ${Math.abs(m)} ${Math.abs(m) === 1 ? 'planta' : 'plantes'}. On arribes?`, valor: f + m, f, m });
+  }
+  return {
+    sig: `sa-${items.map(i => i.f + '_' + i.m).join('-')}`, enunciat: `L'ascensor de l'edifici. Escriu a quina planta arribes.`,
+    visual: () => edificiSVG({ min: -5, max: 8, robotOn: false, colors: true }), pista: { completa: `Puges → sumes. Baixes → restes. Compta les plantes a l'edifici, i recorda que la planta baixa és el 0.`, mitja: `Compta les plantes una a una.` }, ...apartats(items),
+    explicacio: `Pujar és sumar i baixar és restar. Quan passes per la planta baixa, canvies de signe.`,
+    solucio: items.map(it => `${fz(it.f)} ${it.m > 0 ? '+ ' + it.m : '− ' + (-it.m)} = <b>${fz(it.valor)}</b>.`)
+  };
+};
+const REGLES_S = [{ html: 'Sumo i poso +', val: 's+' }, { html: 'Sumo i poso −', val: 's-' }, { html: 'Resto i poso +', val: 'r+' }, { html: 'Resto i poso −', val: 'r-' }];
+S5.regla = (nv) => {
+  const items = []; const vist = new Set();
+  for (let k = 0; k < 2; k++) {
+    let a, b, g = 0; do { a = (Math.random() < .5 ? -1 : 1) * rnd(2, 15); b = (Math.random() < .5 ? -1 : 1) * rnd(2, 15); } while ((Math.abs(a) === Math.abs(b) || vist.has(a + '_' + b) || (k === 1 && Math.sign(a) === Math.sign(items[0].a) && Math.sign(b) === Math.sign(items[0].b))) && g++ < 100);
+    vist.add(a + '_' + b); const r = a + b;
+    const c = Math.sign(a) === Math.sign(b) ? (a < 0 ? 's-' : 's+') : (r < 0 ? 'r-' : 'r+');
+    const html = exprPla([a, b]);
+    items.push({ tipus: 'tria', html: `Per fer <b>${html}</b>, què faig?`, opcions: REGLES_S, correcta: c, a, b }, { tipus: 'enter', html: `${html}`, valor: r, a, b });
+  }
+  return {
+    sig: `sr-${items.filter(i => i.tipus === 'enter').map(i => i.html).join('|')}`, enunciat: `Primer tria la regla que fas servir i després escriu el resultat.`, visual: null, pista: PISTA_S, ...apartats(items),
+    explicacio: `Signes iguals → sumo i poso el mateix signe. Signes diferents → resto i poso el signe del número més gran.`,
+    solucio: items.filter(i => i.tipus === 'enter').map(it => `${it.html}: ${regla2(it.a, it.b)}.`)
+  };
+};
+S5.error = (nv, { n = 2 } = {}) => {
+  const items = []; const vist = new Set();
+  for (let k = 0; k < n; k++) {
+    let a, b, g = 0; do { a = (Math.random() < .6 ? -1 : 1) * rnd(2, nv === 1 ? 8 : 15); b = (Math.random() < .5 ? -1 : 1) * rnd(1, nv === 1 ? 8 : 15); } while ((Math.sign(a) === Math.sign(b) && Math.random() < .6 || vist.has(a + '_' + b)) && g++ < 100);
+    vist.add(a + '_' + b); const r = a + b; const qui = VEINS[(k * 3 + rnd(0, 9)) % VEINS.length][0];
+    const mal = [Math.sign(a) * (Math.abs(a) + Math.abs(b)), -r, Math.sign(b) * Math.abs(r)].filter(x => x !== r);
+    const bona = Math.random() < .4; const diu = bona ? r : tria(mal);
+    items.push({ tipus: 'tria', html: `${majus(qui)} diu que <b>${exprPla([a, b])} = ${fz(diu)}</b>. Té raó?`, opcions: [{ html: 'Sí', val: 'si' }, { html: 'No', val: 'no' }], correcta: diu === r ? 'si' : 'no', a, b, diu, r, llarg: true });
+  }
+  return {
+    sig: `se-${items.map(i => `${i.a}_${i.b}_${i.diu}`).join('-')}`, enunciat: `Comprova els càlculs d'aquests companys.`, visual: nv === 1 ? (() => fitxesHtml(items.map(it => ({ etiqueta: exprPla([it.a, it.b]), ts: [it.a, it.b] })))) : null, fitxes: nv === 1, pista: PISTA_S, ...apartats(items),
+    explicacio: `Fes tu l'operació i compara-la amb la que diuen.`,
+    solucio: items.map(it => `${exprPla([it.a, it.b])} = <b>${fz(it.r)}</b>: ${it.diu === it.r ? 'té raó' : `no té raó (diu ${fz(it.diu)})`}.`)
+  };
+};
+const CTX_S = [
+  () => { const a = -rnd(2, 9), m = rnd(3, 12); return { html: `A les 7 del matí hi havia ${fzT(a)}. Al migdia, la temperatura ha pujat ${m} graus. Quina temperatura fa?`, valor: a + m, unitat: '°C', op: [a, m] }; },
+  () => { const a = rnd(1, 8), m = rnd(3, 14); return { html: `Hi havia ${fzT(a)} i a la nit la temperatura ha baixat ${m} graus. Quina temperatura fa ara?`, valor: a - m, unitat: '°C', op: [a, -m] }; },
+  () => { const a = -rnd(3, 9) * 10, m = rnd(1, 5) * 10; return { html: `Un submarí és a ${-a} metres sota el nivell del mar i puja ${m} metres. On és ara?`, valor: a + m, unitat: 'm', op: [a, m] }; },
+  () => { const a = -rnd(2, 6) * 5, m = rnd(1, 8) * 5; return { html: `Al compte tens un deute de ${-a} € i hi ingresses ${m} €. Quin saldo tens?`, valor: a + m, unitat: '€', op: [a, m] }; },
+  () => { const a = rnd(2, 8) * 5, m = rnd(3, 12) * 5; return { html: `Tens ${a} € al compte i pagues una compra de ${m} €. Quin saldo et queda?`, valor: a - m, unitat: '€', op: [a, -m] }; },
+  () => { const a = -rnd(1, 4), m = rnd(2, 9); return { html: `Ets al soterrani ${fz(a)} i puges ${m} plantes. A quina planta arribes?`, valor: a + m, unitat: '', op: [a, m] }; }
+];
+S5.temp = (nv, { n = 2 } = {}) => {
+  const fs = barreja(CTX_S).slice(0, n); const items = fs.map(f => ({ tipus: 'enter', llarg: true, ...f() }));
+  return {
+    sig: `st-${items.map(i => i.op.join('_')).join('-')}`, enunciat: `Problemes de la vida quotidiana. Escriu el resultat amb el seu signe.`, visual: null, pista: { completa: `Escriu primer l'operació: puja, ingressa → <b>+</b>; baixa, paga, deu → <b>−</b>.`, mitja: `Quina operació és?` }, ...apartats(items),
+    explicacio: `Converteix la història en una operació d'enters i calcula.`,
+    solucio: items.map(it => `${exprPla(it.op)} = <b>${fz(it.valor)}</b>${it.unitat ? ' ' + it.unitat : ''}.`)
+  };
+};
+S5.parent = (nv, { n = 4 } = {}) => {
+  const items = []; const vist = new Set();
+  const forms = barreja(['--', '+-', '-+', '++']).slice(0, Math.min(n - 1, 3));
+  for (const f of forms) {
+    let a; do { a = rnd(2, 12); } while (vist.has(a)); vist.add(a);
+    const dins = f[1] === '-' ? -a : a, val = f[0] === '-' ? -dins : dins;
+    items.push({ tipus: 'enter', html: `${f[0] === '-' ? '−' : '+'}(${fz(dins)})`, valor: val, f });
+  }
+  const a = (Math.random() < .5 ? -1 : 1) * rnd(1, 9), b = -rnd(2, 9);
+  items.push({ tipus: 'enter', html: `${nz(a)} − (${fz(b)})`, valor: a - b, comb: [a, b] });
+  return {
+    sig: `sp-${items.map(i => i.html).join('|')}`, enunciat: `Treu els parèntesis i calcula.`, visual: null,
+    pista: { completa: `Signe de fora × signe de dins: <b>+(+)</b> → +, <b>+(−)</b> → −, <b>−(+)</b> → −, <b>−(−)</b> → +.`, mitja: `−(−) es converteix en +.` }, ...apartats(items),
+    explicacio: `−(−a) = +a i −(+a) = −a. El signe de davant del parèntesi canvia o manté el de dins.`,
+    solucio: items.map(it => it.comb ? `${it.html}: −(${fz(it.comb[1])}) = ${fz(-it.comb[1])}, i ${nz(it.comb[0])} + ${-it.comb[1]} = <b>${fz(it.valor)}</b>.` : `${it.html} = <b>${fz(it.valor)}</b> (${it.f === '--' ? 'menys per menys, més' : it.f === '++' ? 'més per més, més' : 'signes diferents, menys'}).`)
+  };
+};
+TEMES.e4 = {
+  gen: S5, senseCalc: true, signeEscrit: true,
+  sequencia: {
+    1: [['ascensor', { n: 3 }], ['ops', { n: 3 }], ['ops', { n: 3 }], ['temp', { n: 2 }], ['ascensor', { n: 3 }], ['ops', { n: 3 }], ['error', { n: 2 }], ['ops', { n: 3 }]],
+    2: [['ops', { n: 4 }], ['regla'], ['ops', { n: 4, par: true }], ['temp', { n: 2 }], ['error', { n: 3 }], ['ops', { n: 4 }], ['ascensor', { n: 3 }], ['ops', { n: 4, par: true }]],
+    3: [['ops', { n: 3, tres: true }], ['parent', { n: 4 }], ['ops', { n: 4, par: true }], ['error', { n: 3 }], ['temp', { n: 3 }], ['ops', { n: 4, tres: true }], ['regla'], ['ops', { n: 4, tres: true }]]
+  },
+  explicacio: [
+    { text: `<p>Sumar i restar enters és com anar amb <b class="parpelleja">ascensor</b>.</p><p>Comencem a la planta baixa, el <b>0</b>. <b style="color:${T}">+5</b> vol dir <b>pujar</b> 5 plantes.</p>`,
+      vis: () => edificiSVG({ min: -3, max: 6, pis: 5, de: 0, colors: true }) },
+    { text: `<p>Ara <b style="color:${BLAU}">−7</b>: <b>baixem</b> 7 plantes.</p><p>Passem per la <b class="parpelleja">planta baixa</b> i arribem al soterrani <b>−2</b>.</p><p class="petit">5 − 7 = −2</p>`,
+      vis: () => edificiSVG({ min: -3, max: 6, pis: -2, de: 5, colors: true, marcaPis: 0 }) },
+    { text: `<p><b>Regla 1 · Signes iguals</b>: <b class="parpelleja">sumo</b> i poso el mateix signe.</p><p>−7 − 2 = <b style="color:${BLAU}">−9</b> &nbsp;·&nbsp; +3 + 5 = <b style="color:${T}">+8</b></p><p class="petit">Baixo 7 i baixo 2 més: he baixat 9.</p>`,
+      vis: () => `<div class="regla-s"><div><b>−7 − 2</b></div><div>7 + 2 = 9</div><div>signe <b style="color:${BLAU}">−</b></div><div class="res" style="color:${BLAU}">−9</div></div>` },
+    { text: `<p><b>Regla 2 · Signes diferents</b>: <b class="parpelleja">resto</b> i poso el signe del número <b>més gran</b>.</p><p>+3 − 8 = <b style="color:${BLAU}">−5</b> &nbsp;·&nbsp; −7 + 9 = <b style="color:${T}">+2</b></p><p class="petit">Pujo 3 i baixo 8: acabo 5 plantes per sota.</p>`,
+      vis: () => `<div class="regla-s"><div><b>+3 − 8</b></div><div>8 − 3 = 5</div><div>el més gran és el 8, que porta <b style="color:${BLAU}">−</b></div><div class="res" style="color:${BLAU}">−5</div></div>` },
+    { text: `<p><b>Parèntesis</b> <span class="petit">(nivells 2 i 3)</span>: el signe de fora i el de dins es fan <b class="parpelleja">un sol signe</b>.</p><p class="petit">(+7) + (−3) = 7 − 3 = <b>+4</b> &nbsp;·&nbsp; −(−5) = <b>+5</b></p>`,
+      vis: () => `<div class="taula-signes"><div>+(+a) = <b>+a</b></div><div>+(−a) = <b>−a</b></div><div>−(+a) = <b>−a</b></div><div>−(−a) = <b style="color:${T}">+a</b></div></div>` }
+  ],
+  exemple: (nv) => {
+    if (nv === 1) return {
+      enunciat: `Calcula: <b>−3 + 5</b>`,
+      passos: [
+        { text: `Començo al soterrani <b>−3</b>.`, vis: edificiSVG({ min: -4, max: 4, pis: -3, colors: true }) },
+        { text: `<b>+5</b>: pujo 5 plantes. Passo per la planta baixa.`, vis: edificiSVG({ min: -4, max: 4, pis: 2, de: -3, colors: true, marcaPis: 0 }) },
+        { text: `Arribo a la planta <b style="color:${T}">+2</b>. −3 + 5 = +2. <span class="marca-ok">✓</span>`, vis: `<div>${enterGran(2)}</div>` }
+      ]
+    };
+    if (nv === 2) return {
+      enunciat: `Calcula: <b>(+7) + (−10)</b>`,
+      passos: [
+        { text: `Treus els parèntesis: +(−10) és −10. Queda <b>7 − 10</b>.`, vis: `<div class="conj-txt">(+7) + (−10) = 7 − 10</div>` },
+        { text: `Signes diferents: resto, <b>10 − 7 = 3</b>.`, vis: `<div class="regla-s"><div><b>7 − 10</b></div><div>10 − 7 = 3</div></div>` },
+        { text: `El més gran és el 10, que porta −: <b style="color:${BLAU}">−3</b>. <span class="marca-ok">✓</span>`, vis: `<div>${enterGran(-3)}</div>` }
+      ]
+    };
+    return {
+      enunciat: `Calcula: <b>−2 − (−6) + 1</b>`,
+      passos: [
+        { text: `−(−6): menys per menys, més. Queda <b>−2 + 6 + 1</b>.`, vis: `<div class="conj-txt">−2 − (−6) + 1 = −2 + 6 + 1</div>` },
+        { text: `−2 + 6: signes diferents, 6 − 2 = 4, signe + → <b>+4</b>.`, vis: `<div class="conj-txt">−2 + 6 = +4</div>` },
+        { text: `+4 + 1 = <b style="color:${T}">+5</b>. <span class="marca-ok">✓</span>`, vis: `<div>${enterGran(5)}</div>` }
+      ]
+    };
+  }
+};
+
+/* =====================================================================
    TALLER DE REFORÇ · SUMA I RESTA AMB DIFERENT DENOMINADOR
    Passos del dossier: 1r m.c.m. · 2n arreglar numeradors · 3r sumar · 4t simplificar
    ===================================================================== */
@@ -2719,12 +3750,13 @@ const TALLERS = {
             return `<tr><td>${nom}</td><td>${tr.filter(x => x?.done).length}/6</td><td>${tr.reduce((a, x) => a + (x?.err || 0), 0)}</td><td>${ls[L] ? '⭐'.repeat(ls[L]) : '—'}</td></tr>`; }).join('')}</table>
           <p style="margin:8px 0 2px;font-weight:700">Errors per tipus d'exercici</p>
           <table class="taula-mini"><tr>${TIPUS_PZ.map(t => `<th>${t}</th>`).join('')}</tr><tr>${TIPUS_PZ.map((_, k) => `<td>${te[k] || 0}</td>`).join('')}</tr></table>` };
-    } }
+    } },
+  tasc: { id: 'tasc', unitat: 'e', natiu: true, senseDades: true, ic: '🛗', curt: 'Ascensor', titol: "L'ascensor boig", sub: 'Joc per parelles · sumes i restes amb l\'ascensor', defecte: false }
 };
 const LOCALS_PZ = ['🏠 Barri (2–10)', '🍝 Trattoria (11–20)', '🎪 Festival (fins a 100)'];
 const TIPUS_PZ = ['🎫 Tiquets', '🙋 Client', '☎️ Telèfon', '👨‍🍳 Cuina', '✍️ Escriure', '⏱️ Hora punta'];
 const SALES_ESC = ["La capsa d'en Joan", "Com s'escriu?", 'Plàtans i metres', 'Pròpies o impròpies?', 'La recta real', 'Bessones', 'La partida de cartes', 'Suma i resta', 'Producte i divisió'];
-const ORDRE_TALLERS = ['t5b', 'tesc', 'tpz', 'tcx'];
+const ORDRE_TALLERS = ['t5b', 'tesc', 'tpz', 'tcx', 'tasc'];
 const llistaTallers = () => ORDRE_TALLERS.map(k => TALLERS[k]).filter(Boolean);
 const tallerObert = t => S.config?.tallers?.[t.id] ?? !!t.defecte;
 function resumTaller(t, r) {
@@ -2813,9 +3845,363 @@ function targetaTaller(u, res) {
   if (!oberts.length) return '';
   return `<div class="tallers-fila">${oberts.map(t => {
     const rs = resumTaller(t, res[t.id]);
-    const txt = rs ? rs.carta : t.joc ? 'Nou · Juga →' : 'Opcional · Practica pas a pas →';
-    return `<button class="targeta taller" data-taller="${t.id}"><span class="num">${t.ic}</span><div><h3>${t.joc ? 'Taller · ' : 'Taller de reforç · '}${esc(t.titol)}</h3><span class="estat">${txt}</span></div></button>`;
+    const txt = rs ? rs.carta : t.natiu ? 'Per parelles · no compta per a res →' : t.joc ? 'Nou · Juga →' : 'Opcional · Practica pas a pas →';
+    return `<button class="targeta taller" data-taller="${t.id}"><span class="num">${t.ic}</span><div><h3>${t.joc || t.natiu ? 'Taller · ' : 'Taller de reforç · '}${esc(t.titol)}</h3><span class="estat">${txt}</span></div></button>`;
   }).join('')}</div>`;
+}
+/* =====================================================================
+   TALLER · L'ASCENSOR BOIG (per parelles al mateix ordinador; no desa res)
+   L'alumne no prem la planta de destinació: escriu l'operació (posició ± plantes).
+   Cada jugador té el seu replà: 🍎 a l'esquerra de l'ascensor, l'altre a la dreta.
+   ===================================================================== */
+const ASC = { MAX: 8, MIN: -5, FH: 33 };
+const FRUITES_ASC = [['🍎', 'Poma', '#e23b3b'], ['🍌', 'Plàtan', '#d9a400'], ['🍇', 'Raïm', '#7c5cd6'], ['🍊', 'Taronja', '#f26b1d'], ['🍉', 'Síndria', '#2c9a58'], ['🫐', 'Nabius', '#2a6fd6']];
+const VEINS_ASC = [['👵', 'la iaia Rosa'], ['🧑‍🦱', 'en Bilal'], ['👩‍🦰', 'la Laia'], ['🧔', 'l\'Andrei'], ['👩‍🎓', 'la Mei'], ['🧑‍🍳', 'en Pol'], ['👨‍🔧', 'en Hamza'], ['👩', 'la Yasmin'], ['🐕', 'en Rex, el gos'], ['🧑‍🚀', 'la Núria'], ['👴', 'l\'avi Joan'], ['🧕', 'la Salma']];
+const plantaTxt = f => f === 0 ? 'la planta baixa' : `la ${fz(f)}`;
+const MOTS_ASC = ['zero', 'un', 'dos', 'tres', 'quatre', 'cinc', 'sis', 'set', 'vuit', 'nou', 'deu', 'onze', 'dotze', 'tretze', 'catorze'];
+const llegeixZ = v => v === 0 ? 'zero' : `${v > 0 ? 'més' : 'menys'} ${MOTS_ASC[Math.abs(v)]}`;
+let A = null;
+
+/* ---------- So propi del taller: música 8 bits a l'entrada i efectes ---------- */
+const SA = { on: true, mus: true, musica: null };
+try { SA.on = localStorage.getItem('fr4c_asc_so') !== '0'; SA.mus = localStorage.getItem('fr4c_asc_mus') !== '0'; } catch (e) { }
+const soAscActiu = () => SA.on && soActiu();
+function ctxAsc() {
+  const ac = SO.ctx || (SO.ctx = new (window.AudioContext || window.webkitAudioContext)());
+  if (ac.state === 'suspended') ac.resume();
+  if (!SA.gain) { SA.gain = ac.createGain(); SA.gain.gain.value = .55; SA.gain.connect(ac.destination); SA.mgain = ac.createGain(); SA.mgain.gain.value = 1; SA.mgain.connect(SA.gain); }
+  return ac;
+}
+function notaAsc(ac, f, t, dur, ona = 'square', vol = .05, f2 = null, desti = null) {
+  const o = ac.createOscillator(), g = ac.createGain(); o.type = ona;
+  o.frequency.setValueAtTime(f, t); if (f2) o.frequency.exponentialRampToValueAtTime(f2, t + dur);
+  g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + .008); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+  o.connect(g); g.connect(desti || SA.gain); o.start(t); o.stop(t + dur + .03);
+}
+const hzAsc = s => 523.25 * Math.pow(2, s / 12); // s = semitons respecte de do5
+function soAsc(tipus, x) {
+  if (!soAscActiu()) return;
+  try {
+    const ac = ctxAsc(), t = ac.currentTime + .01;
+    if (tipus === 'tecla') notaAsc(ac, 1320, t, .035, 'square', .025);
+    else if (tipus === 'signe') { notaAsc(ac, x > 0 ? 880 : 660, t, .05, 'square', .03); notaAsc(ac, x > 0 ? 1320 : 440, t + .05, .06, 'square', .03); }
+    else if (tipus === 'planta') notaAsc(ac, hzAsc((x || 0) * 1.5), t, .07, 'square', .035); // més agut com més amunt
+    else if (tipus === 'zero') { notaAsc(ac, 784, t, .09, 'triangle', .09); notaAsc(ac, 1175, t + .08, .16, 'triangle', .09); }
+    else if (tipus === 'ding') { notaAsc(ac, 1318.5, t, .5, 'sine', .11); notaAsc(ac, 1046.5, t + .14, .7, 'sine', .1); }
+    else if (tipus === 'entra') { notaAsc(ac, 300, t, .05, 'triangle', .07); notaAsc(ac, 260, t + .16, .05, 'triangle', .07); notaAsc(ac, 300, t + .32, .05, 'triangle', .07); }
+    else if (tipus === 'apareix') { notaAsc(ac, 700, t, .06, 'square', .025, 1100); }
+    else if (tipus === 'ok') [0, 4, 7, 12].forEach((s, i) => notaAsc(ac, hzAsc(s), t + i * .07, i === 3 ? .25 : .08, 'square', .045));
+    else if (tipus === 'ko') { const o = ac.createOscillator(), g = ac.createGain(), l = ac.createOscillator(), lg = ac.createGain(); o.type = 'sawtooth'; o.frequency.setValueAtTime(330, t); o.frequency.exponentialRampToValueAtTime(90, t + .6); l.frequency.value = 9; lg.gain.value = 18; l.connect(lg); lg.connect(o.frequency); g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.07, t + .02); g.gain.exponentialRampToValueAtTime(.0001, t + .65); o.connect(g); g.connect(SA.gain); o.start(t); l.start(t); o.stop(t + .7); l.stop(t + .7); }
+    else if (tipus === 'rapid') notaAsc(ac, 600, t, .22, 'square', .035, 2400);
+    else if (tipus === 'fanfara') [[0, .12], [4, .12], [7, .12], [12, .3], [7, .12], [12, .6]].reduce((ti, [s, d]) => { notaAsc(ac, hzAsc(s), ti, d, 'square', .05); notaAsc(ac, hzAsc(s - 12), ti, d, 'triangle', .07); return ti + d + .02; }, t);
+  } catch (e) { }
+}
+// melodies originals: una d'entrada (més viva) i una de joc (més tranquil·la i fluixa)
+const MUS_ASC = {
+  inici: { cx: .2, vol: .035, vb: .09, mel: [0, 4, 7, 4, 12, 7, 4, 7, -3, 0, 5, 0, 9, 5, 0, 5, -5, -1, 2, 7, 5, 2, -1, 2, 0, 4, 7, 12, null, 7, 12, null],
+    baix: [-24, -24, -17, -17, -31, -19, -31, -19, -29, -17, -29, -17, -24, -29, -24, null] },
+  joc: { cx: .24, vol: .02, vb: .06, mel: [7, null, 4, 7, 9, null, 7, null, 5, null, 2, 5, 7, null, 4, null, 4, null, 0, 4, 5, null, 4, 2, 0, null, 2, null, -1, null, null, null,
+    7, null, 4, 7, 12, null, 11, null, 9, null, 5, 9, 7, null, 4, null, 5, 4, 2, 0, 2, null, -1, 2, 0, null, null, null, null, null, null, null],
+    baix: [-24, -17, -24, -17, -31, -19, -29, -17, -24, -17, -27, -15, -29, -24, -31, -19, -24, -17, -24, -17, -29, -17, -31, -19, -29, -24, -31, -19, -24, -19, -24, null] }
+};
+function musicaAsc(tema) {
+  if (SA.musica) { clearInterval(SA.musica.iv); SA.musica = null; }
+  if (!tema || !SA.mus || !soAscActiu()) return;
+  try {
+    const ac = ctxAsc(), P = MUS_ASC[tema], CX = P.cx, L = P.mel.length; const M = { t: ac.currentTime + .15, k: 0, tema };
+    SA.mgain.gain.setValueAtTime(1, ac.currentTime);
+    const programa = () => {
+      while (M.t < ac.currentTime + .35) {
+        const n = P.mel[M.k % L]; if (n != null) notaAsc(ac, hzAsc(n), M.t, CX * .85, 'square', P.vol, null, SA.mgain);
+        if (M.k % 2 === 0) { const b = P.baix[(M.k / 2) % P.baix.length]; if (b != null) notaAsc(ac, hzAsc(b), M.t, CX * 1.8, 'triangle', P.vb, null, SA.mgain); }
+        if (M.k % 4 === 2) notaAsc(ac, 5200, M.t, .02, 'square', .008, null, SA.mgain);
+        M.t += CX; M.k++;
+      }
+    };
+    programa(); M.iv = setInterval(programa, 90); SA.musica = M;
+  } catch (e) { }
+}
+// mentre FR-4C compta les plantes, la música baixa perquè se sentin els bips
+function apagaMusicaAsc(fluix) { try { if (SA.mgain) SA.mgain.gain.setTargetAtTime(fluix ? .25 : 1, SO.ctx.currentTime, .15); } catch (e) { } }
+const temaMusAsc = () => A?.pantalla === 'inici' ? 'inici' : A?.pantalla === 'joc' ? 'joc' : null;
+function botoSoAsc() { return `<span class="asc-sons"><button class="asc-so ${SA.mus && SA.on ? '' : 'off'}" id="asc-mus" title="${SA.mus ? 'Apaga la música' : 'Engega la música'}">🎵</button><button class="asc-so" id="asc-so" title="${SA.on ? 'Silencia tot el joc' : 'Activa el so'}">${SA.on ? '🔊' : '🔇'}</button></span>`; }
+function enllacaSoAsc() {
+  const b = $('#asc-so'), bm = $('#asc-mus'); if (!b) return;
+  const refresca = () => { b.textContent = SA.on ? '🔊' : '🔇'; b.title = SA.on ? 'Silencia tot el joc' : 'Activa el so'; bm.classList.toggle('off', !(SA.mus && SA.on)); bm.title = SA.mus ? 'Apaga la música' : 'Engega la música'; };
+  b.onclick = () => { SA.on = !SA.on; try { localStorage.setItem('fr4c_asc_so', SA.on ? '1' : '0'); } catch (e) { } refresca(); musicaAsc(temaMusAsc()); };
+  bm.onclick = () => { if (!SA.on) { SA.on = true; SA.mus = true; try { localStorage.setItem('fr4c_asc_so', '1'); } catch (e) { } } else SA.mus = !SA.mus;
+    try { localStorage.setItem('fr4c_asc_mus', SA.mus ? '1' : '0'); } catch (e) { } refresca(); musicaAsc(temaMusAsc()); };
+}
+/* ---------- Joc ---------- */
+function obreAscensor() {
+  tancaJoc(true);
+  A = { pantalla: 'inici', j: [0, 1], nivell: 2, porJug: 5 };
+  document.body.insertAdjacentHTML('beforeend', `<div id="joc-capa" class="asc-capa"><div id="asc"></div></div>`);
+  pintaAsc(); musicaAsc('inici');
+}
+function tancaAscensor() { musicaAsc(null); if (A?.timer) clearInterval(A.timer); A = null; $('#joc-capa')?.remove(); document.removeEventListener('keydown', tecladoAsc); if (S.alumne) mostra('mapa'); }
+function genVeinsAsc(nv, q) {
+  const out = []; let pos = 0; const vist = new Set();
+  const veins = barreja(VEINS_ASC);
+  for (let k = 0; k < q; k++) {
+    let a, b, e = pos, g = 0;
+    do {
+      a = rnd(ASC.MIN, ASC.MAX); b = rnd(ASC.MIN, ASC.MAX);
+      const creua = (a > 0 && b < 0) || (a < 0 && b > 0);
+      const ok = a !== b && Math.abs(b - a) <= 11 && !vist.has(a + '_' + b) && (g > 300 || out[k - 2]?.a !== a) &&
+        (nv === 1 ? (!creua && Math.abs(b - a) <= 7) : nv === 2 ? creua : (a !== e && (creua || (e > 0 && a < 0) || (e < 0 && a > 0))));
+      if (ok) break;
+    } while (g++ < 500);
+    vist.add(a + '_' + b);
+    out.push({ v: veins[k % veins.length], a, b, e: nv === 3 ? e : a, st: k < 3 ? 'espera' : 'ocult' });
+    pos = b;
+  }
+  return out;
+}
+function comencaAsc() {
+  musicaAsc('joc');
+  const q = A.porJug * 2;
+  Object.assign(A, { pantalla: 'joc', veins: genVeinsAsc(A.nivell, q), idx: 0, pos: 0, dir: 0, num: '', bloc: false, punts: [{ ok: 0, err: 0, rapid: 0 }, { ok: 0, err: 0, rapid: 0 }], missatge: '', compte: null, anim: null, hist: [], res: null, nou: null });
+  document.addEventListener('keydown', tecladoAsc);
+  iniciaVeiAsc();
+}
+const veiAsc = () => A.veins[A.idx];
+const jugAsc = () => A.idx % 2;
+function iniciaVeiAsc() {
+  const V = veiAsc(); A.dir = 0; A.num = ''; A.compte = null; A.dins = false; A.hist = []; A.res = null; A.op = null;
+  A.missatge = `${V.v[0]} <b>${majus(V.v[1])}</b>: «Soc a ${plantaTxt(V.a)} i vaig a ${plantaTxt(V.b)}.»`;
+  if (A.nivell === 3) { A.bloc = false; A.etapa = 'buscar'; A.instr = `L'ascensor és a ${plantaTxt(A.pos)}. Primer, <b>ves a buscar</b> ${V.v[1]} a ${plantaTxt(V.a)}: escriu l'operació.`; A.t0 = Date.now(); pintaAsc(); arrencaTimerAsc(); return; }
+  // als nivells 1 i 2, l'ascensor va sol a buscar el veí
+  A.etapa = 'portar'; A.bloc = true; A.instr = `L'ascensor va a buscar ${V.v[1]}…`; pintaAsc();
+  mouAsc(V.a, 140, () => entraVeiAsc(() => { A.bloc = false; A.instr = `Escriu l'<b>operació</b>: ${V.v[1]} és a ${plantaTxt(V.a)}. Tria <b>+</b> (puja) o <b>−</b> (baixa) i quantes plantes.`; A.t0 = Date.now(); pintaAsc(); arrencaTimerAsc(); }));
+}
+// el veí camina del seu replà a la cabina; quan és a dins, n'apareix un de nou a la cua
+function entraVeiAsc(fet) {
+  const V = veiAsc(); soAsc('ding');
+  A.anim = { tipus: 'entra', k: A.idx, x: xVeiAsc(A.idx) }; A.bloc = true; pintaEdificiAsc();
+  setTimeout(() => soAsc('entra'), 150);
+  setTimeout(() => {
+    if (!A) return; A.anim = null; V.st = 'dins'; A.dins = true;
+    const nou = A.veins.findIndex(v => v.st === 'ocult'); if (nou >= 0) { A.veins[nou].st = 'espera'; A.nou = { k: nou, t: Date.now() }; soAsc('apareix'); }
+    pintaEdificiAsc(); fet();
+  }, 750);
+}
+function surtVeiAsc(fet) {
+  const V = veiAsc(); const costat = A.idx % 2;
+  const xoca = A.veins.some((v, k) => v.st === 'espera' && v.a === A.pos && k % 2 === costat);
+  soAsc('ding'); V.st = 'fora'; A.dins = false;
+  A.anim = { tipus: 'surt', k: A.idx, x: xSlotAsc(costat, 0), curt: xoca }; pintaEdificiAsc();
+  setTimeout(() => soAsc('entra'), 100);
+  setTimeout(() => { if (!A) return; A.anim = null; pintaEdificiAsc(); fet(); }, xoca ? 500 : 800);
+}
+function arrencaTimerAsc() {
+  if (A.timer) clearInterval(A.timer);
+  if (A.nivell < 2) return;
+  A.timer = setInterval(() => { const b = $('#asc-tbar'); if (!b || !A) return; const f = Math.max(0, 1 - (Date.now() - A.t0) / 30000); b.style.transform = `scaleX(${f})`; }, 250);
+}
+function mouAsc(desti, ms, fet) {
+  const pas = desti > A.pos ? 1 : -1;
+  if (A.pos === desti) return fet();
+  const iv = setInterval(() => {
+    if (!A) return clearInterval(iv);
+    A.pos += pas; soAsc(A.pos === 0 ? 'zero' : 'planta', A.pos); pintaEdificiAsc();
+    if (A.pos === desti) { clearInterval(iv); setTimeout(fet, 250); }
+  }, ms);
+}
+const opTxtAsc = (o, m) => `${fz(o)} ${m > 0 ? '+' : '−'} ${Math.abs(m)}`;
+const opParAsc = (o, m) => `(${fz(o)}) + (${fz(m)})`;
+function confirmaAsc() {
+  if (A.bloc || !A.dir || !A.num || Number(A.num) === 0) return;
+  const V = veiAsc(); const m = A.dir * Number(A.num); const origen = A.pos;
+  const desti = A.etapa === 'buscar' ? V.a : V.b; const bo = origen + m === desti;
+  const arriba = Math.max(ASC.MIN, Math.min(ASC.MAX, origen + m)); const surt = arriba !== origen + m;
+  A.bloc = true; A.op = { o: origen, m }; A.res = null;
+  A.instr = `FR-4C: «${majus(llegeixZ(origen))} ${m > 0 ? 'més' : 'menys'} ${MOTS_ASC[Math.abs(m)]}…» Som-hi!`; pintaAsc();
+  mouAsc(arriba, 300, () => {
+    const J = A.punts[jugAsc()];
+    A.res = { v: origen + m, bo }; pintaPanellAsc();
+    if (bo) {
+      soAsc('ok');
+      if (A.etapa === 'buscar') {
+        A.hist.push({ o: origen, m, r: desti, bo: true });
+        A.instr = `<span class="asc-be">✓ ${opTxtAsc(origen, m)} = ${fz(desti)}.</span> Obre la porta…`; pintaAsc();
+        setTimeout(() => entraVeiAsc(() => { A.etapa = 'portar'; A.dir = 0; A.num = ''; A.op = null; A.res = null; A.bloc = false; A.t0 += 800;
+          A.instr = `${majus(V.v[1])} ja és a dins. Ara <b>porta'l</b> a ${plantaTxt(V.b)}: escriu la segona operació.`; A.missatge = `${V.v[0]} «Hola! Vaig a ${plantaTxt(V.b)}, si us plau.»`; pintaAsc(); }), 500);
+        return;
+      }
+      J.ok++; const rapid = A.nivell >= 2 && Date.now() - A.t0 < 30000; if (rapid) { J.rapid++; setTimeout(() => soAsc('rapid'), 350); }
+      A.hist.push({ o: origen, m, r: desti, bo: true });
+      A.missatge = `${V.v[0]} <b>${majus(V.v[1])}</b>: «${tria(['Moltes gràcies!', 'Perfecte, gràcies!', 'Quin servei!', 'Gràcies, conserge!'])}»`;
+      A.instr = `<span class="asc-be">✓ Molt bé! ${opTxtAsc(origen, m)} = ${fz(desti)}${rapid ? ' · ⚡ ràpid!' : ''}</span>`;
+      if (A.timer) clearInterval(A.timer);
+      pintaAsc(); setTimeout(() => surtVeiAsc(() => setTimeout(seguentAsc, 500)), 350);
+    } else {
+      soAsc('ko'); J.err++;
+      A.missatge = `${V.v[0]} <b>${majus(V.v[1])}</b>: «${surt ? 'Aquesta planta no existeix!' : `Però si jo ${A.etapa === 'buscar' ? 'era' : 'anava'} a ${plantaTxt(desti)}!`} 😠»`;
+      A.instr = `${opTxtAsc(origen, m)} = ${fz(origen + m)}, però calia anar a ${plantaTxt(desti)}. FR-4C compta les plantes de ${plantaTxt(origen)} a ${plantaTxt(desti)}…`; pintaAsc();
+      setTimeout(() => compteAsc(origen, desti, () => {
+        const mBo = desti - origen;
+        A.hist.push({ o: origen, m: mBo, r: desti, bo: false });
+        A.instr = `<span class="asc-mal">L'operació bona era <b>${opTxtAsc(origen, mBo)} = ${fz(desti)}</b> (${mBo > 0 ? '▲ puja' : '▼ baixa'} ${Math.abs(mBo)})</span>`;
+        A.op = { o: origen, m: mBo }; A.res = { v: desti, bo: true, corregit: true };
+        pintaAsc();
+        mouAsc(desti, 200, () => {
+          if (A.etapa === 'buscar') { setTimeout(() => entraVeiAsc(() => { A.etapa = 'portar'; A.dir = 0; A.num = ''; A.op = null; A.res = null; A.bloc = false; A.compte = null; A.instr = `Ara <b>porta</b> ${V.v[1]} a ${plantaTxt(V.b)}: escriu la segona operació.`; pintaAsc(); }), 700); return; }
+          if (A.timer) clearInterval(A.timer);
+          setTimeout(() => surtVeiAsc(() => setTimeout(seguentAsc, 700)), 900);
+        });
+      }), 1100);
+    }
+  });
+}
+function compteAsc(de, a, fet) {
+  const pas = a > de ? 1 : -1; A.compte = { de, marques: [] }; let n = 0, f = de; apagaMusicaAsc(true);
+  const iv = setInterval(() => {
+    if (!A) return clearInterval(iv);
+    f += pas; n++; A.compte.marques.push([f, n]); A.compte.t = Date.now();
+    const pl = `${n} ${n === 1 ? 'planta' : 'plantes'}`;
+    if (f === 0 && de !== 0 && a !== 0) { A.compte.zero = true; A.instr = `<b>Compte!</b> Passem per la <b>planta baixa (0)</b>. Portem ${pl}…`; }
+    else if (A.compte.zero) A.instr = `Hem passat per la planta baixa (0), que també compta. Portem <b>${pl}</b>…`;
+    else A.instr = `FR-4C compta: <b>${pl}</b>…`;
+    soAsc(f === 0 ? 'zero' : 'planta', f); pintaAsc();
+    if (f === a) { clearInterval(iv); setTimeout(() => { apagaMusicaAsc(false); fet(); }, 900); }
+  }, 520);
+}
+function seguentAsc() {
+  if (!A) return;
+  if (A.idx >= A.veins.length - 1) { if (A.timer) clearInterval(A.timer); A.pantalla = 'fi'; musicaAsc(null); soAsc('fanfara'); return pintaAsc(); }
+  A.idx++; iniciaVeiAsc();
+}
+function tecladoAsc(e) {
+  if (!A || A.pantalla !== 'joc' || A.bloc) return;
+  if (/^[0-9]$/.test(e.key)) { premAsc('n' + e.key); e.preventDefault(); }
+  else if (e.key === 'ArrowUp' || e.key === '+') { premAsc('amunt'); e.preventDefault(); }
+  else if (e.key === 'ArrowDown' || e.key === '-') { premAsc('avall'); e.preventDefault(); }
+  else if (e.key === 'Backspace') { premAsc('esborra'); e.preventDefault(); }
+  else if (e.key === 'Enter') { confirmaAsc(); e.preventDefault(); }
+}
+function premAsc(k) {
+  if (A.bloc) return;
+  if (k === 'amunt') { A.dir = 1; soAsc('signe', 1); } else if (k === 'avall') { A.dir = -1; soAsc('signe', -1); }
+  else if (k === 'esborra') { A.num = A.num.slice(0, -1); soAsc('tecla'); }
+  else if (k.startsWith('n')) { if (A.num.length < 2) A.num = (A.num + k.slice(1)).replace(/^0+/, ''); soAsc('tecla'); }
+  pintaPanellAsc();
+}
+/* ---------- Edifici: façana · replà jugador 1 · forat de l'ascensor · replà jugador 2 ---------- */
+const GA = { x0: 64, top: 8, FA: 92, RP: 64, FO: 52 };
+GA.xL = GA.x0 + GA.FA; GA.xs = GA.xL + GA.RP; GA.xR = GA.xs + GA.FO; GA.W = GA.FA + 2 * GA.RP + GA.FO;
+const yAsc = f => GA.top + (ASC.MAX - f) * ASC.FH;
+const xSlotAsc = (costat, s) => costat === 0 ? GA.xL + GA.RP - 18 - s * 25 : GA.xR + 18 + s * 25;
+function slotsAsc() {
+  // posició de cada veí que espera: el primer de la cua, més a prop de l'ascensor
+  const out = {}; const ocupat = {};
+  A.veins.forEach((v, k) => { if (v.st !== 'espera') return; const c = k % 2, clau = c + '_' + v.a; const s = ocupat[clau] || 0; ocupat[clau] = s + 1; out[k] = { c, s, x: xSlotAsc(c, Math.min(s, 1)), mes: s >= 2 }; });
+  return out;
+}
+const xVeiAsc = k => slotsAsc()[k]?.x ?? xSlotAsc(k % 2, 0);
+function edificiAscSVG() {
+  const { MAX, MIN, FH } = ASC, { x0, top, xL, xs, xR, W, RP, FO } = GA, n = MAX - MIN + 1, y = yAsc;
+  const V = A.pantalla === 'joc' ? veiAsc() : null; const col = i => FRUITES_ASC[A.j[i]][2];
+  let s = `<defs><clipPath id="asc-clip"><rect x="${x0}" y="${top}" width="${W}" height="${n * FH}"/></clipPath></defs>`;
+  for (let f = MAX; f >= MIN; f--) {
+    const yy = y(f), sota = f < 0;
+    s += `<rect x="${x0}" y="${yy}" width="${W}" height="${FH}" fill="${sota ? '#e8dccb' : f === 0 ? '#efe7d8' : '#f4f2ee'}" stroke="#1b1b1b" stroke-width="1.6"/>`;
+    s += `<text x="${x0 - 10}" y="${yy + FH / 2 + 7}" text-anchor="end" font-size="19" font-weight="900" fill="${colZ(f)}">${f === 0 ? '0' : fz(f)}</text>`;
+    if (!sota && f !== 0) for (let k = 0; k < 2; k++) s += `<rect x="${x0 + 12 + k * 40}" y="${yy + 7}" width="26" height="${FH - 14}" rx="3" fill="#cfe0f5" stroke="#1b1b1b" stroke-width="1"/>`;
+    if (f === 0) s += `<text x="${x0 + 8}" y="${yy + FH / 2 + 5}" font-size="11" font-weight="900" fill="#8f8a82">PL. BAIXA</text>`;
+    if (sota) s += `<text x="${x0 + 34}" y="${yy + FH / 2 + 7}" font-size="17" font-weight="900" fill="#a08a6a">P</text>`;
+    // replans: fons suau i terra del color de cada jugador
+    for (const [c, xx] of [[0, xL], [1, xR]]) s += `<rect x="${xx}" y="${yy + 1}" width="${RP}" height="${FH - 2}" fill="${col(c)}" opacity=".10"/><rect x="${xx}" y="${yy + FH - 4}" width="${RP}" height="4" fill="${col(c)}" opacity=".75"/>`;
+  }
+  s += `<line x1="${x0}" y1="${top}" x2="${x0}" y2="${top + n * FH}" stroke="#1b1b1b" stroke-width="2"/>`;
+  s += `<line x1="${x0 - 50}" y1="${y(-1)}" x2="${x0 + W + 30}" y2="${y(-1)}" stroke="#5b8f3a" stroke-width="5"/>`;
+  // capçalera dels replans
+  s += `<text x="${xL + RP / 2}" y="${top + n * FH + 22}" text-anchor="middle" font-size="18">${FRUITES_ASC[A.j[0]][0]}</text><text x="${xR + RP / 2}" y="${top + n * FH + 22}" text-anchor="middle" font-size="18">${FRUITES_ASC[A.j[1]][0]}</text>`;
+  s += `<rect x="${xs}" y="${top}" width="${FO}" height="${n * FH}" fill="#fff" stroke="#1b1b1b" stroke-width="2"/>`;
+  if (V) {
+    const desti = A.etapa === 'buscar' ? V.a : V.b;
+    s += `<text x="${x0 + W + 6}" y="${y(desti) + FH / 2 + 8}" font-size="22">🚩</text>`;
+    // veïns esperant als replans
+    const sl = slotsAsc();
+    for (const [k, p] of Object.entries(sl)) {
+      const v = A.veins[k]; if (A.anim?.k == k && A.anim.tipus === 'entra') continue;
+      const ara = Number(k) === A.idx, nou = A.nou?.k == k && Date.now() - A.nou.t < 500;
+      if (p.mes) { if (p.s === 2) s += `<text x="${xSlotAsc(p.c, 1) + (p.c === 0 ? -16 : 16)}" y="${y(v.a) + 12}" font-size="11" font-weight="900" text-anchor="middle">+1</text>`; continue; }
+      s += `<g class="${nou ? 'asc-pop' : ''}${ara ? ' asc-ara' : ''}">${ara ? `<circle cx="${p.x}" cy="${y(v.a) + FH / 2}" r="14" fill="none" stroke="${col(p.c)}" stroke-width="3"/>` : ''}<text x="${p.x}" y="${y(v.a) + FH / 2 + 8}" text-anchor="middle" font-size="21">${v.v[0]}</text></g>`;
+    }
+  }
+  const cy = y(A.pos), cx = xs + FO / 2;
+  const mostraDins = A.dins && V && !A.anim;
+  s += `<g><rect x="${xs + 3}" y="${cy + 3}" width="${FO - 6}" height="${FH - 6}" rx="4" fill="${T}" stroke="#1b1b1b" stroke-width="2"/>${mostraDins ? `<text x="${cx}" y="${cy + FH / 2 + 8}" text-anchor="middle" font-size="20">${V.v[0]}</text>` : `<rect x="${xs + 12}" y="${cy + 8}" width="${FO - 24}" height="${FH - 16}" rx="4" fill="#fff" stroke="#1b1b1b" stroke-width="1.5"/>`}</g>`;
+  // veí caminant (entra o surt de la cabina)
+  if (A.anim && V) {
+    const dx = A.anim.x - cx;
+    const cls = A.anim.tipus === 'entra' ? 'asc-entra' : A.anim.curt ? 'asc-surt curt' : 'asc-surt';
+    s += `<text class="${cls}" style="--dx:${dx}px" x="${cx}" y="${cy + FH / 2 + 8}" text-anchor="middle" font-size="21">${V.v[0]}</text>`;
+  }
+  // compte de plantes, dins del forat de l'ascensor
+  if (A.compte) A.compte.marques.forEach(([f, k], i) => { const nou = i === A.compte.marques.length - 1;
+    s += `<g class="${nou ? 'asc-pop' : ''}"><circle cx="${cx}" cy="${y(f) + FH / 2}" r="12" fill="${f === 0 ? T : '#1b1b1b'}" stroke="#fff" stroke-width="2"/><text x="${cx}" y="${y(f) + FH / 2 + 5}" text-anchor="middle" font-size="13" font-weight="900" fill="#fff">${k}</text></g>`; });
+  return `<svg class="asc-edifici" viewBox="0 0 ${x0 + W + 36} ${n * FH + top + 30}">${s}</svg>`;
+}
+function pintaEdificiAsc() { const e = $('#asc-ed'); if (e) e.innerHTML = edificiAscSVG(); }
+function pintaPanellAsc() {
+  const p = $('#asc-mov'); if (!p) return;
+  const o = A.op ? A.op.o : A.pos;
+  const sg = A.op ? (A.op.m > 0 ? '+' : '−') : A.dir > 0 ? '+' : A.dir < 0 ? '−' : '';
+  const nn = A.op ? String(Math.abs(A.op.m)) : A.num;
+  const dirCls = (A.op ? A.op.m : A.dir) > 0 ? 'amunt' : (A.op ? A.op.m : A.dir) < 0 ? 'avall' : '';
+  const r = A.res ? `<span class="asc-r ${A.res.bo ? 'bo' : 'mal'}">${fz(A.res.v)}</span>` : `<span class="asc-r">?</span>`;
+  const m = sg && nn ? (sg === '+' ? 1 : -1) * Number(nn) : null;
+  const par = A.nivell === 3 && m ? `<small class="asc-par">${opParAsc(o, m)}</small>` : '';
+  const hist = A.hist.filter((h, i) => A.etapa === 'portar' && i === 0 && A.nivell === 3).map(h => `<small class="asc-hist">1r moviment: ${opTxtAsc(h.o, h.m)} = ${fz(h.r)} ${h.bo ? '✓' : '(corregit)'}</small>`).join('');
+  p.innerHTML = `${hist}<div class="asc-op"><span>${fz(o)}</span><span class="asc-sg ${dirCls}">${sg || '<i>±</i>'}</span><b>${nn || '<i>_</i>'}</b><span>=</span>${r}</div>${par}`;
+  $$('#asc .asc-dir button').forEach(b => b.classList.toggle('activa', !A.op && ((b.dataset.k === 'amunt' && A.dir > 0) || (b.dataset.k === 'avall' && A.dir < 0))));
+  const ok = $('#asc-ok'); if (ok) ok.disabled = A.bloc || !A.dir || !A.num;
+}
+function pintaAsc() {
+  const c = $('#asc'); if (!c || !A) return;
+  const fr = i => FRUITES_ASC[A.j[i]];
+  if (A.pantalla === 'inici') {
+    c.innerHTML = `<div class="asc-inici">${botoSoAsc()}<div class="asc-tit">${robot(120, 'content', true)}<div><h2>🛗 L'ascensor boig</h2><p>En FR-4C fa de conserge. Els veïns diuen on són i on van. <b>No premeu la planta</b>: escriviu l'<b>operació</b>. On és el veí, <b>+</b> si puja o <b>−</b> si baixa, i quantes plantes.</p></div></div>
+      ${[0, 1].map(i => `<div class="asc-jug"><b>Jugador ${i + 1}</b><div>${FRUITES_ASC.map((f, k) => `<button data-j="${i}" data-f="${k}" class="${A.j[i] === k ? 'activa' : ''}" ${A.j[1 - i] === k ? 'disabled' : ''} title="${f[1]}">${f[0]}</button>`).join('')}</div><span class="petit" style="color:var(--gris)">replà de ${i === 0 ? "l'esquerra" : 'la dreta'}</span></div>`).join('')}
+      <div class="asc-jug"><b>Nivell</b><div class="segment" id="asc-nv">${[[1, 'Sense creuar el 0'], [2, 'Creuant el 0'], [3, 'Dos moviments']].map(([n, t]) => `<button data-n="${n}" class="${A.nivell === n ? 'activa' : ''}">${n} · ${t}</button>`).join('')}</div></div>
+      <p class="petit" style="color:var(--gris)">Es juga per torns, un veí cadascú: ${A.porJug} veïns per jugador. Els vostres veïns esperen al vostre replà. ${A.nivell >= 2 ? 'Hi ha un rellotge: si l\'encerteu en menys de 30 segons, guanyeu un ⚡ (no resta mai).' : ''}</p>
+      <div class="accions"><button class="boto sec" id="asc-surt">Surt</button><button class="boto taronja" id="asc-go">Comencem! →</button></div></div>`;
+    $$('[data-j]', c).forEach(b => b.onclick = () => { A.j[Number(b.dataset.j)] = Number(b.dataset.f); soAsc('tecla'); pintaAsc(); });
+    $$('#asc-nv button', c).forEach(b => b.onclick = () => { A.nivell = Number(b.dataset.n); soAsc('tecla'); pintaAsc(); });
+    $('#asc-surt').onclick = tancaAscensor; $('#asc-go').onclick = () => comencaAsc();
+    enllacaSoAsc(); if (SA.musica?.tema !== 'inici') musicaAsc('inici');
+    return;
+  }
+  if (A.pantalla === 'fi') {
+    const p = A.punts; const g = p[0].ok === p[1].ok ? -1 : p[0].ok > p[1].ok ? 0 : 1;
+    c.innerHTML = `<div class="asc-inici">${botoSoAsc()}<div class="asc-tit">${robot(120, 'content', true)}<div><h2>Torn acabat!</h2><p>${g < 0 ? 'Empat! Tots dos sou bons conserges.' : `Guanya ${fr(g)[0]} <b>${fr(g)[1]}</b>!`}</p></div></div>
+      <table class="asc-resum"><tr><th></th><th>Veïns ben lliurats</th><th>Errors</th>${A.nivell >= 2 ? '<th>⚡ Ràpids</th>' : ''}</tr>${[0, 1].map(i => `<tr><td>${fr(i)[0]} ${fr(i)[1]}</td><td><b>${p[i].ok}</b> de ${A.porJug}</td><td>${p[i].err}</td>${A.nivell >= 2 ? `<td>${p[i].rapid}</td>` : ''}</tr>`).join('')}</table>
+      <div class="accions"><button class="boto sec" id="asc-surt">Surt</button><button class="boto taronja" id="asc-re">Torna a jugar</button></div></div>`;
+    $('#asc-surt').onclick = tancaAscensor; $('#asc-re').onclick = () => { A.pantalla = 'inici'; pintaAsc(); };
+    enllacaSoAsc();
+    return;
+  }
+  const J = jugAsc();
+  c.innerHTML = `<div class="asc-joc">
+    <div class="asc-esq" id="asc-ed">${edificiAscSVG()}</div>
+    <div class="asc-dre">
+      <div class="asc-cap"><span class="asc-torn" style="border-color:${fr(J)[2]}">Torn de ${fr(J)[0]} <b>${fr(J)[1]}</b> <small>${J === 0 ? '◂ replà esquerre' : 'replà dret ▸'}</small></span>
+        ${[0, 1].map(i => `<span class="asc-punts ${i === J ? 'ara' : ''}">${fr(i)[0]} ${A.punts[i].ok}</span>`).join('')}
+        <span class="asc-n">Veí ${A.idx + 1} de ${A.veins.length}</span>${botoSoAsc()}<button class="boto-petit" id="asc-surt">Surt</button></div>
+      ${A.nivell >= 2 ? `<div class="asc-timer"><i id="asc-tbar"></i></div>` : ''}
+      <div class="asc-bocadill">${A.missatge}</div>
+      <div class="asc-conserge">${robot(54, A.instr.includes('asc-mal') ? 'pensa' : 'normal')}<div>${A.instr}</div></div>
+      <div class="asc-panell">
+        <div class="asc-mov" id="asc-mov"></div>
+        <div class="asc-dir"><button data-k="amunt"><b>+</b><small>▲ puja</small></button><button data-k="avall"><b>−</b><small>▼ baixa</small></button></div>
+        <div class="asc-tecles">${[1, 2, 3, 4, 5, 6, 7, 8, 9].map(n => `<button data-k="n${n}">${n}</button>`).join('')}<button data-k="esborra">⌫</button><button data-k="n0">0</button><button class="ok" id="asc-ok">Mou ▶</button></div>
+      </div></div></div>`;
+  $('#asc-surt').onclick = tancaAscensor;
+  $$('#asc [data-k]').forEach(b => b.onclick = () => premAsc(b.dataset.k));
+  $('#asc-ok').onclick = confirmaAsc;
+  enllacaSoAsc(); pintaPanellAsc();
 }
 /* ---------- Jocs encastats com a tallers ---------- */
 function fontJoc(tid) {
@@ -3306,7 +4692,12 @@ function generaRonda(o, nivell, evitar = []) {
       ex = c; if (!ev.has(c.sig)) break;
     }
     if (!ex) ex = tema.gen[tipus](nivell, opts || {});
-    usats.add(ex.sig); out.push(ex);
+    usats.add(ex.sig); ex.tipus = ex.tipus || tipus;
+    if (tema.signeEscrit) { // a partir de l'objectiu 5 el signe s'escriu, sense botons
+      if (ex.resposta?.mode === 'enter') ex.resposta.escrit = true;
+      if (ex.resposta?.mode === 'apartats') ex.resposta.items.forEach(it => { if (it.tipus === 'enter') it.escrit = true; });
+    }
+    out.push(ex);
   }
   return out;
 }
@@ -3329,8 +4720,15 @@ function pintaCapAlumne() {
   const b = $('#btn-sortir'); if (b) b.onclick = () => surtAlumne();
 }
 function mostra(v) { S.vista = v; render(); }
+function calcAmagada() {
+  const R = S.ronda; if (S.vista !== 'objectiu' || !R) return false;
+  if (R.prova) return UNITATS[R.unitat]?.obj.some(o => TEMES[o.id]?.senseCalc);
+  return !!TEMES[R.obj]?.senseCalc;
+}
 function render() {
   pintaCapAlumne();
+  const amaga = calcAmagada(); $('#e-calc').classList.toggle('ocult', amaga);
+  if (amaga) { $('#f-calc')?.classList.add('ocult'); $('#e-calc').classList.remove('activa'); }
   if (S.vista === 'portada') return pantallaPortada();
   if (S.vista === 'error') return pantallaError();
   if (S.vista === 'mapa') return pantallaMapa();
@@ -3383,7 +4781,7 @@ function mostraCredits() {
     <p style="font-size:1.1rem"><b>Ins Júlia Minguell</b> · Matemàtiques 4t ESO · Grup Flexible</p>
     <p style="margin-top:14px">Ideat per <b>J. Alcolea</b></p>
     <p style="color:var(--gris)">Desenvolupat amb Claude</p>
-    <p style="color:var(--gris);margin-top:10px">Versió 3.1</p>
+    <p style="color:var(--gris);margin-top:10px">Versió 3.3</p>
     <div class="accions"><button class="boto" data-tanca-modal>D'acord</button></div>`);
 }
 function entraAlumne(id) {
@@ -3435,7 +4833,7 @@ function pantallaMapa() {
   $$('.targeta[data-obj]').forEach(b => { if (!b.disabled) b.onclick = () => iniciaObjectiu(b.dataset.obj); });
   const tp = $('.targeta[data-prova]'); if (tp && !tp.disabled) tp.onclick = () => iniciaProva(u.id);
   const tc = $('.targeta[data-comp]'); if (tc && !tc.disabled) tc.onclick = () => { so('pas'); iniciaComp(); };
-  $$('.targeta[data-taller]').forEach(b => { if (!b.disabled) b.onclick = () => { so('pas'); TALLERS[b.dataset.taller]?.joc ? obreJoc(b.dataset.taller) : iniciaTaller(b.dataset.taller); }; });
+  $$('.targeta[data-taller]').forEach(b => { if (!b.disabled) b.onclick = () => { so('pas'); TALLERS[b.dataset.taller]?.joc ? obreJoc(b.dataset.taller) : TALLERS[b.dataset.taller]?.natiu ? obreAscensor() : iniciaTaller(b.dataset.taller); }; });
   $$('#m-unitats button').forEach(b => b.onclick = () => { so('pas'); S.unitat = b.dataset.u; try { localStorage.setItem('fr4c_unitat_' + S.alumne, S.unitat); } catch (e) { } render(); });
 }
 
@@ -3449,6 +4847,41 @@ function iniciaObjectiu(o, { directe = false } = {}) {
     fase: directe ? 'exercici' : (r.intents || r.anulats) ? 'exemple' : 'explicacio', pas: 0, exemple: TEMES[o].exemple(nivell), respost: false
   };
   mostra('objectiu');
+}
+/* ---------- MODE DE REVISIÓ DEL PROFESSOR: fa l'objectiu com un alumne, sense desar res ---------- */
+function previsualitza(o, nivell, { directe = false } = {}) {
+  if (!S.previsual) S.previsual = { alumne: S.alumne, vista: S.vista, ronda: S.ronda };
+  $('#panell').classList.add('ocult');
+  S.ronda = { obj: o, nivell, previ: true, exercicis: generaRonda(o, nivell), i: 0, respostes: [], errors: 0, punts: 0,
+    fase: directe ? 'exercici' : 'explicacio', pas: 0, exemple: TEMES[o].exemple(nivell), respost: false };
+  $('#banda-previ')?.remove();
+  document.body.insertAdjacentHTML('beforeend', `<div id="banda-previ">👁 <b>Mode revisió del professor</b> · Objectiu ${objPerId(o).num} · Nivell ${nivell} · no es desa res<button id="bp-surt">Torna al panell</button></div>`);
+  $('#bp-surt').onclick = surtPrevisual;
+  mostra('objectiu');
+}
+function surtPrevisual() {
+  const p = S.previsual; S.previsual = null; $('#banda-previ')?.remove(); tancaModal();
+  S.ronda = p?.ronda || null; S.vista = p?.vista && p.vista !== 'objectiu' ? p.vista : (p?.alumne ? 'mapa' : 'portada');
+  if (p?.ronda) S.vista = 'objectiu';
+  render(); obrePanell();
+}
+const previNavHtml = R => `<span class="previ-nav"><button class="boto-petit" id="pv-ant" ${R.i === 0 ? 'disabled' : ''}>◀</button><b>${R.i + 1}/${R.exercicis.length}</b><button class="boto-petit" id="pv-seg" ${R.i === R.exercicis.length - 1 ? 'disabled' : ''}>▶</button><button class="boto-petit" id="pv-resp">👁 Resposta</button></span>`;
+function saltaPrevi(R, k) {
+  k = Math.max(0, Math.min(R.exercicis.length - 1, k));
+  R.respostes = R.respostes.slice(0, k);
+  while (R.respostes.length < k) R.respostes.push({ e: '', r: '(saltat)', c: '', ok: true, salt: true });
+  R.errors = R.respostes.filter(x => !x.ok).length; R.punts = R.respostes.filter(x => x.ok && !x.salt).length;
+  R.i = k; R.respost = false; so('pas'); render();
+}
+function enllacaPreviNav(R, ex) {
+  $('#pv-ant').onclick = () => saltaPrevi(R, R.i - 1);
+  $('#pv-seg').onclick = () => saltaPrevi(R, R.i + 1);
+  $('#pv-resp').onclick = () => {
+    const rp = ex.resposta;
+    if (rp.mode === 'opcions') $$('.opcio').forEach(b => { if (b.dataset.val === rp.correcta) b.classList.add('correcta'); });
+    if (rp.mode === 'sino') $$('.opcio').forEach(b => { if (b.dataset.val === rp.correcta) b.classList.add('correcta'); });
+    $('#zona-retorn').innerHTML = `<div class="retorn previ"><div><h4>Resposta correcta</h4><p>${ex.correctaHtml}</p><ol class="previ-sol">${ex.solucio.map(t => `<li>${t}</li>`).join('')}</ol>${ex.dibuixSolucio ? `<div class="mini-sol">${ex.dibuixSolucio}</div>` : ''}<p class="petit" style="color:var(--gris)">Tipus: ${esc(ex.tipus || '')} · ${esc(ex.sig)}</p></div></div>`;
+  };
 }
 const rondaEnCurs = () => S.ronda && (S.ronda.fase === 'exercici') && S.ronda.respostes.length > 0;
 
@@ -3508,6 +4941,7 @@ function capObj(o, dreta = '') {
 }
 const textSortida = () => S.ronda?.prova ? `Si surts ara, la prova quedarà <b>entregada</b> amb les respostes que has fet. Vols sortir igualment?` : `Si surts ara, aquest intent comptarà com a <b>no superat</b>. Vols sortir igualment?`;
 async function tornaMapa() {
+  if (S.ronda?.previ) return surtPrevisual();
   if (rondaEnCurs()) {
     const ok = await confirma(textSortida(), 'Surt');
     if (!ok) return;
@@ -3553,7 +4987,7 @@ function faseExemple(R, o) {
   $('#seg').focus();
 }
 function puntsHtml(R) {
-  return `<div class="punts">${R.exercicis.map((_, i) => { const r = R.respostes[i]; return `<i class="${r ? (R.prova ? 'fet' : r.ok ? 'ok' : 'ko') : i === R.i ? 'ara' : ''}"></i>`; }).join('')}</div>`;
+  return `<div class="punts">${R.exercicis.map((_, i) => { const r = R.respostes[i]; return `<i class="${r ? (r.salt ? 'salt' : R.prova ? 'fet' : r.ok ? 'ok' : 'ko') : i === R.i ? 'ara' : ''}"></i>`; }).join('')}</div>`;
 }
 function respostaHtml(ex) { return (ex.resposta.taules ? taulesHtml(ex.resposta.taules) : '') + respostaHtmlBase(ex); }
 function taulesHtml(t) {
@@ -3565,7 +4999,7 @@ function respostaHtmlBase(ex) {
   if (rp.mode === 'opcions') return `<div class="opcions">${rp.opcions.map((op, k) => `<button class="opcio" data-val="${esc(op.val)}"><span class="lletra">${'ABCD'[k]}</span><span>${op.html}</span></button>`).join('')}</div>`;
   if (rp.mode === 'sino') return `<div class="opcions fila"><button class="opcio" data-val="si">Sí</button><button class="opcio" data-val="no">No</button></div>`;
   if (rp.mode === 'fraccio') return `<div class="entrada-frac"><input id="r-n" inputmode="numeric" maxlength="3" autocomplete="off" aria-label="Numerador"><div class="ratlla"></div><input id="r-d" inputmode="numeric" maxlength="3" autocomplete="off" aria-label="Denominador"></div>`;
-  if (rp.mode === 'pintar' || rp.mode === 'recta') return '';
+  if (rp.mode === 'pintar' || rp.mode === 'recta' || rp.mode === 'rectaZ' || rp.mode === 'apartats') return '';
   if (rp.mode === 'cadena') {
     const cin = (n, d) => `<span class="c-in"><input id="${n}" inputmode="numeric" maxlength="3" autocomplete="off"><i></i><input id="${d}" inputmode="numeric" maxlength="3" autocomplete="off"></span>`;
     return `<div class="cadena">
@@ -3574,14 +5008,15 @@ function respostaHtmlBase(ex) {
       <div class="c-fila ${rp.pasAPas ? 'ocult' : ''}" id="c-final"><span class="op">=</span>${cin('c-rn', 'c-rd')}<span class="c-etq">Resultat</span></div></div>`;
   }
   if (rp.mode === 'mixt') return `<div class="entrada-mixt"><input id="r-e" class="ent" inputmode="numeric" maxlength="2" autocomplete="off" aria-label="Part entera"><div class="entrada-frac"><input id="r-n" inputmode="numeric" maxlength="3" autocomplete="off" aria-label="Numerador"><div class="ratlla"></div><input id="r-d" inputmode="numeric" maxlength="3" autocomplete="off" aria-label="Denominador"></div></div>`;
+  if (rp.mode === 'enter' && rp.escrit) return `<div class="entrada-enter"><input id="r-z" class="escrit" inputmode="text" maxlength="6" autocomplete="off" spellcheck="false" placeholder="±" aria-label="Resultat amb el signe">${rp.unitat ? `<span>${rp.unitat}</span>` : ''}</div><p class="ajuda-enter">Escriu el resultat amb el signe: per exemple <b>−7</b> o <b>+4</b>. El 0 no porta signe.</p>`;
   if (rp.mode === 'enter') return `<div class="entrada-enter"><div class="signes"><button type="button" data-sg="1">+</button><button type="button" data-sg="-1">−</button></div><input id="r-z" inputmode="numeric" maxlength="5" autocomplete="off" aria-label="Número">${rp.unitat ? `<span>${rp.unitat}</span>` : ''}</div><p class="ajuda-enter">Tria el signe i escriu el número. El 0 no porta signe.</p>`;
   if (rp.mode === 'numero') return `<div class="entrada-num"><input id="r-x" inputmode="numeric" maxlength="5" autocomplete="off" aria-label="Resposta">${rp.unitat ? `<span>${rp.unitat}</span>` : ''}</div>`;
 }
 function faseExercici(R, o) {
   const ex = R.exercicis[R.i]; const tipusPista = R.prova ? null : quinaPista(R.nivell, R.i, ex);
   const pistaTxt = tipusPista ? (ex.pista?.[tipusPista] || ex.pista?.completa) : null;
-  const vis = ex.visual ? ex.visual(tipusPista === 'completa') : '';
-  vista.innerHTML = `<section class="pantalla">${capObj(o, avisForaHtml(R) + puntsHtml(R))}
+  const vis = ex.visual && !(R.prova && ex.fitxes) ? ex.visual(tipusPista === 'completa') : '';
+  vista.innerHTML = `<section class="pantalla">${capObj(o, avisForaHtml(R) + puntsHtml(R) + (R.previ ? previNavHtml(R) : ''))}
     <div class="joc">
       <div class="costat pregunta"><div class="etiqueta">Exercici ${R.i + 1} de ${R.exercicis.length}${R.prova ? ` · objectiu ${ex.objNum}` : ''}</div>
         <div class="enunciat">${ex.enunciat}</div>
@@ -3627,6 +5062,12 @@ function faseExercici(R, o) {
     });
     if (rp.pasAPas) btn.textContent = 'Comprova el pas intermig';
     ins1[0].focus();
+  } else if (rp.mode === 'enter' && rp.escrit) {
+    const inp = $('#r-z');
+    const upd = () => { btn.disabled = !llegeixEnter(inp.value); };
+    inp.oninput = () => { inp.value = netejaEnter(inp.value); upd(); };
+    inp.onkeydown = e => { if (e.key === 'Enter') { e.preventDefault(); if (!btn.disabled) btn.click(); } };
+    upd(); inp.focus();
   } else if (rp.mode === 'enter') {
     R.signe = null; const inp = $('#r-z');
     const upd = () => { const v = inp.value; btn.disabled = !v || (Number(v) !== 0 && !R.signe); };
@@ -3637,6 +5078,20 @@ function faseExercici(R, o) {
       if (e.key === 'Enter') { e.preventDefault(); if (!btn.disabled) btn.click(); }
     };
     inp.focus();
+  } else if (rp.mode === 'apartats') {
+    R.ap = rp.items.map(() => ({}));
+    $('#zona-resp').innerHTML = apartatsHtml(rp, R, true);
+    enllacaApartats(R, rp, btn);
+  } else if (rp.mode === 'rectaZ') {
+    R.rz = { sel: null }; const zona = $('#zona-resp');
+    const repinta = () => { zona.innerHTML = rectaZHtml(rp, R.rz, !R.respost); btn.disabled = R.rz.sel == null; };
+    zona.onclick = e => {
+      if (R.respost) return; const svg = e.target.closest('#rectaz-int'); if (!svg) return;
+      const r = svg.getBoundingClientRect(); const x = (e.clientX - r.left) * RZ.W / r.width;
+      const pas = (RZ.x1 - RZ.x0) / (rp.max - rp.min);
+      R.rz.sel = Math.max(rp.min, Math.min(rp.max, rp.min + Math.round((x - RZ.x0) / pas))); repinta();
+    };
+    repinta();
   } else if (rp.mode === 'recta') {
     R.recta = { M: rp.M, d: rp.triaD ? null : rp.d, k: null, triaD: !!rp.triaD };
     const zona = $('#zona-resp');
@@ -3670,6 +5125,7 @@ function faseExercici(R, o) {
     else { c.classList.remove('no'); void c.offsetWidth; c.classList.add('no'); }
   };
   btn.onclick = () => comprova(R, ex, !!pistaTxt);
+  if (R.previ) enllacaPreviNav(R, ex);
 }
 function avaluaPas1(rp, n1, m1, n2, m2) {
   const comu = m => m > 0 && m % rp.d1 === 0 && m % rp.d2 === 0;
@@ -3736,6 +5192,18 @@ function comprova(R, ex, ambPista) {
     if (!p1.ok) motiu = `El pas intermig té errors: ${p1.motiu}`;
     txt = `${n1}/${m1} ${rp.sg} ${n2}/${m2} = ${rn}/${rd}${R.cadIntents ? ` (pas intermig corregit ${R.cadIntents} ${R.cadIntents === 1 ? 'cop' : 'cops'})` : ''}`;
     $$('#zona-resp input').forEach(i => i.disabled = true);
+  } else if (rp.mode === 'apartats') {
+    if (!rp.items.every((it, k) => apFet(it, R.ap[k]))) return;
+    const est = rp.items.map((it, k) => apOk(it, R.ap[k]) ? 'ok' : 'ko'); ok = est.every(x => x === 'ok');
+    const nko = est.filter(x => x === 'ko').length;
+    if (!ok) motiu = `${nko === 1 ? 'Hi ha 1 apartat' : `Hi ha ${nko} apartats`} malament (en vermell). Per encertar l'exercici, tots han d'estar bé.`;
+    const nSig = rp.items.filter((it, k) => it.tipus === 'enter' && it.escrit && est[k] === 'ko' && Math.abs(llegeixEnter(R.ap[k].n)?.v ?? NaN) === Math.abs(it.valor)).length;
+    if (nSig) motiu += ` ${nSig === 1 ? 'En un apartat' : `En ${nSig} apartats`} el número és bo però el <b>signe</b> no: fixa't si el resultat és positiu o negatiu.`;
+    txt = rp.items.map((it, k) => `${LLETRES_AP[k]}) ${apTxt(it, R.ap[k])}${est[k] === 'ko' ? ' ✗' : ''}`).join(' · ');
+    $('#zona-resp').innerHTML = apartatsHtml(rp, R, false, est);
+  } else if (rp.mode === 'rectaZ') {
+    if (R.rz?.sel == null) return; ok = R.rz.sel === rp.valor; txt = `punt a ${fz(R.rz.sel)}`;
+    $('#zona-resp').innerHTML = rectaZHtml(rp, R.rz, false);
   } else if (rp.mode === 'recta') {
     const st = R.recta; if (!st.d || st.k == null) return;
     const [vn, vd] = rp.valor; ok = st.k * vd === vn * st.d; txt = `punt a ${ftxt(st.k, st.d)}`;
@@ -3744,6 +5212,11 @@ function comprova(R, ex, ambPista) {
     const st = R.pint; const cnt = st.pintades.size; if (!st.d || !cnt) return;
     const [vn, vd] = rp.valor; ok = cnt * vd === vn * st.d; txt = ftxt(cnt, st.d);
     $('#zona-resp').innerHTML = pintadorHtml(st, false);
+  } else if (rp.mode === 'enter' && rp.escrit) {
+    const l = llegeixEnter($('#r-z').value); if (!l) return;
+    ok = l.v === rp.valor; txt = fz(l.v) + (rp.unitat ? ' ' + rp.unitat : '');
+    if (!ok && Math.abs(l.v) === Math.abs(rp.valor)) motiu = 'El número és bo, però el <b>signe</b> no: fixa\'t si el resultat és positiu o negatiu.';
+    $('#r-z').disabled = true;
   } else if (rp.mode === 'enter') {
     const n = parseInt($('#r-z').value, 10); if (isNaN(n) || (n !== 0 && !R.signe)) return;
     const v = n === 0 ? 0 : R.signe * n; ok = v === rp.valor; txt = fz(v) + (rp.unitat ? ' ' + rp.unitat : '');
@@ -3764,12 +5237,12 @@ function comprova(R, ex, ambPista) {
   }
   const permesos = errorsPermesos(R.nivell);
   const ultim = R.i === TOTAL_EX - 1;
-  const perdut = R.errors > permesos;
+  const perdut = R.errors > permesos && !R.previ;
   const frasesOk = ['Correcte!', 'Molt bé!', 'Perfecte!', 'Així es fa!', 'Genial!'];
   so(ok ? 'ok' : 'ko');
   $('#zona-retorn').innerHTML = `<div class="retorn ${ok ? 'ok' : 'ko'}">${robot(52, ok ? 'content' : 'pensa')}<div>
     <h4>${ok ? tria(frasesOk) : 'No és correcte.'}</h4>
-    ${ok ? `<p>${ex.explicacio}</p>` : `${motiu ? `<p><b>${motiu}</b></p>` : ''}<p>${ex.resposta.mode === 'pintar' || ex.resposta.mode === 'recta' ? `Havies de representar ${ex.correctaHtml}.` : `La resposta correcta és ${ex.correctaHtml}.`}</p><p>${ex.explicacio}</p>${ex.dibuixSolucio ? `<div class="mini-sol">${ex.dibuixSolucio}</div>` : ''}`}</div></div>`;
+    ${ok ? `<p>${ex.explicacio}</p>` : `${motiu ? `<p><b>${motiu}</b></p>` : ''}<p>${ex.resposta.mode === 'apartats' ? 'Mira la correcció de cada apartat.' : ex.resposta.mode === 'pintar' || ex.resposta.mode === 'recta' || ex.resposta.mode === 'rectaZ' ? `Havies de representar ${ex.correctaHtml}.` : `La resposta correcta és ${ex.correctaHtml}.`}</p><p>${ex.explicacio}</p>${ex.dibuixSolucio && ex.resposta.mode !== 'rectaZ' ? `<div class="mini-sol">${ex.dibuixSolucio}</div>` : ''}`}</div></div>`;
   $$('.punts i')[R.i].className = ok ? 'ok' : 'ko';
   const btn = $('#btn-comprova');
   btn.textContent = perdut || ultim ? 'Veure el resultat →' : 'Següent →';
@@ -3777,11 +5250,12 @@ function comprova(R, ex, ambPista) {
 }
 async function seguent(R) {
   const permesos = errorsPermesos(R.nivell);
-  if (R.errors > permesos || R.i === TOTAL_EX - 1) return acabaRonda(R);
+  if ((R.errors > permesos && !R.previ) || R.i === TOTAL_EX - 1) return acabaRonda(R);
   so('pas'); R.i++; R.respost = false; render();
 }
 async function acabaRonda(R) {
   const superat = R.respostes.length === TOTAL_EX && R.errors <= errorsPermesos(R.nivell);
+  if (R.previ) { R.fase = 'resultat'; R.superat = superat; if (superat) so('assolit'); return render(); }
   R.fase = 'resultat'; R.superat = superat; R.desant = true; if (superat) so('assolit'); render();
   try { const r = await registraIntent(R, superat); R.baixat = r.baixat; R.errDesa = false; }
   catch (e) { console.error(e); R.errDesa = true; }
@@ -3859,9 +5333,9 @@ function faseResultat(R, o) {
     <h2>${titol}</h2>${cos}
     ${R.desant ? `<p style="color:var(--gris)">Desant…</p>` : R.errDesa ? `<p class="missatge-error">No s'ha pogut desar el resultat. Avisa el professor.</p>` : ''}
     <div class="accions">${R.superat ? `<button class="boto taronja" id="btn-m">Tornar al mapa →</button>` : `<button class="boto taronja" id="btn-r">Torna-hi</button><button class="boto sec" id="btn-m">Tornar al mapa</button>`}</div></div></div></section>`;
-  $('#btn-mapa').onclick = () => { S.ronda = null; mostra('mapa'); };
-  $('#btn-m').onclick = () => { S.ronda = null; mostra('mapa'); };
-  const br = $('#btn-r'); if (br) { br.disabled = !!R.desant; br.onclick = () => iniciaObjectiu(o.id); }
+  $('#btn-mapa').onclick = () => { if (R.previ) return surtPrevisual(); S.ronda = null; mostra('mapa'); };
+  $('#btn-m').onclick = () => { if (R.previ) return surtPrevisual(); S.ronda = null; mostra('mapa'); };
+  const br = $('#btn-r'); if (br) { br.disabled = !!R.desant; br.onclick = () => R.previ ? previsualitza(o.id, R.nivell, { directe: true }) : iniciaObjectiu(o.id); }
 }
 /* ---------- SORTIDES DE LA PESTANYA ---------- */
 const FORA = { t0: null, i: 0, R: null };
@@ -3924,7 +5398,7 @@ const durada = s => s < 60 ? `${s} s` : `${Math.floor(s / 60)} min${s % 60 ? ` $
 
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && !$('#modal-fons').classList.contains('ocult')) { tancaModal(); return; }
-  if (e.key !== 'Enter' || S.vista !== 'objectiu' || !S.ronda || S.profe) return;
+  if (e.key !== 'Enter' || S.vista !== 'objectiu' || !S.ronda || (S.profe && !S.ronda.previ)) return;
   if (!$('#modal-fons').classList.contains('ocult')) return;
   const R = S.ronda; const t = e.target;
   if (R.fase === 'exercici' && t.tagName !== 'INPUT' && t.tagName !== 'BUTTON') { const b = $('#btn-comprova'); if (b && !b.disabled) b.click(); }
@@ -4020,10 +5494,11 @@ function estatCasella(id, o) {
   return 'proces';
 }
 const tallersU = u => llistaTallers().filter(t => t.unitat === u.id);
+const tallersCol = u => tallersU(u).filter(t => !t.senseDades);
 function pitjorPas(e) { const l = Object.entries(e || {}).filter(([, v]) => v > 0).sort((a, b) => b[1] - a[1]); return l.length ? Number(l[0][0].slice(1)) : null; }
 function tallersPlegats() { try { const v = localStorage.getItem('fr4c_tallers_plegats'); if (v != null) return v === '1'; } catch (e) { } return !!S.tallersPlegats; }
 function celaTallers(id, u) {
-  const tl = tallersU(u); const res = S.resTots[id] || {};
+  const tl = tallersCol(u); const res = S.resTots[id] || {};
   const amb = tl.filter(t => res[t.id]);
   if (!amb.length) return `<td class="casella c-buit" data-a="${id}" data-o="tallers"><b>—</b></td>`;
   return `<td class="casella c-taller-p" data-a="${id}" data-o="tallers" style="line-height:1.5">${amb.map(t => { const rs = resumTaller(t, res[t.id]);
@@ -4045,7 +5520,7 @@ function seccioTaller(id, t) {
 function detallTallers(id) {
   const a = S.alumnes[id]; const u = UNITATS[S.unitatProfe] || UNITATS.f;
   const m = obreModal(`<h3>${esc(a?.nom)} · Tallers</h3>
-    ${tallersU(u).map(t => seccioTaller(id, t)).join('')}
+    ${tallersCol(u).map(t => seccioTaller(id, t)).join('')}
     <p class="ajuda" style="margin-top:10px">Els tallers no compten per a cap nota: serveixen per practicar i per veure on s'encalla cada alumne. El joc fa servir la ruta del seu nivell (N1 Base · N2 Mitjana · N3 Repte).</p>
     <div class="accions"><button class="boto" data-tanca-modal>Tanca</button></div>`, 'ample');
   $$('[data-reinicia]', m).forEach(b => b.onclick = async () => {
@@ -4057,7 +5532,17 @@ function detallTallers(id) {
 function teFora(r) { return Object.values(r?.historial || {}).some(h => h.foraN); }
 function teAnulat(r) { return Object.values(r?.historial || {}).some(h => h.anulat || h.entregaForcada); }
 function pintaLlibreta() {
+  // es conserva la posició de l'scroll (taula, panell i finestra) en tornar a dibuixar
   const c = $('#llib'); if (!c) return;
+  const clau = S.unitatProfe; const tc = $('.taula-caixa', c);
+  const pares = []; for (let n = c.parentElement; n; n = n.parentElement) if (n.scrollHeight > n.clientHeight || n.scrollWidth > n.clientWidth) pares.push([n, n.scrollTop, n.scrollLeft]);
+  const pos = tc && c.dataset.clau === clau ? [tc.scrollTop, tc.scrollLeft] : null; const wy = window.scrollY, wx = window.scrollX;
+  pintaLlibretaDins(c);
+  c.dataset.clau = clau;
+  const tc2 = $('.taula-caixa', c); if (pos && tc2) { tc2.scrollTop = pos[0]; tc2.scrollLeft = pos[1]; }
+  pares.forEach(([n, t, l]) => { n.scrollTop = t; n.scrollLeft = l; }); window.scrollTo(wx, wy);
+}
+function pintaLlibretaDins(c) {
   if (S.unitatProfe === 'seg') return pintaSeguiment(c);
   const u = UNITATS[S.unitatProfe] || UNITATS.f; const OBJS = u.obj;
   const llista = Object.entries(S.alumnes).sort(ordenaNoms);
@@ -4074,7 +5559,7 @@ function pintaLlibreta() {
       ${alertes ? `<span style="color:var(--ko);font-weight:800">⚠ ${alertes} ${alertes === 1 ? 'alumne necessita' : 'alumnes necessiten'} ajuda</span>` : ''}</div>
     <div class="taula-caixa"><table class="llibreta"><thead><tr><th class="nom">Alumne</th><th>Nivell</th>
       ${OBJS.map(o => `<th title="${esc(o.titol)}">${o.num}<br><small style="font-weight:500;opacity:.75">${esc(o.curt)}</small></th>`).join('')}
-      ${tallersU(u).length ? (tallersPlegats() ? `<th class="th-taller plegat"><button class="plega" id="l-plega" title="Mostra la columna de tallers">✦<br>▸</button></th>` : `<th class="th-taller">✦ Tallers <button class="plega" id="l-plega" title="Amaga la columna de tallers">◂</button><br><small style="font-weight:500;opacity:.85">no compten</small></th>`) : ''}<th>Assolits</th><th>Qualif.</th>${u.id === PC.unitat ? `<th class="th-comp">Competències<br><button class="cb-i" id="cb-i-cap" title="Com funciona">ⓘ</button></th>` : ''}${unitatCompleta(u) ? '<th>Prova<br><small style="font-weight:500;opacity:.75">final</small></th>' : ''}</tr></thead><tbody>
+      ${tallersCol(u).length ? (tallersPlegats() ? `<th class="th-taller plegat"><button class="plega" id="l-plega" title="Mostra la columna de tallers">✦<br>▸</button></th>` : `<th class="th-taller">✦ Tallers <button class="plega" id="l-plega" title="Amaga la columna de tallers">◂</button><br><small style="font-weight:500;opacity:.85">no compten</small></th>`) : ''}<th>Assolits</th><th>Qualif.</th>${u.id === PC.unitat ? `<th class="th-comp">Competències<br><button class="cb-i" id="cb-i-cap" title="Com funciona">ⓘ</button></th>` : ''}${unitatCompleta(u) ? '<th>Prova<br><small style="font-weight:500;opacity:.75">final</small></th>' : ''}</tr></thead><tbody>
       ${llista.map(([id, a]) => {
         const assolits = OBJS.filter(o => estatCasella(id, o.id) === 'ok').length;
         const pr = S.resTots[id]?.[u.prova];
@@ -4091,7 +5576,7 @@ function pintaLlibreta() {
             if (r.anulats) html += `<small class="anul-txt">⊘ ${r.anulats} anul·lat${r.anulats === 1 ? '' : 's'}</small>`;
             return `<td class="casella c-${e} ${teAnulat(r) ? 'anul' : teFora(r) ? 'fora' : ''}" data-a="${id}" data-o="${o.id}">${html}</td>`;
           }).join('')}
-          ${tallersU(u).length ? (tallersPlegats() ? '<td class="c-plegat"></td>' : celaTallers(id, u)) : ''}<td><b>${assolits}/${OBJS.length}</b></td><td><span class="nota-as ${assolits >= minimAS ? 'si' : 'no'}">${assolits >= minimAS ? 'AS' : 'NA'}</span></td>${u.id === PC.unitat ? celaComp(id) : ''}
+          ${tallersCol(u).length ? (tallersPlegats() ? '<td class="c-plegat"></td>' : celaTallers(id, u)) : ''}<td><b>${assolits}/${OBJS.length}</b></td><td><span class="nota-as ${assolits >= minimAS ? 'si' : 'no'}">${assolits >= minimAS ? 'AS' : 'NA'}</span></td>${u.id === PC.unitat ? celaComp(id) : ''}
           ${unitatCompleta(u) ? `<td class="casella ${pr?.fetes ? 'c-prova' : 'c-buit'} ${teAnulat(pr) ? 'anul' : teFora(pr) ? 'fora' : ''}" data-a="${id}" data-o="${u.prova}">${pr?.fetes ? `<b>${pr.darrera?.punts ?? 0}/${OBJS.length}</b><small>${pr.fetes} ${pr.fetes === 1 ? 'intent' : 'intents'}${(pr.permesos || 1) > pr.fetes ? ' · reoberta' : ''}</small>${teAnulat(pr) ? '<small class="anul-txt">⊘ entrega forçada</small>' : ''}` : `<b>—</b>`}</td>` : ''}</tr>`;
       }).join('')}</tbody></table></div>`;
   enllacaBarra(c, u);
@@ -4333,7 +5818,7 @@ function dadesExport() {
   const fulls = [];
   const estatTxt = (id, o) => { const r = S.resTots[id]?.[o] || {}; if (r.estat === 'assolit') return `Assolit N${r.nivellAssolit}`; if (r.alerta) return 'Alerta'; if (r.intents || r.anulats) return 'En procés'; return ''; };
   for (const k of LLISTA_UNITATS) {
-    const u = UNITATS[k]; const OBJS = u.obj.filter(o => TEMES[o.id]); const tl = tallersU(u);
+    const u = UNITATS[k]; const OBJS = u.obj.filter(o => TEMES[o.id]); const tl = tallersCol(u);
     const cap = ['Alumne', 'Codi', 'Nivell', ...OBJS.map(o => `Obj. ${o.num} · ${o.curt}`), ...tl.map(t => `Taller ${t.curt}`), 'Assolits', 'Qualificació', ...(unitatCompleta(u) ? ['Prova final'] : [])];
     const files = llista.map(([id, a]) => {
       const as = u.obj.filter(o => estatCasella(id, o.id) === 'ok').length; const pr = S.resTots[id]?.[u.prova];
@@ -4409,28 +5894,46 @@ async function exportaExcel(msg) {
     msg.textContent = 'No s\'ha pogut crear l\'Excel; s\'ha descarregat un CSV que l\'Excel també obre.';
   }
 }
+function respDemoHtml(ex, resolt) {
+  const rp = ex.resposta;
+  if (rp.mode === 'opcions') return `<div class="opcions">${rp.opcions.map((op, k) => `<div class="opcio ${resolt && op.val === rp.correcta ? 'correcta' : ''}"><span class="lletra">${'ABCD'[k]}</span><span>${op.html}</span></div>`).join('')}</div>`;
+  if (rp.mode === 'apartats') return demoApartatsHtml(rp, resolt);
+  if (rp.mode === 'pintar' || rp.mode === 'recta' || rp.mode === 'rectaZ') return resolt && ex.dibuixSolucio ? `<div class="visual">${ex.dibuixSolucio}</div>` : '';
+  if (rp.mode === 'sino') return `<div class="opcions fila"><div class="opcio ${resolt && rp.correcta === 'si' ? 'correcta' : ''}">Sí</div><div class="opcio ${resolt && rp.correcta === 'no' ? 'correcta' : ''}">No</div></div>`;
+  return '';
+}
 function pintaDemo() {
   const c = $('#panell-cos');
-  const st = S.demo || (S.demo = { o: 'o1', nivell: 2, ex: null, pas: 0 });
+  const st = S.demo || (S.demo = { o: 'o1', nivell: 2, ex: null, pas: 0, mode: 'un', ronda: null });
   const grups = LLISTA_UNITATS.map(k => [UNITATS[k], UNITATS[k].obj.filter(o => TEMES[o.id])]).filter(([, l]) => l.length);
-  if (!st.ex) { st.ex = generaRonda(st.o, st.nivell)[rnd(0, TOTAL_EX - 1)]; st.pas = 0; }
-  const ex = st.ex;
-  const rp = ex.resposta;
-  const respHtml = rp.mode === 'opcions' ? `<div class="opcions">${rp.opcions.map((op, k) => `<div class="opcio ${st.pas >= ex.solucio.length && op.val === rp.correcta ? 'correcta' : ''}"><span class="lletra">${'ABCD'[k]}</span><span>${op.html}</span></div>`).join('')}</div>`
-    : (rp.mode === 'pintar' || rp.mode === 'recta') ? (st.pas >= ex.solucio.length ? `<div class="visual">${ex.dibuixSolucio}</div>` : '')
-    : rp.mode === 'sino' ? `<div class="opcions fila"><div class="opcio ${st.pas >= ex.solucio.length && rp.correcta === 'si' ? 'correcta' : ''}">Sí</div><div class="opcio ${st.pas >= ex.solucio.length && rp.correcta === 'no' ? 'correcta' : ''}">No</div></div>` : '';
-  const visDemo = ex.visual ? ex.visual(st.pas > 0) : '';
-  c.innerHTML = `<div class="fila-form"><b>Objectiu</b> <select class="camp" id="d-o">${grups.map(([u, l]) => `<optgroup label="${u.nom}">${l.map(o => `<option value="${o.id}" ${o.id === st.o ? 'selected' : ''}>${o.num} · ${o.titol}</option>`).join('')}</optgroup>`).join('')}</select>
+  const barra = `<div class="fila-form"><b>Objectiu</b> <select class="camp" id="d-o">${grups.map(([u, l]) => `<optgroup label="${u.nom}">${l.map(o => `<option value="${o.id}" ${o.id === st.o ? 'selected' : ''}>${o.num} · ${o.titol}</option>`).join('')}</optgroup>`).join('')}</select>
       <b style="margin-left:12px">Nivell</b> <span class="segment" id="d-n">${[1, 2, 3].map(n => `<button data-n="${n}" class="${n === st.nivell ? 'activa' : ''}">${n}</button>`).join('')}</span>
-      <button class="boto-petit" id="d-nou" style="margin-left:auto">🎲 Un altre exercici</button></div>
-    <div class="demo">
-      <div class="costat pregunta"><div class="enunciat">${ex.enunciat}</div>${visDemo ? `<div class="visual">${visDemo}</div>` : ''}${respHtml}</div>
+      <span class="segment" id="d-m" style="margin-left:12px"><button data-m="un" class="${st.mode === 'un' ? 'activa' : ''}">Un exercici</button><button data-m="ronda" class="${st.mode === 'ronda' ? 'activa' : ''}">Ronda sencera</button></span>
+      <span style="margin-left:auto;display:flex;gap:8px"><button class="boto-petit" id="d-nou">🎲 ${st.mode === 'ronda' ? 'Una altra ronda' : 'Un altre exercici'}</button><button class="boto taronja" id="d-previ" title="Fes l'objectiu com un alumne, sense desar res">👁 Prova-ho com a alumne</button></span></div>`;
+  let cos;
+  if (st.mode === 'ronda') {
+    if (!st.ronda) st.ronda = generaRonda(st.o, st.nivell);
+    cos = `<p class="ajuda" style="margin:4px 0 10px">Els 8 exercicis d'una ronda de l'objectiu al nivell ${st.nivell}, en l'ordre en què els veurà l'alumne, amb la resposta i la solució.${quinaPista(st.nivell, 0, {}) ? ` Pistes al nivell ${st.nivell}: ${st.nivell === 1 ? 'completa al 1r exercici i curta al 2n' : 'completa al 1r exercici'}.` : ' Al nivell 3 no hi ha pistes.'} Errors permesos: ${errorsPermesos(st.nivell)}.</p>
+      <div class="ronda-demo">${st.ronda.map((ex, i) => { const tp = quinaPista(st.nivell, i, ex); const vis = ex.visual ? ex.visual(tp === 'completa') : '';
+        return `<div class="rd-ex"><div class="rd-cap"><b>${i + 1}</b><span>${esc(ex.tipus || '')}</span>${tp ? `<span class="rd-pista">💡 pista ${tp === 'completa' ? 'completa' : 'curta'}</span>` : ''}</div>
+          <div class="rd-cos"><div class="rd-preg"><div class="enunciat">${ex.enunciat}</div>${vis ? `<div class="visual">${vis}</div>` : ''}${tp ? `<div class="pista"><span class="ico">💡</span><div>${ex.pista?.[tp] || ex.pista?.completa || ''}</div></div>` : ''}${respDemoHtml(ex, true)}</div>
+          <div class="rd-sol"><div class="etiqueta">Resposta</div><div>${ex.correctaHtml}</div><div class="etiqueta" style="margin-top:8px">Solució</div><ol>${ex.solucio.map(t => `<li>${t}</li>`).join('')}</ol></div></div></div>`; }).join('')}</div>`;
+  } else {
+    if (!st.ex) { st.ex = generaRonda(st.o, st.nivell)[rnd(0, TOTAL_EX - 1)]; st.pas = 0; }
+    const ex = st.ex; const visDemo = ex.visual ? ex.visual(st.pas > 0) : '';
+    cos = `<div class="demo">
+      <div class="costat pregunta"><div class="enunciat">${ex.enunciat}</div>${visDemo ? `<div class="visual">${visDemo}</div>` : ''}${respDemoHtml(ex, st.pas >= ex.solucio.length)}</div>
       <div class="costat respostes"><div class="etiqueta">Solució pas a pas</div>
-        ${ex.solucio.slice(0, st.pas).map((s, i) => `<div class="sol-pas apareix">${i + 1}. ${s}</div>`).join('')}
+        ${ex.solucio.slice(0, st.pas).map((t, i) => `<div class="sol-pas apareix">${i + 1}. ${t}</div>`).join('')}
         <div class="accions">${st.pas < ex.solucio.length ? `<button class="boto taronja" id="d-pas">${st.pas === 0 ? 'Mostra la solució' : 'Següent pas →'}</button>` : `<span class="marca-ok" style="font-size:1.2rem">Resposta: ${ex.correctaHtml}</span>`}</div></div></div>`;
-  $('#d-o').onchange = e => { st.o = e.target.value; st.ex = null; pintaDemo(); };
-  $$('#d-n button').forEach(b => b.onclick = () => { st.nivell = Number(b.dataset.n); st.ex = null; pintaDemo(); });
-  $('#d-nou').onclick = () => { st.ex = null; pintaDemo(); };
+  }
+  c.innerHTML = barra + cos;
+  const nou = () => { st.ex = null; st.ronda = null; };
+  $('#d-o').onchange = e => { st.o = e.target.value; nou(); pintaDemo(); };
+  $$('#d-n button').forEach(b => b.onclick = () => { st.nivell = Number(b.dataset.n); nou(); pintaDemo(); });
+  $$('#d-m button').forEach(b => b.onclick = () => { st.mode = b.dataset.m; pintaDemo(); });
+  $('#d-nou').onclick = () => { nou(); pintaDemo(); };
+  $('#d-previ').onclick = () => previsualitza(st.o, st.nivell);
   const dp = $('#d-pas'); if (dp) dp.onclick = () => { st.pas++; pintaDemo(); };
   c.insertAdjacentHTML('beforeend', `<div class="apps-extra"><span class="ae-ic">🎮</span><div><b>App extra · Fraccions impròpies</b><br><small>Joc per a tota la classe, per equips de fruites: llegir, pintar i posar a la recta fraccions més grans que 1. Per quan la cosa es posi avorrida. No desa res dels alumnes.</small></div><button class="boto taronja" id="d-impropies">Obre-la a pantalla completa</button></div>`);
   $('#d-impropies').onclick = () => obreAppDemo('dimp');
@@ -4643,7 +6146,7 @@ function arrenca() {
 (async function inicia() {
   vista.innerHTML = `<section class="pantalla centrat">${robot(120)}<p style="margin-top:12px;color:var(--gris)">Connectant…</p></section>`;
   const local = new URLSearchParams(location.search).has('local');
-  if (local) { DB = connectaLocal(); window.__fr4c = { S, generaRonda, TEMES, DB, CB_ITEMS, vigila }; return arrenca(); }
+  if (local) { DB = connectaLocal(); window.__fr4c = { S, generaRonda, TEMES, DB, CB_ITEMS, vigila }; window.__A = () => A; return arrenca(); }
   try {
     DB = await Promise.race([connectaFirebase(), new Promise((_, rej) => setTimeout(() => rej(new Error('temps')), 12000))]);
     arrenca();
