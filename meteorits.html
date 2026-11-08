@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Defensa la base de Mart · FR-4C</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,800&display=swap" rel="stylesheet">
+<style>
+/* Taller de l'app FR-4C · Enters. Es pot obrir sol o dins de l'app (l'app li passa l'alumne i el nivell per postMessage). */
+:root{--taronja:#f26b1d;--blau:#2a6fd6;--tinta:#1b1b1b;--ok:#2c9a58;--ko:#d64242;--cel1:#0b1026;--cel2:#1d1340}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;font-family:"Atkinson Hyperlegible",system-ui,sans-serif;background:var(--cel1);color:#fff;overflow:hidden;user-select:none}
+#joc{position:relative;width:100%;height:100%;background:radial-gradient(ellipse at 50% 120%,#5a1d0c 0%,var(--cel2) 35%,var(--cel1) 75%)}
+.estels{position:absolute;inset:0;background-image:radial-gradient(1.5px 1.5px at 20% 30%,#fff9 50%,transparent 51%),radial-gradient(1px 1px at 70% 20%,#fff8 50%,transparent 51%),radial-gradient(1.5px 1.5px at 40% 70%,#fff6 50%,transparent 51%),radial-gradient(1px 1px at 85% 55%,#fff9 50%,transparent 51%),radial-gradient(1px 1px at 10% 80%,#fff7 50%,transparent 51%),radial-gradient(1.5px 1.5px at 60% 45%,#fff8 50%,transparent 51%);background-size:300px 220px;animation:estels 60s linear infinite;opacity:.9}
+@keyframes estels{from{background-position:0 0}to{background-position:0 660px}}
+.terra{position:absolute;left:0;right:0;bottom:0;height:22%;background:linear-gradient(#c4502a,#8e3416);border-top:4px solid #e0703f}
+.terra::before{content:'';position:absolute;left:8%;top:22%;width:60px;height:14px;border-radius:50%;background:#7a2b12;box-shadow:340px 20px 0 -2px #7a2b12,620px 6px 0 4px #7a2b12,900px 24px 0 -3px #7a2b12}
+#base{position:absolute;left:50%;bottom:16%;transform:translateX(-50%);width:170px;height:110px}
+.cap{position:absolute;top:10px;left:16px;right:16px;display:flex;align-items:center;gap:14px;z-index:5;font-weight:700}
+.cap .tit{font-family:"Bricolage Grotesque",sans-serif;font-size:1.25rem}
+.cap .punts{margin-left:auto;font-size:1.6rem;font-family:"Bricolage Grotesque",sans-serif}
+.escuts{font-size:1.5rem;letter-spacing:4px}.escuts .perdut{opacity:.2;filter:grayscale(1)}
+.combo{color:var(--taronja);font-size:1.2rem;min-width:60px}
+.temps{position:absolute;top:52px;left:16px;right:16px;height:6px;border-radius:3px;background:#ffffff22;z-index:5}.temps i{display:block;height:100%;border-radius:3px;background:var(--taronja);transform-origin:left;transition:transform .25s linear}
+.btn{border:3px solid #fff;background:#ffffff14;color:#fff;border-radius:12px;padding:6px 12px;font:inherit;font-weight:700;cursor:pointer}
+.btn:hover{background:#ffffff2b}
+.meteor{position:absolute;left:0;top:0;width:150px;margin-left:-75px;display:flex;flex-direction:column;align-items:center;z-index:3;will-change:transform}
+.meteor .roca{width:64px;height:64px;border-radius:50% 46% 52% 44%;background:radial-gradient(circle at 35% 30%,#a58a7a,#5e4636 70%);border:3px solid #2b1d14;box-shadow:0 -18px 28px -6px #ff8a3d,0 -34px 40px -12px #ffcf6b88}
+.meteor .op{margin-top:8px;background:#fff;color:var(--tinta);border-radius:14px;padding:6px 12px;font-family:"Bricolage Grotesque",sans-serif;font-size:1.65rem;white-space:nowrap;border:3px solid var(--taronja);box-shadow:0 4px 0 #0005}
+.respostes{position:absolute;left:50%;bottom:3%;transform:translateX(-50%);display:flex;gap:18px;z-index:6}
+.resp{min-width:150px;font-family:"Bricolage Grotesque",sans-serif;font-size:2rem;padding:10px 18px;border-radius:18px;border:4px solid var(--tinta);background:#fff;color:var(--tinta);cursor:pointer;box-shadow:0 6px 0 #0007;position:relative}
+.resp small{position:absolute;top:4px;left:8px;font-size:.8rem;color:#999;font-family:"Atkinson Hyperlegible",sans-serif}
+.resp:hover{transform:translateY(-2px)}.resp:active{transform:translateY(3px);box-shadow:0 2px 0 #0007}
+.resp.be{background:var(--ok);color:#fff}.resp.mal{background:var(--ko);color:#fff}
+.resp:disabled{cursor:default}
+svg.fx{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:4}
+.boom{position:absolute;width:10px;height:10px;margin:-5px;border-radius:50%;background:#ffcf6b;z-index:4;animation:boom .55s ease-out forwards}
+@keyframes boom{to{transform:translate(var(--dx),var(--dy)) scale(.2);opacity:0}}
+.avis{position:absolute;left:50%;top:38%;transform:translate(-50%,-50%);z-index:7;background:#fff;color:var(--tinta);border-radius:18px;padding:12px 22px;font-size:1.5rem;font-weight:700;border:4px solid var(--ko);box-shadow:0 8px 0 #0006;text-align:center;animation:apareix .25s}
+.avis b{font-family:"Bricolage Grotesque",sans-serif;font-size:2rem}
+.avis.ok{border-color:var(--ok)}
+@keyframes apareix{from{transform:translate(-50%,-50%) scale(.6);opacity:0}}
+.sacseja{animation:sacseja .35s}@keyframes sacseja{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+.pantalla{position:absolute;inset:0;z-index:10;display:flex;align-items:center;justify-content:center;background:#0b1026cc}
+.panell{background:#fff;color:var(--tinta);border-radius:24px;border:4px solid var(--tinta);padding:24px 30px;max-width:780px;width:92%;box-shadow:0 10px 0 #0008;max-height:92vh;overflow:auto}
+.panell h1{font-family:"Bricolage Grotesque",sans-serif;margin:0 0 6px;font-size:2rem}
+.panell p{font-size:1.15rem;line-height:1.45;margin:8px 0}
+.panell .fila{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:14px}
+.big{font-family:"Bricolage Grotesque",sans-serif;font-size:1.3rem;border-radius:14px;padding:12px 26px;border:4px solid var(--tinta);cursor:pointer;background:var(--taronja);color:#fff;box-shadow:0 5px 0 #0006}
+.big.sec{background:#fff;color:var(--tinta)}
+.seg{display:inline-flex;border:3px solid var(--tinta);border-radius:12px;overflow:hidden}.seg button{border:0;background:#fff;padding:8px 14px;font:inherit;font-weight:700;cursor:pointer}.seg button.on{background:var(--tinta);color:#fff}
+.resum{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:12px 0}.resum div{background:#f5f3ef;border-radius:14px;padding:10px;text-align:center}.resum b{display:block;font-family:"Bricolage Grotesque",sans-serif;font-size:2rem}
+.fallades{columns:2;font-size:1.1rem;margin:6px 0 0;padding-left:20px}.fallades li{margin:2px 0}
+.rec{color:var(--taronja);font-weight:800}
+.mini{font-size:.95rem;color:#666}
+</style>
+</head>
+<body>
+<div id="joc">
+  <div class="estels"></div>
+  <div class="terra"></div>
+  <svg id="base" viewBox="0 0 170 110" aria-hidden="true">
+    <path d="M10 108 Q10 50 85 46 Q160 50 160 108 Z" fill="#dfe9f5" stroke="#1b1b1b" stroke-width="4" opacity=".95"/>
+    <path d="M28 108 Q30 66 85 62 Q140 66 142 108" fill="none" stroke="#9db6d3" stroke-width="3"/>
+    <g id="robot" transform="translate(85 46)">
+      <rect x="-9" y="-46" width="18" height="34" rx="5" fill="#1b1b1b"/><rect x="-6" y="-60" width="12" height="18" rx="3" fill="#f26b1d" stroke="#1b1b1b" stroke-width="3"/>
+      <rect x="-28" y="-26" width="56" height="34" rx="10" fill="#fff" stroke="#1b1b1b" stroke-width="4"/>
+      <rect x="-21" y="-19" width="42" height="20" rx="6" fill="#1b1b1b"/>
+      <circle cx="-9" cy="-9" r="4" fill="#f26b1d"/><circle cx="9" cy="-9" r="4" fill="#f26b1d"/>
+    </g>
+  </svg>
+  <svg class="fx" id="fx"></svg>
+  <div class="cap">
+    <span class="tit">☄️ Defensa la base de Mart</span>
+    <span class="escuts" id="escuts"></span>
+    <span class="combo" id="combo"></span>
+    <span class="punts" id="punts">0</span>
+    <button class="btn" id="so" title="So">🔊</button>
+    <button class="btn" id="surt" title="Surt">✕</button>
+  </div>
+  <div class="temps"><i id="tbar"></i></div>
+  <div id="cel"></div>
+  <div class="respostes" id="resp"></div>
+  <div class="pantalla" id="pant"></div>
+</div>
+<script>
+'use strict';
+/* ---------- utilitats ---------- */
+const $ = s => document.querySelector(s);
+const rnd = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+const tria = a => a[Math.floor(Math.random() * a.length)];
+const barreja = a => { a = [...a]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const sg = () => Math.random() < .5 ? -1 : 1;
+const fz = v => v > 0 ? `+${v}` : v < 0 ? `−${-v}` : '0';
+const nz = v => v < 0 ? `−${-v}` : String(v);
+const pz = v => `(${fz(v)})`;
+const exprT = ts => ts.map((t, i) => i === 0 ? nz(t) : t < 0 ? ` − ${-t}` : ` + ${t}`).join('');
+const DURADA = 120; // segons màxims de partida
+const ESCUTS = 3;
+
+/* ---------- estat ---------- */
+const M = { nivell: 1, nom: '', record: 0, dinsApp: false, so: true, pantalla: 'inici' };
+window.__M = M; // per a les proves automàtiques
+try { M.so = localStorage.getItem('fr4c_met_so') !== '0'; } catch (e) {}
+const qs = new URLSearchParams(location.search); if (qs.get('nivell')) M.nivell = Math.max(1, Math.min(3, +qs.get('nivell')));
+try { M.record = +(localStorage.getItem('fr4c_met_rec_' + M.nivell) || 0); } catch (e) {}
+
+/* ---------- operacions per nivell, amb distractors que són errors típics ---------- */
+function opSuma(L) {
+  let a, b; do { a = sg() * rnd(1, L); b = sg() * rnd(1, L); } while (Math.abs(a) === Math.abs(b));
+  const r = a + b; const par = L > 10 && Math.random() < .4;
+  const html = par ? (Math.random() < .5 ? `${pz(a)} − ${pz(-b)}` : `${pz(a)} + ${pz(b)}`) : exprT([a, b]);
+  const mals = [-r, Math.sign(a) * (Math.abs(a) + Math.abs(b)), a - b, Math.sign(r || 1) * (Math.abs(a) + Math.abs(b)), -(Math.abs(a) + Math.abs(b))];
+  return { html, r, mals };
+}
+function opProd(L) {
+  const div = Math.random() < .4; const x = rnd(2, L), y = rnd(2, L), s1 = sg(), s2 = sg();
+  const a = div ? s1 * x * y : s1 * x, b = s2 * y; const r = div ? a / b : a * b;
+  const mals = [-r, div ? -(Math.abs(r) + 1) * Math.sign(r) : a + b, Math.abs(r) === 1 ? 2 : Math.sign(r) * (Math.abs(r) + (div ? 1 : Math.abs(b))), Math.abs(r)];
+  return { html: `${pz(a)} ${div ? ':' : '·'} ${pz(b)}`, r, mals };
+}
+function opComb() {
+  const t = rnd(0, 3);
+  if (t === 0) { const a = sg() * rnd(2, 12), b = rnd(2, 5), c = sg() * rnd(2, 5); const res = Math.random() < .5; const r = res ? a - b * c : a + b * c;
+    return { html: `${nz(a)} ${res ? '−' : '+'} ${b} · ${pz(c)}`, r, mals: [res ? (a - b) * c : (a + b) * c, res ? a + b * c : a - b * c, -r] }; }
+  if (t === 1) { const a = rnd(2, 9), b = sg() * rnd(2, 9); const r = -(a + b);
+    return { html: `−(${exprT([a, b])})`, r, mals: [-a + b, a + b, -r] }; }
+  if (t === 2) { let ts; do { ts = [sg() * rnd(1, 9), sg() * rnd(1, 9), sg() * rnd(1, 9)]; } while (ts.every(x => x > 0) || ts.every(x => x < 0));
+    const r = ts[0] + ts[1] + ts[2]; return { html: exprT(ts), r, mals: [-r, r + 2, r - 2, ts[0] - ts[1] + ts[2]] }; }
+  const d = rnd(2, 5), q = sg() * rnd(2, 6), c = sg() * rnd(2, 9); const r = q + c;
+  return { html: `${pz(q * d)} : ${pz(d)} ${c < 0 ? '−' : '+'} ${Math.abs(c)}`, r, mals: [-q + c, q - c, -r] };
+}
+function novaOp() {
+  let o;
+  if (M.nivell === 1) o = opSuma(10);
+  else if (M.nivell === 2) o = Math.random() < .5 ? opSuma(15) : opProd(10);
+  else o = Math.random() < .55 ? opComb() : Math.random() < .5 ? opProd(12) : opSuma(20);
+  // 3 opcions diferents: la bona i dos errors típics (si no n'hi ha prou, números propers)
+  const set = new Set([o.r]); const ops = [o.r];
+  for (const m of barreja(o.mals)) if (!set.has(m) && ops.length < 3) { set.add(m); ops.push(m); }
+  let g = 0; while (ops.length < 3 && g++ < 50) { const m = o.r + tria([-3, -2, -1, 1, 2, 3]); if (!set.has(m)) { set.add(m); ops.push(m); } }
+  o.opcions = barreja(ops); return o;
+}
+
+/* ---------- so ---------- */
+let AC = null;
+function to(f, d, tipus = 'square', v = .05, f2 = null, t0 = 0) {
+  if (!M.so) return; try {
+    AC = AC || new (window.AudioContext || window.webkitAudioContext)(); if (AC.state === 'suspended') AC.resume();
+    const t = AC.currentTime + t0, o = AC.createOscillator(), g = AC.createGain(); o.type = tipus; o.frequency.setValueAtTime(f, t); if (f2) o.frequency.exponentialRampToValueAtTime(f2, t + d);
+    g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(v, t + .01); g.gain.exponentialRampToValueAtTime(.0001, t + d); o.connect(g); g.connect(AC.destination); o.start(t); o.stop(t + d + .05);
+  } catch (e) {}
+}
+const SO = {
+  laser: () => to(1600, .18, 'sawtooth', .04, 300),
+  boom: () => { to(180, .35, 'sawtooth', .06, 40); to(90, .4, 'square', .03, 30, .02); },
+  mal: () => { to(300, .45, 'sawtooth', .06, 80); },
+  impacte: () => { to(120, .6, 'sawtooth', .08, 30); to(60, .7, 'square', .05, 25, .05); },
+  combo: () => [0, 4, 7].forEach((s, i) => to(660 * Math.pow(2, s / 12), .09, 'square', .035, null, i * .06)),
+  fi: () => [0, 4, 7, 12].forEach((s, i) => to(523 * Math.pow(2, s / 12), .2, 'square', .05, null, i * .12))
+};
+
+/* ---------- partida ---------- */
+const P = {}; window.__P = P;
+function comenca() {
+  Object.assign(P, { punts: 0, escuts: ESCUTS, combo: 0, maxCombo: 0, encerts: 0, errors: 0, t0: performance.now(), fallades: [], vel: M.nivell === 1 ? 11 : M.nivell === 2 ? 12 : 13, bloc: false, met: null, acabada: false });
+  M.pantalla = 'joc'; $('#pant').style.display = 'none'; pintaCap(); llança(); requestAnimationFrame(bucle);
+}
+function llança() {
+  const o = novaOp(); const W = $('#joc').clientWidth;
+  const el = document.createElement('div'); el.className = 'meteor'; el.innerHTML = `<div class="roca"></div><div class="op">${o.html}</div>`;
+  $('#cel').appendChild(el);
+  const x = rnd(Math.round(W * .2), Math.round(W * .8));
+  P.met = { o, el, x, y: -110, t: performance.now(), dur: P.vel };
+  P.bloc = false; pintaRespostes();
+}
+function pintaRespostes() {
+  const o = P.met.o;
+  $('#resp').innerHTML = o.opcions.map((v, i) => `<button class="resp" data-i="${i}"><small>${i + 1}</small>${fz(v)}</button>`).join('');
+  document.querySelectorAll('.resp').forEach(b => b.onclick = () => respon(+b.dataset.i));
+}
+function bucle(ara) {
+  if (M.pantalla !== 'joc') return;
+  const H = $('#joc').clientHeight; const sol = H * .80;
+  const temps = (ara - P.t0) / 1000; $('#tbar').style.transform = `scaleX(${Math.max(0, 1 - temps / DURADA)})`;
+  if (temps >= DURADA && !P.bloc) return acaba('temps');
+  const m = P.met;
+  if (m && !P.bloc) {
+    const f = (ara - m.t) / (m.dur * 1000); m.y = -110 + f * (sol - 40 + 110);
+    m.el.style.transform = `translate(${m.x}px, ${m.y}px)`;
+    if (m.y >= sol - 60) impacte();
+  }
+  requestAnimationFrame(bucle);
+}
+function respon(i) {
+  if (P.bloc || !P.met) return; P.bloc = true;
+  const o = P.met.o, v = o.opcions[i], ok = v === o.r; const bs = document.querySelectorAll('.resp');
+  bs.forEach(b => b.disabled = true);
+  if (ok) {
+    bs[i].classList.add('be'); P.encerts++; P.combo++; P.maxCombo = Math.max(P.maxCombo, P.combo);
+    const mult = P.combo >= 6 ? 3 : P.combo >= 3 ? 2 : 1; const rest = Math.max(0, 1 - (performance.now() - P.met.t) / (P.met.dur * 1000));
+    const guany = Math.round((10 + 10 * rest) * mult); P.punts += guany;
+    if (P.combo === 3 || P.combo === 6) SO.combo();
+    dispara(P.met, () => { esclata(P.met); seguent(350); }); avis(`+${guany}${mult > 1 ? ` · combo ×${mult}` : ''}`, true, 600);
+    P.vel = Math.max(M.nivell === 3 ? 6 : 5, P.vel - .35);
+  } else {
+    bs[i].classList.add('mal'); bs[o.opcions.indexOf(o.r)].classList.add('be');
+    falla(`${o.html} = <b>${fz(o.r)}</b>`);
+  }
+  pintaCap();
+}
+function impacte() {
+  P.bloc = true; SO.impacte(); const o = P.met.o;
+  document.querySelectorAll('.resp').forEach((b, k) => { b.disabled = true; if (o.opcions[k] === o.r) b.classList.add('be'); });
+  esclata(P.met, true); falla(`${o.html} = <b>${fz(o.r)}</b>`, true);
+}
+function falla(txt, xoc = false) {
+  P.errors++; P.combo = 0; P.escuts--; if (!xoc) SO.mal();
+  P.fallades.push(P.met.o.html + ' = ' + fz(P.met.o.r));
+  $('#joc').classList.remove('sacseja'); void $('#joc').offsetWidth; $('#joc').classList.add('sacseja');
+  avis(`${xoc ? 'Impacte!' : 'Ui!'} ${txt}`, false, 1500);
+  if (!xoc) setTimeout(() => esclata(P.met, true), 300);
+  pintaCap();
+  setTimeout(() => P.escuts <= 0 ? acaba('escuts') : seguent(0), 1600);
+}
+function seguent(ms) { setTimeout(() => { if (M.pantalla !== 'joc') return; P.met?.el.remove(); P.met = null; if ((performance.now() - P.t0) / 1000 >= DURADA) return acaba('temps'); llança(); }, ms); }
+function dispara(m, fet) {
+  SO.laser(); const r = $('#base').getBoundingClientRect(), j = $('#joc').getBoundingClientRect();
+  const x0 = r.left - j.left + r.width / 2, y0 = r.top - j.top + 0, x1 = m.x, y1 = m.y + 30;
+  $('#fx').innerHTML = `<line x1="${x0}" y1="${y0}" x2="${x1}" y2="${y1}" stroke="#ff8a3d" stroke-width="8" stroke-linecap="round" opacity=".9"/><line x1="${x0}" y1="${y0}" x2="${x1}" y2="${y1}" stroke="#fff" stroke-width="3" stroke-linecap="round"/>`;
+  const ang = Math.atan2(x1 - x0, -(y1 - y0)) * 180 / Math.PI; $('#robot').setAttribute('transform', `translate(85 46) rotate(${ang})`);
+  setTimeout(() => { $('#fx').innerHTML = ''; fet(); }, 160);
+}
+function esclata(m, gris = false) {
+  if (!m?.el.isConnected) return; SO.boom();
+  const cx = m.x, cy = m.y + 32;
+  for (let k = 0; k < 14; k++) { const b = document.createElement('i'); b.className = 'boom'; const a = Math.random() * Math.PI * 2, d = 40 + Math.random() * 70;
+    b.style.cssText = `left:${cx}px;top:${cy}px;--dx:${Math.cos(a) * d}px;--dy:${Math.sin(a) * d}px;background:${gris ? '#d64242' : tria(['#ffcf6b', '#ff8a3d', '#fff'])}`; $('#joc').appendChild(b); setTimeout(() => b.remove(), 600); }
+  m.el.style.opacity = '0';
+}
+function avis(html, ok, ms) { const d = document.createElement('div'); d.className = 'avis' + (ok ? ' ok' : ''); d.innerHTML = html; $('#joc').appendChild(d); setTimeout(() => d.remove(), ms); }
+function pintaCap() {
+  $('#punts').textContent = P.punts ?? 0;
+  $('#escuts').innerHTML = Array.from({ length: ESCUTS }, (_, i) => `<span class="${i < (P.escuts ?? ESCUTS) ? '' : 'perdut'}">🛡️</span>`).join('');
+  $('#combo').textContent = P.combo >= 3 ? `combo ×${P.combo >= 6 ? 3 : 2}` : '';
+}
+function acaba(motiu) {
+  if (P.acabada) return; P.acabada = true; M.pantalla = 'fi'; P.met?.el.remove(); $('#resp').innerHTML = '';
+  SO.fi(); const nouRec = P.punts > M.record; if (nouRec) M.record = P.punts;
+  try { localStorage.setItem('fr4c_met_rec_' + M.nivell, M.record); } catch (e) {}
+  const temps = Math.round((performance.now() - P.t0) / 1000);
+  envia({ tipus: 'fr4c-met-fi', punts: P.punts, encerts: P.encerts, errors: P.errors, maxCombo: P.maxCombo, nivell: M.nivell, temps, fallades: P.fallades.slice(0, 20) });
+  const pct = P.encerts + P.errors ? Math.round(100 * P.encerts / (P.encerts + P.errors)) : 0;
+  pantalla(`<h1>${motiu === 'temps' ? 'Temps! La base resisteix 🛡️' : 'La base ha caigut! 💥'}</h1>
+    <p>${nouRec ? '<span class="rec">🏆 Nou rècord!</span> ' : ''}${M.nom ? `<b>${esc(M.nom)}</b>, h` : 'H'}as fet <b>${P.punts}</b> punts. ${!nouRec && M.record ? `El teu rècord és de <b>${M.record}</b>.` : ''}</p>
+    <div class="resum"><div><b>${P.encerts}</b>meteorits destruïts</div><div><b>${P.errors}</b>errors</div><div><b>${pct}%</b>d'encerts</div></div>
+    ${P.fallades.length ? `<p><b>Repassa les que has fallat:</b></p><ul class="fallades">${P.fallades.slice(0, 12).map(f => `<li>${f}</li>`).join('')}</ul>` : '<p>Cap error! 🌟</p>'}
+    <div class="fila"><button class="big" id="torna">Torna a jugar</button><button class="big sec" id="tanca2">Surt</button></div>`);
+  $('#torna').onclick = comenca; $('#tanca2').onclick = surt;
+}
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+function pantalla(html) { const p = $('#pant'); p.innerHTML = `<div class="panell">${html}</div>`; p.style.display = 'flex'; }
+function inici() {
+  M.pantalla = 'inici';
+  const txtN = { 1: 'sumes i restes', 2: 'sumes, restes, multiplicacions i divisions', 3: 'operacions combinades' };
+  pantalla(`<h1>☄️ Defensa la base de Mart</h1>
+    <p>${M.nom ? `Hola, <b>${esc(M.nom)}</b>! ` : ''}Cauen meteorits sobre la base d'en FR-4C. Cada meteorit porta una operació: <b>toca el resultat correcte</b> (o prem 1, 2 o 3) i el làser el destruirà.</p>
+    <p>Tens <b>3 escuts</b> 🛡️🛡️🛡️: cada error o cada meteorit que toca terra en treu un. La partida dura com a màxim 2 minuts. Si n'encadenes 3 de seguits, <b>combo ×2</b>; si en són 6, <b>×3</b>!</p>
+    <p class="mini">Nivell ${M.nivell}: ${txtN[M.nivell]}.${M.record ? ` El teu rècord: <b>${M.record}</b> punts.` : ''}</p>
+    ${!M.dinsApp ? `<div class="fila"><b>Nivell:</b><span class="seg" id="nv">${[1, 2, 3].map(n => `<button data-n="${n}" class="${n === M.nivell ? 'on' : ''}">${n}</button>`).join('')}</span></div>` : ''}
+    <div class="fila"><button class="big" id="go">Comença! →</button>${M.dinsApp ? '<button class="big sec" id="tanca2">Surt</button>' : ''}</div>`);
+  $('#go').onclick = comenca; const t = $('#tanca2'); if (t) t.onclick = surt;
+  document.querySelectorAll('#nv button').forEach(b => b.onclick = () => { M.nivell = +b.dataset.n; try { M.record = +(localStorage.getItem('fr4c_met_rec_' + M.nivell) || 0); } catch (e) {} inici(); });
+}
+/* ---------- comunicació amb l'app ---------- */
+const envia = m => { try { if (window.parent !== window) window.parent.postMessage(m, '*'); } catch (e) {} };
+function surt() { M.pantalla = 'fora'; envia({ tipus: 'fr4c-met-tanca' }); if (window.parent === window) inici(); }
+window.addEventListener('message', ev => {
+  const d = ev.data || {}; if (d.tipus !== 'fr4c-met-ini') return;
+  M.dinsApp = true; M.nom = d.nom || ''; M.nivell = Math.max(1, Math.min(3, d.nivell || 1)); M.record = Math.max(d.record || 0, 0);
+  if (d.so === false) M.so = false; $('#so').textContent = M.so ? '🔊' : '🔇';
+  if (M.pantalla === 'inici') inici();
+});
+document.addEventListener('keydown', e => { if (M.pantalla === 'joc' && ['1', '2', '3'].includes(e.key)) respon(+e.key - 1); else if (e.key === 'Enter' && M.pantalla !== 'joc') $('#go, #torna')?.click(); });
+$('#so').onclick = () => { M.so = !M.so; $('#so').textContent = M.so ? '🔊' : '🔇'; try { localStorage.setItem('fr4c_met_so', M.so ? '1' : '0'); } catch (e) {} };
+$('#surt').onclick = () => { if (M.pantalla === 'joc') { P.acabada = true; P.met?.el.remove(); $('#resp').innerHTML = ''; } surt(); };
+$('#so').textContent = M.so ? '🔊' : '🔇';
+pintaCap(); inici(); envia({ tipus: 'fr4c-met-llest' });
+</script>
+</body>
+</html>
