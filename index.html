@@ -288,7 +288,7 @@ small.anul-txt{display:block;font-size:.68rem}
 .avis-fora{background:var(--groc-suau);border:2px solid var(--groc);color:#8a6400;font-weight:800;font-size:.85rem;padding:3px 10px;border-radius:999px}
 .modal-fora{display:flex;gap:18px;align-items:center}
 .modal-fora h3{margin-bottom:6px}.modal-fora p{margin-top:6px}
-.llib-barra{margin-bottom:10px}.seg-tl{font-size:.8rem;white-space:nowrap;text-align:center;min-width:34px}.seg-tl .fet{color:var(--ok);font-weight:900}.seg-tl .mig{opacity:.45}.instr-tancada{margin-top:16px;max-width:520px;border:3px solid var(--taronja);border-radius:14px;overflow:hidden;background:#fff}.instr-tancada .cap{background:var(--taronja);color:#fff;font-weight:900;font-size:1.15rem;padding:8px 16px}.instr-tancada .txt{padding:12px 16px;font-size:1.15rem;line-height:1.45;max-height:42vh;overflow:auto;overflow-wrap:anywhere}.instr-tancada a{color:var(--taronja);font-weight:800}.avis-tancada{margin-top:18px;display:inline-block;padding:10px 18px;border:3px solid var(--taronja);border-radius:12px;font-weight:900;font-size:1.3rem;color:var(--taronja)}.xip.obj-tancat{border-color:var(--taronja);color:var(--taronja)}.th-tancat{background:var(--taronja)!important;color:#000!important}
+.llib-barra{margin-bottom:10px}.lin-in{display:inline-flex;align-items:center;gap:4px;font-size:1.4rem}.lin-in input{width:74px}.seg-tl{font-size:.8rem;white-space:nowrap;text-align:center;min-width:34px}.seg-tl .fet{color:var(--ok);font-weight:900}.seg-tl .mig{opacity:.45}.instr-tancada{margin-top:16px;max-width:520px;border:3px solid var(--taronja);border-radius:14px;overflow:hidden;background:#fff}.instr-tancada .cap{background:var(--taronja);color:#fff;font-weight:900;font-size:1.15rem;padding:8px 16px}.instr-tancada .txt{padding:12px 16px;font-size:1.15rem;line-height:1.45;max-height:42vh;overflow:auto;overflow-wrap:anywhere}.instr-tancada a{color:var(--taronja);font-weight:800}.avis-tancada{margin-top:18px;display:inline-block;padding:10px 18px;border:3px solid var(--taronja);border-radius:12px;font-weight:900;font-size:1.3rem;color:var(--taronja)}.xip.obj-tancat{border-color:var(--taronja);color:var(--taronja)}.th-tancat{background:var(--taronja)!important;color:#000!important}
 .c-prova{background:#efeafe}
 .fitxes{display:flex;flex-direction:column;gap:10px;width:100%;max-width:580px;margin:0 auto}
 .fx-obre{align-self:center;display:inline-flex;align-items:center;gap:8px;border:3px solid var(--tinta);background:#fff;border-radius:14px;padding:12px 20px;font-size:1.2rem;font-weight:800;cursor:pointer}.fx-obre:hover{background:#fff3ea}
@@ -946,12 +946,23 @@ const OBJ_POTENCIES = [
   { id: 'w7', num: '7', titol: 'Potència d\'una potència', curt: 'Pot. d\'una pot.' },
   { id: 'w8', num: '8', titol: 'L\'arrel quadrada', curt: 'Arrel' }
 ];
+const OBJ_EQUACIONS = [
+  { id: 'q1', num: '1', titol: 'El llenguatge algebraic', curt: 'Llenguatge' },
+  { id: 'q2', num: '2', titol: 'El valor numèric d\'una expressió', curt: 'Valor numèric' },
+  { id: 'q3', num: '3', titol: 'Termes semblants: reduir expressions', curt: 'Reduir' },
+  { id: 'q4', num: '4', titol: 'Equació i solució', curt: 'Solució' },
+  { id: 'q5', num: '5', titol: 'Equacions d\'un pas', curt: 'Un pas' },
+  { id: 'q6', num: '6', titol: 'Equacions de dos passos', curt: 'Dos passos' },
+  { id: 'q7', num: '7', titol: 'La x als dos costats i parèntesis', curt: 'Dos costats' },
+  { id: 'q8', num: '8', titol: 'Equacions de segon grau incompletes', curt: '2n grau' }
+];
 const UNITATS = {
   f: { id: 'f', nom: 'Fraccions', obj: OBJ_FRACCIONS, prova: 'pf', minimKey: 'minimAS', minimDef: 6, provaKey: 'provaF' },
   e: { id: 'e', nom: 'Enters', obj: OBJ_ENTERS, prova: 'pe', minimKey: 'minimASe', minimDef: 6, provaKey: 'provaE' },
-  p: { id: 'p', nom: 'Potències', obj: OBJ_POTENCIES, prova: 'pw', minimKey: 'minimASp', minimDef: 6, provaKey: 'provaP' }
+  p: { id: 'p', nom: 'Potències', obj: OBJ_POTENCIES, prova: 'pw', minimKey: 'minimASp', minimDef: 6, provaKey: 'provaP' },
+  q: { id: 'q', nom: 'Equacions', obj: OBJ_EQUACIONS, prova: 'pq', minimKey: 'minimASq', minimDef: 6, provaKey: 'provaQ' }
 };
-const LLISTA_UNITATS = ['f', 'e', 'p'];
+const LLISTA_UNITATS = ['f', 'e', 'p', 'q'];
 const unitatDe = oId => UNITATS[LLISTA_UNITATS.find(k => UNITATS[k].obj.some(o => o.id === oId) || UNITATS[k].prova === oId) || 'f'];
 const objPerId = id => { for (const k of LLISTA_UNITATS) { const o = UNITATS[k].obj.find(x => x.id === id); if (o) return o; } return null; };
 const minimDe = u => S.config?.[u.minimKey] || u.minimDef;
@@ -990,8 +1001,8 @@ const enllacaQualif = c => $$('.q-man', c).forEach(td => td.onclick = () => canv
 const unitatCompleta = u => u.obj.every(o => !o.properament);
 /* ---------- Fitxers a part: cada unitat i cada joc es carrega quan cal ----------
    Són scripts clàssics (funcionen a GitHub Pages i també obrint l'index des de l'ordinador). */
-const V_FITXERS = '5.0';
-const FITXERS_UNITAT = { f: 'fraccions.js', e: 'enters.js', p: 'potencies.js' };
+const V_FITXERS = '5.1';
+const FITXERS_UNITAT = { f: 'fraccions.js', e: 'enters.js', p: 'potencies.js', q: 'equacions.js' };
 const FITXERS_JOC = { tcx: 'joc-caixa.js', tesc: 'joc-escape.js', tpz: 'joc-pizzeria.js', dimp: 'joc-impropies.js' };
 const CARREGUES = {};
 function carregaScript(fitxer) {
@@ -1245,13 +1256,21 @@ function apCorrHtml(it) {
   if (it.tipus === 'signe') return `${it.ha || fz(it.a)} <b>${it.correcta}</b> ${it.hb || fz(it.b)}`;
   if (it.tipus === 'num') { const v = it.valor >= 10000 ? String(it.valor).replace(/\B(?=(\d{3})+(?!\d))/g, '\u202f') : it.valor; return it.llarg ? `<b>${v}</b>` : `${it.html} = <b>${v}</b>`; }
   if (it.tipus === 'pot') return `<b>${pw(it.base, it.exp)}</b>`;
+  if (it.tipus === 'lin') return `<b>${fmtLin(it.a, it.b, it.v)}</b>`;
   if (it.tipus === 'factors') return `${it.html} <b>${repeteix(it.base, it.exp)}</b>`;
-  if (it.tipus === 'enter') return it.llarg ? `<b>${fz(it.valor)}${it.unitat ? ' ' + it.unitat : ''}</b>` : `${it.html} = <b>${fz(it.valor)}</b>${it.unitat ? ' ' + it.unitat : ''}`;
+  if (it.tipus === 'enter') { const fv = it.senseMes && it.valor > 0 ? String(it.valor) : fz(it.valor); return it.llarg ? `<b>${fv}${it.unitat ? ' ' + it.unitat : ''}</b>` : `${it.html} = <b>${fv}</b>${it.unitat ? ' ' + it.unitat : ''}`; }
   if (it.tipus === 'tria') return `<b>${it.opcions.find(o => o.val === it.correcta).html}</b>`;
   if (it.tipus === 'ordena') return ordenats(it).map(fz).join(it.ordre === 'asc' ? ' &lt; ' : ' &gt; ');
   if (it.tipus === 'marca') return it.nums.filter((_, i) => it.bons.includes(i)).map(v => it.nat ? v : fz(v)).join(', ');
 }
 const apCorrTxt = it => textPla(apCorrHtml(it));
+// expressió lineal a·x + b en text («4x − 3», «−x», «7»)
+function fmtLin(a, b, v = 'x') {
+  const ta = a === 0 ? '' : a === 1 ? v : a === -1 ? '−' + v : (a < 0 ? '−' + (-a) : a) + v;
+  if (!b) return ta || '0'; const tb = (b < 0 ? ' − ' : ' + ') + Math.abs(b);
+  return ta ? ta + tb : (b < 0 ? '−' : '') + Math.abs(b);
+}
+const linVal = t => String(t ?? '').trim() === '' ? 0 : llegeixEnter(t)?.v;
 // llegeix un enter escrit: accepta − o -, + opcional i espais («- 3», «+3», «3»)
 function llegeixEnter(t) {
   const m = String(t ?? '').replace(/[−–—]/g, '-').replace(/\s+/g, '').match(/^([+-]?)(\d{1,4})$/);
@@ -1269,6 +1288,7 @@ function apHtml(it, k, st, actiu) {
   const dis = actiu ? '' : 'disabled';
   if (it.tipus === 'num') return `<span class="${it.llarg ? 'ap-text' : 'ap-expr'}">${it.html}${it.llarg ? '' : ' ='}</span><span class="ap-ent"><input data-k="${k}" ${it.valor >= 1000 ? 'class="ample"' : ''} inputmode="numeric" maxlength="11" autocomplete="off" value="${esc(st.n ?? '')}" ${dis} aria-label="Resposta de l'apartat ${LLETRES_AP[k]}"></span>`;
   if (it.tipus === 'pot') return `<span class="${it.llarg ? 'ap-text' : 'ap-expr'}">${it.html}</span><span class="pot-in"><input data-k="${k}" data-camp="b" class="pb" inputmode="numeric" maxlength="3" autocomplete="off" value="${esc(st.b ?? '')}" ${dis} aria-label="Base"><input data-k="${k}" data-camp="e" class="pe" inputmode="numeric" maxlength="2" autocomplete="off" value="${esc(st.e ?? '')}" ${dis} aria-label="Exponent"></span>`;
+  if (it.tipus === 'lin') return `<span class="${it.llarg ? 'ap-text' : 'ap-expr'}">${it.html}</span><span class="lin-in"><input class="escrit" data-k="${k}" data-esc="1" data-camp="a" inputmode="text" maxlength="6" autocomplete="off" value="${esc(st.a ?? '')}" ${dis} aria-label="Coeficient de ${it.v || 'x'}"><b>${it.v || 'x'}</b><input class="escrit" data-k="${k}" data-esc="1" data-camp="b" inputmode="text" maxlength="6" autocomplete="off" value="${esc(st.b ?? '')}" ${dis} aria-label="Nombre" placeholder="±"></span>`;
   if (it.tipus === 'factors') { const seq = st.seq || [];
     return `<div class="ap-ord"><div class="ap-ord-cap">${it.html}</div><div class="fac-fila" data-k="${k}">${seq.length ? seq.map((v, i) => `<button type="button" data-k="${k}" data-fr="${i}" ${dis} title="Treu aquest factor">${v}</button>`).join('<i>·</i>') : '<span class="fac-buit">toca o arrossega aquí els factors</span>'}</div>
       ${actiu ? `<div class="ap-ord-pool">${it.pool.map(v => `<button type="button" draggable="true" data-k="${k}" data-fa="${v}">${v}</button>`).join('')}</div>` : ''}</div>`; }
@@ -1291,6 +1311,7 @@ const apFet = (it, st) => it.tipus === 'signe' || it.tipus === 'tria' ? st.v != 
   : it.tipus === 'marca' ? (st.sel?.size || 0) > 0
   : it.tipus === 'num' ? st.n !== '' && st.n != null
   : it.tipus === 'pot' ? !!st.b && st.e !== '' && st.e != null
+  : it.tipus === 'lin' ? linVal(st.a) != null && String(st.a ?? '').trim() !== '' && linVal(st.b) != null
   : it.tipus === 'factors' ? (st.seq || []).length > 0 : false;
 function apOk(it, st) {
   if (it.tipus === 'signe' || it.tipus === 'tria') return st.v === it.correcta;
@@ -1299,11 +1320,14 @@ function apOk(it, st) {
   if (it.tipus === 'marca') return st.sel.size === it.bons.length && it.bons.every(i => st.sel.has(i));
   if (it.tipus === 'num') return Number(st.n) === it.valor;
   if (it.tipus === 'pot') return Number(st.b) === it.base && Number(st.e) === it.exp;
+  if (it.tipus === 'lin') return linVal(st.a) === it.a && linVal(st.b) === it.b;
   if (it.tipus === 'factors') return st.seq.length === it.exp && st.seq.every(v => v === it.base);
 }
 // etiqueta d'error típic d'un apartat fallat (per a la llibreta del professor)
 function apEtiq(it, st) {
   if (it.tipus === 'num') return it.errs?.[Number(st.n)] || null;
+  if (it.tipus === 'enter') { const v = it.escrit ? llegeixEnter(st.n)?.v : (Number(st.n) === 0 ? 0 : st.sg * Number(st.n)); return it.errs?.[v] || null; }
+  if (it.tipus === 'lin') return it.errs?.[`${linVal(st.a)}|${linVal(st.b)}`] || null;
   if (it.tipus === 'tria' || it.tipus === 'signe') return it.etiq?.[st.v] || null;
   if (it.tipus === 'pot') return it.errs?.[`${Number(st.b)}^${Number(st.e)}`] || (Number(st.b) === it.exp && Number(st.e) === it.base ? 'swap' : null);
   if (it.tipus === 'factors') { const q = st.seq || []; if (q.length === 2 && q.includes(it.base) && q.includes(it.exp)) return 'baseExp'; if (q.length === it.base && q.every(v => v === it.exp)) return 'swap'; return null; }
@@ -1314,6 +1338,7 @@ function apTxt(it, st) {
   if (it.tipus === 'signe') return `${it.ta || fz(it.a)} ${st.v} ${it.tb || fz(it.b)}`;
   if (it.tipus === 'num') return it.llarg ? String(st.n) : `${textPla(it.html)} = ${st.n}`;
   if (it.tipus === 'pot') return pw(st.b, st.e);
+  if (it.tipus === 'lin') return `${textPla(it.html)} ${fmtLin(linVal(st.a) ?? 0, linVal(st.b) ?? 0, it.v)}`;
   if (it.tipus === 'factors') return `${textPla(it.html)} ${(st.seq || []).join(' · ')}`;
   if (it.tipus === 'enter') { const n = Number(st.n); const r = fz(it.escrit ? llegeixEnter(st.n)?.v ?? 0 : n === 0 ? 0 : st.sg * n) + (it.unitat ? ' ' + it.unitat : ''); return it.llarg ? r : `${textPla(it.html)} = ${r}`; }
   if (it.tipus === 'tria') return textPla(it.opcions.find(o => o.val === st.v)?.html || st.v);
@@ -1321,7 +1346,7 @@ function apTxt(it, st) {
   if (it.tipus === 'marca') return [...st.sel].sort((a, b) => a - b).map(i => fz(it.nums[i])).join(', ');
 }
 const apFila = (it, k, st, actiu, estat) => `<div class="ap ${estat || ''} ap-${it.tipus}" data-fila="${k}"><span class="ap-l">${LLETRES_AP[k]})</span><div class="ap-cos">${apHtml(it, k, st, actiu)}${estat === 'ko' ? `<div class="ap-bona">Correcte: ${apCorrHtml(it)}</div>` : ''}</div></div>`;
-function apartatsHtml(rp, R, actiu, estats = []) { return `${actiu && rp.items.some(it => it.escrit) ? '<p class="ajuda-enter" style="margin:0 0 8px">Escriu cada resultat amb el signe: per exemple <b>−7</b> o <b>+4</b>. El 0 no porta signe.</p>' : ''}<div class="apartats">${rp.items.map((it, k) => apFila(it, k, R.ap[k], actiu, estats[k])).join('')}</div>`; }
+function apartatsHtml(rp, R, actiu, estats = []) { return `${actiu && rp.items.some(it => it.tipus === 'lin') ? '<p class="ajuda-enter" style="margin:0 0 8px">Escriu el número que va <b>davant de la x</b> (si és només x, posa 1) i el <b>número sol</b> amb el signe (−3 o +3). Si no hi ha número sol, deixa la casella buida.</p>' : actiu && rp.items.some(it => it.escrit) ? `<p class="ajuda-enter" style="margin:0 0 8px">${rp.items.some(it => it.senseMes) ? 'Escriu el resultat. Si és negatiu, posa-hi el signe: per exemple <b>−7</b>.' : 'Escriu cada resultat amb el signe: per exemple <b>−7</b> o <b>+4</b>. El 0 no porta signe.'}</p>` : ''}<div class="apartats">${rp.items.map((it, k) => apFila(it, k, R.ap[k], actiu, estats[k])).join('')}</div>`; }
 function enllacaApartats(R, rp, btn) {
   const zona = $('#zona-resp');
   const actualitza = () => { btn.disabled = !rp.items.every((it, k) => apFet(it, R.ap[k])); };
@@ -1370,7 +1395,7 @@ function demoApartatsHtml(rp, resolt) {
     : it.tipus === 'enter' ? `${it.html} = <span class="ap-buit">?</span>`
     : it.tipus === 'tria' ? `${it.html} <span style="color:var(--gris)">(${it.opcions.map(o => textPla(o.html)).join(' / ')})</span>`
     : it.tipus === 'num' ? `${it.html}${it.llarg ? '' : ' ='} <span class="ap-buit">?</span>`
-    : it.tipus === 'pot' ? `${it.html} <span class="ap-buit">?</span>`
+    : it.tipus === 'pot' || it.tipus === 'lin' ? `${it.html} <span class="ap-buit">?</span>`
     : it.tipus === 'factors' ? `${it.html} <span class="ap-buit">?</span> <span style="color:var(--gris)">(factors: ${it.pool.join(', ')})</span>`
     : `${it.html || (it.ordre === 'asc' ? 'Ordena de més petit a més gran' : 'Ordena de més gran a més petit')}: ${it.nums.map(fz).join(', ')}`}</div></div>`).join('')}</div>`;
 }
@@ -2731,7 +2756,7 @@ function mostraCredits() {
     <p style="font-size:1.1rem"><b>Ins Júlia Minguell</b> · Matemàtiques 4t ESO · Grup Flexible</p>
     <p style="margin-top:14px">Ideat per <b>J. Alcolea</b></p>
     <p style="color:var(--gris)">Desenvolupat amb Claude</p>
-    <p style="color:var(--gris);margin-top:10px">Versió 5.0</p>
+    <p style="color:var(--gris);margin-top:10px">Versió 5.1</p>
     <div class="accions"><button class="boto" data-tanca-modal>D'acord</button></div>`);
 }
 function entraAlumne(id) {
