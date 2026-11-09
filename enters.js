@@ -1842,6 +1842,7 @@ async function desaRE(estK, canvi) {
   if (totes && r.estat !== 'fet') upd.vegades = (r.vegades || 0) + 1;
   S.resMeu = S.resMeu || {}; S.resMeu.tre = { ...r, ...upd };
   try { await DB.update(`${ARREL}/resultats/${S.alumne}/tre`, upd); } catch (er) { console.error(er); }
+  marcaDiaTaller(S.alumne, 'tre', !!canvi.acabada || totes);
 }
 function obreRepas(nivell = null) {
   tancaJoc(true);

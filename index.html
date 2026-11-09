@@ -288,7 +288,7 @@ small.anul-txt{display:block;font-size:.68rem}
 .avis-fora{background:var(--groc-suau);border:2px solid var(--groc);color:#8a6400;font-weight:800;font-size:.85rem;padding:3px 10px;border-radius:999px}
 .modal-fora{display:flex;gap:18px;align-items:center}
 .modal-fora h3{margin-bottom:6px}.modal-fora p{margin-top:6px}
-.llib-barra{margin-bottom:10px}.instr-tancada{margin-top:16px;max-width:520px;border:3px solid var(--taronja);border-radius:14px;overflow:hidden;background:#fff}.instr-tancada .cap{background:var(--taronja);color:#fff;font-weight:900;font-size:1.15rem;padding:8px 16px}.instr-tancada .txt{padding:12px 16px;font-size:1.15rem;line-height:1.45;max-height:42vh;overflow:auto;overflow-wrap:anywhere}.instr-tancada a{color:var(--taronja);font-weight:800}.avis-tancada{margin-top:18px;display:inline-block;padding:10px 18px;border:3px solid var(--taronja);border-radius:12px;font-weight:900;font-size:1.3rem;color:var(--taronja)}.xip.obj-tancat{border-color:var(--taronja);color:var(--taronja)}.th-tancat{background:var(--taronja)!important;color:#000!important}
+.llib-barra{margin-bottom:10px}.seg-tl{font-size:.8rem;white-space:nowrap;text-align:center;min-width:34px}.seg-tl .fet{color:var(--ok);font-weight:900}.seg-tl .mig{opacity:.45}.instr-tancada{margin-top:16px;max-width:520px;border:3px solid var(--taronja);border-radius:14px;overflow:hidden;background:#fff}.instr-tancada .cap{background:var(--taronja);color:#fff;font-weight:900;font-size:1.15rem;padding:8px 16px}.instr-tancada .txt{padding:12px 16px;font-size:1.15rem;line-height:1.45;max-height:42vh;overflow:auto;overflow-wrap:anywhere}.instr-tancada a{color:var(--taronja);font-weight:800}.avis-tancada{margin-top:18px;display:inline-block;padding:10px 18px;border:3px solid var(--taronja);border-radius:12px;font-weight:900;font-size:1.3rem;color:var(--taronja)}.xip.obj-tancat{border-color:var(--taronja);color:var(--taronja)}.th-tancat{background:var(--taronja)!important;color:#000!important}
 .c-prova{background:#efeafe}
 .fitxes{display:flex;flex-direction:column;gap:10px;width:100%;max-width:580px;margin:0 auto}
 .fx-obre{align-self:center;display:inline-flex;align-items:center;gap:8px;border:3px solid var(--tinta);background:#fff;border-radius:14px;padding:12px 20px;font-size:1.2rem;font-weight:800;cursor:pointer}.fx-obre:hover{background:#fff3ea}
@@ -990,7 +990,7 @@ const enllacaQualif = c => $$('.q-man', c).forEach(td => td.onclick = () => canv
 const unitatCompleta = u => u.obj.every(o => !o.properament);
 /* ---------- Fitxers a part: cada unitat i cada joc es carrega quan cal ----------
    Són scripts clàssics (funcionen a GitHub Pages i també obrint l'index des de l'ordinador). */
-const V_FITXERS = '4.9';
+const V_FITXERS = '5.0';
 const FITXERS_UNITAT = { f: 'fraccions.js', e: 'enters.js', p: 'potencies.js' };
 const FITXERS_JOC = { tcx: 'joc-caixa.js', tesc: 'joc-escape.js', tpz: 'joc-pizzeria.js', dimp: 'joc-impropies.js' };
 const CARREGUES = {};
@@ -1504,6 +1504,7 @@ const TALLERS = {
           <p class="ajuda" style="margin:6px 0 0">Si els errors de <b>signe</b> són molts més que els de càlcul, l'alumne sap calcular però no aplica bé la norma.</p>` };
     } },
   tmet: { id: 'tmet', unitat: 'e', ic: '☄️', curt: 'Meteorits', titol: 'Defensa la base de Mart', sub: 'Joc individual · operacions amb enters', defecte: false, esJoc: true, obre: () => obreMeteorits(), resum: r => resumJocExt(r, 'Meteorits destruïts') },
+  tmetf: { id: 'tmetf', unitat: 'f', ic: '☄️', curt: 'Meteorits', titol: 'Defensa la base de Mart', sub: 'Joc individual · càlcul mental amb fraccions', defecte: false, esJoc: true, obre: () => obreJocExt('tmetf'), resum: r => resumJocExt(r, 'Meteorits destruïts') },
   tbac: { id: 'tbac', unitat: 'p', ic: '🦠', curt: 'Bacteris', titol: 'Brot de bacteris', sub: 'Joc individual · potències i regles', defecte: false, esJoc: true, obre: () => obreJocExt('tbac'), resum: r => resumJocExt(r, 'Encerts') },
   ttor: { id: 'ttor', unitat: 'p', ic: '🏗️', curt: 'Torre', titol: 'Torre de potències', sub: 'Joc individual · producte, quocient i potència d\'una potència', defecte: false, esJoc: true, obre: () => obreJocExt('ttor'), resum: r => resumJocExt(r, 'Pisos posats') },
   tasc: { id: 'tasc', unitat: 'e', natiu: true, senseDades: true, ic: '🛗', curt: 'Ascensor', titol: "L'ascensor boig", sub: 'Joc per parelles · sumes i restes amb l\'ascensor', defecte: false }
@@ -1520,7 +1521,14 @@ function resumJocExt(r, nomEncerts) {
           <table class="taula-mini"><tr><th>Nivell</th><th>Partides</th><th>Rècord</th></tr>${[1, 2, 3].map(n => `<tr><td>Nivell ${n}</td><td>${nv[n]?.partides || 0}</td><td>${nv[n]?.record || 0}</td></tr>`).join('')}</table>
           ${darreres.length ? `<p style="margin:8px 0 2px;font-weight:700">Darreres partides</p><table class="taula-mini"><tr><th>Data</th><th>Nivell</th><th>Punts</th><th>Encerts</th><th>Errors</th><th>Ha fallat</th></tr>${darreres.map(([t, h]) => `<tr><td>${dataCurta(+t)}</td><td>${h.nivell}</td><td>${h.punts}</td><td>${h.encerts}</td><td>${h.errors}</td><td style="text-align:left;font-size:.85rem">${(h.fallades || []).slice(0, 4).map(esc).join(' · ')}</td></tr>`).join('')}</table>` : ''}` };
     }
-const ORDRE_TALLERS = ['t5b', 'tesc', 'tpz', 'tcx', 'tre', 'tmet', 'tasc', 'tbac', 'ttor'];
+const ORDRE_TALLERS = ['t5b', 'tesc', 'tpz', 'tcx', 'tmetf', 'tre', 'tmet', 'tasc', 'tbac', 'ttor'];
+/* «Fet» dels tallers al seguiment: resultats/{alumne}/diesTallers/{AAAA-MM-DD}/{taller} = 2 (fet: acabat o partida sencera) · 1 (hi ha treballat) */
+function marcaDiaTaller(id, tid, fet) {
+  if (!id || !tid) return; const d = avuiISO(); const v = fet ? 2 : 1;
+  const ara = S.resMeu?.diesTallers?.[d]?.[tid] || 0; if (ara >= v) return;
+  S.resMeu = S.resMeu || {}; S.resMeu.diesTallers = { ...(S.resMeu.diesTallers || {}), [d]: { ...(S.resMeu.diesTallers?.[d] || {}), [tid]: v } };
+  DB.set(`${ARREL}/resultats/${id}/diesTallers/${d}/${tid}`, v).catch(e => console.error(e));
+}
 const llistaTallers = () => ORDRE_TALLERS.map(k => TALLERS[k]).filter(Boolean);
 const tallerObert = t => S.config?.tallers?.[t.id] ?? !!t.defecte;
 function resumTaller(t, r) {
@@ -1621,7 +1629,8 @@ function targetaTaller(u, res) {
    ===================================================================== */
 /* Jocs en fitxer a part (meteorits, bacteris, torre): mateix protocol fr4c-<prefix>-ini/llest/fi/tanca */
 const JOCS_EXT = {
-  tmet: { fitxer: 'meteorits.html?v=1', pref: 'fr4c-met', titol: 'Defensa la base de Mart' },
+  tmet: { fitxer: 'meteorits.html?v=2', pref: 'fr4c-met', titol: 'Defensa la base de Mart', mode: 'enters' },
+  tmetf: { fitxer: 'meteorits.html?v=2', pref: 'fr4c-met', titol: 'Defensa la base de Mart · fraccions', mode: 'fraccions' },
   tbac: { fitxer: 'bacteris.html?v=1', pref: 'fr4c-bac', titol: 'Brot de bacteris' },
   ttor: { fitxer: 'torre.html?v=1', pref: 'fr4c-tor', titol: 'Torre de potències' } };
 let MET = null;
@@ -1638,7 +1647,7 @@ function obreJocExt(tid, nivellProva = null) {
   MET.timeout = setTimeout(() => { if (MET && !MET.llest) { const c = $('#joc-capa'); if (c) c.insertAdjacentHTML('beforeend', `<div class="met-err">No s'ha pogut carregar el joc (<b>${J.fitxer.split('?')[0]}</b>). Comprova que el fitxer està pujat a GitHub al costat de l'app.</div>`); } }, 8000);
 }
 const obreMeteorits = (n = null) => obreJocExt('tmet', n);
-function enviaMet() { const f = $('#joc-capa iframe'); if (!f || !MET) return; try { f.contentWindow.postMessage({ tipus: MET.J.pref + '-ini', nom: MET.nom, nivell: MET.nivell, record: MET.record, so: soActiu() }, '*'); } catch (e) { } }
+function enviaMet() { const f = $('#joc-capa iframe'); if (!f || !MET) return; try { f.contentWindow.postMessage({ tipus: MET.J.pref + '-ini', mode: MET.J.mode, nom: MET.nom, nivell: MET.nivell, record: MET.record, so: soActiu() }, '*'); } catch (e) { } }
 function tancaMeteorits() { if (MET?.timeout) clearTimeout(MET.timeout); MET = null; tancaJoc(); }
 async function desaMeteorits(d) {
   if (!MET || MET.prova || !MET.id) return;
@@ -1650,6 +1659,7 @@ async function desaMeteorits(d) {
   };
   MET.record = Math.max(MET.record, d.punts || 0);
   try { await DB.update(`${ARREL}/resultats/${MET.id}/${tid}`, upd); } catch (e) { console.error(e); }
+  marcaDiaTaller(MET.id, tid, true);
 }
 window.addEventListener('message', ev => {
   const d = ev.data || {}; if (!MET || typeof d.tipus !== 'string' || !d.tipus.startsWith(MET.J.pref + '-')) return;
@@ -2024,13 +2034,14 @@ function obreJoc(tid) {
   const cami = rel => rel ? `${base}/${rel}` : base;
   const prep = (rel, v) => rel || !t.prepara ? v : t.prepara(v, ruta);
   const desubs = [];
+  let tmFet = null; const revisaFet = () => { clearTimeout(tmFet); tmFet = setTimeout(() => DB.get(base).then(v => marcaDiaTaller(id, tid, !!resumTaller(t, v)?.fet)).catch(() => { }), 1500); };
   window.__fr4cPont = {
     alumne: () => ({ nom: a.nom, codi: String(a.codi || ''), ruta, nivell: nivellBase(id), sons: soActiu() }),
     config: () => t.config ? t.config(ruta) : {},
     get: rel => DB.get(cami(rel)).then(v => prep(rel, v)),
     on: (rel, cb) => { const u = DB.on(cami(rel), v => cb(prep(rel, v))); desubs.push(u); return u; },
-    set: (rel, v) => DB.set(cami(rel), v),
-    update: (rel, o) => DB.update(cami(rel), o),
+    set: (rel, v) => { revisaFet(); return DB.set(cami(rel), v); },
+    update: (rel, o) => { revisaFet(); return DB.update(cami(rel), o); },
     remove: rel => DB.remove(cami(rel)),
     surt: () => tancaJoc()
   };
@@ -2077,6 +2088,7 @@ async function desaTaller(R, final = false) {
   upd.estat = final || r.estat === 'fet' ? 'fet' : 'proces';
   if (final) upd.vegades = (r.vegades || 0) + 1;
   try { await DB.update(`${ARREL}/resultats/${S.alumne}/${R.obj}`, upd); } catch (e) { console.error(e); }
+  marcaDiaTaller(S.alumne, R.obj, final);
 }
 function errPas(R, p) { R.errorsPas[`p${p}`] = (R.errorsPas[`p${p}`] || 0) + 1; so('ko'); }
 const msgT = (ok, html) => `<div class="retorn ${ok ? 'ok' : 'ko'}"><div><p>${html}</p></div></div>`;
@@ -2719,7 +2731,7 @@ function mostraCredits() {
     <p style="font-size:1.1rem"><b>Ins Júlia Minguell</b> · Matemàtiques 4t ESO · Grup Flexible</p>
     <p style="margin-top:14px">Ideat per <b>J. Alcolea</b></p>
     <p style="color:var(--gris)">Desenvolupat amb Claude</p>
-    <p style="color:var(--gris);margin-top:10px">Versió 4.9</p>
+    <p style="color:var(--gris);margin-top:10px">Versió 5.0</p>
     <div class="accions"><button class="boto" data-tanca-modal>D'acord</button></div>`);
 }
 function entraAlumne(id) {
@@ -3563,6 +3575,13 @@ const segmentLlibreta = actiu => `<span class="segment" id="l-unitats">${LLISTA_
 const avuiISO = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
 const dataSeg = iso => { const [y, m, d] = iso.split('-').map(Number); const dt = new Date(y, m - 1, d); return { dia: dt.toLocaleDateString('ca-ES', { weekday: 'short' }).replace('.', ''), num: `${String(d).padStart(2, '0')}/${String(m).padStart(2, '0')}`, llarg: dt.toLocaleDateString('ca-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) }; };
 const diesSeg = () => Object.keys(S.seg || {}).filter(k => /^\d{4}-\d{2}-\d{2}$/.test(k)).sort().reverse();
+const diesTallerFet = id => Object.values(S.resTots[id]?.diesTallers || {}).filter(o => Object.values(o || {}).some(v => v === 2)).length;
+function celaTallerDia(id, d) {
+  const o = S.resTots[id]?.diesTallers?.[d] || {}; const ks = Object.keys(o).filter(k => TALLERS[k]);
+  if (!ks.length) return '<td class="seg-tl"></td>';
+  const tit = ks.map(k => `${TALLERS[k].titol}: ${o[k] === 2 ? 'fet' : 'hi ha treballat'}`).join(' · ');
+  return `<td class="seg-tl" title="${esc(tit)}">${ks.map(k => `<span class="${o[k] === 2 ? 'fet' : 'mig'}">${TALLERS[k].ic}${o[k] === 2 ? '✓' : ''}</span>`).join('')}</td>`;
+}
 function resumSeg(id) {
   const r = { n: 0, suma: 0, a: 0, p: 0, nn: 0, i: 0, f: 0, fj: 0 };
   for (const d of diesSeg()) { const x = S.seg[d]?.a?.[id]; if (!x) continue; if (typeof x.t === 'number') { r.n++; r.suma += x.t; } if (x.t === 'F') r.f++; if (x.t === 'FJ') r.fj++; if (x.p === 'a') r.a++; if (x.p === 'p') r.p++; if (x.p === 'n') r.nn++; if (x.i) r.i++; }
@@ -3574,16 +3593,16 @@ function pintaSeguiment(c) {
   const barra = `<div class="fila-form llib-barra">${segmentLlibreta('seg')}<span class="grup-barra"><button class="boto taronja" id="seg-nou">＋ Nou dia</button></span>
     <span style="margin-left:auto;color:var(--gris);font-size:.9rem">Toca una casella per canviar-la · Treball: 1 → 2 → 3 → F → FJ → buit · Participació: 😊 → 😐 → 😠 → buit · 🔴 incident</span></div>`;
   if (!llista.length) { c.innerHTML = barra + `<div class="seccio"><h3>Encara no hi ha alumnes</h3></div>`; enllacaSeg(c); return; }
-  const cap1 = dies.map(d => { const f = dataSeg(d); return `<th colspan="2" class="seg-dia" data-dia="${d}" title="${f.llarg} · clica per esborrar el dia">${f.dia} ${f.num}</th>`; }).join('');
-  const cap2 = dies.map(() => `<th class="seg-sub">Treb.</th><th class="seg-sub">Part.</th>`).join('');
+  const cap1 = dies.map(d => { const f = dataSeg(d); return `<th colspan="3" class="seg-dia" data-dia="${d}" title="${f.llarg} · clica per esborrar el dia">${f.dia} ${f.num}</th>`; }).join('');
+  const cap2 = dies.map(() => `<th class="seg-sub">Treb.</th><th class="seg-sub">Part.</th><th class="seg-sub" title="Tallers fets aquell dia">✦</th>`).join('');
   c.innerHTML = barra + `<div class="taula-caixa"><table class="llibreta seguiment"><thead>
-      <tr><th class="nom" rowspan="2">Alumne</th><th colspan="${7 + LLISTA_UNITATS.length}" class="seg-resum">Resum</th>${cap1 || '<th rowspan="2" class="seg-buit">Clica «＋ Nou dia» per començar</th>'}</tr>
-      <tr><th class="seg-sub" title="Mitjana de treball (sense comptar les faltes)">Treb.</th><th class="seg-sub" title="Faltes">F</th><th class="seg-sub" title="Faltes justificades">FJ</th><th class="seg-sub">😊</th><th class="seg-sub">😐</th><th class="seg-sub">😠</th><th class="seg-sub">🔴</th>${LLISTA_UNITATS.map(k => `<th class="seg-sub" title="Qualificació de ${UNITATS[k].nom} (${asAuto(UNITATS[k]) ? 'automàtica' : 'manual: clica per canviar-la'})">AS ${UNITATS[k].nom.slice(0, 3)}.</th>`).join('')}${cap2}</tr></thead><tbody>
+      <tr><th class="nom" rowspan="2">Alumne</th><th colspan="${8 + LLISTA_UNITATS.length}" class="seg-resum">Resum</th>${cap1 || '<th rowspan="2" class="seg-buit">Clica «＋ Nou dia» per començar</th>'}</tr>
+      <tr><th class="seg-sub" title="Mitjana de treball (sense comptar les faltes)">Treb.</th><th class="seg-sub" title="Faltes">F</th><th class="seg-sub" title="Faltes justificades">FJ</th><th class="seg-sub">😊</th><th class="seg-sub">😐</th><th class="seg-sub">😠</th><th class="seg-sub">🔴</th><th class="seg-sub" title="Dies amb algun taller fet (acabat o partida sencera)">✦ dies</th>${LLISTA_UNITATS.map(k => `<th class="seg-sub" title="Qualificació de ${UNITATS[k].nom} (${asAuto(UNITATS[k]) ? 'automàtica' : 'manual: clica per canviar-la'})">AS ${UNITATS[k].nom.slice(0, 3)}.</th>`).join('')}${cap2}</tr></thead><tbody>
       ${llista.map(([id, a]) => { const r = resumSeg(id);
         return `<tr><td class="nom" title="${esc(a.nom)}">${esc(a.nom)}</td>
-          <td class="seg-r"><b>${r.mitjana == null ? '—' : r.mitjana.toFixed(1).replace('.', ',')}</b></td><td class="seg-r ${r.f ? 'seg-mal' : ''}">${r.f || ''}</td><td class="seg-r">${r.fj || ''}</td><td class="seg-r">${r.a || ''}</td><td class="seg-r">${r.p || ''}</td><td class="seg-r ${r.nn ? 'seg-mal' : ''}">${r.nn || ''}</td><td class="seg-r ${r.i ? 'seg-mal' : ''}">${r.i || ''}</td>${LLISTA_UNITATS.map(k => celaQualif(id, UNITATS[k], true).replace('<td', '<td data-qs="1"')).join('')}
+          <td class="seg-r"><b>${r.mitjana == null ? '—' : r.mitjana.toFixed(1).replace('.', ',')}</b></td><td class="seg-r ${r.f ? 'seg-mal' : ''}">${r.f || ''}</td><td class="seg-r">${r.fj || ''}</td><td class="seg-r">${r.a || ''}</td><td class="seg-r">${r.p || ''}</td><td class="seg-r ${r.nn ? 'seg-mal' : ''}">${r.nn || ''}</td><td class="seg-r ${r.i ? 'seg-mal' : ''}">${r.i || ''}</td><td class="seg-r" title="Dies amb algun taller fet">${diesTallerFet(id) || ''}</td>${LLISTA_UNITATS.map(k => celaQualif(id, UNITATS[k], true).replace('<td', '<td data-qs="1"')).join('')}
           ${dies.map(d => { const x = S.seg[d]?.a?.[id] || {};
-            return ` <td class="seg-t t${x.t || 0}" title="${x.t === 'F' ? 'Falta' : x.t === 'FJ' ? 'Falta justificada' : ''}" data-d="${d}" data-a="${id}" data-c="t">${x.t || ''}</td><td class="seg-p" data-d="${d}" data-a="${id}" data-c="p"><span class="seg-cara">${x.p ? PARTIC[x.p].e : ''}</span><button class="seg-inc ${x.i ? 'on' : ''}" data-d="${d}" data-a="${id}" title="${x.i ? 'Treu l\'incident' : 'Marca un incident (mal comportament)'}"></button></td>`; }).join('')}</tr>`; }).join('')}
+            return ` <td class="seg-t t${x.t || 0}" title="${x.t === 'F' ? 'Falta' : x.t === 'FJ' ? 'Falta justificada' : ''}" data-d="${d}" data-a="${id}" data-c="t">${x.t || ''}</td><td class="seg-p" data-d="${d}" data-a="${id}" data-c="p"><span class="seg-cara">${x.p ? PARTIC[x.p].e : ''}</span><button class="seg-inc ${x.i ? 'on' : ''}" data-d="${d}" data-a="${id}" title="${x.i ? 'Treu l\'incident' : 'Marca un incident (mal comportament)'}"></button></td>${celaTallerDia(id, d)}`; }).join('')}</tr>`; }).join('')}
     </tbody></table></div>
     <p class="ajuda" style="margin-top:8px">El seguiment no compta per a cap nota de l'app i només el veu el professor.</p>`;
   enllacaSeg(c);
@@ -3900,7 +3919,7 @@ function pintaDemo() {
   const barra = `<div class="fila-form"><b>Objectiu</b> <select class="camp" id="d-o">${grups.map(([u, l]) => `<optgroup label="${u.nom}">${l.map(o => `<option value="${o.id}" ${o.id === st.o ? 'selected' : ''}>${o.num} · ${o.titol}</option>`).join('')}</optgroup>`).join('')}</select>
       <b style="margin-left:12px">Nivell</b> <span class="segment" id="d-n">${[1, 2, 3].map(n => `<button data-n="${n}" class="${n === st.nivell ? 'activa' : ''}">${n}</button>`).join('')}</span>
       <span class="segment" id="d-m" style="margin-left:12px"><button data-m="un" class="${st.mode === 'un' ? 'activa' : ''}">Un exercici</button><button data-m="ronda" class="${st.mode === 'ronda' ? 'activa' : ''}">Ronda sencera</button></span>
-      <span style="margin-left:auto;display:flex;gap:8px"><button class="boto-petit" id="d-met" title="Obre el joc dels meteorits al nivell triat (no es desa res)">☄️ Meteorits</button><button class="boto-petit" id="d-bac" title="Obre el joc dels bacteris al nivell triat (no es desa res)">🦠 Bacteris</button><button class="boto-petit" id="d-tor" title="Obre la torre de potències al nivell triat (no es desa res)">🏗️ Torre</button><button class="boto-petit" id="d-repas" title="Obre el taller de repàs d'enters per veure'l (no es desa res)">🔁 Taller de repàs</button><button class="boto-petit" id="d-nou">🎲 ${st.mode === 'ronda' ? 'Una altra ronda' : 'Un altre exercici'}</button><button class="boto taronja" id="d-previ" title="Fes l'objectiu com un alumne, sense desar res">👁 Prova-ho com a alumne</button></span></div>`;
+      <span style="margin-left:auto;display:flex;gap:8px"><button class="boto-petit" id="d-met" title="Obre el joc dels meteorits al nivell triat (no es desa res)">☄️ Meteorits</button><button class="boto-petit" id="d-metf" title="Meteorits amb fraccions al nivell triat (no es desa res)">☄️ Fraccions</button><button class="boto-petit" id="d-bac" title="Obre el joc dels bacteris al nivell triat (no es desa res)">🦠 Bacteris</button><button class="boto-petit" id="d-tor" title="Obre la torre de potències al nivell triat (no es desa res)">🏗️ Torre</button><button class="boto-petit" id="d-repas" title="Obre el taller de repàs d'enters per veure'l (no es desa res)">🔁 Taller de repàs</button><button class="boto-petit" id="d-nou">🎲 ${st.mode === 'ronda' ? 'Una altra ronda' : 'Un altre exercici'}</button><button class="boto taronja" id="d-previ" title="Fes l'objectiu com un alumne, sense desar res">👁 Prova-ho com a alumne</button></span></div>`;
   let cos;
   if (st.mode === 'ronda') {
     if (!st.ronda) st.ronda = generaRonda(st.o, st.nivell);
@@ -3927,6 +3946,7 @@ function pintaDemo() {
   $('#d-previ').onclick = () => previsualitza(st.o, st.nivell);
   const dr = $('#d-repas'); if (dr) dr.onclick = () => obreRepas(st.nivell);
   const dm = $('#d-met'); if (dm) dm.onclick = () => obreMeteorits(st.nivell);
+  const dmf = $('#d-metf'); if (dmf) dmf.onclick = () => obreJocExt('tmetf', st.nivell);
   const db2 = $('#d-bac'); if (db2) db2.onclick = () => obreJocExt('tbac', st.nivell);
   const dt2 = $('#d-tor'); if (dt2) dt2.onclick = () => obreJocExt('ttor', st.nivell);
   const dp = $('#d-pas'); if (dp) dp.onclick = () => { st.pas++; pintaDemo(); };

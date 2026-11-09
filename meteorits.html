@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,800&display=swap" rel="stylesheet">
 <style>
-/* Taller de l'app FR-4C · Enters. Es pot obrir sol o dins de l'app (l'app li passa l'alumne i el nivell per postMessage). */
+/* Taller de l'app FR-4C · Enters, fraccions i mesura (paquets d'operacions: M.mode). Es pot obrir sol o dins de l'app (l'app li passa l'alumne i el nivell per postMessage). */
 :root{--taronja:#f26b1d;--blau:#2a6fd6;--tinta:#1b1b1b;--ok:#2c9a58;--ko:#d64242;--cel1:#0b1026;--cel2:#1d1340}
 *{box-sizing:border-box}
 html,body{margin:0;height:100%;font-family:"Atkinson Hyperlegible",system-ui,sans-serif;background:var(--cel1);color:#fff;overflow:hidden;user-select:none}
@@ -54,6 +54,7 @@ svg.fx{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-in
 .fallades{columns:2;font-size:1.1rem;margin:6px 0 0;padding-left:20px}.fallades li{margin:2px 0}
 .rec{color:var(--taronja);font-weight:800}
 .mini{font-size:.95rem;color:#666}
+.fr{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1;margin:0 2px;font-size:.85em}.fr i{font-style:normal;padding:0 3px}.fr i:first-child{border-bottom:3px solid currentColor;padding-bottom:2px}.fr i:last-child{padding-top:2px}
 </style>
 </head>
 <body>
@@ -100,11 +101,12 @@ const DURADA = 120; // segons màxims de partida
 const ESCUTS = 3;
 
 /* ---------- estat ---------- */
-const M = { nivell: 1, nom: '', record: 0, dinsApp: false, so: true, pantalla: 'inici' };
+const M = { nivell: 1, nom: '', record: 0, dinsApp: false, so: true, pantalla: 'inici', mode: 'enters' };
 window.__M = M; // per a les proves automàtiques
 try { M.so = localStorage.getItem('fr4c_met_so') !== '0'; } catch (e) {}
-const qs = new URLSearchParams(location.search); if (qs.get('nivell')) M.nivell = Math.max(1, Math.min(3, +qs.get('nivell')));
-try { M.record = +(localStorage.getItem('fr4c_met_rec_' + M.nivell) || 0); } catch (e) {}
+const qs = new URLSearchParams(location.search); if (qs.get('nivell')) M.nivell = Math.max(1, Math.min(3, +qs.get('nivell'))); if (['enters', 'fraccions', 'mesura'].includes(qs.get('mode'))) M.mode = qs.get('mode');
+const clauRec = () => 'fr4c_met_rec_' + (M.mode === 'enters' ? '' : M.mode + '_') + M.nivell;
+try { M.record = +(localStorage.getItem(clauRec()) || 0); } catch (e) {}
 
 /* ---------- operacions per nivell, amb distractors que són errors típics ---------- */
 function opSuma(L) {
@@ -131,16 +133,61 @@ function opComb() {
   const d = rnd(2, 5), q = sg() * rnd(2, 6), c = sg() * rnd(2, 9); const r = q + c;
   return { html: `${pz(q * d)} : ${pz(d)} ${c < 0 ? '−' : '+'} ${Math.abs(c)}`, r, mals: [-q + c, q - c, -r] };
 }
+/* ---------- paquet FRACCIONS ---------- */
+const mcd = (a, b) => b ? mcd(b, a % b) : a;
+const FR = (n, d) => { const g = mcd(Math.abs(n), d); n /= g; d /= g; return d === 1 ? String(n) : `${n}/${d}`; }; // valor canònic (text)
+const frH = t => String(t).replace(/(\d+)\/(\d+)/g, '<span class="fr"><i>$1</i><i>$2</i></span>').replace(/-/g, '−');
+const dec = v => String(v).replace('.', ',');
+function opFrac() {
+  const L = M.nivell; const t = rnd(0, L === 1 ? 2 : L === 2 ? 4 : 6);
+  if (t === 0) { const d = tria([2, 3, 4, 5, 10]), k = rnd(2, L === 1 ? 6 : 12), n = L === 1 ? 1 : rnd(1, d - 1); const q = d * k;
+    return { html: `${frH(n + '/' + d)} de ${q}`, r: String(n * k), mals: [String(q / n | 0), String(q - n * k), String(k), String(n * k + d)] }; }
+  if (t === 1) { const d = tria([3, 4, 5, 6, 8]), a = rnd(1, d - 2), b = rnd(1, d - a - 1);
+    return { html: `${frH(a + '/' + d)} + ${frH(b + '/' + d)}`, r: FR(a + b, d), mals: [`${a + b}/${d + d}`, `${a * b}/${d}`, FR(a + b + 1, d)] }; }
+  if (t === 2) { const d = tria([2, 3, 4, 5]), n = rnd(1, d - 1), k = rnd(2, 4);
+    return { html: `${frH(n + '/' + d)} = ${frH('?/' + d * k)}`, r: String(n * k), mals: [String(n + k), String(n * k + 1), String(d * k - n)] }; }
+  if (t === 3) { const [f, v] = tria([['1/2', '0,5'], ['1/4', '0,25'], ['3/4', '0,75'], ['1/5', '0,2'], ['2/5', '0,4'], ['1/10', '0,1'], ['3/10', '0,3']]);
+    return { html: `${frH(f)} = ?`, r: v, mals: ['0,' + f.replace('/', ''), '1,' + f.split('/')[1], f.split('/')[0] + ',' + f.split('/')[1], '0,' + f.split('/')[1]] }; }
+  if (t === 4) { const d = tria([3, 4, 5, 6, 7, 8]), a = rnd(2, d - 1), b = rnd(1, a - 1);
+    return { html: `${frH(a + '/' + d)} − ${frH(b + '/' + d)}`, r: FR(a - b, d), mals: [`${a - b}/0`.replace('/0', ''), FR(a - b, d * 2), FR(a + b, d)] }; }
+  if (t === 5) { const [x, y] = tria([[2, 4], [2, 6], [3, 6], [4, 8], [2, 8], [3, 9]]); const a = 1, b = rnd(1, y - 1);
+    return { html: `${frH(a + '/' + x)} + ${frH(b + '/' + y)}`, r: FR(a * (y / x) + b, y), mals: [FR(a + b, x + y), FR(a + b, y), FR(a * (y / x) + b + 1, y)] }; }
+  const a = rnd(1, 4), b = rnd(2, 5), c = rnd(1, 4), d = rnd(2, 5);
+  return { html: `${frH(a + '/' + b)} · ${frH(c + '/' + d)}`, r: FR(a * c, b * d), mals: [FR(a * d, b * c), FR(a + c, b + d), FR(a * c, b + d)] };
+}
+/* ---------- paquet MESURA (moure la coma i canvis d'unitats) ---------- */
+const nr = x => Math.round(x * 1e6) / 1e6;
+const fmtN = x => { const t = dec(nr(x)); const [e, d] = t.split(','); const eg = e.length > 4 ? e.replace(/\B(?=(\d{3})+$)/g, '.') : e; return d ? eg + ',' + d : eg; };
+function opMesura() {
+  const L = M.nivell;
+  if (L === 1 || Math.random() < .25) { const f = tria([10, 100, 1000]); const per = Math.random() < .5; const x = tria([3.4, 0.7, 25, 4.56, 0.08, 12, 1.5, 7.25, 360, 52]);
+    const v = per ? x * f : x / f; const alt = [per ? x * f * 10 : x / f / 10, per ? x * f / 10 : x / f * 10, per ? x / f : x * f];
+    return { html: `${fmtN(x)} ${per ? '·' : ':'} ${String(f).replace(/(\d)(?=(\d{3})+$)/g, '$1.')}`, r: fmtN(v), mals: alt.map(fmtN) }; }
+  const LONG = ['km', 'hm', 'dam', 'm', 'dm', 'cm', 'mm'], MASSA = ['kg', 'hg', 'dag', 'g', 'dg', 'cg', 'mg'], CAP = ['kL', 'hL', 'daL', 'L', 'dL', 'cL', 'mL'];
+  if (L === 3 && Math.random() < .35) {
+    const t = rnd(0, 2);
+    if (t === 0) { const [u, f, a, b] = tria([['m²', 100, 'm²', 'dm²'], ['dm²', 100, 'dm²', 'cm²'], ['ha', 10000, 'ha', 'm²']]); const x = tria([2, 3.5, 0.4, 1.2]);
+      return { html: `${fmtN(x)} ${a} = ? ${b}`, r: fmtN(x * f), mals: [fmtN(x * 10), fmtN(x * f * 10), fmtN(x / f)] }; }
+    if (t === 1) { const x = tria([1.5, 2, 0.5, 3, 2.25]); return { html: `${fmtN(x)} h = ? min`, r: fmtN(x * 60), mals: [fmtN(x * 100), fmtN(x * 60 + 10), fmtN(Math.floor(x) * 60 + (x % 1) * 10)] }; }
+    const x = tria([2, 5, 0.5, 1.5, 3]); return { html: `${fmtN(x)} dm³ = ? L`, r: fmtN(x), mals: [fmtN(x * 10), fmtN(x * 1000), fmtN(x / 10)] };
+  }
+  const esc = tria([LONG, LONG, MASSA, CAP]); let i, j; do { i = rnd(0, 6); j = rnd(0, 6); } while (i === j || Math.abs(i - j) > (L === 2 ? 3 : 6) || (esc === MASSA && (i === 1 || i === 2 || j === 1 || j === 2) && L === 2));
+  const x = tria([2.5, 3, 0.75, 1.2, 45, 350, 8, 0.6, 12.5, 125]); const v = x * 10 ** (j - i);
+  return { html: `${fmtN(x)} ${esc[i]} = ? ${esc[j]}`, r: fmtN(v), mals: [fmtN(x * 10 ** (i - j)), fmtN(v * 10), fmtN(v / 10), fmtN(x * 10 ** (j - i + (j > i ? 1 : -1)))] };
+}
 function novaOp() {
   let o;
-  if (M.nivell === 1) o = opSuma(10);
+  if (M.mode === 'fraccions') o = opFrac();
+  else if (M.mode === 'mesura') o = opMesura();
+  else if (M.nivell === 1) o = opSuma(10);
   else if (M.nivell === 2) o = Math.random() < .5 ? opSuma(15) : opProd(10);
   else o = Math.random() < .55 ? opComb() : Math.random() < .5 ? opProd(12) : opSuma(20);
   // 3 opcions diferents: la bona i dos errors típics (si no n'hi ha prou, números propers)
-  const set = new Set([o.r]); const ops = [o.r];
-  for (const m of barreja(o.mals)) if (!set.has(m) && ops.length < 3) { set.add(m); ops.push(m); }
-  let g = 0; while (ops.length < 3 && g++ < 50) { const m = o.r + tria([-3, -2, -1, 1, 2, 3]); if (!set.has(m)) { set.add(m); ops.push(m); } }
-  o.opcions = barreja(ops); return o;
+  const canon = m => typeof m === 'string' && /^\d+\/\d+$/.test(m) ? FR(+m.split('/')[0], +m.split('/')[1]) : m; // 4/6 i 2/3 són el mateix valor
+  const set = new Set([canon(o.r)]); const ops = [o.r];
+  for (const m of barreja(o.mals)) if (!set.has(canon(m)) && ops.length < 3) { set.add(canon(m)); ops.push(m); }
+  let g = 0; while (ops.length < 3 && g++ < 50) { const m = typeof o.r === 'number' ? o.r + tria([-3, -2, -1, 1, 2, 3]) : (M.mode === 'mesura' ? fmtN(parseFloat(o.r.replace(',', '.')) * tria([2, 3, 1000, .5])) : FR(rnd(1, 9), rnd(2, 9))); if (!set.has(m)) { set.add(m); ops.push(m); } }
+  o.opcions = barreja(ops); o.fmt = M.mode === 'enters' ? fz : (M.mode === 'fraccions' ? frH : String); return o;
 }
 
 /* ---------- so ---------- */
@@ -162,7 +209,7 @@ const SO = {
 };
 
 /* ---------- partida ---------- */
-const P = {}; window.__P = P;
+const P = {}; window.__P = P; window.__novaOp = () => novaOp();
 function comenca() {
   Object.assign(P, { punts: 0, escuts: ESCUTS, combo: 0, maxCombo: 0, encerts: 0, errors: 0, t0: performance.now(), fallades: [], vel: M.nivell === 1 ? 11 : M.nivell === 2 ? 12 : 13, bloc: false, met: null, acabada: false });
   M.pantalla = 'joc'; $('#pant').style.display = 'none'; pintaCap(); llança(); requestAnimationFrame(bucle);
@@ -177,7 +224,7 @@ function llança() {
 }
 function pintaRespostes() {
   const o = P.met.o;
-  $('#resp').innerHTML = o.opcions.map((v, i) => `<button class="resp" data-i="${i}"><small>${i + 1}</small>${fz(v)}</button>`).join('');
+  $('#resp').innerHTML = o.opcions.map((v, i) => `<button class="resp" data-i="${i}"><small>${i + 1}</small>${o.fmt(v)}</button>`).join('');
   document.querySelectorAll('.resp').forEach(b => b.onclick = () => respon(+b.dataset.i));
 }
 function bucle(ara) {
@@ -206,18 +253,18 @@ function respon(i) {
     P.vel = Math.max(M.nivell === 3 ? 6 : 5, P.vel - .35);
   } else {
     bs[i].classList.add('mal'); bs[o.opcions.indexOf(o.r)].classList.add('be');
-    falla(`${o.html} = <b>${fz(o.r)}</b>`);
+    falla(`${o.html} = <b>${o.fmt(o.r)}</b>`);
   }
   pintaCap();
 }
 function impacte() {
   P.bloc = true; SO.impacte(); const o = P.met.o;
   document.querySelectorAll('.resp').forEach((b, k) => { b.disabled = true; if (o.opcions[k] === o.r) b.classList.add('be'); });
-  esclata(P.met, true); falla(`${o.html} = <b>${fz(o.r)}</b>`, true);
+  esclata(P.met, true); falla(`${o.html} = <b>${o.fmt(o.r)}</b>`, true);
 }
 function falla(txt, xoc = false) {
   P.errors++; P.combo = 0; P.escuts--; if (!xoc) SO.mal();
-  P.fallades.push(P.met.o.html + ' = ' + fz(P.met.o.r));
+  P.fallades.push((P.met.o.html + ' = ' + P.met.o.fmt(P.met.o.r)).replace(/<span class="fr"><i>(\d+|\?)<\/i><i>(\d+)<\/i><\/span>/g, '$1/$2'));
   $('#joc').classList.remove('sacseja'); void $('#joc').offsetWidth; $('#joc').classList.add('sacseja');
   avis(`${xoc ? 'Impacte!' : 'Ui!'} ${txt}`, false, 1500);
   if (!xoc) setTimeout(() => esclata(P.met, true), 300);
@@ -248,9 +295,9 @@ function pintaCap() {
 function acaba(motiu) {
   if (P.acabada) return; P.acabada = true; M.pantalla = 'fi'; P.met?.el.remove(); $('#resp').innerHTML = '';
   SO.fi(); const nouRec = P.punts > M.record; if (nouRec) M.record = P.punts;
-  try { localStorage.setItem('fr4c_met_rec_' + M.nivell, M.record); } catch (e) {}
+  try { localStorage.setItem(clauRec(), M.record); } catch (e) {}
   const temps = Math.round((performance.now() - P.t0) / 1000);
-  envia({ tipus: 'fr4c-met-fi', punts: P.punts, encerts: P.encerts, errors: P.errors, maxCombo: P.maxCombo, nivell: M.nivell, temps, fallades: P.fallades.slice(0, 20) });
+  envia({ tipus: 'fr4c-met-fi', mode: M.mode, punts: P.punts, encerts: P.encerts, errors: P.errors, maxCombo: P.maxCombo, nivell: M.nivell, temps, fallades: P.fallades.slice(0, 20) });
   const pct = P.encerts + P.errors ? Math.round(100 * P.encerts / (P.encerts + P.errors)) : 0;
   pantalla(`<h1>${motiu === 'temps' ? 'Temps! La base resisteix 🛡️' : 'La base ha caigut! 💥'}</h1>
     <p>${nouRec ? '<span class="rec">🏆 Nou rècord!</span> ' : ''}${M.nom ? `<b>${esc(M.nom)}</b>, h` : 'H'}as fet <b>${P.punts}</b> punts. ${!nouRec && M.record ? `El teu rècord és de <b>${M.record}</b>.` : ''}</p>
@@ -263,22 +310,23 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;',
 function pantalla(html) { const p = $('#pant'); p.innerHTML = `<div class="panell">${html}</div>`; p.style.display = 'flex'; }
 function inici() {
   M.pantalla = 'inici';
-  const txtN = { 1: 'sumes i restes', 2: 'sumes, restes, multiplicacions i divisions', 3: 'operacions combinades' };
+  const TXT = { enters: { 1: 'sumes i restes', 2: 'sumes, restes, multiplicacions i divisions', 3: 'operacions combinades' }, fraccions: { 1: 'fracció d\'una quantitat, sumes i equivalents', 2: 'decimals, sumes i restes', 3: 'diferent denominador i productes' }, mesura: { 1: 'moure la coma (· i : per 10, 100, 1.000)', 2: 'canvis d\'unitats de longitud, massa i capacitat', 3: 'canvis d\'unitats, superfície, volum i temps' } };
+  const txtN = TXT[M.mode];
   pantalla(`<h1>☄️ Defensa la base de Mart</h1>
-    <p>${M.nom ? `Hola, <b>${esc(M.nom)}</b>! ` : ''}Cauen meteorits sobre la base d'en FR-4C. Cada meteorit porta una operació: <b>toca el resultat correcte</b> (o prem 1, 2 o 3) i el làser el destruirà.</p>
+    <p>${M.nom ? `Hola, <b>${esc(M.nom)}</b>! ` : ''}Cauen meteorits sobre la base d'en FR-4C. Cada meteorit porta ${M.mode === 'mesura' ? 'una mesura o una operació' : M.mode === 'fraccions' ? 'una operació amb fraccions' : 'una operació'}: <b>toca el resultat correcte</b> (o prem 1, 2 o 3) i el làser el destruirà.</p>
     <p>Tens <b>3 escuts</b> 🛡️🛡️🛡️: cada error o cada meteorit que toca terra en treu un. La partida dura com a màxim 2 minuts. Si n'encadenes 3 de seguits, <b>combo ×2</b>; si en són 6, <b>×3</b>!</p>
     <p class="mini">Nivell ${M.nivell}: ${txtN[M.nivell]}.${M.record ? ` El teu rècord: <b>${M.record}</b> punts.` : ''}</p>
     ${!M.dinsApp ? `<div class="fila"><b>Nivell:</b><span class="seg" id="nv">${[1, 2, 3].map(n => `<button data-n="${n}" class="${n === M.nivell ? 'on' : ''}">${n}</button>`).join('')}</span></div>` : ''}
     <div class="fila"><button class="big" id="go">Comença! →</button>${M.dinsApp ? '<button class="big sec" id="tanca2">Surt</button>' : ''}</div>`);
   $('#go').onclick = comenca; const t = $('#tanca2'); if (t) t.onclick = surt;
-  document.querySelectorAll('#nv button').forEach(b => b.onclick = () => { M.nivell = +b.dataset.n; try { M.record = +(localStorage.getItem('fr4c_met_rec_' + M.nivell) || 0); } catch (e) {} inici(); });
+  document.querySelectorAll('#nv button').forEach(b => b.onclick = () => { M.nivell = +b.dataset.n; try { M.record = +(localStorage.getItem(clauRec()) || 0); } catch (e) {} inici(); });
 }
 /* ---------- comunicació amb l'app ---------- */
 const envia = m => { try { if (window.parent !== window) window.parent.postMessage(m, '*'); } catch (e) {} };
 function surt() { M.pantalla = 'fora'; envia({ tipus: 'fr4c-met-tanca' }); if (window.parent === window) inici(); }
 window.addEventListener('message', ev => {
   const d = ev.data || {}; if (d.tipus !== 'fr4c-met-ini') return;
-  M.dinsApp = true; M.nom = d.nom || ''; M.nivell = Math.max(1, Math.min(3, d.nivell || 1)); M.record = Math.max(d.record || 0, 0);
+  M.dinsApp = true; M.nom = d.nom || ''; if (['enters', 'fraccions', 'mesura'].includes(d.mode)) M.mode = d.mode; M.nivell = Math.max(1, Math.min(3, d.nivell || 1)); M.record = Math.max(d.record || 0, 0);
   if (d.so === false) M.so = false; $('#so').textContent = M.so ? '🔊' : '🔇';
   if (M.pantalla === 'inici') inici();
 });

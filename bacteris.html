@@ -54,6 +54,7 @@ html,body{margin:0;height:100%;font-family:"Atkinson Hyperlegible",system-ui,san
 .rec{color:var(--taronja);font-weight:800}
 .mini{font-size:.95rem;color:#666}
 .regla{font-size:1rem;color:#555;margin-top:4px}
+sup{font-size:.62em;line-height:0;vertical-align:.75em;font-family:inherit}
 </style>
 </head>
 <body>
@@ -86,7 +87,11 @@ const barreja = a => { a = [...a]; for (let i = a.length - 1; i > 0; i--) { cons
 const SUP = '⁰¹²³⁴⁵⁶⁷⁸⁹';
 const sp = n => String(n).split('').map(c => SUP[+c]).join('');
 const pw = (b, e) => `${b}${sp(e)}`;
-const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const pwH = (b, e) => `${b}<sup>${e}</sup>`;
+const esc0 = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+// els exponents es pinten amb <sup> (els caràcters ⁰¹²… no surten tots amb la mateixa lletra)
+const supH = h => String(h).replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹]+/g, m => '<sup>' + [...m].map(c => SUP.indexOf(c)).join('') + '</sup>');
+const esc = s => supH(esc0(s));
 const DURADA = 120, MAXL = 8;
 
 const M = { nivell: 1, nom: '', record: 0, dinsApp: false, so: true, pantalla: 'inici' };
@@ -152,7 +157,7 @@ function pintaPlaca() {
   const n = Math.min(2 ** P.L, 256); const perill = P.L >= MAXL - 1;
   $('#placa').innerHTML = `<circle cx="100" cy="100" r="92" fill="#fffdf6" stroke="#1b1b1b" stroke-width="5"/><circle cx="100" cy="100" r="84" fill="none" stroke="#ddd" stroke-width="2"/>` +
     PUNTS.slice(0, n).map(([x, y, k]) => `<ellipse cx="${x}" cy="${y}" rx="4.2" ry="2.6" transform="rotate(${k * 180} ${x} ${y})" fill="${perill ? '#d64242' : k < .5 ? '#2c9a58' : '#4fb56f'}" stroke="#1b1b1b" stroke-width=".6"/>`).join('');
-  $('#estat').innerHTML = `Colònia: <b>${pw(2, P.L)}</b> = ${n} bacteris<small>${perill ? '⚠️ La placa està a punt de vessar!' : `Vessa a ${pw(2, MAXL + 1)}. Cada encert la divideix entre 2.`}</small>`;
+  $('#estat').innerHTML = `Colònia: <b>${pwH(2, P.L)}</b> = ${n} ${n === 1 ? "bacteri" : "bacteris"}<small>${perill ? '⚠️ La placa està a punt de vessar!' : `Vessa a ${pwH(2, MAXL + 1)}. Cada encert la divideix entre 2.`}</small>`;
   $('#estat').classList.toggle('perill', perill);
   $('#cbar').style.transform = `scaleX(${P.L / (MAXL + 1)})`;
 }
@@ -164,7 +169,7 @@ function comenca() {
   Object.assign(P, { punts: 0, L: 2, combo: 0, maxCombo: 0, encerts: 0, errors: 0, t0: performance.now(), tick: performance.now(), fallades: [], bloc: false, acabada: false, r: null, ultim: '' });
   M.pantalla = 'joc'; $('#pant').style.display = 'none'; pintaCap(); pintaPlaca(); seguent(); requestAnimationFrame(bucle);
 }
-function seguent() { P.r = nouRepte(); P.bloc = false; P.tq = performance.now(); $('#q').textContent = P.r.q; $('#e').textContent = P.r.e; $('#regla').textContent = M.nivell === 1 ? P.r.regla : '';
+function seguent() { P.r = nouRepte(); P.bloc = false; P.tq = performance.now(); $('#q').innerHTML = esc(P.r.q); $('#e').innerHTML = esc(P.r.e); $('#regla').innerHTML = M.nivell === 1 ? esc(P.r.regla) : '';
   $('#resp').innerHTML = P.r.opcions.map((v, i) => `<button class="resp" data-i="${i}"><small>${i + 1}</small>${esc(v)}</button>`).join('');
   document.querySelectorAll('.resp').forEach(b => b.onclick = () => respon(+b.dataset.i)); }
 function bucle(ara) {
@@ -197,7 +202,7 @@ function respon(i) {
     pintaCap(); setTimeout(() => { if (M.pantalla !== 'joc') return; creix(); if (M.pantalla === 'joc') { P.tick = performance.now(); seguent(); } }, 1900);
   }
 }
-function avis(html, ok, ms) { const d = document.createElement('div'); d.className = 'avis' + (ok ? ' ok' : ''); d.innerHTML = html; $('#joc').appendChild(d); setTimeout(() => d.remove(), ms); }
+function avis(html, ok, ms) { const d = document.createElement('div'); d.className = 'avis' + (ok ? ' ok' : ''); d.innerHTML = supH(html); $('#joc').appendChild(d); setTimeout(() => d.remove(), ms); }
 function pintaCap() { $('#punts').textContent = P.punts ?? 0; $('#combo').textContent = P.combo >= 3 ? `combo ×${P.combo >= 6 ? 3 : 2}` : ''; }
 function acaba(motiu) {
   if (P.acabada) return; P.acabada = true; M.pantalla = 'fi'; $('#resp').innerHTML = '';
@@ -214,13 +219,13 @@ function acaba(motiu) {
     <div class="fila"><button class="big" id="torna">Torna a jugar</button><button class="big sec" id="tanca2">Surt</button></div>`);
   $('#torna').onclick = comenca; $('#tanca2').onclick = surt;
 }
-function pantalla(html) { const p = $('#pant'); p.innerHTML = `<div class="panell">${html}</div>`; p.style.display = 'flex'; }
+function pantalla(html) { const p = $('#pant'); p.innerHTML = `<div class="panell">${supH(html)}</div>`; p.style.display = 'flex'; }
 function inici() {
   M.pantalla = 'inici';
   const txtN = { 1: 'què és una potència, calcular-la, potències de 10', 2: 'producte, quocient i potència d\'una potència', 3: 'regles combinades, base negativa i arrels' };
   P.L = 2; pintaPlaca();
   pantalla(`<h1>🦠 Brot de bacteris</h1>
-    <p>${M.nom ? `Hola, <b>${esc(M.nom)}</b>! ` : ''}Al laboratori d'en FR-4C hi ha un cultiu de bacteris que <b>es duplica</b> cada pocs segons: 2² → 2³ → 2⁴… Si arriba a ${pw(2, MAXL + 1)}, la placa vessa!</p>
+    <p>${M.nom ? `Hola, <b>${esc(M.nom)}</b>! ` : ''}Al laboratori d'en FR-4C hi ha un cultiu de bacteris que <b>es duplica</b> cada pocs segons: 2² → 2³ → 2⁴… Si arriba a ${pwH(2, MAXL + 1)}, la placa vessa!</p>
     <p>Cada <b>encert</b> hi tira una gota d'antibiòtic i la colònia es <b>divideix entre 2</b> (amb 3 encerts seguits, entre 4). Cada <b>error</b> la fa duplicar de cop. Si aguantes 2 minuts, +50 punts.</p>
     <p class="mini">Nivell ${M.nivell}: ${txtN[M.nivell]}.${M.record ? ` El teu rècord: <b>${M.record}</b> punts.` : ''} Pots respondre amb les tecles 1, 2 i 3.</p>
     ${!M.dinsApp ? `<div class="fila"><b>Nivell:</b><span class="seg" id="nv">${[1, 2, 3].map(n => `<button data-n="${n}" class="${n === M.nivell ? 'on' : ''}">${n}</button>`).join('')}</span></div>` : ''}
