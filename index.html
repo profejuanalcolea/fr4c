@@ -534,6 +534,9 @@ svg.fletxes{max-width:310px}
 .cb-chips{display:flex;flex-wrap:wrap;gap:6px}.cb-chips span{background:#eaf1fb;border:1px solid #c3d3ec;border-radius:999px;padding:2px 10px;font-size:.85rem}
 .cb-tbl{border-collapse:collapse;margin:8px 0;font-size:.95rem}.cb-tbl th,.cb-tbl td{border:1px solid #c3d3ec;padding:4px 8px;text-align:left}.cb-tbl th{background:#eaf1fb;color:#0b2a5b}
 .cb-mosaic{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.cb-graf,.cb-aid-recta{margin:6px 0}.cb-graf svg,.cb-edifici svg,.cb-aid-recta svg{display:block;margin:0 auto;height:auto}
+.cb-ctx-fila{display:flex;gap:14px;align-items:flex-start}.cb-ctx-fila>div:first-child{flex:1}.cb-edifici{flex:0 0 auto}
+@media (max-width:700px){.cb-ctx-fila{flex-direction:column}}
 .cb-llegenda{display:flex;flex-direction:column;gap:4px;font-size:.85rem}.cb-llegenda i{display:inline-block;width:14px;height:14px;border:1px solid #0b2a5b;margin-right:6px;vertical-align:-2px}
 .cb-prog{display:flex;gap:3px;flex-wrap:wrap;margin-top:auto}.cb-prog i{width:18px;height:7px;border-radius:3px;background:#c3d3ec}.cb-prog i.done{background:#0b2a5b}.cb-prog i.now{background:var(--taronja)}.cb-prog i.gap{width:8px;background:transparent}
 .cb-q{display:flex;gap:10px;align-items:flex-start;font-size:1.1rem;font-weight:600}
@@ -2205,15 +2208,15 @@ function faseTallerSol(R, info, prog) {
    Contingut original: 3 activitats, 18 preguntes, 10 punts
    ===================================================================== */
 const NAVY = '#0b2a5b';
-const PC = { id: 'pc', unitat: 'f', provaKey: 'provaC', titol: 'Prova de competències · Fraccions' };
+const PC_F = { id: 'pc', unitat: 'f', provaKey: 'provaC', titol: 'Prova de competències · Fraccions' };
 const CB_NIV = { 1: 'basic', 2: 'intermedi', 3: 'repte' };
 const CB_NOM = { basic: 'Nivell bàsic', intermedi: 'Nivell intermedi', repte: 'Nivell repte' };
 const CB_MULT = [1, .5, .25], CB_PISTA = .75;
 const F = (n, d) => frac(n, d);
-const cbParse = s => { s = String(s).trim().replace(/\s/g, ''); if (!s) return NaN; if (/^\d{1,3}(\.\d{3})+(,\d+)?$/.test(s)) s = s.replace(/\./g, ''); s = s.replace(',', '.'); return /^-?\d*\.?\d+$/.test(s) ? Number(s) : NaN; };
+const cbParse = s => { s = String(s).trim().replace(/\s/g, '').replace(/^[−–]/, '-').replace(/^\+/, ''); if (!s) return NaN; if (/^\d{1,3}(\.\d{3})+(,\d+)?$/.test(s)) s = s.replace(/\./g, ''); s = s.replace(',', '.'); return /^-?\d*\.?\d+$/.test(s) ? Number(s) : NaN; };
 const cbFmt = x => (Math.round(x * 100) / 100).toLocaleString('ca-ES', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
 function cbHash(str) { let h = 2166136261; for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
-function cbOrdre(n) { let a = cbHash((S.alumne || 'x') + '|' + n); const r = () => { a = (a + 0x6D2B79F5) | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; const k = ['a', 'b', 'c', 'd']; for (let i = 3; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [k[i], k[j]] = [k[j], k[i]]; } return k; }
+function cbOrdre(n) { let a = cbHash((PC.id === 'pc' ? '' : PC.id + '|') + (S.alumne || 'x') + '|' + n); const r = () => { a = (a + 0x6D2B79F5) | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; const k = ['a', 'b', 'c', 'd']; for (let i = 3; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [k[i], k[j]] = [k[j], k[i]]; } return k; }
 // lectura en veu alta (nivell bàsic)
 const CB_U = ['zero', 'un', 'dos', 'tres', 'quatre', 'cinc', 'sis', 'set', 'vuit', 'nou', 'deu', 'onze', 'dotze', 'tretze', 'catorze', 'quinze', 'setze', 'disset', 'divuit', 'dinou'];
 const CB_T = { 20: 'vint', 30: 'trenta', 40: 'quaranta', 50: 'cinquanta', 60: 'seixanta', 70: 'setanta', 80: 'vuitanta', 90: 'noranta' };
@@ -2222,7 +2225,7 @@ const CB_OS = { 2: 'mig', 3: 'terç', 4: 'quart', 5: 'cinquè', 6: 'sisè', 7: '
 const cbOrdS = d => CB_OS[d] || `${d}è`;
 const cbOrdP = d => d === 2 ? 'mitjos' : d === 3 ? 'terços' : d === 4 ? 'quarts' : cbOrdS(d).replace(/è$/, 'ens');
 const cbWords = (n, d) => (n === 1 ? 'un' : cbCard(n)) + ' ' + (n === 1 ? cbOrdS(d) : cbOrdP(d));
-function cbVeu(h) { const d = document.createElement('div'); d.innerHTML = h; $$('table', d).forEach(t => t.remove()); $$('.fr', d).forEach(f => { const [a, b] = [...f.children].map(x => x.textContent.trim()); const n = +a, dd = +b; f.replaceWith(Number.isInteger(n) && Number.isInteger(dd) && dd < 20 ? ` ${cbWords(n, dd)} ` : ` ${a} entre ${b} `); }); return d.textContent.replace(/\s+/g, ' ').trim(); }
+function cbVeu(h) { const d = document.createElement('div'); d.innerHTML = h; $$('table', d).forEach(t => t.remove()); $$('.fr', d).forEach(f => { const [a, b] = [...f.children].map(x => x.textContent.trim()); const n = +a, dd = +b; f.replaceWith(Number.isInteger(n) && Number.isInteger(dd) && dd < 20 ? ` ${cbWords(n, dd)} ` : ` ${a} entre ${b} `); }); return d.textContent.replace(/[−–-](?=\d)/g, ' menys ').replace(/\+(?=\d)/g, ' més ').replace(/\s+/g, ' ').trim(); }
 function cbParla(it) { if (!soActiu() || !('speechSynthesis' in window)) return; let t = cbVeu(it.q); if (it.type === 'mc') t += '. ' + cbOrdre(it.n).map((k, i) => 'Opció ' + 'abcd'[i] + ': ' + cbVeu(it.opts[k])).join('. '); try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(t); u.lang = 'ca-ES'; const v = speechSynthesis.getVoices().find(x => /^ca/i.test(x.lang)); if (v) u.voice = v; u.rate = .88; speechSynthesis.speak(u); } catch (e) { } }
 
 function cbMosaic(numerat) {
@@ -2233,12 +2236,12 @@ function cbMosaic(numerat) {
     <line x1="236" y1="10" x2="236" y2="210" stroke="${NAVY}" stroke-width="2"/><text x="244" y="114" font-size="12" fill="${NAVY}" transform="rotate(90 244 114)" text-anchor="middle">40 cm</text></svg>
     <div class="cb-llegenda"><span><i style="background:#2f6fd6"></i>Blau</span><span><i style="background:#f4c430"></i>Groc</span><span><i style="background:#fff"></i>Blanc</span></div></div>`;
 }
-const CB_ACTS = [
+const CB_ACTS_F = [
   { t: 'La festa de final de curs', max: 3.5, ctx: () => `<p>Els <b>60 alumnes</b> de 4t d'ESO de l'institut organitzen una festa de final de curs. El pressupost total és de <b>1.800 €</b>. L'AMPA en paga <b>la meitat</b>, l'ajuntament en paga <b>una cinquena part</b> i <b>la resta</b> la paguen els alumnes.</p><div class="cb-chips"><span>👥 60 alumnes</span><span>💶 1.800 €</span><span>AMPA: la meitat</span><span>Ajuntament: una cinquena part</span><span>Alumnes: la resta</span></div>` },
   { t: 'El mosaic', max: 3.5, ctx: () => `<p>Per decorar el vestíbul de l'institut, els alumnes dissenyen una rajola quadrada de <b>40 cm de costat</b>. La rajola es divideix en una quadrícula de <b>4 × 4</b> quadrats iguals: <b>6 són blaus</b>, <b>2 són grocs</b> i la resta són blancs.</p>${cbMosaic()}` },
   { t: 'La recepta', max: 3, ctx: () => `<p>En Pol vol fer una coca per a la festa. Ha trobat aquesta recepta en una aplicació de cuina:</p><table class="cb-tbl"><thead><tr><th>COCA DE IOGURT (4 persones)</th><th>Quantitat</th></tr></thead><tbody><tr><td>Farina</td><td>${F(3, 4)} kg</td></tr><tr><td>Llet</td><td>${F(1, 2)} litre</td></tr><tr><td>Sucre</td><td>${F(7, 4)} de tassa</td></tr><tr><td>Ous</td><td>2</td></tr></tbody></table>` }];
 const P_A1 = .5, P_A3 = .4, P_OPEN = 1;
-const CB_ITEMS = [
+const CB_ITEMS_F = [
   { n: 1, act: 0, type: 'mc', pts: P_A1, q: 'Quina fracció del pressupost paguen els alumnes?', opts: { a: F(1, 10), b: F(3, 10), c: F(2, 7), d: F(7, 10) }, ans: 'b',
     hb: ['Suma primer el que paguen l\'AMPA i l\'ajuntament: ' + F(1, 2) + ' + ' + F(1, 5) + '.', F(1, 2) + ' = ' + F(5, 10) + ' i ' + F(1, 5) + ' = ' + F(2, 10) + '. Junts paguen ' + F(7, 10) + '. Quant falta per arribar a ' + F(10, 10) + '?'], hi: 'Els alumnes paguen el que falta per arribar a 1 (el pressupost sencer).' },
   { n: 2, act: 0, type: 'mc', pts: P_A1, q: 'Quants euros paguen els alumnes en total?', opts: { a: '360 €', b: '540 €', c: '900 €', d: '1.260 €' }, ans: 'b',
@@ -2284,12 +2287,11 @@ const CB_ITEMS = [
     choice: { lab: 'Té raó en Pol?', opts: ['Sí, en Pol n\'ha menjat més.', 'No, la seva germana n\'ha menjat més.', 'N\'han menjat igual.'], ans: 0 },
     grade: (v, c) => { const ok = v[0] === 10 && v[1] === 9; if (c === 0) return ok ? 2 : 1; return ok ? 1 : 0; },
     hb: ['Per comparar-les, posa-les amb el mateix denominador: 15.', F(2, 3) + ' = ' + F(10, 15) + ' i ' + F(3, 5) + ' = ' + F('?', 15) + '.'], hi: 'Passa les dues fraccions a denominador 15.' }];
-const CB_N = CB_ITEMS.length;
 const cbActPts = (resp, a) => CB_ITEMS.filter(it => it.act === a).reduce((s, it) => s + (resp?.['i' + it.n]?.pts || 0), 0);
 const cbTotal = resp => [0, 1, 2].reduce((s, a) => s + cbActPts(resp, a), 0);
-const cbRespText = (it, r) => { if (!r) return 'sense resposta'; if (it.type === 'mc') return r.k ? textPla(it.opts[r.k]) : '—'; return it.fields.map((f, j) => `${textPla(f.pre)} ${r.v ? String(r.v[j]).replace('.', ',') : '—'}${f.frac ? '/' + f.frac : ' ' + (f.suf || '')}`).join(' · ') + (it.choice && r.c != null ? ` · ${it.choice.opts[r.c]}` : ''); };
-const cbCorrText = it => it.type === 'mc' ? textPla(it.opts[it.ans]) : it.fields.map(f => `${textPla(f.pre)} ${f.ans.toLocaleString('ca-ES')}${f.frac ? '/' + f.frac : ' ' + (f.suf || '')}`).join(' · ') + (it.choice ? ` · ${it.choice.opts[it.choice.ans]}` : '');
-const CB_INFO = `<h3>ⓘ Prova de competències · com funciona</h3>
+const cbRespText = (it, r) => { if (!r) return 'sense resposta'; if (it.type === 'mc') return r.k ? textPla(it.opts[r.k]) : '—'; return it.fields.map((f, j) => `${textPla(f.pre)} ${r.v ? String(r.v[j]).replace('.', ',').replace(/^-/, '−') : '—'}${f.frac ? '/' + f.frac : ' ' + (f.suf || '')}`).join(' · ') + (it.choice && r.c != null ? ` · ${it.choice.opts[r.c]}` : ''); };
+const cbCorrText = it => it.type === 'mc' ? textPla(it.opts[it.ans]) : it.fields.map(f => `${textPla(f.pre)} ${f.ans.toLocaleString('ca-ES').replace(/^-/, '−')}${f.frac ? '/' + f.frac : ' ' + (f.suf || '')}`).join(' · ') + (it.choice ? ` · ${it.choice.opts[it.choice.ans]}` : '');
+const CB_INFO_F = `<h3>ⓘ Prova de competències · Fraccions</h3>
   <p><b>Què és.</b> La prova de fraccions en format de competències bàsiques: 3 activitats amb context (la festa, el mosaic i la recepta) i 18 preguntes (15 de resposta tancada i 3 d'obertes). Compta com a <b>examen a part</b>: no toca els objectius ni l'AS de la unitat.</p>
   <p><b>Obertura.</b> Està tancada fins que l'obres (llibreta o Configuració). Cada alumne la fa <b>una vegada</b>; des de la seva casella li pots deixar fer un altre intent. Es pot deixar a mitges amb «Plego per avui» i continuar on era.</p>
   <p><b>Nivell.</b> Surt del nivell general de l'alumne: N1 → bàsic, N2 → intermedi, N3 → repte.</p>
@@ -2301,16 +2303,142 @@ const CB_INFO = `<h3>ⓘ Prova de competències · com funciona</h3>
   <p><b>Sortides de la pestanya.</b> La primera, avís. La segona, la prova s'entrega amb el que hi hagi.</p>
   <p><b>Compte:</b> les preguntes 5 (probabilitat), 10 (escala d'àrees), 16 (preu per quilogram) i 17 (percentatges) avaluen coses que l'app no treballa als objectius.</p>`;
 
+
+/* =====================================================================
+   PROVA DE COMPETÈNCIES · ENTERS (inspirada en les CB 4t ESO, adaptada)
+   3 activitats, 18 preguntes, 10 punts. Mateixa mecànica que la de fraccions.
+   Activitat 1: CB 2021-22 (ítems 21-24). Activitats 2 i 3: ampliació amb negatius.
+   ===================================================================== */
+const PC_E = { id: 'pce', unitat: 'e', provaKey: 'provaCE', titol: 'Prova de competències · Enters' };
+const CBE_D = [0, 2, 3, 5, 4, 4, 3, 1, 3, -2, -5, -8, -6, -4, -3, -1, 0, -2, -1, -4, -3];
+const cbz = v => `<b style="color:${colZ(v)}">${fz(v)}</b>`;
+function cbGraf(numerat) {
+  const X = m => 52 + m * 23.6, Y = v => 22 + (6 - v) * 16; let s = '';
+  s += `<rect x="${X(0)}" y="${Y(6)}" width="${X(20) - X(0)}" height="${Y(0) - Y(6)}" fill="#fff1e3"/><rect x="${X(0)}" y="${Y(0)}" width="${X(20) - X(0)}" height="${Y(-9) - Y(0)}" fill="#e6efff"/>`;
+  for (let v = -9; v <= 6; v++) { s += `<line x1="${X(0)}" y1="${Y(v)}" x2="${X(20)}" y2="${Y(v)}" stroke="${v === 0 ? NAVY : '#c9d3e3'}" stroke-width="${v === 0 ? 2.5 : 1}"/>`; s += `<text x="${X(0) - 7}" y="${Y(v) + 4}" text-anchor="end" font-size="11" font-weight="${v === 0 ? 900 : 600}" fill="${NAVY}">${v > 0 ? '+' + v : v < 0 ? '−' + (-v) : 0}</text>`; }
+  for (let m = 0; m <= 20; m++) { s += `<line x1="${X(m)}" y1="${Y(6)}" x2="${X(m)}" y2="${Y(-9)}" stroke="#dbe2ee" stroke-width="1"/><text x="${X(m)}" y="${Y(-9) + 16}" text-anchor="middle" font-size="11" font-weight="600" fill="${NAVY}">${m}</text>`; }
+  s += `<polyline points="${CBE_D.map((v, m) => X(m) + ',' + Y(v)).join(' ')}" fill="none" stroke="${NAVY}" stroke-width="2.5"/>`;
+  CBE_D.forEach((v, m) => { s += `<circle cx="${X(m)}" cy="${Y(v)}" r="4" fill="${NAVY}"/>`; if (numerat && m) s += `<text x="${X(m)}" y="${Y(v) + (v >= 0 ? -8 : 15)}" text-anchor="middle" font-size="11" font-weight="900" fill="${v > 0 ? '#c25a00' : v < 0 ? '#1f56b3' : NAVY}" stroke="#fff" stroke-width="3" paint-order="stroke">${v > 0 ? '+' + v : v < 0 ? '−' + (-v) : 0}</text>`; });
+  s += `<text x="${X(20) - 4}" y="${Y(6) + 14}" text-anchor="end" font-size="12" font-weight="800" fill="#c25a00">▲ Guanya l'equip A</text><text x="${X(20) - 4}" y="${Y(-9) - 6}" text-anchor="end" font-size="12" font-weight="800" fill="#1f56b3">▼ Guanya l'equip B</text>`;
+  s += `<text x="${(X(0) + X(20)) / 2}" y="${Y(-9) + 32}" text-anchor="middle" font-size="12" font-weight="700" fill="${NAVY}">Minut del partit</text><text x="14" y="${Y(-1.5)}" font-size="12" font-weight="700" fill="${NAVY}" transform="rotate(-90 14 ${Y(-1.5)})" text-anchor="middle">Diferència A − B</text>`;
+  return `<div class="cb-graf"><svg viewBox="0 0 560 320" style="width:100%;max-width:${numerat ? 470 : 540}px">${s}</svg></div>`;
+}
+function cbEdifici({ alt = false, traj = null, petit = false } = {}) {
+  const H = 22, Y = f => 8 + (8 - f) * H, x0 = 74, w = 120; let s = '';
+  s += `<rect x="${x0 - 30}" y="${Y(0) + H}" width="${w + 120}" height="${4 * H + 6}" fill="#e3ddd2"/>`;
+  for (let f = 8; f >= -4; f--) {
+    const y = Y(f), sot = f < 0;
+    s += `<rect x="${x0}" y="${y}" width="${w}" height="${H}" fill="${sot ? '#cfd6e2' : f === 0 ? '#ffe2c9' : '#ffffff'}" stroke="${NAVY}" stroke-width="1.5"/>`;
+    s += `<rect x="${x0 + w - 26}" y="${y + 3}" width="18" height="${H - 6}" fill="${sot ? '#b7c1d3' : '#e8eef8'}" stroke="${NAVY}" stroke-width="1"/>`;
+    s += `<text x="${x0 - 10}" y="${y + 16}" text-anchor="end" font-size="14" font-weight="900" fill="${f > 0 ? '#c25a00' : f < 0 ? '#1f56b3' : NAVY}">${f < 0 ? '−' + (-f) : f}</text>`;
+    s += `<text x="${x0 + 8}" y="${y + 15}" font-size="11" fill="${NAVY}">${f === 0 ? 'Recepció' : sot ? 'Aparcament' : 'Habitatges'}</text>`;
+    if (alt) s += `<text x="${x0 + w + 8}" y="${y + H + 4}" font-size="11" font-weight="800" fill="${f > 0 ? '#c25a00' : f < 0 ? '#1f56b3' : NAVY}">${f === 0 ? '0 m' : (f > 0 ? '+' : '−') + Math.abs(3 * f) + ' m'}</text>`;
+  }
+  if (alt) s += `<text x="${x0 + w + 8}" y="${Y(-4) + H + 4}" font-size="11" font-weight="800" fill="#1f56b3">−12 m</text>`;
+  s += `<line x1="${x0 - 34}" y1="${Y(0) + H}" x2="${x0 + w + 64}" y2="${Y(0) + H}" stroke="#1b1b1b" stroke-width="3"/>${traj ? '' : `<text x="${x0 + w + (alt ? 44 : 8)}" y="${Y(0) + H - 5}" font-size="11" font-weight="900" fill="#1b1b1b">CARRER</text>`}`;
+  if (traj) {
+    for (let k = 0; k < traj.length - 1; k++) {
+      const a = traj[k], b = traj[k + 1], x = x0 + w + 16 + k * 18, ya = Y(a) + H / 2, yb = Y(b) + H / 2 + (b > a ? 5 : -5), col = ['#c25a00', '#1f56b3', '#2c9a58'][k % 3];
+      s += `<line x1="${x}" y1="${ya}" x2="${x}" y2="${yb}" stroke="${col}" stroke-width="3"/><path d="M ${x - 5} ${yb + (b > a ? 6 : -6)} L ${x} ${yb + (b > a ? -2 : 2)} L ${x + 5} ${yb + (b > a ? 6 : -6)} Z" fill="${col}"/><circle cx="${x}" cy="${ya}" r="3.5" fill="${col}"/>`;
+    }
+  }
+  const lleg = traj ? `<div class="petit" style="text-align:center">${traj.slice(0, -1).map((a, k) => `<b style="color:${['#c25a00', '#1f56b3', '#2c9a58'][k % 3]}">${fz(a).replace('+', '')} → ${fz(traj[k + 1]).replace('+', '')}</b>`).join(' · ')}</div>` : '';
+  return `<div class="cb-edifici"><svg viewBox="0 0 ${x0 + w + 80} ${Y(-4) + H + 16}" style="width:100%;max-width:${petit ? 200 : 250}px">${s}</svg>${lleg}</div>`;
+}
+const CBE_SALDO = [['Octubre', 45], ['Novembre', -30], ['Desembre', 60], ['Gener', -15], ['Febrer', -20]];
+function cbSaldo(acum) {
+  let a = 0;
+  return `<table class="cb-tbl"><thead><tr><th>Mes</th><th>Saldo</th>${acum ? '<th>Acumulat</th>' : ''}</tr></thead><tbody>${CBE_SALDO.map(([m, v], i) => { a += v; return `<tr><td>${m}</td><td>${cbz(v)} €</td>${acum ? `<td>${i < 2 ? cbz(a) + ' €' : '?'}</td>` : ''}</tr>`; }).join('')}</tbody></table>`;
+}
+function cbRectaDiners() {
+  const X = v => 30 + (v + 40) * 4.6; let s = `<line x1="${X(-40) - 10}" y1="40" x2="${X(70) + 10}" y2="40" stroke="#1b1b1b" stroke-width="2.5"/>`;
+  for (let v = -40; v <= 70; v += 10) s += `<line x1="${X(v)}" y1="${v ? 32 : 26}" x2="${X(v)}" y2="${v ? 48 : 54}" stroke="#1b1b1b" stroke-width="${v ? 2 : 3.5}"/><text x="${X(v)}" y="70" text-anchor="middle" font-size="12" font-weight="800" fill="${colZ(v)}">${v > 0 ? '+' + v : v < 0 ? '−' + (-v) : 0}</text>`;
+  s += `<circle cx="${X(-30)}" cy="40" r="7" fill="#1f56b3"/><text x="${X(-30)}" y="20" text-anchor="middle" font-size="12" font-weight="800" fill="#1f56b3">Novembre</text><circle cx="${X(60)}" cy="40" r="7" fill="#c25a00"/><text x="${X(60)}" y="20" text-anchor="middle" font-size="12" font-weight="800" fill="#c25a00">Desembre</text>`;
+  return `<div class="cb-aid-recta"><svg viewBox="0 0 560 80" style="width:100%;max-width:470px">${s}</svg><div class="petit" style="text-align:center">Saldos en euros</div></div>`;
+}
+const CB_ACTS_E = [
+  { t: 'El partit de bàsquet', max: 3.5, ctx: L => `<p>La Carla segueix el partit del seu germà amb una aplicació. Al final de cada minut, l'aplicació calcula la <b>diferència de punts</b> entre els dos equips:</p><div class="cb-chips"><span>Diferència = punts de l'equip A − punts de l'equip B</span><span>Valor positiu: guanya A</span><span>Valor negatiu: guanya B</span></div><p>El gràfic mostra els 20 minuts de la primera part:</p>${cbGraf(L === 'basic')}` },
+  { t: "L'ascensor i l'aparcament", max: 3.5, ctx: () => `<div class="cb-ctx-fila"><div><p>L'edifici on viu en Nil té <b>8 plantes</b> d'habitatges i <b>4 plantes d'aparcament</b> sota terra.</p><p>La <b>planta 0</b> (la recepció) és al nivell del carrer. Les plantes d'aparcament es numeren amb nombres negatius: <b>−1, −2, −3 i −4</b>.</p><p>Cada planta fa <b>3 metres</b> d'alçada.</p></div>${cbEdifici()}</div>` },
+  { t: 'La paradeta de 4t', max: 3, ctx: () => `<p>Els alumnes de 4t tenen una paradeta per finançar el viatge de final de curs. La taula recull el <b>saldo</b> de cada mes (ingressos − despeses):</p>${cbSaldo()}<p>A la fira de primavera lloguen un estand que costa <b>120 €</b> i hi venen paquets de galetes. Per cada paquet guanyen <b>4 €</b>. El benefici de la fira, en euros, és:</p><div class="cb-chips"><span style="font-size:1.15em"><b>B(x) = 4x − 120</b></span><span>x = nombre de paquets venuts</span></div>` }];
+const CB_ITEMS_E = [
+  { n: 1, act: 0, type: 'mc', pts: P_A1, q: 'Al final del minut 13, quin equip guanyava i de quants punts?', opts: { a: "L'equip A, de 4 punts", b: "L'equip B, de 4 punts", c: 'Anaven empatats', d: "L'equip B, de 13 punts" }, ans: 'b',
+    hb: ["Busca el minut 13 a l'eix horitzontal i mira el valor del punt.", 'Al minut 13 el valor és ' + cbz(-4) + '. És negatiu: quin equip guanya quan el valor és negatiu?'], hi: "Mira el valor al minut 13 i fixa't en el signe." },
+  { n: 2, act: 0, type: 'mc', pts: P_A1, q: 'En quin minut la diferència de punts entre els dos equips ha estat més gran?', opts: { a: 'Minut 3', b: 'Minut 11', c: 'Minut 16', d: 'Minut 20' }, ans: 'b',
+    hb: ["La diferència pot ser a favor de l'equip A (amunt) o de l'equip B (avall). Busca el punt més allunyat de la línia del 0.", 'Al minut 3, A guanya de 5. Al minut 11, B guanya de 8. Quin dels dos punts és més lluny del 0?'], hi: 'Busca el punt més allunyat de la línia del 0, cap amunt o cap avall.' },
+  { n: 3, act: 0, type: 'mc', pts: P_A1, q: 'Entre el final del minut 8 i el final del minut 9, què ha passat?', opts: { a: "L'equip B ha anotat exactament 5 punts més que l'equip A.", b: "L'equip B ha anotat exactament 1 punt més que l'equip A.", c: "L'equip A ha anotat exactament 5 punts més que l'equip B.", d: "L'equip A ha anotat exactament 1 punt més que l'equip B." }, ans: 'a',
+    hb: ['Al minut 8 la diferència és ' + cbz(3) + ' i al minut 9 és ' + cbz(-2) + '.', 'De ' + cbz(3) + ' a ' + cbz(-2) + ' hi ha 5 salts cap avall. Si la diferència baixa, quin equip ha anotat més?'], hi: 'Calcula quant ha canviat la diferència: valor del minut 9 − valor del minut 8.' },
+  { n: 4, act: 0, type: 'mc', pts: P_A1, q: "Al final del minut 20, l'equip A té 41 punts. Quants punts té l'equip B?", opts: { a: '38 punts', b: '41 punts', c: '44 punts', d: '3 punts' }, ans: 'c',
+    hb: ['Al minut 20 la diferència és ' + cbz(-3) + ": guanya l'equip B de 3 punts.", "Si guanya l'equip B de 3 punts, B té 3 punts més que A: 41 + 3."], hi: 'Mira el signe de la diferència al minut 20: quin equip té més punts?' },
+  { n: 5, act: 0, type: 'mc', pts: P_A1, q: 'Quina expressió calcula el valor que mostra el gràfic?', opts: { a: '(Punts de A) + (Punts de B)', b: '(Punts de A) − (Punts de B)', c: '(Punts de B) − (Punts de A)', d: 'La diferència sempre en positiu, sense signe' }, ans: 'b',
+    hb: ['Quan guanya l\'equip A, el valor és positiu. Prova-ho amb un marcador: A té 10 punts i B en té 7.', '10 − 7 = ' + cbz(3) + ' (positiu: guanya A). 7 − 10 = ' + cbz(-3) + '. Quina resta dona positiu quan guanya A?'], hi: "Inventa't un marcador on guanyi A i comprova quina expressió dona un nombre positiu." },
+  { n: 6, act: 0, type: 'open', pts: P_OPEN, q: "L'entrenador de l'equip A diu: «Entre el minut 11 i el minut 17 hem retallat 10 punts de diferència.» Té raó?",
+    fields: [{ pre: 'Valor del gràfic al minut 11:', ans: -8, suf: '' }, { pre: 'Valor del gràfic al minut 17:', ans: -2, suf: '' }, { pre: "Punts que ha retallat l'equip A:", ans: 6, suf: 'punts' }],
+    choice: { lab: "Té raó l'entrenador?", opts: ['Sí, han retallat 10 punts.', 'No, han retallat menys de 10 punts.', 'No, la diferència a favor de B ha augmentat.'], ans: 1 },
+    grade: (v, c) => { const r = v[2] === 6; if (c === 1) return r ? 2 : 1; return r ? 1 : 0; },
+    hb: ['Llegeix el valor del gràfic als minuts 11 i 17. Fixa\'t en el signe.', 'Al minut 11: ' + cbz(-8) + '. Al minut 17: ' + cbz(-2) + '. Per anar de −8 a −2, quants salts fas cap amunt?'], hi: 'Calcula la variació: valor del minut 17 − valor del minut 11.' },
+  { n: 7, act: 1, type: 'mc', pts: P_A1, q: "L'ascensor és a la planta 3 i baixa 5 plantes. A quina planta arriba?", opts: { a: 'A la planta 2', b: 'A la planta −2', c: 'A la planta 8', d: 'A la planta −8' }, ans: 'b',
+    hb: ["Situa't a la planta 3 de l'edifici i baixa planta a planta.", '3 → 2 → 1 → 0 → … Has de baixar 5 plantes en total. Després del 0 vénen els soterranis.'], hi: 'Calcula 3 − 5.' },
+  { n: 8, act: 1, type: 'mc', pts: P_A1, q: 'En Nil agafa l\'ascensor a la planta −4, on té el cotxe, i puja fins a casa seva, a la planta 6. Quantes plantes puja?', opts: { a: '2 plantes', b: '6 plantes', c: '10 plantes', d: '−10 plantes' }, ans: 'c',
+    hb: ['Compta les plantes que hi ha des de la −4 fins al 0, i des del 0 fins a la 6.', 'De −4 a 0 hi ha 4 plantes. De 0 a 6 n\'hi ha 6. Suma-les.'], hi: 'Calcula 6 − (−4).' },
+  { n: 9, act: 1, type: 'mc', pts: P_A1, q: 'El terra de la planta 0 és al nivell del carrer (0 m). A quina alçada respecte del carrer és el terra de la planta −3?', opts: { a: '9 m', b: '−9 m', c: '−6 m', d: '−3 m' }, ans: 'b',
+    hb: ['Cada planta fa 3 metres. La planta −3 és 3 plantes per sota de la planta 0.', '3 plantes × 3 metres = 9 metres. El terra de la planta −3 és per sobre o per sota del carrer?'], hi: "Multiplica −3 per l'alçada de cada planta.", aidB: () => cbEdifici({ alt: true, petit: true }) },
+  { n: 10, act: 1, type: 'mc', pts: P_A1, q: "Un dia l'ascensor fa aquest trajecte: planta −1 → planta 5 → planta −4 → planta 2. Quina és la diferència entre la planta més alta i la planta més baixa on ha estat?", opts: { a: '3 plantes', b: '1 planta', c: '5 plantes', d: '9 plantes' }, ans: 'd',
+    hb: ['La planta més alta del trajecte és la 5. Quina és la més baixa?', 'La més baixa és la −4. De −4 a 0 hi ha 4 plantes i de 0 a 5, 5 més.'], hi: 'Diferència = planta més alta − planta més baixa.', aidB: () => cbEdifici({ traj: [-1, 5, -4, 2], petit: true }) },
+  { n: 11, act: 1, type: 'mc', pts: P_A1, q: "L'ascensor és a la planta <i>p</i> i baixa <i>n</i> plantes. Quina expressió dona la planta on arriba?", opts: { a: '<i>p</i> + <i>n</i>', b: '<i>p</i> − <i>n</i>', c: '<i>n</i> − <i>p</i>', d: '−<i>p</i> − <i>n</i>' }, ans: 'b',
+    hb: ['Prova amb números: és a la planta 3 i baixa 5 plantes. Arriba a la −2.', 'Quina expressió dona −2 si p = 3 i n = 5? Prova-les totes.'], hi: 'Dona valors a p i a n i comprova cada expressió.' },
+  { n: 12, act: 1, type: 'open', pts: P_OPEN, q: "El panell de manteniment compta les plantes que recorre l'ascensor. En Marc diu: «Amb el trajecte −1 → 5 → −4 → 2, l'ascensor només ha recorregut 3 plantes, perquè ha acabat 3 plantes més amunt d'on havia sortit.» Té raó en Marc?",
+    fields: [{ pre: 'Plantes del tram −1 → 5:', ans: 6, suf: 'plantes' }, { pre: 'Plantes del tram 5 → −4:', ans: 9, suf: 'plantes' }, { pre: 'Plantes del tram −4 → 2:', ans: 6, suf: 'plantes' }, { pre: 'Plantes recorregudes en total:', ans: 21, suf: 'plantes' }],
+    choice: { lab: 'Té raó en Marc?', opts: ['Sí, ha recorregut 3 plantes.', 'No, ha recorregut més de 3 plantes.', 'No, ha recorregut menys de 3 plantes.'], ans: 1 },
+    grade: (v, c) => { const r = v[3] === 21; if (c === 1) return r ? 2 : 1; return r ? 1 : 0; },
+    hb: ['Compta cada tram per separat, tant si puja com si baixa. Les plantes recorregudes sempre són positives.', 'De −1 a 5 són 6 plantes. De 5 a −4 en són 9. De −4 a 2, quantes? Després suma-ho tot.'], hi: "Calcula les plantes de cada tram (sense signe) i suma-les." },
+  { n: 13, act: 2, type: 'mc', pts: P_A3, q: 'Quants mesos ha tingut pèrdues la paradeta?', opts: { a: '2 mesos', b: '3 mesos', c: '5 mesos', d: 'Cap mes' }, ans: 'b',
+    hb: ['Un saldo negatiu vol dir que aquell mes hi ha hagut pèrdues.', 'Compta els mesos que tenen el signe −.'], hi: 'Compta els saldos negatius.' },
+  { n: 14, act: 2, type: 'mc', pts: P_A3, q: 'Quin és el saldo total dels cinc mesos?', opts: { a: '+40 €', b: '+170 €', c: '+105 €', d: '−65 €' }, ans: 'a',
+    hb: ["Ajunta els guanys d'una banda i les pèrdues de l'altra.", 'Guanys: 45 + 60 = 105 €. Pèrdues: 30 + 15 + 20 = 65 €. Ara calcula 105 − 65.'], hi: 'Suma tots els saldos, cadascun amb el seu signe.', aidB: () => cbSaldo(true) },
+  { n: 15, act: 2, type: 'mc', pts: P_A3, q: 'Quina diferència de diners hi ha entre el millor mes i el pitjor mes?', opts: { a: '30 €', b: '75 €', c: '90 €', d: '−90 €' }, ans: 'c',
+    hb: ['El millor mes és el desembre (' + cbz(60) + ' €). El pitjor és el novembre (' + cbz(-30) + ' €).', 'De −30 fins a 0 hi ha 30 €, i de 0 fins a +60 n\'hi ha 60. Suma-ho.'], hi: 'Calcula 60 − (−30).', aidB: () => cbRectaDiners() },
+  { n: 16, act: 2, type: 'mc', pts: P_A3, q: 'Quin benefici obtenen a la fira si venen 25 paquets?', opts: { a: '20 €', b: '−20 € (perden 20 €)', c: '100 €', d: '−95 €' }, ans: 'b',
+    hb: ['Substitueix x per 25: B(25) = 4 · 25 − 120.', '4 · 25 = 100. Ara calcula 100 − 120. Com que 120 és més gran que 100, el resultat és negatiu.'], hi: 'Substitueix x = 25 a la fórmula.' },
+  { n: 17, act: 2, type: 'mc', pts: P_A3, q: 'Quants paquets han de vendre, com a mínim, per no perdre diners?', opts: { a: '30 paquets', b: '31 paquets', c: '120 paquets', d: '480 paquets' }, ans: 'a',
+    hb: ['No perdre diners vol dir que el benefici és 0 o més.', 'Han de recuperar els 120 € del lloguer, i cada paquet en dona 4. Calcula 120 : 4.'], hi: 'Busca el valor de x que fa que B(x) = 0.' },
+  { n: 18, act: 2, type: 'open', pts: P_OPEN, q: 'La Júlia diu: «Si venem el doble de paquets, guanyarem el doble de diners.» Comprova-ho amb 25 i amb 50 paquets. Té raó la Júlia?',
+    fields: [{ pre: 'B(25) =', ans: -20, suf: '€' }, { pre: 'B(50) =', ans: 80, suf: '€' }],
+    choice: { lab: 'Té raó la Júlia?', opts: ['Sí, amb el doble de paquets es guanya el doble.', 'No: amb 25 paquets perden diners i amb 50 en guanyen.', 'No, perquè amb 50 paquets també perden diners.'], ans: 1 },
+    grade: (v, c) => { const ok = v[0] === -20 && v[1] === 80; if (c === 1) return ok ? 2 : 1; return ok ? 1 : 0; },
+    hb: ['Calcula B(25) i B(50) amb la fórmula B(x) = 4x − 120.', 'B(25) = 100 − 120 = ' + cbz(-20) + '. B(50) = 200 − 120 = ?'], hi: 'Calcula el benefici amb 25 i amb 50 paquets i compara\'ls.' }];
+const CB_INFO_E = `<h3>ⓘ Prova de competències · Enters</h3>
+  <p><b>Què és.</b> Una prova en format de competències bàsiques: 3 activitats amb context (el partit de bàsquet, l'ascensor i la paradeta de 4t) i 18 preguntes (15 de resposta tancada i 3 d'obertes). Compta com a <b>examen a part</b>: no toca els objectius ni l'AS de la unitat.</p>
+  <p><b>D'on surt.</b> L'activitat 1 segueix el model del bàsquet de la prova oficial del 2021-22, l'única on surten enters amb signe. Les activitats 2 i 3 prenen l'estructura de les CB (desnivell i funció de benefici), però hi afegeixen nombres negatius que les proves oficials no demanen.</p>
+  <p><b>Obertura.</b> Està tancada fins que l'obres (llibreta d'Enters o Configuració). Cada alumne la fa <b>una vegada</b>; des de la seva casella li pots deixar fer un altre intent. Es pot deixar a mitges amb «Plego per avui».</p>
+  <p><b>Nivell.</b> Surt del nivell general de l'alumne: N1 → bàsic, N2 → intermedi, N3 → repte. Les preguntes són les mateixes per a tots els nivells; canvien els intents, les pistes i els suports.</p>
+  <table class="simple"><thead><tr><th>Nivell</th><th>Com respon</th><th>Pistes i suports</th><th>Correcció</th></tr></thead><tbody>
+    <tr><td><b>Bàsic</b></td><td>3 intents per pregunta. 1r intent: 100 % · 2n: 50 % · 3r: 25 %</td><td>2 pistes per pregunta, que no resten. Gràfic amb els valors escrits, edifici amb les alçades, taula de l'acumulat i recta dels saldos. Pot escoltar la pregunta (🔊)</td><td>Sap si l'ha encertada (necessari per als intents)</td></tr>
+    <tr><td><b>Intermedi</b></td><td>1 intent</td><td>1 pista per pregunta: si l'obre, la pregunta val el 75 %</td><td>No sap res fins al final</td></tr>
+    <tr><td><b>Repte</b></td><td>1 intent</td><td>Cap</td><td>No sap res fins al final</td></tr></tbody></table>
+  <p><b>Puntuació (sobre 10).</b> Activitat 1: 3,5 punts · Activitat 2: 3,5 punts · Activitat 3: 3 punts. Les tancades valen 0,5 punts (0,4 a l'activitat 3). Les obertes valen 1 punt amb puntuació parcial: conclusió i càlcul clau bons, 1 punt; només una de les dues coses, mig punt.</p>
+  <p><b>Sortides de la pestanya.</b> La primera, avís. La segona, la prova s'entrega amb el que hi hagi. Al detall de cada alumne surt a quina pregunta ha sortit i quanta estona.</p>
+  <p><b>Compte:</b> les preguntes 5 i 11 (expressions amb lletres) i 16, 17 i 18 (la funció B(x) = 4x − 120) avaluen coses que l'app no treballa als objectius d'enters.</p>`;
+
+/* ---------- registre de proves de competències (una per unitat) ---------- */
+const CB_PROVES = {
+  f: { PC: PC_F, acts: CB_ACTS_F, items: CB_ITEMS_F, info: CB_INFO_F },
+  e: { PC: PC_E, acts: CB_ACTS_E, items: CB_ITEMS_E, info: CB_INFO_E } };
+let PC = PC_F, CB_ACTS = CB_ACTS_F, CB_ITEMS = CB_ITEMS_F, CB_N = CB_ITEMS_F.length, CB_INFO = CB_INFO_F;
+function cbUsa(u) { const p = CB_PROVES[u] || CB_PROVES.f; PC = p.PC; CB_ACTS = p.acts; CB_ITEMS = p.items; CB_N = p.items.length; CB_INFO = p.info; return p; }
+const cbProvaDe = oid => Object.keys(CB_PROVES).find(k => CB_PROVES[k].PC.id === oid);
+const cbInfoModal = u => obreModal(CB_PROVES[u].info + `<div class="accions"><button class="boto" data-tanca-modal>Entesos</button></div>`, 'ample');
+
 function targetaComp(u, res) {
-  if (u.id !== PC.unitat) return '';
+  if (!CB_PROVES[u.id]) return ''; cbUsa(u.id);
   const r = res[PC.id] || {}; const oberta = S.config?.[PC.provaKey] === true;
   let cls, txt, pot = false;
   if (r.estat === 'lliurada') { cls = 'feta'; txt = `✓ Lliurada · ${cbFmt(r.nota ?? 0)} / 10`; }
   else if (!oberta) { cls = 'tancat'; txt = r.estat === 'fent' ? `🔒 Tancada pel professor · anaves per la pregunta ${r.item + 1}` : '🔒 L\'obrirà el professor'; }
   else { pot = true; cls = ''; txt = r.estat === 'fent' ? `Continua · pregunta ${(r.item || 0) + 1} de ${CB_N} →` : 'Comença la prova →'; }
-  return `<button class="targeta comp ${cls}" data-comp="1" ${pot ? '' : 'disabled'}><span class="num">✎</span><div><h3>${PC.titol}</h3><span class="estat">${txt}</span></div></button>`;
+  return `<button class="targeta comp ${cls}" data-comp="${u.id}" ${pot ? '' : 'disabled'}><span class="num">✎</span><div><h3>${PC.titol}</h3><span class="estat">${txt}</span></div></button>`;
 }
-function iniciaComp() {
+function iniciaComp(uid) {
+  cbUsa(uid || 'f');
   const r = S.resMeu[PC.id] || {}; const nivell = CB_NIV[nivellBase(S.alumne)] || 'intermedi';
   S.ronda = { comp: true, obj: PC.id, unitat: PC.unitat, nivell: r.nivellCB || nivell, fase: 'avis', resp: { ...(r.resp || {}) }, item: r.item || 0, temps: r.temps || 0, estat: r.estat || 'nou' };
   mostra('objectiu');
@@ -2320,6 +2448,7 @@ function cbTemps(R) { if (R.t0) { R.temps += Math.round((Date.now() - R.t0) / 10
 async function cbDesa(R, extra = {}) { try { await DB.update(cbRef(), { estat: R.estat, item: R.item, temps: cbTemps(R), nivellCB: R.nivell, darrer: Date.now(), ...extra }); } catch (e) { console.error(e); } }
 function cbProg(i) { return `<div class="cb-prog">${CB_ITEMS.map((it, k) => `${k && it.act !== CB_ITEMS[k - 1].act ? '<i class="gap"></i>' : ''}<i class="${k < i ? 'done' : k === i ? 'now' : ''}"></i>`).join('')}</div>`; }
 function faseComp(R) {
+  cbUsa(R.unitat);
   const info = infoRonda(R);
   const plego = `<button class="boto-petit" id="cb-plego">Plego per avui</button>`;
   if (R.fase === 'avis') {
@@ -2359,7 +2488,7 @@ function faseComp(R) {
   const pistaBtn = L === 'repte' ? '' : `<button class="boto-petit" id="cb-pista">💡 ${L === 'basic' ? 'Pista' : 'Pista (la pregunta valdrà el 75 %)'}</button>`;
   vista.innerHTML = `<section class="pantalla">${capObj(info, avisForaHtml(R) + plego)}
     <div class="joc cb-joc">
-      <div class="costat pregunta cb-ctx"><div class="cb-ah"><span class="cb-num-act">Activitat ${it.act + 1}</span><h3>${act.t}</h3></div>${act.ctx()}${cbProg(R.item)}<div class="etiqueta">Pregunta ${R.item + 1} de ${CB_N} · ${cbFmt(it.pts)} ${it.pts === 1 ? 'punt' : 'punts'}${it.type === 'open' ? ' · oberta' : ''}</div></div>
+      <div class="costat pregunta cb-ctx"><div class="cb-ah"><span class="cb-num-act">Activitat ${it.act + 1}</span><h3>${act.t}</h3></div>${act.ctx(L)}${cbProg(R.item)}<div class="etiqueta">Pregunta ${R.item + 1} de ${CB_N} · ${cbFmt(it.pts)} ${it.pts === 1 ? 'punt' : 'punts'}${it.type === 'open' ? ' · oberta' : ''}</div></div>
       <div class="costat respostes"><div class="cb-q"><span class="cb-inum">${it.n}</span><div>${it.q}</div>${L === 'basic' && 'speechSynthesis' in window ? `<button class="boto-petit" id="cb-veu" title="Escolta la pregunta">🔊</button>` : ''}</div>
         ${L === 'basic' && it.aidB ? `<div class="cb-aid">${it.aidB()}</div>` : ''}
         ${inp}<div id="cb-pistes"></div><div id="zona-retorn"></div>
@@ -2426,12 +2555,14 @@ function cbResol(R, ok, pts, g, vals) {
   } else segueix();
 }
 async function cbPlego(R) {
+  cbUsa(R.unitat);
   if (R.fase === 'final') { S.ronda = null; return mostra('mapa'); }
   const ok = await confirma(`Les teves respostes queden guardades. Continuaràs a la <b>pregunta ${Math.min(R.item + 1, CB_N)}</b>.`, 'Plego per avui');
   if (!ok) return;
   await cbDesa(R); S.ronda = null; mostra('mapa');
 }
 async function cbLliura(R, forcat = false) {
+  cbUsa(R.unitat);
   const nota = Math.round(cbTotal(R.resp) * 100) / 100; R.estat = 'lliurada'; R.nota = nota; R.fase = 'final';
   const ex = { fi: Date.now(), nota, a1: Math.round(cbActPts(R.resp, 0) * 100) / 100, a2: Math.round(cbActPts(R.resp, 1) * 100) / 100, a3: Math.round(cbActPts(R.resp, 2) * 100) / 100 };
   if (forcat) ex.entregaForcada = true; if (R.foraN) { ex.foraN = R.foraN; ex.foraS = Math.round((R.foraMs || 0) / 1000); }
@@ -2459,6 +2590,7 @@ function celaComp(id) {
   return `<td class="casella c-comp-p ${marca}" data-a="${id}" data-o="${PC.id}"><b>Fent</b><small>pregunta ${(r.item || 0) + 1}/${CB_N}</small></td>`;
 }
 function detallComp(id) {
+  const P = PC, INFO = CB_INFO;
   const a = S.alumnes[id]; const r = S.resTots[id]?.[PC.id] || {}; const hist = Object.values(r.historial || {}).sort((x, y) => y.fi - x.fi);
   const fila = (resp) => CB_ITEMS.map(it => { const x = resp?.['i' + it.n]; return `<tr><td>${it.n}</td><td>${x ? (x.ok ? '<span class="marca-ok">✓</span>' : x.g === 1 ? '½' : '<span class="marca-ko">✗</span>') : '—'}</td><td>${esc(x ? cbRespText(it, x) : '')}</td><td>${x?.ok ? '' : esc(cbCorrText(it))}</td><td>${x ? cbFmt(x.pts) : '0'}/${cbFmt(it.pts)}</td><td>${x?.int || ''}</td><td>${x?.pis || ''}</td><td>${x ? durada(x.t || 0) : ''}${x?.fn ? ` <span class="fora-txt">● fora ${durada(x.fs || 0)}</span>` : ''}</td></tr>${x?.free ? `<tr><td></td><td colspan="7" class="fora-txt">«${esc(x.free)}»</td></tr>` : ''}`; }).join('');
   const taula = resp => `<table class="simple cb-det"><thead><tr><th>#</th><th></th><th>Resposta</th><th>Correcta</th><th>Punts</th><th>Int.</th><th>Pistes</th><th>Temps</th></tr></thead><tbody>${fila(resp)}</tbody></table>`;
@@ -2473,11 +2605,11 @@ function detallComp(id) {
     <div class="accions"><button class="boto-petit" id="cb-info">ⓘ Com funciona</button><span style="flex:1"></span><button class="boto" data-tanca-modal>Tanca</button></div>`, 'ample');
   const ro = $('#cb-reobre', m); if (ro) ro.onclick = async () => {
     const ok = await confirma(`<b>${esc(a?.nom)}</b> podrà tornar a fer la prova des del principi. La nota actual (${cbFmt(r.nota)}) quedarà guardada als intents anteriors.`, 'Sí, que la torni a fer'); if (!ok) return;
-    const { historial, ...actual } = r; await DB.push(`${ARREL}/resultats/${id}/${PC.id}/historial`, actual);
-    await DB.update(`${ARREL}/resultats/${id}/${PC.id}`, { estat: null, item: 0, resp: null, nota: null, temps: 0, a1: null, a2: null, a3: null, fi: null, entregaForcada: null, foraN: null, foraS: null, nivellCB: null });
+    const { historial, ...actual } = r; await DB.push(`${ARREL}/resultats/${id}/${P.id}/historial`, actual);
+    await DB.update(`${ARREL}/resultats/${id}/${P.id}`, { estat: null, item: 0, resp: null, nota: null, temps: 0, a1: null, a2: null, a3: null, fi: null, entregaForcada: null, foraN: null, foraS: null, nivellCB: null });
   };
-  $('#cb-esborra', m).onclick = async () => { const ok = await confirma(`S'esborrarà tot el que hi ha de la prova de competències de <b>${esc(a?.nom)}</b>.`, 'Esborra'); if (ok) await DB.remove(`${ARREL}/resultats/${id}/${PC.id}`); };
-  $('#cb-info', m).onclick = () => { tancaModal(); obreModal(CB_INFO + `<div class="accions"><button class="boto" data-tanca-modal>Entesos</button></div>`, 'ample'); };
+  $('#cb-esborra', m).onclick = async () => { const ok = await confirma(`S'esborrarà tot el que hi ha de la ${esc(P.titol.toLowerCase())} de <b>${esc(a?.nom)}</b>.`, 'Esborra'); if (ok) await DB.remove(`${ARREL}/resultats/${id}/${P.id}`); };
+  $('#cb-info', m).onclick = () => { tancaModal(); obreModal(INFO + `<div class="accions"><button class="boto" data-tanca-modal>Entesos</button></div>`, 'ample'); };
 }
 
 function generaRonda(o, nivell, evitar = []) {
@@ -2643,7 +2775,7 @@ function pantallaMapa() {
     }).join('')}${targetaTaller(u, res)}${targetaComp(u, res)}${targetaProva(u, res)}</div></section>`;
   $$('.targeta[data-obj]').forEach(b => { if (!b.disabled) b.onclick = () => iniciaObjectiu(b.dataset.obj); });
   const tp = $('.targeta[data-prova]'); if (tp && !tp.disabled) tp.onclick = () => iniciaProva(u.id);
-  const tc = $('.targeta[data-comp]'); if (tc && !tc.disabled) tc.onclick = () => { so('pas'); iniciaComp(); };
+  const tc = $('.targeta[data-comp]'); if (tc && !tc.disabled) tc.onclick = () => { so('pas'); iniciaComp(tc.dataset.comp); };
   $$('.targeta[data-taller]').forEach(b => { if (!b.disabled) b.onclick = () => { so('pas'); TALLERS[b.dataset.taller]?.obre ? TALLERS[b.dataset.taller].obre() : TALLERS[b.dataset.taller]?.joc ? obreJoc(b.dataset.taller) : TALLERS[b.dataset.taller]?.natiu ? obreAscensor() : iniciaTaller(b.dataset.taller); }; });
   $$('#m-unitats button').forEach(b => b.onclick = () => { so('pas'); S.unitat = b.dataset.u; try { localStorage.setItem('fr4c_unitat_' + S.alumne, S.unitat); } catch (e) { } render(); });
 }
@@ -2719,7 +2851,7 @@ function iniciaProva(uid) {
   mostra('objectiu');
 }
 function infoRonda(R) {
-  if (R.comp) return { cap: `<span style="color:${NAVY}">✎ ${PC.titol}</span>`, ctx: `<b>Competències</b> · ${CB_NOM[R.nivell]}` };
+  if (R.comp) { cbUsa(R.unitat); } if (R.comp) return { cap: `<span style="color:${NAVY}">✎ ${PC.titol}</span>`, ctx: `<b>Competències</b> · ${CB_NOM[R.nivell]}` };
   if (R.taller) { const t = TALLERS[R.obj]; return { cap: `<span style="color:${LILA}">✦ Taller de reforç</span> · ${t.titol}`, ctx: `<b>Taller</b> · ${t.titol}` }; }
   if (R.prova) { const u = UNITATS[R.unitat]; return { cap: `Prova final · ${u.nom}`, ctx: `<b>Prova final</b> · ${u.nom}` }; }
   const o = objPerId(R.obj); return { ...o, cap: `Objectiu ${o.num} · ${o.titol}`, ctx: `Objectiu <b>${o.num}</b> · ${o.titol}` };
@@ -3366,13 +3498,14 @@ function pintaLlibreta() {
 function pintaLlibretaDins(c) {
   if (S.unitatProfe === 'seg') return pintaSeguiment(c);
   const u = UNITATS[S.unitatProfe] || UNITATS.f; const OBJS = u.obj;
+  const CBP = CB_PROVES[u.id] ? cbUsa(u.id) : null;
   const llista = Object.entries(S.alumnes).sort(ordenaNoms);
   const minimAS = minimDe(u);
   const sostre = sostreDe(u); const OBERTS = OBJS.filter(o => !o.properament);
   const barra = `<div class="fila-form llib-barra">${segmentLlibreta(u.id)}
     <span class="grup-barra"><b>App:</b><span class="segment petit" id="l-app"><button data-v="1" class="${appTancada() ? '' : 'activa'}">Oberta</button><button data-v="0" class="${appTancada() ? 'activa' : ''}" title="Ningú hi pot entrar. El missatge es canvia a Configuració.">🔒 Tancada</button></span></span>
     <span class="grup-barra"><b>Obert fins a:</b><select class="camp" id="l-sostre" style="padding:4px 8px;width:auto" title="Els objectius de després queden tancats, encara que l'alumne hagi superat l'anterior">${OBERTS.map((o, i) => `<option value="${i + 1}" ${sostre === i + 1 ? 'selected' : ''}>objectiu ${o.num}</option>`).join('')}<option value="" ${sostre === null || sostre >= OBERTS.length ? 'selected' : ''}>tot obert</option><option value="0" ${sostre === 0 ? 'selected' : ''}>res (tot tancat)</option></select></span>
-    ${u.id === PC.unitat ? `<span class="grup-barra"><b>Competències:</b><span class="segment petit" id="l-comp"><button data-v="0" class="${S.config?.provaC === true ? '' : 'activa'}">Tancada</button><button data-v="1" class="${S.config?.provaC === true ? 'activa' : ''}">Oberta</button></span></span>` : ''}
+    ${CBP ? `<span class="grup-barra"><b>Competències:</b><span class="segment petit" id="l-comp"><button data-v="0" class="${S.config?.[CBP.PC.provaKey] === true ? '' : 'activa'}">Tancada</button><button data-v="1" class="${S.config?.[CBP.PC.provaKey] === true ? 'activa' : ''}">Oberta</button></span></span>` : ''}
     ${tallersU(u).length ? `<span class="grup-barra"><b>Tallers:</b><span id="l-tallers">${tallersU(u).map(t => `<button class="xip ${tallerObert(t) ? 'on' : ''}" data-t="${t.id}" title="${esc(t.titol)} · ${tallerObert(t) ? 'obert: clica per tancar-lo' : 'tancat: clica per obrir-lo'}">${t.ic} ${t.curt}${tallerObert(t) ? '' : ' 🔒'}</button>`).join('')}</span></span>` : ''}
     <span class="grup-barra"><b>AS:</b><span class="segment petit" id="l-asauto"><button data-v="1" class="${asAuto(u) ? 'activa' : ''}" title="L'app posa AS quan l'alumne arriba al mínim d'objectius">Automàtica</button><button data-v="0" class="${asAuto(u) ? '' : 'activa'}" title="La poses tu clicant la casella">Manual</button></span></span>
     ${unitatCompleta(u) ? `<span class="grup-barra"><b>Prova final:</b><span class="segment petit" id="l-prova"><button data-v="0" class="${provaOberta(u) ? '' : 'activa'}">Tancada</button><button data-v="1" class="${provaOberta(u) ? 'activa' : ''}">Oberta</button></span></span>` : ''}</div>`;
@@ -3384,7 +3517,7 @@ function pintaLlibretaDins(c) {
       ${alertes ? `<span style="color:var(--ko);font-weight:800">⚠ ${alertes} ${alertes === 1 ? 'alumne necessita' : 'alumnes necessiten'} ajuda</span>` : ''}</div>
     <div class="taula-caixa"><table class="llibreta"><thead><tr><th class="nom">Alumne</th><th>Nivell</th>
       ${OBJS.map(o => `<th title="${esc(o.titol)}${objTancat(o.id) ? ' · tancat (sostre)' : ''}" class="${objTancat(o.id) ? 'th-tancat' : ''}">${objTancat(o.id) ? '🔒' : ''}${o.num}<br><small style="font-weight:500;opacity:.75">${esc(o.curt)}</small></th>`).join('')}
-      ${tallersCol(u).length ? (tallersPlegats() ? `<th class="th-taller plegat"><button class="plega" id="l-plega" title="Mostra la columna de tallers">✦<br>▸</button></th>` : `<th class="th-taller">✦ Tallers <button class="plega" id="l-plega" title="Amaga la columna de tallers">◂</button><br><small style="font-weight:500;opacity:.85">no compten</small></th>`) : ''}<th>Assolits</th><th>Qualif.</th>${u.id === PC.unitat ? `<th class="th-comp">Competències<br><button class="cb-i" id="cb-i-cap" title="Com funciona">ⓘ</button></th>` : ''}${unitatCompleta(u) ? '<th>Prova<br><small style="font-weight:500;opacity:.75">final</small></th>' : ''}</tr></thead><tbody>
+      ${tallersCol(u).length ? (tallersPlegats() ? `<th class="th-taller plegat"><button class="plega" id="l-plega" title="Mostra la columna de tallers">✦<br>▸</button></th>` : `<th class="th-taller">✦ Tallers <button class="plega" id="l-plega" title="Amaga la columna de tallers">◂</button><br><small style="font-weight:500;opacity:.85">no compten</small></th>`) : ''}<th>Assolits</th><th>Qualif.</th>${CBP ? `<th class="th-comp">Competències<br><button class="cb-i" id="cb-i-cap" title="Com funciona">ⓘ</button></th>` : ''}${unitatCompleta(u) ? '<th>Prova<br><small style="font-weight:500;opacity:.75">final</small></th>' : ''}</tr></thead><tbody>
       ${llista.map(([id, a]) => {
         const assolits = OBJS.filter(o => estatCasella(id, o.id) === 'ok').length;
         const pr = S.resTots[id]?.[u.prova];
@@ -3401,7 +3534,7 @@ function pintaLlibretaDins(c) {
             if (r.anulats) html += `<small class="anul-txt">⊘ ${r.anulats} anul·lat${r.anulats === 1 ? '' : 's'}</small>`;
             return `<td class="casella c-${e} ${teAnulat(r) ? 'anul' : teFora(r) ? 'fora' : ''}" data-a="${id}" data-o="${o.id}">${html}</td>`;
           }).join('')}
-          ${tallersCol(u).length ? (tallersPlegats() ? '<td class="c-plegat"></td>' : celaTallers(id, u)) : ''}<td><b>${assolits}/${OBJS.length}</b></td>${celaQualif(id, u)}${u.id === PC.unitat ? celaComp(id) : ''}
+          ${tallersCol(u).length ? (tallersPlegats() ? '<td class="c-plegat"></td>' : celaTallers(id, u)) : ''}<td><b>${assolits}/${OBJS.length}</b></td>${celaQualif(id, u)}${CBP ? celaComp(id) : ''}
           ${unitatCompleta(u) ? `<td class="casella ${pr?.fetes ? 'c-prova' : 'c-buit'} ${teAnulat(pr) ? 'anul' : teFora(pr) ? 'fora' : ''}" data-a="${id}" data-o="${u.prova}">${pr?.fetes ? `<b>${pr.darrera?.punts ?? 0}/${OBJS.length}</b><small>${pr.fetes} ${pr.fetes === 1 ? 'intent' : 'intents'}${(pr.permesos || 1) > pr.fetes ? ' · reoberta' : ''}</small>${teAnulat(pr) ? '<small class="anul-txt">⊘ entrega forçada</small>' : ''}` : `<b>—</b>`}</td>` : ''}</tr>`;
       }).join('')}</tbody></table></div>`;
   enllacaBarra(c, u);
@@ -3409,8 +3542,8 @@ function pintaLlibretaDins(c) {
     const id = b.dataset.niv; const nou = Math.max(1, Math.min(3, nivellBase(id) + Number(b.dataset.d)));
     DB.set(`${ARREL}/alumnes/${id}/nivell`, nou);
   });
-  const ci = $('#cb-i-cap', c); if (ci) ci.onclick = e => { e.stopPropagation(); obreModal(CB_INFO + `<div class="accions"><button class="boto" data-tanca-modal>Entesos</button></div>`, 'ample'); };
-  $$('.casella', c).forEach(td => td.onclick = () => td.dataset.o === PC.id ? detallComp(td.dataset.a) : td.dataset.o === 'tallers' ? detallTallers(td.dataset.a) : esProva(td.dataset.o) ? detallProva(td.dataset.a, td.dataset.o) : detallCasella(td.dataset.a, td.dataset.o));
+  const ci = $('#cb-i-cap', c); if (ci) ci.onclick = e => { e.stopPropagation(); cbInfoModal(u.id); };
+  $$('.casella', c).forEach(td => td.onclick = () => cbProvaDe(td.dataset.o) ? (cbUsa(cbProvaDe(td.dataset.o)), detallComp(td.dataset.a)) : td.dataset.o === 'tallers' ? detallTallers(td.dataset.a) : esProva(td.dataset.o) ? detallProva(td.dataset.a, td.dataset.o) : detallCasella(td.dataset.a, td.dataset.o));
 }
 /* =====================================================================
    SEGUIMENT DIARI (només el professor): treball 1-3, participació, incident
@@ -3483,7 +3616,7 @@ function enllacaSeg(c) {
 function enllacaBarra(c, u) {
   $$('#l-unitats button', c).forEach(b => b.onclick = () => { S.unitatProfe = b.dataset.u; pintaLlibreta(); });
   $$('#l-prova button', c).forEach(b => b.onclick = () => DB.update(`${ARREL}/config`, { [u.provaKey]: b.dataset.v === '1' }));
-  $$('#l-comp button', c).forEach(b => b.onclick = () => DB.update(`${ARREL}/config`, { provaC: b.dataset.v === '1' }));
+  $$('#l-comp button', c).forEach(b => b.onclick = () => DB.update(`${ARREL}/config`, { [CB_PROVES[u.id]?.PC.provaKey || 'provaC']: b.dataset.v === '1' }));
   $$('#l-asauto button', c).forEach(b => b.onclick = () => DB.update(`${ARREL}/config/asAuto`, { [u.id]: b.dataset.v === '1' }));
   $$('#l-app button', c).forEach(b => b.onclick = () => DB.update(`${ARREL}/config`, { tancada: b.dataset.v === '0' }));
   const ls = $('#l-sostre', c); if (ls) ls.onchange = () => posaSostre(u, ls.value === '' ? null : Number(ls.value));
@@ -3617,8 +3750,8 @@ function pintaConfig() {
       ${LLISTA_UNITATS.map(k => { const u = UNITATS[k]; return `<div class="fila-form" style="margin:6px 0"><b style="width:110px">${u.nom}</b><span class="segment petit"><button data-asa="${k}" data-v="1" class="${asAuto(u) ? 'activa' : ''}">Automàtica</button><button data-asa="${k}" data-v="0" class="${asAuto(u) ? '' : 'activa'}">Manual</button></span><span style="color:var(--gris);margin-left:10px">mínim</span><span class="nivell-ctl" style="font-size:1.2rem"><button data-as="${k}" data-d="-1">−</button><b>${minimDe(u)}</b><button data-as="${k}" data-d="1">+</button></span><span style="color:var(--gris)">de ${u.obj.length}</span></div>`; }).join('')}</div>
     <div class="targeta-conf"><h3>Prova final</h3><p class="ajuda">Mentre està tancada, els alumnes no la poden començar. També la pots obrir des de la llibreta.</p>
       ${LLISTA_UNITATS.map(k => { const u = UNITATS[k]; return `<div class="fila-form" style="margin:6px 0"><b style="width:110px">${u.nom}</b>${unitatCompleta(u) ? `<span class="segment petit"><button data-pr="${k}" data-v="0" class="${provaOberta(u) ? '' : 'activa'}">Tancada</button><button data-pr="${k}" data-v="1" class="${provaOberta(u) ? 'activa' : ''}">Oberta</button></span>` : '<span style="color:var(--gris)">Disponible quan hi hagi tots els objectius</span>'}</div>`; }).join('')}</div>
-    <div class="targeta-conf"><h3>Prova de competències · Fraccions <button class="cb-i" id="c-cb-i">ⓘ</button></h3><p class="ajuda">Examen a part, en format de competències bàsiques. També l'obres des de la llibreta.</p>
-      <span class="segment petit" id="c-comp"><button data-v="0" class="${S.config?.provaC === true ? '' : 'activa'}">Tancada</button><button data-v="1" class="${S.config?.provaC === true ? 'activa' : ''}">Oberta</button></span></div>
+    <div class="targeta-conf"><h3>Proves de competències</h3><p class="ajuda">Exàmens a part, en format de competències bàsiques. També les obres des de la llibreta de cada unitat.</p>
+      ${Object.entries(CB_PROVES).map(([k, p]) => `<div class="fila-form" style="margin:6px 0"><b style="width:110px">${UNITATS[k].nom}</b><span class="segment petit" data-cbk="${p.PC.provaKey}"><button data-v="0" class="${S.config?.[p.PC.provaKey] === true ? '' : 'activa'}">Tancada</button><button data-v="1" class="${S.config?.[p.PC.provaKey] === true ? 'activa' : ''}">Oberta</button></span><button class="cb-i" data-cbi="${k}" title="Com funciona">ⓘ</button></div>`).join('')}</div>
     <div class="targeta-conf"><h3>Sons</h3><p class="ajuda">Silencia l'app a tots els alumnes alhora. Cada alumne també es pot silenciar a la pestanya Alumnes.</p>
       <div class="segment" id="c-sons"><button data-s="1" class="${S.config?.sons !== false ? 'activa' : ''}">Activats</button><button data-s="0" class="${S.config?.sons === false ? 'activa' : ''}">Silenciats per a tothom</button></div></div>
     <div class="targeta-conf"><h3>Exportar dades</h3><p class="ajuda">Descarrega un fitxer d'Excel amb tots els resultats: resum per unitat, tots els intents, totes les respostes, la prova final i el taller.</p>
@@ -3635,8 +3768,8 @@ function pintaConfig() {
   $$('[data-asa]', c).forEach(b => b.onclick = () => DB.update(`${ARREL}/config/asAuto`, { [b.dataset.asa]: b.dataset.v === '1' }));
   $$('[data-pr]', c).forEach(b => b.onclick = () => DB.update(`${ARREL}/config`, { [UNITATS[b.dataset.pr].provaKey]: b.dataset.v === '1' }));
   $('#c-excel', c).onclick = () => exportaExcel($('#c-excel-msg', c));
-  $$('#c-comp button', c).forEach(b => b.onclick = () => DB.update(`${ARREL}/config`, { provaC: b.dataset.v === '1' }));
-  $('#c-cb-i', c).onclick = () => obreModal(CB_INFO + `<div class="accions"><button class="boto" data-tanca-modal>Entesos</button></div>`, 'ample');
+  $$('[data-cbk] button', c).forEach(b => b.onclick = () => DB.update(`${ARREL}/config`, { [b.parentElement.dataset.cbk]: b.dataset.v === '1' }));
+  $$('[data-cbi]', c).forEach(b => b.onclick = () => cbInfoModal(b.dataset.cbi));
   $('#c-nou', c).onclick = async () => {
     const ok = await confirma(`S'arxivaran tots els alumnes i resultats i l'aplicació quedarà buida per al curs nou.`, 'Arxiva i comença');
     if (!ok) return;
@@ -3679,7 +3812,7 @@ function dadesExport() {
   for (const [id, a] of llista) {
     const res = S.resTots[id] || {};
     for (const [oid, r] of Object.entries(res)) {
-      if (TALLERS[oid] || oid === PC.id) continue;
+      if (TALLERS[oid] || cbProvaDe(oid)) continue;
       const u = unitatDe(oid); const prova = esProva(oid); const nomO = prova ? 'Prova final' : `${objPerId(oid)?.num || oid} · ${objPerId(oid)?.titol || ''}`;
       for (const h of Object.values(r.historial || {}).sort((x, y) => x.t - y.t)) {
         const resultat = h.anulat ? 'Anul·lat (pestanya)' : h.entregaForcada ? 'Entregada per sortir de la pestanya' : prova ? 'Feta' : h.superat ? 'Superat' : h.abandonat ? 'Abandonat' : 'No superat';
@@ -3700,10 +3833,13 @@ function dadesExport() {
     tal.push([a.nom, t.titol, r.estat === 'fet' ? 'Fet' : 'En curs', r.guiats || 0, r.solsOk || 0, e.p1 || 0, e.p2 || 0, e.p3 || 0, e.p4 || 0, dataExcel(r.darrer)]);
   }
   fulls.push(['Taller 5b', tal], ['Tallers jocs', jocs]);
+  for (const k of Object.keys(CB_PROVES)) {
+  cbUsa(k);
   const cbF = [['Alumne', 'Estat', 'Nivell', 'Nota (/10)', 'Activitat 1 (/3,5)', 'Activitat 2 (/3,5)', 'Activitat 3 (/3)', 'Temps (min)', 'Data de lliurament', 'Sortides de la pestanya', ...CB_ITEMS.map(it => `P${it.n} (/${String(it.pts).replace('.', ',')})`)]];
   for (const [id, a] of llista) { const r = S.resTots[id]?.[PC.id]; if (!r) continue;
     cbF.push([a.nom, r.estat === 'lliurada' ? (r.entregaForcada ? 'Lliurada (sortida de pestanya)' : 'Lliurada') : r.estat === 'fent' ? 'Fent' : 'Reoberta', CB_NOM[r.nivellCB] || '', r.estat === 'lliurada' ? r.nota : '', r.a1 ?? '', r.a2 ?? '', r.a3 ?? '', r.temps ? Math.round(r.temps / 60) : '', dataExcel(r.fi), r.foraN || 0, ...CB_ITEMS.map(it => r.resp?.['i' + it.n]?.pts ?? '')]); }
-  fulls.push(['Competències', cbF]);
+  fulls.push([k === 'f' ? 'Competències' : 'Competències ' + UNITATS[k].nom.toLowerCase(), cbF]);
+  }
   const dies = diesSeg();
   if (dies.length) {
     const segR = [['Alumne', 'Treball (mitjana)', 'Dies amb treball', 'Faltes', 'Faltes justificades', 'Participació activa 😊', 'Passiu 😐', 'Negativa 😠', 'Incidents 🔴']];
@@ -4004,7 +4140,7 @@ function arrenca() {
   if (local) {
     DB = connectaLocal();
     if (!new URLSearchParams(location.search).has('lazy')) { try { await carregaTotes(); } catch (e) { console.error(e); } }
-    window.__fr4c = { S, generaRonda, TEMES, DB, CB_ITEMS, vigila, genRE: (...x) => genRE(...x), carregaTotes };
+    window.__fr4c = { S, generaRonda, TEMES, DB, CB_ITEMS, cb: () => ({ items: CB_ITEMS, PC, n: CB_N }), vigila, genRE: (...x) => genRE(...x), carregaTotes };
     window.__A = () => A; window.__RE = () => RE; return arrenca();
   }
   try {
