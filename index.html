@@ -128,6 +128,7 @@ b,strong{font-weight:700}
 .targeta.assolit{border-color:var(--ok);background:var(--ok-suau);cursor:pointer}
 .targeta.assolit .num{color:var(--ok);background:var(--paper)}
 .targeta.assolit .estat{color:var(--ok)}
+.targeta.saltat{border-style:dashed;border-color:var(--taronja)}.targeta.saltat .estat{color:var(--taronja);font-weight:800}
 .targeta.bloquejat,.targeta.construccio,.targeta.tancat{color:var(--gris);background:var(--suau)}.targeta.tancat{border-style:dashed;border-color:var(--taronja)}.targeta.tancat .estat{color:var(--taronja);font-weight:800}
 .targeta.construccio{border-style:dashed}
 
@@ -288,7 +289,7 @@ small.anul-txt{display:block;font-size:.68rem}
 .avis-fora{background:var(--groc-suau);border:2px solid var(--groc);color:#8a6400;font-weight:800;font-size:.85rem;padding:3px 10px;border-radius:999px}
 .modal-fora{display:flex;gap:18px;align-items:center}
 .modal-fora h3{margin-bottom:6px}.modal-fora p{margin-top:6px}
-.llib-barra{margin-bottom:10px}.lin-in{display:inline-flex;align-items:center;gap:4px;font-size:1.4rem}.lin-in input{width:74px}.seg-tl{font-size:.8rem;white-space:nowrap;text-align:center;min-width:34px}.seg-tl .fet{color:var(--ok);font-weight:900}.seg-tl .mig{opacity:.45}.instr-tancada{margin-top:16px;max-width:520px;border:3px solid var(--taronja);border-radius:14px;overflow:hidden;background:#fff}.instr-tancada .cap{background:var(--taronja);color:#fff;font-weight:900;font-size:1.15rem;padding:8px 16px}.instr-tancada .txt{padding:12px 16px;font-size:1.15rem;line-height:1.45;max-height:42vh;overflow:auto;overflow-wrap:anywhere}.instr-tancada a{color:var(--taronja);font-weight:800}.avis-tancada{margin-top:18px;display:inline-block;padding:10px 18px;border:3px solid var(--taronja);border-radius:12px;font-weight:900;font-size:1.3rem;color:var(--taronja)}.xip.obj-tancat{border-color:var(--taronja);color:var(--taronja)}.th-tancat{background:var(--taronja)!important;color:#000!important}
+.llib-barra{margin-bottom:10px}.lin-in{display:inline-flex;align-items:center;gap:4px;font-size:1.4rem}.lin-in input{width:74px}.mt.mig{opacity:.5}.instr-tancada{margin-top:16px;max-width:520px;border:3px solid var(--taronja);border-radius:14px;overflow:hidden;background:#fff}.instr-tancada .cap{background:var(--taronja);color:#fff;font-weight:900;font-size:1.15rem;padding:8px 16px}.instr-tancada .txt{padding:12px 16px;font-size:1.15rem;line-height:1.45;max-height:42vh;overflow:auto;overflow-wrap:anywhere}.instr-tancada a{color:var(--taronja);font-weight:800}.avis-tancada{margin-top:18px;display:inline-block;padding:10px 18px;border:3px solid var(--taronja);border-radius:12px;font-weight:900;font-size:1.3rem;color:var(--taronja)}.xip.obj-tancat{border-color:var(--taronja);color:var(--taronja)}.th-tancat{background:var(--taronja)!important;color:#000!important}
 .c-prova{background:#efeafe}
 .fitxes{display:flex;flex-direction:column;gap:10px;width:100%;max-width:580px;margin:0 auto}
 .fx-obre{align-self:center;display:inline-flex;align-items:center;gap:8px;border:3px solid var(--tinta);background:#fff;border-radius:14px;padding:12px 20px;font-size:1.2rem;font-weight:800;cursor:pointer}.fx-obre:hover{background:#fff3ea}
@@ -683,7 +684,7 @@ table.llibreta{border-collapse:separate;border-spacing:0;font-size:.85rem;min-wi
 .casella small{display:block;font-size:.72rem;opacity:.8}
 .c-buit{background:#fafafa;color:#bbb}
 .c-proces{background:var(--groc-suau)}
-.c-alerta{background:var(--ko);color:#fff}
+.c-alerta{background:var(--ko);color:#fff}.c-salt{background:#fff3e6;box-shadow:inset 0 0 0 2px var(--taronja)}
 .c-ok{background:var(--ok-suau)}
 .nivell-ctl{display:inline-flex;align-items:center;gap:4px}
 .nivell-ctl button{width:24px;height:24px;border-radius:6px;border:1px solid var(--tinta);font-weight:800;line-height:1}
@@ -1001,7 +1002,7 @@ const enllacaQualif = c => $$('.q-man', c).forEach(td => td.onclick = () => canv
 const unitatCompleta = u => u.obj.every(o => !o.properament);
 /* ---------- Fitxers a part: cada unitat i cada joc es carrega quan cal ----------
    Són scripts clàssics (funcionen a GitHub Pages i també obrint l'index des de l'ordinador). */
-const V_FITXERS = '5.2';
+const V_FITXERS = '5.3';
 const FITXERS_UNITAT = { f: 'fraccions.js', e: 'enters.js', p: 'potencies.js', q: 'equacions.js' };
 const FITXERS_JOC = { tcx: 'joc-caixa.js', tesc: 'joc-escape.js', tpz: 'joc-pizzeria.js', dimp: 'joc-impropies.js' };
 const CARREGUES = {};
@@ -2760,7 +2761,7 @@ function mostraCredits() {
     <p style="font-size:1.1rem"><b>Ins Júlia Minguell</b> · Matemàtiques 4t ESO · Grup Flexible</p>
     <p style="margin-top:14px">Ideat per <b>J. Alcolea</b></p>
     <p style="color:var(--gris)">Desenvolupat amb Claude</p>
-    <p style="color:var(--gris);margin-top:10px">Versió 5.2</p>
+    <p style="color:var(--gris);margin-top:10px">Versió 5.3</p>
     <div class="accions"><button class="boto" data-tanca-modal>D'acord</button></div>`);
 }
 function entraAlumne(id) {
@@ -2788,9 +2789,10 @@ function estatObj(u, res, idx) {
   if (r?.estat === 'assolit') return objTancat(o.id) ? 'assolitTancat' : 'assolit';
   if (o.properament) return 'construccio'; // encara no fet: «properament», encara que l'anterior no estigui assolit
   if (objTancat(o.id)) return 'tancat'; // sostre posat pel professor
-  const obert = idx === 0 || res[u.obj[idx - 1].id]?.estat === 'assolit';
+  const ant = idx > 0 ? res[u.obj[idx - 1].id] : null;
+  const obert = idx === 0 || ant?.estat === 'assolit' || !!ant?.salt; // un objectiu saltat pel professor obre el següent
   if (!obert) return 'bloquejat';
-  return 'disponible';
+  return r?.salt ? 'saltat' : 'disponible';
 }
 function pantallaMapa() {
   const a = S.alumnes[S.alumne]; if (!a) return surtAlumne(true);
@@ -2818,7 +2820,7 @@ function pantallaMapa() {
       <div style="margin-left:auto;text-align:right"><div style="font-weight:800;margin-bottom:6px">${assolits} de ${OBJS.length} objectius</div><div class="barra-prog"><i style="width:${assolits / OBJS.length * 100}%"></i></div></div></div>
     <div class="graella ${OBJS.length === 6 ? 'g6' : ''}">${OBJS.map((o, i) => {
       const e = estatObj(u, res, i); const r = res[o.id] || {};
-      const txt = e === 'assolit' || e === 'assolitTancat' ? '✓ Assolit' : e === 'bloquejat' ? '🔒 Supera l\'anterior' : e === 'construccio' ? '🔒 Properament' : e === 'tancat' ? '🔒 L\'obrirem a classe' : (r.intents ? `Continua · ${r.intents} ${r.intents === 1 ? 'intent' : 'intents'}` : 'Comença →');
+      const txt = e === 'saltat' ? '⏭ Saltat · pots tornar-hi' : e === 'assolit' || e === 'assolitTancat' ? '✓ Assolit' : e === 'bloquejat' ? '🔒 Supera l\'anterior' : e === 'construccio' ? '🔒 Properament' : e === 'tancat' ? '🔒 L\'obrirem a classe' : (r.intents ? `Continua · ${r.intents} ${r.intents === 1 ? 'intent' : 'intents'}` : 'Comença →');
       return `<button class="targeta ${e === 'assolitTancat' ? 'assolit' : e}" data-obj="${o.id}" ${['bloquejat', 'construccio', 'tancat', 'assolitTancat'].includes(e) ? 'disabled' : ''}>
         <span class="num">${e === 'assolit' || e === 'assolitTancat' ? '✓' : o.num}</span><h3>${o.titol}</h3><span class="estat">${txt}</span></button>`;
     }).join('')}${targetaTaller(u, res)}${targetaComp(u, res)}${targetaProva(u, res)}</div></section>`;
@@ -3499,12 +3501,15 @@ const tallersU = u => llistaTallers().filter(t => t.unitat === u.id);
 const tallersCol = u => tallersU(u).filter(t => !t.senseDades);
 function pitjorPas(e) { const l = Object.entries(e || {}).filter(([, v]) => v > 0).sort((a, b) => b[1] - a[1]); return l.length ? Number(l[0][0].slice(1)) : null; }
 function tallersPlegats() { try { const v = localStorage.getItem('fr4c_tallers_plegats'); if (v != null) return v === '1'; } catch (e) { } return !!S.tallersPlegats; }
+const diesDeTaller = (id, tid) => Object.entries(S.resTots[id]?.diesTallers || {}).filter(([, o]) => o?.[tid]).map(([d, o]) => [d, o[tid]]).sort();
 function celaTallers(id, u) {
   const tl = tallersCol(u); const res = S.resTots[id] || {};
-  const amb = tl.filter(t => res[t.id]);
+  const amb = tl.filter(t => res[t.id] || diesDeTaller(id, t.id).length);
   if (!amb.length) return `<td class="casella c-buit" data-a="${id}" data-o="tallers"><b>—</b></td>`;
   return `<td class="casella c-taller-p" data-a="${id}" data-o="tallers" style="line-height:1.5">${amb.map(t => { const rs = resumTaller(t, res[t.id]);
-    return `<span class="mt ${rs.fet ? 'ok' : ''}" title="${esc(t.titol)}">${t.ic} ${rs.fet ? '✓' : rs.prog}</span>`; }).join('')}</td>`;
+    const ds = diesDeTaller(id, t.id), fets = ds.filter(([, v]) => v === 2);
+    const tit = `${t.titol}${ds.length ? ' · ' + ds.map(([d, v]) => `${d.slice(8, 10)}/${d.slice(5, 7)}${v === 2 ? ' ✓' : ' (hi ha treballat)'}`).join(', ') : ''}`;
+    return `<span class="mt ${rs.fet || fets.length ? 'ok' : ''} ${!fets.length && ds.length ? 'mig' : ''}" title="${esc(tit)}">${t.ic} ${fets.length ? `✓ ${fets.length} ${fets.length === 1 ? 'dia' : 'dies'}` : rs.fet ? '✓' : rs.prog}</span>`; }).join('')}</td>`;
 }
 function seccioTaller(id, t) {
   const r = S.resTots[id]?.[t.id]; const rs = resumTaller(t, r);
@@ -3559,9 +3564,9 @@ function pintaLlibretaDins(c) {
     <span class="grup-barra"><b>AS:</b><span class="segment petit" id="l-asauto"><button data-v="1" class="${asAuto(u) ? 'activa' : ''}" title="L'app posa AS quan l'alumne arriba al mínim d'objectius">Automàtica</button><button data-v="0" class="${asAuto(u) ? '' : 'activa'}" title="La poses tu clicant la casella">Manual</button></span></span>
     ${unitatCompleta(u) ? `<span class="grup-barra"><b>Prova final:</b><span class="segment petit" id="l-prova"><button data-v="0" class="${provaOberta(u) ? '' : 'activa'}">Tancada</button><button data-v="1" class="${provaOberta(u) ? 'activa' : ''}">Oberta</button></span></span>` : ''}</div>`;
   if (!llista.length) { c.innerHTML = barra + `<div class="seccio"><h3>Encara no hi ha alumnes</h3><p class="ajuda">Afegeix-los a la pestanya <b>Alumnes</b>.</p></div>`; enllacaBarra(c, u); return; }
-  const alertes = llista.filter(([id]) => OBJS.some(o => estatCasella(id, o.id) === 'alerta')).length;
+  const alertes = llista.filter(([id]) => OBJS.some(o => estatCasella(id, o.id) === 'alerta' && !S.resTots[id]?.[o.id]?.salt)).length;
   c.innerHTML = barra + `<div class="llegenda">
-      <span><i style="background:var(--ok-suau)"></i> Assolit</span><span><i style="background:var(--groc-suau)"></i> En procés</span><span><i style="background:var(--ko)"></i> Alerta (3 intents fallits al nivell 1)</span><span><i style="background:#fafafa"></i> No començat</span><span class="fora-txt"><i style="background:var(--taronja);border-radius:50%;width:8px;height:8px;border:0"></i> Avís per sortir de la pestanya</span><span class="fora-txt"><i style="background:var(--ko);border-radius:50%;width:9px;height:9px;border:0"></i> Intent anul·lat</span>
+      <span><i style="background:var(--ok-suau)"></i> Assolit</span><span><i style="background:#fff3e6;box-shadow:inset 0 0 0 2px var(--taronja)"></i> ⏭ Saltat (no assolit)</span><span><i style="background:var(--groc-suau)"></i> En procés</span><span><i style="background:var(--ko)"></i> Alerta (3 intents fallits al nivell 1)</span><span><i style="background:#fafafa"></i> No començat</span><span class="fora-txt"><i style="background:var(--taronja);border-radius:50%;width:8px;height:8px;border:0"></i> Avís per sortir de la pestanya</span><span class="fora-txt"><i style="background:var(--ko);border-radius:50%;width:9px;height:9px;border:0"></i> Intent anul·lat</span>
       <span style="margin-left:auto;color:var(--gris)">Clica una casella per veure els intents · ${asAuto(u) ? `AS automàtica amb ${minimAS} de ${OBJS.length} objectius` : 'AS manual: clica la casella de qualificació (AS → NA → buit)'}</span>
       ${alertes ? `<span style="color:var(--ko);font-weight:800">⚠ ${alertes} ${alertes === 1 ? 'alumne necessita' : 'alumnes necessiten'} ajuda</span>` : ''}</div>
     <div class="taula-caixa"><table class="llibreta"><thead><tr><th class="nom">Alumne</th><th>Nivell</th>
@@ -3578,10 +3583,11 @@ function pintaLlibretaDins(c) {
             let html;
             if (o.properament) return `<td class="c-buit" style="color:#ccc">·</td>`;
             if (e === 'buit') html = `<b>—</b><small>N${nvAra}${baix ? '↓' : ''}</small>`;
-            else if (e === 'ok') html = `<b>✓ N${r.nivellAssolit}</b><small>${r.millor}/8 · ${r.intents || 0} int.</small>`;
+            else if (e === 'ok') html = `<b>✓ N${r.nivellAssolit}${r.salt ? ' <span title="Abans l\'havia saltat" style="color:var(--taronja)">⏭</span>' : ''}</b><small>${r.millor}/8 · ${r.intents || 0} int.</small>`;
+            else if (r.salt) html = `<b style="color:var(--taronja)" title="Saltat pel professor (no assolit)">⏭ N${nvAra}</b><small>${r.millor || 0}/8 · ${r.intents || 0} int.</small>`;
             else html = `<b>${e === 'alerta' ? '⚠ ' : ''}N${nvAra}${baix ? '↓' : ''}</b><small>${r.millor || 0}/8 · ${r.intents || 0} int.</small>`;
             if (r.anulats) html += `<small class="anul-txt">⊘ ${r.anulats} anul·lat${r.anulats === 1 ? '' : 's'}</small>`;
-            return `<td class="casella c-${e} ${teAnulat(r) ? 'anul' : teFora(r) ? 'fora' : ''}" data-a="${id}" data-o="${o.id}">${html}</td>`;
+            return `<td class="casella c-${e !== 'ok' && r.salt ? 'salt' : e} ${teAnulat(r) ? 'anul' : teFora(r) ? 'fora' : ''}" data-a="${id}" data-o="${o.id}">${html}</td>`;
           }).join('')}
           ${tallersCol(u).length ? (tallersPlegats() ? '<td class="c-plegat"></td>' : celaTallers(id, u)) : ''}<td><b>${assolits}/${OBJS.length}</b></td>${celaQualif(id, u)}${CBP ? celaComp(id) : ''}
           ${unitatCompleta(u) ? `<td class="casella ${pr?.fetes ? 'c-prova' : 'c-buit'} ${teAnulat(pr) ? 'anul' : teFora(pr) ? 'fora' : ''}" data-a="${id}" data-o="${u.prova}">${pr?.fetes ? `<b>${pr.darrera?.punts ?? 0}/${OBJS.length}</b><small>${pr.fetes} ${pr.fetes === 1 ? 'intent' : 'intents'}${(pr.permesos || 1) > pr.fetes ? ' · reoberta' : ''}</small>${teAnulat(pr) ? '<small class="anul-txt">⊘ entrega forçada</small>' : ''}` : `<b>—</b>`}</td>` : ''}</tr>`;
@@ -3604,13 +3610,6 @@ const segmentLlibreta = actiu => `<span class="segment" id="l-unitats">${LLISTA_
 const avuiISO = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
 const dataSeg = iso => { const [y, m, d] = iso.split('-').map(Number); const dt = new Date(y, m - 1, d); return { dia: dt.toLocaleDateString('ca-ES', { weekday: 'short' }).replace('.', ''), num: `${String(d).padStart(2, '0')}/${String(m).padStart(2, '0')}`, llarg: dt.toLocaleDateString('ca-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) }; };
 const diesSeg = () => Object.keys(S.seg || {}).filter(k => /^\d{4}-\d{2}-\d{2}$/.test(k)).sort().reverse();
-const diesTallerFet = id => Object.values(S.resTots[id]?.diesTallers || {}).filter(o => Object.values(o || {}).some(v => v === 2)).length;
-function celaTallerDia(id, d) {
-  const o = S.resTots[id]?.diesTallers?.[d] || {}; const ks = Object.keys(o).filter(k => TALLERS[k]);
-  if (!ks.length) return '<td class="seg-tl"></td>';
-  const tit = ks.map(k => `${TALLERS[k].titol}: ${o[k] === 2 ? 'fet' : 'hi ha treballat'}`).join(' · ');
-  return `<td class="seg-tl" title="${esc(tit)}">${ks.map(k => `<span class="${o[k] === 2 ? 'fet' : 'mig'}">${TALLERS[k].ic}${o[k] === 2 ? '✓' : ''}</span>`).join('')}</td>`;
-}
 function resumSeg(id) {
   const r = { n: 0, suma: 0, a: 0, p: 0, nn: 0, i: 0, f: 0, fj: 0 };
   for (const d of diesSeg()) { const x = S.seg[d]?.a?.[id]; if (!x) continue; if (typeof x.t === 'number') { r.n++; r.suma += x.t; } if (x.t === 'F') r.f++; if (x.t === 'FJ') r.fj++; if (x.p === 'a') r.a++; if (x.p === 'p') r.p++; if (x.p === 'n') r.nn++; if (x.i) r.i++; }
@@ -3622,16 +3621,16 @@ function pintaSeguiment(c) {
   const barra = `<div class="fila-form llib-barra">${segmentLlibreta('seg')}<span class="grup-barra"><button class="boto taronja" id="seg-nou">＋ Nou dia</button></span>
     <span style="margin-left:auto;color:var(--gris);font-size:.9rem">Toca una casella per canviar-la · Treball: 1 → 2 → 3 → F → FJ → buit · Participació: 😊 → 😐 → 😠 → buit · 🔴 incident</span></div>`;
   if (!llista.length) { c.innerHTML = barra + `<div class="seccio"><h3>Encara no hi ha alumnes</h3></div>`; enllacaSeg(c); return; }
-  const cap1 = dies.map(d => { const f = dataSeg(d); return `<th colspan="3" class="seg-dia" data-dia="${d}" title="${f.llarg} · clica per esborrar el dia">${f.dia} ${f.num}</th>`; }).join('');
-  const cap2 = dies.map(() => `<th class="seg-sub">Treb.</th><th class="seg-sub">Part.</th><th class="seg-sub" title="Tallers fets aquell dia">✦</th>`).join('');
+  const cap1 = dies.map(d => { const f = dataSeg(d); return `<th colspan="2" class="seg-dia" data-dia="${d}" title="${f.llarg} · clica per esborrar el dia">${f.dia} ${f.num}</th>`; }).join('');
+  const cap2 = dies.map(() => `<th class="seg-sub">Treb.</th><th class="seg-sub">Part.</th>`).join('');
   c.innerHTML = barra + `<div class="taula-caixa"><table class="llibreta seguiment"><thead>
-      <tr><th class="nom" rowspan="2">Alumne</th><th colspan="${8 + LLISTA_UNITATS.length}" class="seg-resum">Resum</th>${cap1 || '<th rowspan="2" class="seg-buit">Clica «＋ Nou dia» per començar</th>'}</tr>
-      <tr><th class="seg-sub" title="Mitjana de treball (sense comptar les faltes)">Treb.</th><th class="seg-sub" title="Faltes">F</th><th class="seg-sub" title="Faltes justificades">FJ</th><th class="seg-sub">😊</th><th class="seg-sub">😐</th><th class="seg-sub">😠</th><th class="seg-sub">🔴</th><th class="seg-sub" title="Dies amb algun taller fet (acabat o partida sencera)">✦ dies</th>${LLISTA_UNITATS.map(k => `<th class="seg-sub" title="Qualificació de ${UNITATS[k].nom} (${asAuto(UNITATS[k]) ? 'automàtica' : 'manual: clica per canviar-la'})">AS ${UNITATS[k].nom.slice(0, 3)}.</th>`).join('')}${cap2}</tr></thead><tbody>
+      <tr><th class="nom" rowspan="2">Alumne</th><th colspan="${7 + LLISTA_UNITATS.length}" class="seg-resum">Resum</th>${cap1 || '<th rowspan="2" class="seg-buit">Clica «＋ Nou dia» per començar</th>'}</tr>
+      <tr><th class="seg-sub" title="Mitjana de treball (sense comptar les faltes)">Treb.</th><th class="seg-sub" title="Faltes">F</th><th class="seg-sub" title="Faltes justificades">FJ</th><th class="seg-sub">😊</th><th class="seg-sub">😐</th><th class="seg-sub">😠</th><th class="seg-sub">🔴</th>${LLISTA_UNITATS.map(k => `<th class="seg-sub" title="Qualificació de ${UNITATS[k].nom} (${asAuto(UNITATS[k]) ? 'automàtica' : 'manual: clica per canviar-la'})">AS ${UNITATS[k].nom.slice(0, 3)}.</th>`).join('')}${cap2}</tr></thead><tbody>
       ${llista.map(([id, a]) => { const r = resumSeg(id);
         return `<tr><td class="nom" title="${esc(a.nom)}">${esc(a.nom)}</td>
-          <td class="seg-r"><b>${r.mitjana == null ? '—' : r.mitjana.toFixed(1).replace('.', ',')}</b></td><td class="seg-r ${r.f ? 'seg-mal' : ''}">${r.f || ''}</td><td class="seg-r">${r.fj || ''}</td><td class="seg-r">${r.a || ''}</td><td class="seg-r">${r.p || ''}</td><td class="seg-r ${r.nn ? 'seg-mal' : ''}">${r.nn || ''}</td><td class="seg-r ${r.i ? 'seg-mal' : ''}">${r.i || ''}</td><td class="seg-r" title="Dies amb algun taller fet">${diesTallerFet(id) || ''}</td>${LLISTA_UNITATS.map(k => celaQualif(id, UNITATS[k], true).replace('<td', '<td data-qs="1"')).join('')}
+          <td class="seg-r"><b>${r.mitjana == null ? '—' : r.mitjana.toFixed(1).replace('.', ',')}</b></td><td class="seg-r ${r.f ? 'seg-mal' : ''}">${r.f || ''}</td><td class="seg-r">${r.fj || ''}</td><td class="seg-r">${r.a || ''}</td><td class="seg-r">${r.p || ''}</td><td class="seg-r ${r.nn ? 'seg-mal' : ''}">${r.nn || ''}</td><td class="seg-r ${r.i ? 'seg-mal' : ''}">${r.i || ''}</td>${LLISTA_UNITATS.map(k => celaQualif(id, UNITATS[k], true).replace('<td', '<td data-qs="1"')).join('')}
           ${dies.map(d => { const x = S.seg[d]?.a?.[id] || {};
-            return ` <td class="seg-t t${x.t || 0}" title="${x.t === 'F' ? 'Falta' : x.t === 'FJ' ? 'Falta justificada' : ''}" data-d="${d}" data-a="${id}" data-c="t">${x.t || ''}</td><td class="seg-p" data-d="${d}" data-a="${id}" data-c="p"><span class="seg-cara">${x.p ? PARTIC[x.p].e : ''}</span><button class="seg-inc ${x.i ? 'on' : ''}" data-d="${d}" data-a="${id}" title="${x.i ? 'Treu l\'incident' : 'Marca un incident (mal comportament)'}"></button></td>${celaTallerDia(id, d)}`; }).join('')}</tr>`; }).join('')}
+            return ` <td class="seg-t t${x.t || 0}" title="${x.t === 'F' ? 'Falta' : x.t === 'FJ' ? 'Falta justificada' : ''}" data-d="${d}" data-a="${id}" data-c="t">${x.t || ''}</td><td class="seg-p" data-d="${d}" data-a="${id}" data-c="p"><span class="seg-cara">${x.p ? PARTIC[x.p].e : ''}</span><button class="seg-inc ${x.i ? 'on' : ''}" data-d="${d}" data-a="${id}" title="${x.i ? 'Treu l\'incident' : 'Marca un incident (mal comportament)'}"></button></td>`; }).join('')}</tr>`; }).join('')}
     </tbody></table></div>
     <p class="ajuda" style="margin-top:8px">El seguiment no compta per a cap nota de l'app i només el veu el professor.</p>`;
   enllacaSeg(c);
@@ -3696,10 +3695,12 @@ function detallCasella(id, o) {
   const nvAra = nivellDe(id, o);
   const m = obreModal(`<h3>${esc(a?.nom)} · ${unitatDe(o).nom} · Objectiu ${ob.num}</h3><p style="color:var(--gris);margin-top:-6px">${ob.titol}</p>
     <div class="targeta-conf" style="margin-top:14px;display:flex;gap:16px;align-items:center;flex-wrap:wrap">
-      <div><b>Estat:</b> ${r.estat === 'assolit' ? `<span class="marca-ok">Assolit al nivell ${r.nivellAssolit}</span>` : r.alerta ? '<span class="marca-ko">Alerta</span>' : (r.intents || r.anulats) ? 'En procés' : 'No començat'}</div>
+      <div><b>Estat:</b> ${r.estat === 'assolit' ? `<span class="marca-ok">Assolit al nivell ${r.nivellAssolit}</span>${r.salt ? ' <small>(abans saltat)</small>' : ''}` : r.salt ? '<span style="color:#b44f00;font-weight:800">⏭ Saltat (no assolit)</span>' : r.alerta ? '<span class="marca-ko">Alerta</span>' : (r.intents || r.anulats) ? 'En procés' : 'No començat'}</div>
       <div><b>Nivell en aquest objectiu:</b> <span class="segment" id="seg-niv">${[1, 2, 3].map(n => `<button class="${n === nvAra ? 'activa' : ''}" data-n="${n}">${n}</button>`).join('')}</span></div>
-      <button class="boto-petit" id="btn-reinicia" style="margin-left:auto;border-color:var(--ko);color:var(--ko)">Reinicia l'objectiu</button>
+      ${r.estat !== 'assolit' && (r.salt || nvAra <= 2) ? `<button class="boto-petit" id="btn-salt" style="margin-left:auto;border-color:var(--taronja);color:#b44f00" title="L'objectiu queda com a NO assolit, però s'obre el següent">${r.salt ? `Treu el salt (saltat el ${dataCurta(r.salt)})` : '⏭ Deixa\'l passar'}</button>` : ''}
+      <button class="boto-petit" id="btn-reinicia" style="${r.estat !== 'assolit' && (r.salt || nvAra <= 2) ? '' : 'margin-left:auto;'}border-color:var(--ko);color:var(--ko)">Reinicia l'objectiu</button>
     </div>
+    ${r.estat !== 'assolit' && nvAra <= 2 && !r.salt ? '<p class="ajuda" style="margin:6px 0 0">«Deixa\'l passar» obre el següent objectiu, però aquest continua com a <b>no assolit</b>: no compta per a l\'AS automàtic. L\'alumne hi pot tornar quan vulgui.</p>' : ''}
     ${resumErrors(hist)}
     ${htmlIntents(hist, TOTAL_EX)}
     <div class="accions"><button class="boto" data-tanca-modal>Tanca</button></div>`, 'ample');
@@ -3707,6 +3708,10 @@ function detallCasella(id, o) {
     const desitjat = Number(b.dataset.n); DB.set(`${ARREL}/alumnes/${id}/baixades/${o}`, nivellBase(id) - desitjat);
     $$('#seg-niv button', m).forEach(x => x.classList.toggle('activa', x === b));
   });
+  const bs = $('#btn-salt', m); if (bs) bs.onclick = async () => {
+    if (!r.salt) { const ok = await confirma(`<b>${esc(a?.nom)}</b> podrà passar a l'objectiu següent. L'objectiu ${ob.num} quedarà com a <b>no assolit</b> (⏭ a la llibreta).`, 'Deixa\'l passar'); if (!ok) return; }
+    await DB.update(`${ARREL}/resultats/${id}/${o}`, { salt: r.salt ? null : Date.now() }); tancaModal();
+  };
   $('#btn-reinicia', m).onclick = async () => {
     const ok = await confirma(`S'esborraran tots els intents de <b>${esc(a?.nom)}</b> a l'objectiu ${ob.num}.`, 'Reinicia');
     if (!ok) return;
@@ -3852,7 +3857,7 @@ const dataExcel = t => t ? new Date(t).toLocaleString('ca-ES', { day: '2-digit',
 function dadesExport() {
   const llista = Object.entries(S.alumnes).sort(ordenaNoms);
   const fulls = [];
-  const estatTxt = (id, o) => { const r = S.resTots[id]?.[o] || {}; if (r.estat === 'assolit') return `Assolit N${r.nivellAssolit}`; if (r.alerta) return 'Alerta'; if (r.intents || r.anulats) return 'En procés'; return ''; };
+  const estatTxt = (id, o) => { const r = S.resTots[id]?.[o] || {}; if (r.estat === 'assolit') return `Assolit N${r.nivellAssolit}`; if (r.salt) return `Saltat pel professor (${dataCurta(r.salt)})`; if (r.alerta) return 'Alerta'; if (r.intents || r.anulats) return 'En procés'; return ''; };
   for (const k of LLISTA_UNITATS) {
     const u = UNITATS[k]; const OBJS = u.obj.filter(o => !o.properament); const tl = tallersCol(u);
     const cap = ['Alumne', 'Codi', 'Nivell', ...OBJS.map(o => `Obj. ${o.num} · ${o.curt}`), ...tl.map(t => `Taller ${t.curt}`), 'Assolits', asAuto(u) ? 'Qualificació' : 'Qualificació (posada pel professor)', ...(asAuto(u) ? [] : ['Càlcul automàtic']), ...(unitatCompleta(u) ? ['Prova final'] : [])];
