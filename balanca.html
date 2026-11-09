@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>La balança · FR-4C</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,800&display=swap" rel="stylesheet">
+<style>
+/* Taller de l'app FR-4C · Equacions: resoldre equacions traient el mateix dels dos plats (postMessage fr4c-bal-*). */
+:root{--taronja:#f26b1d;--blau:#2a6fd6;--tinta:#1b1b1b;--ok:#2c9a58;--ko:#d64242;--fons:#f6f4ef}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;font-family:"Atkinson Hyperlegible",system-ui,sans-serif;background:var(--fons);color:var(--tinta);overflow:hidden;user-select:none}
+#joc{position:relative;width:100%;height:100%;display:grid;grid-template-columns:1.25fr 1fr;gap:18px;padding:64px 24px 18px}
+.cap{position:absolute;top:10px;left:16px;right:16px;display:flex;align-items:center;gap:14px;font-weight:700}
+.cap .tit{font-family:"Bricolage Grotesque",sans-serif;font-size:1.3rem}.cap .punts{margin-left:auto;font-size:1.6rem;font-family:"Bricolage Grotesque",sans-serif}
+.btn{border:3px solid var(--tinta);background:#fff;color:var(--tinta);border-radius:12px;padding:6px 12px;font:inherit;font-weight:700;cursor:pointer}
+.esq{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px}
+#bal{width:100%;max-width:680px;align-self:stretch;margin:0 auto}
+.eq{font-family:"Bricolage Grotesque",sans-serif;font-size:2.4rem;text-align:center}
+.dre{display:flex;flex-direction:column;gap:12px;justify-content:center}
+.caixa{background:#fff;border:4px solid var(--tinta);border-radius:20px;padding:16px 18px;box-shadow:0 6px 0 #0002}
+.caixa h3{margin:0 0 8px;font-family:"Bricolage Grotesque",sans-serif;font-size:1.2rem}
+.accions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.acc{font:inherit;font-weight:800;font-size:1.1rem;padding:12px 10px;border-radius:14px;border:3px solid var(--tinta);background:#fff;cursor:pointer;box-shadow:0 4px 0 #0003}
+.acc:hover{background:#fff3e6}.acc:disabled{opacity:.35;cursor:default}
+.acc.x{background:#ffe2c9}.acc.p{background:#dbe8ff}
+.log{font-size:1.05rem;line-height:1.6;max-height:30vh;overflow:auto}.log div{padding:2px 0;border-bottom:1px dashed #ddd}
+.resol{display:flex;align-items:center;gap:10px;font-family:"Bricolage Grotesque",sans-serif;font-size:1.8rem}
+.resol input{width:110px;font:inherit;font-size:1.8rem;text-align:center;border:3px solid var(--tinta);border-radius:12px;padding:4px}
+.big{font-family:"Bricolage Grotesque",sans-serif;font-size:1.3rem;border-radius:14px;padding:12px 26px;border:4px solid var(--tinta);cursor:pointer;background:var(--taronja);color:#fff;box-shadow:0 5px 0 #0004}
+.big.sec{background:#fff;color:var(--tinta)}
+.msg{min-height:2.6em;font-size:1.1rem;font-weight:700}.msg.ko{color:var(--ko)}.msg.ok{color:var(--ok)}
+.prog{display:flex;gap:6px}.prog i{width:22px;height:22px;border-radius:50%;border:3px solid var(--tinta);background:#fff}.prog i.f{background:var(--ok)}.prog i.a{background:var(--taronja)}
+.pantalla{position:absolute;inset:0;z-index:10;display:flex;align-items:center;justify-content:center;background:#1b1b1b99}
+.panell{background:#fff;border-radius:24px;border:4px solid var(--tinta);padding:24px 30px;max-width:780px;width:92%;box-shadow:0 10px 0 #0006;max-height:92vh;overflow:auto}
+.panell h1{font-family:"Bricolage Grotesque",sans-serif;margin:0 0 6px;font-size:2rem}.panell p{font-size:1.15rem;line-height:1.45;margin:8px 0}
+.panell .fila{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:14px}
+.seg{display:inline-flex;border:3px solid var(--tinta);border-radius:12px;overflow:hidden}.seg button{border:0;background:#fff;padding:8px 14px;font:inherit;font-weight:700;cursor:pointer}.seg button.on{background:var(--tinta);color:#fff}
+.mini{font-size:.95rem;color:#666}.rec{color:var(--taronja);font-weight:800}
+</style>
+</head>
+<body>
+<div id="joc">
+  <div class="cap"><span class="tit">⚖️ La balança</span><span class="prog" id="prog"></span><span class="punts" id="punts">0</span><button class="btn" id="so">🔊</button><button class="btn" id="surt">✕</button></div>
+  <div class="esq"><svg id="bal" viewBox="0 0 640 330"></svg><div class="eq" id="eq"></div></div>
+  <div class="dre">
+    <div class="caixa"><h3>Què treus? (sempre dels <b>dos</b> plats)</h3><div class="accions">
+      <button class="acc x" data-a="x">− 1 caixa x</button><button class="acc p" data-a="1">− 1 pes</button>
+      <button class="acc p" data-a="5">− 5 pesos</button><button class="acc p" data-a="tot">− tots els pesos possibles</button></div></div>
+    <div class="caixa" id="cresol" style="display:none"><h3>Ja només queden caixes a un plat i pesos a l'altre!</h3><div class="resol"><span id="qres"></span><input id="rx" inputmode="numeric" maxlength="4" autocomplete="off"><button class="big" id="okx">Comprova</button></div></div>
+    <div class="msg" id="msg"></div>
+    <div class="caixa"><h3>El que has fet, escrit com a equació</h3><div class="log" id="log"></div></div>
+  </div>
+  <div class="pantalla" id="pant"></div>
+</div>
+<script>
+'use strict';
+const $ = s => document.querySelector(s);
+const rnd = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const RONDES = 5;
+const M = { nivell: 1, nom: '', record: 0, dinsApp: false, so: true, pantalla: 'inici' }; window.__M = M;
+try { M.so = localStorage.getItem('fr4c_bal_so') !== '0'; } catch (e) {}
+const qs = new URLSearchParams(location.search); if (qs.get('nivell')) M.nivell = Math.max(1, Math.min(3, +qs.get('nivell')));
+try { M.record = +(localStorage.getItem('fr4c_bal_rec_' + M.nivell) || 0); } catch (e) {}
+let AC = null;
+function to(f, d, tipus = 'triangle', v = .05, t0 = 0) { if (!M.so) return; try { AC = AC || new (window.AudioContext || window.webkitAudioContext)(); const t = AC.currentTime + t0, o = AC.createOscillator(), g = AC.createGain(); o.type = tipus; o.frequency.value = f; g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(v, t + .01); g.gain.exponentialRampToValueAtTime(.0001, t + d); o.connect(g); g.connect(AC.destination); o.start(t); o.stop(t + d + .05); } catch (e) {} }
+const SO = { treu: () => to(520, .12), be: () => [0, 4, 7].forEach((s, i) => to(660 * 2 ** (s / 12), .12, 'square', .04, i * .07)), mal: () => to(200, .35, 'sawtooth', .04) };
+
+const P = {}; window.__P = P;
+const lin = (a, b) => a === 0 ? String(b) : `${a === 1 ? '' : a}x${b ? ' + ' + b : ''}`;
+const eqTxt = () => `${lin(P.e.a, P.e.b)} = ${lin(P.e.c, P.e.d)}`;
+function novaEq() {
+  const L = M.nivell;
+  if (L === 1) { const x = rnd(1, 9), b = rnd(1, 6); return { a: 1, b, c: 0, d: x + b, x }; }
+  if (L === 2) { const a = rnd(2, 3), x = rnd(1, a === 2 ? 6 : 5), b = rnd(1, 4); return { a, b, c: 0, d: a * x + b, x }; }
+  const a = rnd(2, 4), c = rnd(1, a - 1), x = rnd(1, 4), b = rnd(0, 3); return { a, b, c, d: (a - c) * x + b, x };
+}
+function pinta() {
+  const { a, b, c, d } = P.e; const peces = (nx, np) => [...Array(nx).fill('x'), ...Array(np).fill('p')];
+  const dib = (ps, cx) => { const n = ps.length, por = Math.min(n, 7), w = 34; let s = '';
+    ps.forEach((p, i) => { const fila = Math.floor(i / 7), col = i % 7, x0 = cx - por * w / 2 + col * w, y0 = 196 - fila * 36;
+      s += p === 'x' ? `<g><rect x="${x0 + 1}" y="${y0 - 33}" width="32" height="32" rx="5" fill="#ffe2c9" stroke="#1b1b1b" stroke-width="3"/><text x="${x0 + 17}" y="${y0 - 10}" text-anchor="middle" font-size="19" font-weight="900">x</text></g>`
+        : `<g><circle cx="${x0 + 17}" cy="${y0 - 15}" r="14" fill="#dbe8ff" stroke="#1b1b1b" stroke-width="3"/><text x="${x0 + 17}" y="${y0 - 9}" text-anchor="middle" font-size="16" font-weight="900">1</text></g>`; }); return s; };
+  $('#bal').innerHTML = `<polygon points="320,312 290,328 350,328" fill="#1b1b1b"/><rect x="314" y="90" width="12" height="225" fill="#1b1b1b"/><rect x="40" y="82" width="560" height="14" rx="7" fill="#1b1b1b"/>
+    <line x1="80" y1="96" x2="80" y2="200" stroke="#1b1b1b" stroke-width="3"/><line x1="240" y1="96" x2="240" y2="200" stroke="#1b1b1b" stroke-width="3"/><rect x="60" y="198" width="200" height="10" rx="5" fill="#1b1b1b"/>
+    <line x1="400" y1="96" x2="400" y2="200" stroke="#1b1b1b" stroke-width="3"/><line x1="560" y1="96" x2="560" y2="200" stroke="#1b1b1b" stroke-width="3"/><rect x="380" y="198" width="200" height="10" rx="5" fill="#1b1b1b"/>
+    ${dib(peces(a, b), 160)}${dib(peces(c, d), 480)}`;
+  $('#eq').textContent = eqTxt();
+  const nomesX = (a > 0 && b === 0 && c === 0) || (c > 0 && d === 0 && a === 0);
+  $('#cresol').style.display = nomesX ? '' : 'none';
+  if (nomesX) { const [k, n] = a > 0 ? [a, d] : [c, b]; $('#qres').textContent = k === 1 ? 'x =' : `${k} caixes pesen ${n}: x =`; setTimeout(() => $('#rx').focus(), 50); }
+  document.querySelectorAll('.acc').forEach(bt => { const t = bt.dataset.a; bt.disabled = nomesX || (t === 'x' ? Math.min(a, c) < 1 : t === 'tot' ? Math.min(b, d) < 1 : Math.min(b, d) < +t); });
+  $('#prog').innerHTML = Array.from({ length: RONDES }, (_, i) => `<i class="${i < P.ronda ? 'f' : i === P.ronda ? 'a' : ''}"></i>`).join('');
+  $('#punts').textContent = P.punts;
+}
+const log = h => { $('#log').insertAdjacentHTML('beforeend', `<div>${h}</div>`); $('#log').scrollTop = 1e6; };
+const msg = (t, cls = '') => { $('#msg').className = 'msg ' + cls; $('#msg').innerHTML = t; };
+function accio(t) {
+  const e = P.e; let tret;
+  if (t === 'x') { if (Math.min(e.a, e.c) < 1) return msg('No pots: a un dels plats no hi ha cap caixa x. El que treus d\'un plat, ho has de treure de l\'altre.', 'ko'); e.a--; e.c--; tret = 'x'; P.passos.push('x'); }
+  else { const n = t === 'tot' ? Math.min(e.b, e.d) : +t; if (Math.min(e.b, e.d) < n) return msg('No hi ha prou pesos als dos plats.', 'ko'); e.b -= n; e.d -= n; tret = n; P.treuN += n; }
+  SO.treu(); P.moviments++;
+  log(`Treus <b>${tret === 'x' ? 'una x' : tret}</b> de cada plat → <b>${eqTxt()}</b>`); msg(''); pinta();
+}
+function comprova() {
+  const v = +$('#rx').value; if (!$('#rx').value) return;
+  if (v === P.e.x) {
+    SO.be(); const guany = P.intent === 0 ? 20 : 10; P.punts += guany; P.encerts++;
+    const ini = P.ini; const curt = ini.c === 0 ? `${lin(ini.a, ini.b)} = ${ini.d} → ${ini.a === 1 ? '' : ini.a}x = ${ini.d} − ${ini.b}${ini.a > 1 ? ` → x = ${ini.d - ini.b} : ${ini.a}` : ''}` : `${lin(ini.a, ini.b)} = ${lin(ini.c, ini.d)} → ${ini.a}x − ${ini.c === 1 ? '' : ini.c}x = ${ini.d} − ${ini.b}`;
+    log(`<b style="color:var(--ok)">✓ x = ${v}</b> · Amb la regla curta: ${curt}`); msg(`Molt bé! +${guany}. Treure ${P.ini.b || 'pesos'} dels dos plats és el mateix que «passar-lo restant».`, 'ok');
+    P.ronda++; $('#rx').value = ''; setTimeout(() => P.ronda >= RONDES ? acaba() : novaRonda(), 1600); pinta();
+  } else { SO.mal(); P.errors++; P.intent++; P.fallades.push(`${lin(P.ini.a, P.ini.b)} = ${lin(P.ini.c, P.ini.d)} → x = ${P.e.x}`); msg(`No. Si ${P.e.a || P.e.c} ${(P.e.a || P.e.c) === 1 ? 'caixa pesa' : 'caixes pesen'} ${P.e.d || P.e.b}, quant pesa <b>una</b> caixa? Reparteix-ho.`, 'ko'); $('#rx').select(); }
+}
+function novaRonda() { P.e = novaEq(); P.ini = { ...P.e }; P.intent = 0; P.passos = []; $('#log').innerHTML = ''; log(`Comencem: <b>${eqTxt()}</b>`); msg('Treu el mateix dels dos plats fins que la x quedi sola.'); pinta(); }
+function comenca() { Object.assign(P, { punts: 0, ronda: 0, encerts: 0, errors: 0, moviments: 0, treuN: 0, fallades: [], t0: performance.now() }); M.pantalla = 'joc'; $('#pant').style.display = 'none'; novaRonda(); }
+function acaba() {
+  M.pantalla = 'fi'; const nouRec = P.punts > M.record; if (nouRec) M.record = P.punts; try { localStorage.setItem('fr4c_bal_rec_' + M.nivell, M.record); } catch (e) {}
+  envia({ tipus: 'fr4c-bal-fi', punts: P.punts, encerts: P.encerts, errors: P.errors, nivell: M.nivell, temps: Math.round((performance.now() - P.t0) / 1000), fallades: P.fallades.slice(0, 12) });
+  pantalla(`<h1>Balança dominada! ⚖️</h1><p>${nouRec ? '<span class="rec">🏆 Nou rècord!</span> ' : ''}Has resolt <b>${RONDES}</b> equacions i has fet <b>${P.punts}</b> punts${P.errors ? ` (${P.errors} ${P.errors === 1 ? 'error' : 'errors'} en la resposta)` : ''}.</p>
+    <p class="mini">Recorda: treure el mateix dels dos plats és el que fem quan diem que un número «passa a l'altra banda restant».</p>
+    <div class="fila"><button class="big" id="torna">Torna a jugar</button><button class="big sec" id="tanca2">Surt</button></div>`);
+  $('#torna').onclick = comenca; $('#tanca2').onclick = surt;
+}
+function pantalla(html) { const p = $('#pant'); p.innerHTML = `<div class="panell">${html}</div>`; p.style.display = 'flex'; }
+function inici() {
+  M.pantalla = 'inici'; P.e = { a: 1, b: 3, c: 0, d: 8, x: 5 }; P.ronda = 0; P.punts = 0; pinta();
+  const txtN = { 1: 'x + 3 = 8', 2: '2x + 3 = 11', 3: '3x + 2 = x + 8' };
+  pantalla(`<h1>⚖️ La balança</h1><p>${M.nom ? `Hola, <b>${esc(M.nom)}</b>! ` : ''}Cada equació és una <b>balança equilibrada</b>: les caixes <b>x</b> pesen el que no sabem i les boles pesen 1.</p>
+    <p>Per descobrir quant pesa una caixa, <b>treu el mateix dels dos plats</b> fins que la x quedi sola. Al final, si hi ha diverses caixes, reparteix el pes.</p>
+    <p class="mini">Nivell ${M.nivell}: equacions com ${txtN[M.nivell]}. ${RONDES} equacions per partida.${M.record ? ` El teu rècord: <b>${M.record}</b>.` : ''}</p>
+    ${!M.dinsApp ? `<div class="fila"><b>Nivell:</b><span class="seg" id="nv">${[1, 2, 3].map(n => `<button data-n="${n}" class="${n === M.nivell ? 'on' : ''}">${n}</button>`).join('')}</span></div>` : ''}
+    <div class="fila"><button class="big" id="go">Comença! →</button>${M.dinsApp ? '<button class="big sec" id="tanca2">Surt</button>' : ''}</div>`);
+  $('#go').onclick = comenca; const t = $('#tanca2'); if (t) t.onclick = surt;
+  document.querySelectorAll('#nv button').forEach(b => b.onclick = () => { M.nivell = +b.dataset.n; try { M.record = +(localStorage.getItem('fr4c_bal_rec_' + M.nivell) || 0); } catch (e) {} inici(); });
+}
+const envia = m => { try { if (window.parent !== window) window.parent.postMessage(m, '*'); } catch (e) {} };
+function surt() { M.pantalla = 'fora'; envia({ tipus: 'fr4c-bal-tanca' }); if (window.parent === window) inici(); }
+window.addEventListener('message', ev => { const d = ev.data || {}; if (d.tipus !== 'fr4c-bal-ini') return; M.dinsApp = true; M.nom = d.nom || ''; M.nivell = Math.max(1, Math.min(3, d.nivell || 1)); M.record = Math.max(d.record || 0, 0); if (d.so === false) M.so = false; $('#so').textContent = M.so ? '🔊' : '🔇'; if (M.pantalla === 'inici') inici(); });
+document.querySelectorAll('.acc').forEach(b => b.onclick = () => accio(b.dataset.a));
+$('#okx').onclick = comprova; $('#rx').onkeydown = e => { if (e.key === 'Enter') comprova(); }; $('#rx').oninput = () => { $('#rx').value = $('#rx').value.replace(/[^0-9]/g, ''); };
+$('#so').onclick = () => { M.so = !M.so; $('#so').textContent = M.so ? '🔊' : '🔇'; try { localStorage.setItem('fr4c_bal_so', M.so ? '1' : '0'); } catch (e) {} };
+$('#surt').onclick = surt; $('#so').textContent = M.so ? '🔊' : '🔇';
+inici(); envia({ tipus: 'fr4c-bal-llest' }); window.__novaEq = novaEq;
+</script>
+</body>
+</html>

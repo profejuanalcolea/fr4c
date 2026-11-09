@@ -555,4 +555,47 @@ TEMES.q8 = {
       { text: `x = 0, o bé x − 6 = 0 → x = 6. <b>x = 0 i x = 6</b>. <span class="marca-ok">✓</span>`, vis: `<div class="q-eq">x = 0 &nbsp;i&nbsp; x = 6</div>` }] };
   }
 };
+/* =====================================================================
+   PROVA DE COMPETÈNCIES · EQUACIONS (petita: 2 activitats, 10 preguntes, 10 punts)
+   Activitat 1 inspirada en l'ítem 21 de la CB 2024-25 (les cartes). Activitat 2: funció de cost (CB 2011-13).
+   ===================================================================== */
+const PC_Q = { id: 'pcq', unitat: 'q', provaKey: 'provaCQ', titol: 'Prova de competències · Equacions' };
+const CB_ACTS_Q = [
+  { t: 'Cartes i cromos', max: 5, ctx: L => `<p>La <b>Carla</b> i en <b>Joan</b> juguen a cartes. Al final de la partida, entre els dos han fet <b>120 punts</b>. La Carla n'ha fet <b>32 més</b> que en Joan.</p><p>Després, la <b>Laia</b> i en <b>Pau</b> comparen els seus cromos: la Laia en té el <b>triple</b> que en Pau, i entre els dos en tenen <b>48</b>.</p><div class="cb-chips"><span>Diem <b>x</b> al nombre que no sabem</span><span>«32 més que x» → x + 32</span><span>«el triple de x» → 3x</span></div>${L === 'basic' ? '<p class="petit">💡 Per comprovar una solució, canvia la x pel número i mira si surt el total.</p>' : ''}` },
+  { t: 'El pressupost de la sortida', max: 5, ctx: L => `<p>Per a la sortida de final de curs, l'autocar costa <b>300 €</b> i l'entrada al parc d'aventures costa <b>15 €</b> per alumne.</p><p>El cost total per a <b>x</b> alumnes és:</p><div class="cb-chips" style="font-size:1.1rem"><span><b>C = 15x + 300</b> (en euros)</span></div>${L === 'basic' ? '<table class="cb-tbl"><thead><tr><th>Alumnes (x)</th><th>10</th><th>20</th><th>30</th></tr></thead><tbody><tr><td>Cost (€)</td><td>450</td><td>?</td><td>?</td></tr></tbody></table>' : ''}` }];
+const CB_ITEMS_Q = [
+  { n: 1, act: 0, type: 'mc', pts: 1, q: 'Si <b>x</b> són els punts d\'en Joan, quina expressió dona els punts de la Carla?', opts: { a: 'x + 32', b: 'x − 32', c: '32x', d: '120 − x' }, ans: 'a',
+    hb: ['La Carla té <b>més</b> punts que en Joan.', '«32 més que x» és sumar 32 a x.'], hi: 'La Carla en té 32 més que en Joan.' },
+  { n: 2, act: 0, type: 'mc', pts: 1, q: 'Quina equació permet calcular els punts d\'en Joan?', opts: { a: 'x + (x + 32) = 120', b: 'x + 32 = 120', c: 'x − (x + 32) = 120', d: '2x = 120 + 32' }, ans: 'a',
+    hb: ['Entre els dos fan 120: punts d\'en Joan + punts de la Carla = 120.', 'En Joan té x i la Carla x + 32. Suma-ho.'], hi: 'Escriu la suma dels punts dels dos.' },
+  { n: 3, act: 0, type: 'mc', pts: 1, q: 'Quants punts ha fet en Joan?', opts: { a: '44 punts', b: '76 punts', c: '88 punts', d: '60 punts' }, ans: 'a',
+    hb: ['Resol x + x + 32 = 120: ajunta les x, 2x + 32 = 120.', '2x = 120 − 32 = 88. Ara passa el 2 dividint.'], hi: 'Resol l\'equació de la pregunta anterior.' },
+  { n: 4, act: 0, type: 'mc', pts: 1, q: 'Si <b>x</b> són els cromos d\'en Pau, quina equació permet trobar-los?', opts: { a: 'x + 3x = 48', b: '3x = 48', c: 'x + 3 = 48', d: 'x + x + 3 = 48' }, ans: 'a',
+    hb: ['En Pau en té x. La Laia en té el triple: 3x.', 'Entre els dos en tenen 48: cromos d\'en Pau + cromos de la Laia = 48.'], hi: 'Suma els cromos dels dos.' },
+  { n: 5, act: 0, type: 'open', pts: 1, q: 'En Pau diu: «Jo tinc 16 cromos.» Té raó?',
+    fields: [{ pre: 'Cromos d\'en Pau (x):', ans: 12, suf: '' }, { pre: 'Cromos de la Laia:', ans: 36, suf: '' }],
+    choice: { lab: 'Té raó en Pau?', opts: ['Sí, en té 16.', 'No, en té menys de 16.', 'No, en té més de 16.'], ans: 1 },
+    grade: (v, c) => { const r = v[0] === 12; if (c === 1) return r ? 2 : 1; return r ? 1 : 0; },
+    hb: ['Resol x + 3x = 48: ajunta les x.', '4x = 48 → x = 48 : 4. La Laia en té el triple.'], hi: 'Resol l\'equació i comprova el total.' },
+  { n: 6, act: 1, type: 'mc', pts: 1, q: 'Quant costa la sortida si hi van 20 alumnes?', opts: { a: '600 €', b: '315 €', c: '6.300 €', d: '335 €' }, ans: 'a',
+    hb: ['Canvia la x per 20 a la fórmula C = 15x + 300.', '15 · 20 = 300. Ara suma-hi els 300 € de l\'autocar.'], hi: 'Substitueix x = 20.' },
+  { n: 7, act: 1, type: 'mc', pts: 1, q: 'La sortida ha costat 750 €. Quina equació permet saber quants alumnes hi han anat?', opts: { a: '15x + 300 = 750', b: '15x = 750', c: '300x + 15 = 750', d: '15 + 300x = 750' }, ans: 'a',
+    hb: ['El cost és C = 15x + 300 i ara sabem que C = 750.', 'Posa 750 a l\'altra banda de l\'igual.'], hi: 'Iguala la fórmula a 750.' },
+  { n: 8, act: 1, type: 'mc', pts: 1, q: 'Quants alumnes hi han anat?', opts: { a: '30 alumnes', b: '50 alumnes', c: '70 alumnes', d: '21 alumnes' }, ans: 'a',
+    hb: ['Resol 15x + 300 = 750. Primer el +300 passa restant.', '15x = 450. Ara el 15 passa dividint.'], hi: 'Resol l\'equació de la pregunta anterior.' },
+  { n: 9, act: 1, type: 'mc', pts: 1, q: 'Cada alumne paga 25 €. Quants alumnes han d\'anar perquè els diners recollits paguin exactament la sortida? (25x = 15x + 300)', opts: { a: '30 alumnes', b: '12 alumnes', c: '20 alumnes', d: '7 alumnes' }, ans: 'a',
+    hb: ['Passa el 15x a l\'esquerra restant: 25x − 15x = 300.', '10x = 300 → x = 300 : 10.'], hi: 'Les x a un costat i els números a l\'altre.' },
+  { n: 10, act: 1, type: 'open', pts: 1, q: 'La tutora diu: «Si som el doble d\'alumnes, la sortida costarà el doble.» Comprova-ho amb 20 i amb 40 alumnes.',
+    fields: [{ pre: 'Cost amb 20 alumnes:', ans: 600, suf: '€' }, { pre: 'Cost amb 40 alumnes:', ans: 900, suf: '€' }],
+    choice: { lab: 'Té raó la tutora?', opts: ['Sí, costa el doble.', 'No, costa menys del doble.', 'No, costa més del doble.'], ans: 1 },
+    grade: (v, c) => { const ok = v[0] === 600 && v[1] === 900; if (c === 1) return ok ? 2 : 1; return ok ? 1 : 0; },
+    hb: ['Calcula C amb x = 20 i amb x = 40.', 'C(20) = 600 €. C(40) = 15 · 40 + 300. El doble de 600 seria 1.200.'], hi: 'Calcula els dos costos i compara\'ls.' }];
+const CB_INFO_Q = `<h3>ⓘ Prova de competències · Equacions</h3>
+  <p><b>Què és.</b> Una prova <b>breu</b> en format de competències bàsiques: 2 activitats amb context (cartes i cromos, el pressupost de la sortida) i 10 preguntes (8 de resposta tancada i 2 d'obertes). Compta com a <b>examen a part</b>: no toca els objectius ni l'AS de la unitat.</p>
+  <p><b>D'on surt.</b> A les CB les equacions gairebé només surten com «quina equació representa la situació» (cartes, CB 2024-25) i com a funcions de cost (CB 2011-13). Per això la prova és petita.</p>
+  <p><b>Obertura.</b> Està tancada fins que l'obres (llibreta d'Equacions o Configuració). Cada alumne la fa <b>una vegada</b>; des de la seva casella li pots deixar fer un altre intent.</p>
+  <p><b>Nivell.</b> Surt del nivell general de l'alumne: N1 → bàsic (3 intents, 2 pistes per pregunta, recordatori per comprovar i taula de costos), N2 → intermedi (1 intent, 1 pista que fa valer la pregunta el 75 %), N3 → repte (sense pistes).</p>
+  <p><b>Puntuació (sobre 10).</b> Cada pregunta val 1 punt. Les obertes tenen puntuació parcial: conclusió i càlcul bons, 1 punt; només una de les dues coses, mig punt.</p>`;
+CB_PROVES.q = { PC: PC_Q, acts: CB_ACTS_Q, items: CB_ITEMS_Q, info: CB_INFO_Q };
+
 UNITATS.q.carregada = true;

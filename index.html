@@ -1001,7 +1001,7 @@ const enllacaQualif = c => $$('.q-man', c).forEach(td => td.onclick = () => canv
 const unitatCompleta = u => u.obj.every(o => !o.properament);
 /* ---------- Fitxers a part: cada unitat i cada joc es carrega quan cal ----------
    Són scripts clàssics (funcionen a GitHub Pages i també obrint l'index des de l'ordinador). */
-const V_FITXERS = '5.1';
+const V_FITXERS = '5.2';
 const FITXERS_UNITAT = { f: 'fraccions.js', e: 'enters.js', p: 'potencies.js', q: 'equacions.js' };
 const FITXERS_JOC = { tcx: 'joc-caixa.js', tesc: 'joc-escape.js', tpz: 'joc-pizzeria.js', dimp: 'joc-impropies.js' };
 const CARREGUES = {};
@@ -1530,6 +1530,8 @@ const TALLERS = {
     } },
   tmet: { id: 'tmet', unitat: 'e', ic: '☄️', curt: 'Meteorits', titol: 'Defensa la base de Mart', sub: 'Joc individual · operacions amb enters', defecte: false, esJoc: true, obre: () => obreMeteorits(), resum: r => resumJocExt(r, 'Meteorits destruïts') },
   tmetf: { id: 'tmetf', unitat: 'f', ic: '☄️', curt: 'Meteorits', titol: 'Defensa la base de Mart', sub: 'Joc individual · càlcul mental amb fraccions', defecte: false, esJoc: true, obre: () => obreJocExt('tmetf'), resum: r => resumJocExt(r, 'Meteorits destruïts') },
+  tbal: { id: 'tbal', unitat: 'q', ic: '⚖️', curt: 'Balança', titol: 'La balança', sub: 'Taller individual · resoldre equacions traient el mateix dels dos plats', defecte: false, esJoc: true, obre: () => obreJocExt('tbal'), resum: r => resumJocExt(r, 'Equacions resoltes') },
+  tzom: { id: 'tzom', unitat: 'q', ic: '🧟', curt: 'Zombis', titol: 'Zombis a l\'institut', sub: 'Joc individual · equacions de cap', defecte: false, esJoc: true, obre: () => obreJocExt('tzom'), resum: r => resumJocExt(r, 'Zombis aturats') },
   tbac: { id: 'tbac', unitat: 'p', ic: '🦠', curt: 'Bacteris', titol: 'Brot de bacteris', sub: 'Joc individual · potències i regles', defecte: false, esJoc: true, obre: () => obreJocExt('tbac'), resum: r => resumJocExt(r, 'Encerts') },
   ttor: { id: 'ttor', unitat: 'p', ic: '🏗️', curt: 'Torre', titol: 'Torre de potències', sub: 'Joc individual · producte, quocient i potència d\'una potència', defecte: false, esJoc: true, obre: () => obreJocExt('ttor'), resum: r => resumJocExt(r, 'Pisos posats') },
   tasc: { id: 'tasc', unitat: 'e', natiu: true, senseDades: true, ic: '🛗', curt: 'Ascensor', titol: "L'ascensor boig", sub: 'Joc per parelles · sumes i restes amb l\'ascensor', defecte: false }
@@ -1546,7 +1548,7 @@ function resumJocExt(r, nomEncerts) {
           <table class="taula-mini"><tr><th>Nivell</th><th>Partides</th><th>Rècord</th></tr>${[1, 2, 3].map(n => `<tr><td>Nivell ${n}</td><td>${nv[n]?.partides || 0}</td><td>${nv[n]?.record || 0}</td></tr>`).join('')}</table>
           ${darreres.length ? `<p style="margin:8px 0 2px;font-weight:700">Darreres partides</p><table class="taula-mini"><tr><th>Data</th><th>Nivell</th><th>Punts</th><th>Encerts</th><th>Errors</th><th>Ha fallat</th></tr>${darreres.map(([t, h]) => `<tr><td>${dataCurta(+t)}</td><td>${h.nivell}</td><td>${h.punts}</td><td>${h.encerts}</td><td>${h.errors}</td><td style="text-align:left;font-size:.85rem">${(h.fallades || []).slice(0, 4).map(esc).join(' · ')}</td></tr>`).join('')}</table>` : ''}` };
     }
-const ORDRE_TALLERS = ['t5b', 'tesc', 'tpz', 'tcx', 'tmetf', 'tre', 'tmet', 'tasc', 'tbac', 'ttor'];
+const ORDRE_TALLERS = ['t5b', 'tesc', 'tpz', 'tcx', 'tmetf', 'tre', 'tmet', 'tasc', 'tbac', 'ttor', 'tbal', 'tzom'];
 /* «Fet» dels tallers al seguiment: resultats/{alumne}/diesTallers/{AAAA-MM-DD}/{taller} = 2 (fet: acabat o partida sencera) · 1 (hi ha treballat) */
 function marcaDiaTaller(id, tid, fet) {
   if (!id || !tid) return; const d = avuiISO(); const v = fet ? 2 : 1;
@@ -1657,7 +1659,9 @@ const JOCS_EXT = {
   tmet: { fitxer: 'meteorits.html?v=2', pref: 'fr4c-met', titol: 'Defensa la base de Mart', mode: 'enters' },
   tmetf: { fitxer: 'meteorits.html?v=2', pref: 'fr4c-met', titol: 'Defensa la base de Mart · fraccions', mode: 'fraccions' },
   tbac: { fitxer: 'bacteris.html?v=1', pref: 'fr4c-bac', titol: 'Brot de bacteris' },
-  ttor: { fitxer: 'torre.html?v=1', pref: 'fr4c-tor', titol: 'Torre de potències' } };
+  ttor: { fitxer: 'torre.html?v=1', pref: 'fr4c-tor', titol: 'Torre de potències' },
+  tbal: { fitxer: 'balanca.html?v=1', pref: 'fr4c-bal', titol: 'La balança' },
+  tzom: { fitxer: 'zombis.html?v=1', pref: 'fr4c-zom', titol: 'Zombis a l\'institut' } };
 let MET = null;
 function obreJocExt(tid, nivellProva = null) {
   tancaJoc(true);
@@ -2502,8 +2506,8 @@ function faseComp(R) {
     vista.innerHTML = `<section class="pantalla">${capObj(info)}
       <div class="expl diapo cb"><span class="diapo-tag" style="background:${NAVY}">Instruccions</span>
         <div class="expl-text"><p class="petit"><b>${CB_NOM[R.nivell]}.</b> ${regles}</p>
-          <table class="simple cb-taula"><thead><tr><th>Activitat</th><th>Preguntes</th><th>Punts</th></tr></thead><tbody>${CB_ACTS.map((a, i) => `<tr><td><b>${i + 1}. ${a.t}</b></td><td>${i * 6 + 1} a ${i * 6 + 6}</td><td>${cbFmt(a.max)}</td></tr>`).join('')}<tr><td colspan="2"><b>Total</b></td><td><b>10</b></td></tr></tbody></table>
-          <p class="petit">· Llegeix bé el context de cada activitat.<br>· Pots fer servir la calculadora i l'esborrany.<br>· Les preguntes obertes valen el doble: fes els càlculs i tria la conclusió.<br>· Es guarda tot sol: si has de plegar, continuaràs on eres.<br>· Si surts de la pestanya, quedarà registrat.</p></div>
+          <table class="simple cb-taula"><thead><tr><th>Activitat</th><th>Preguntes</th><th>Punts</th></tr></thead><tbody>${CB_ACTS.map((a, i) => `<tr><td><b>${i + 1}. ${a.t}</b></td><td>${(q => `${q[0]} a ${q[q.length - 1]}`)(CB_ITEMS.filter(it => it.act === i).map(it => it.n))}</td><td>${cbFmt(a.max)}</td></tr>`).join('')}<tr><td colspan="2"><b>Total</b></td><td><b>10</b></td></tr></tbody></table>
+          <p class="petit">· Llegeix bé el context de cada activitat.<br>· Pots fer servir la calculadora i l'esborrany.<br>· ${CB_ITEMS.some(it => it.type === 'open' && it.pts > CB_ITEMS.find(x => x.type === 'mc').pts) ? 'Les preguntes obertes valen més: fes els càlculs i tria la conclusió.' : 'A les preguntes obertes, fes els càlculs i tria la conclusió.'}<br>· Es guarda tot sol: si has de plegar, continuaràs on eres.<br>· Si surts de la pestanya, quedarà registrat.</p></div>
         <div class="expl-vis">${robot(140, 'normal', true)}<div class="bafarada" style="max-width:300px">Avui faig d'examinador. Llegeix amb calma i molta sort!</div></div></div>
       <div class="expl-peu"><span style="flex:1"></span><button class="boto taronja" id="seg">${comencat ? `Continua (pregunta ${R.item + 1} de ${CB_N}) →` : 'Comença la prova →'}</button></div></section>`;
     $('#btn-mapa').onclick = () => { S.ronda = null; mostra('mapa'); };
@@ -2511,7 +2515,7 @@ function faseComp(R) {
     return;
   }
   if (R.fase === 'act') {
-    const a = R.actFeta, last = a === 2;
+    const a = R.actFeta, last = a === CB_ACTS.length - 1;
     const mostraNota = R.nivell === 'basic';
     vista.innerHTML = `<section class="pantalla">${capObj(info)}<div class="resultat">${robot(150, 'content')}<div class="apareix">
       <h2>Activitat ${a + 1} acabada</h2><p><b>${CB_ACTS[a].t}</b></p>${mostraNota ? `<p style="font-size:1.4rem">${cbFmt(cbActPts(R.resp, a))} de ${cbFmt(CB_ACTS[a].max)} punts</p>` : `<p>Ja tens guardades les respostes d'aquesta activitat.</p>`}
@@ -2641,7 +2645,7 @@ function detallComp(id) {
   const taula = resp => `<table class="simple cb-det"><thead><tr><th>#</th><th></th><th>Resposta</th><th>Correcta</th><th>Punts</th><th>Int.</th><th>Pistes</th><th>Temps</th></tr></thead><tbody>${fila(resp)}</tbody></table>`;
   const m = obreModal(`<h3>${esc(a?.nom)} · ${PC.titol}</h3>
     <div class="targeta-conf" style="margin-top:12px;display:flex;gap:16px;align-items:center;flex-wrap:wrap">
-      <div><b>Estat:</b> ${r.estat === 'lliurada' ? `Lliurada · <b>${cbFmt(r.nota)} / 10</b> (A1 ${cbFmt(r.a1 || 0)} · A2 ${cbFmt(r.a2 || 0)} · A3 ${cbFmt(r.a3 || 0)})` : r.estat === 'fent' ? `Fent · pregunta ${(r.item || 0) + 1} de ${CB_N}` : r.historial ? 'Reoberta: la pot tornar a fer' : 'No començada'}${r.nivellCB ? ` · ${CB_NOM[r.nivellCB]}` : ''}${r.temps ? ` · ${durada(r.temps)}` : ''}</div>
+      <div><b>Estat:</b> ${r.estat === 'lliurada' ? `Lliurada · <b>${cbFmt(r.nota)} / 10</b> (${CB_ACTS.map((_, i) => `A${i + 1} ${cbFmt(r['a' + (i + 1)] || 0)}`).join(' · ')})` : r.estat === 'fent' ? `Fent · pregunta ${(r.item || 0) + 1} de ${CB_N}` : r.historial ? 'Reoberta: la pot tornar a fer' : 'No començada'}${r.nivellCB ? ` · ${CB_NOM[r.nivellCB]}` : ''}${r.temps ? ` · ${durada(r.temps)}` : ''}</div>
       ${r.entregaForcada ? '<span class="anul-txt">⊘ entregada per sortir de la pestanya</span>' : r.foraN ? `<span class="fora-txt">● ${r.foraN} sortides de la pestanya</span>` : ''}
       <span style="margin-left:auto"></span>${r.estat === 'lliurada' ? `<button class="boto-petit" id="cb-reobre">Deixa-li tornar-la a fer</button>` : ''}
       <button class="boto-petit" id="cb-esborra" style="border-color:var(--ko);color:var(--ko)">Esborra-la</button></div>
@@ -2756,7 +2760,7 @@ function mostraCredits() {
     <p style="font-size:1.1rem"><b>Ins Júlia Minguell</b> · Matemàtiques 4t ESO · Grup Flexible</p>
     <p style="margin-top:14px">Ideat per <b>J. Alcolea</b></p>
     <p style="color:var(--gris)">Desenvolupat amb Claude</p>
-    <p style="color:var(--gris);margin-top:10px">Versió 5.1</p>
+    <p style="color:var(--gris);margin-top:10px">Versió 5.2</p>
     <div class="accions"><button class="boto" data-tanca-modal>D'acord</button></div>`);
 }
 function entraAlumne(id) {
@@ -3887,9 +3891,9 @@ function dadesExport() {
   fulls.push(['Taller 5b', tal], ['Tallers jocs', jocs]);
   for (const k of Object.keys(CB_PROVES)) {
   cbUsa(k);
-  const cbF = [['Alumne', 'Estat', 'Nivell', 'Nota (/10)', 'Activitat 1 (/3,5)', 'Activitat 2 (/3,5)', 'Activitat 3 (/3)', 'Temps (min)', 'Data de lliurament', 'Sortides de la pestanya', ...CB_ITEMS.map(it => `P${it.n} (/${String(it.pts).replace('.', ',')})`)]];
+  const cbF = [['Alumne', 'Estat', 'Nivell', 'Nota (/10)', ...CB_ACTS.map((a, i) => `Activitat ${i + 1} (/${String(a.max).replace('.', ',')})`), 'Temps (min)', 'Data de lliurament', 'Sortides de la pestanya', ...CB_ITEMS.map(it => `P${it.n} (/${String(it.pts).replace('.', ',')})`)]];
   for (const [id, a] of llista) { const r = S.resTots[id]?.[PC.id]; if (!r) continue;
-    cbF.push([a.nom, r.estat === 'lliurada' ? (r.entregaForcada ? 'Lliurada (sortida de pestanya)' : 'Lliurada') : r.estat === 'fent' ? 'Fent' : 'Reoberta', CB_NOM[r.nivellCB] || '', r.estat === 'lliurada' ? r.nota : '', r.a1 ?? '', r.a2 ?? '', r.a3 ?? '', r.temps ? Math.round(r.temps / 60) : '', dataExcel(r.fi), r.foraN || 0, ...CB_ITEMS.map(it => r.resp?.['i' + it.n]?.pts ?? '')]); }
+    cbF.push([a.nom, r.estat === 'lliurada' ? (r.entregaForcada ? 'Lliurada (sortida de pestanya)' : 'Lliurada') : r.estat === 'fent' ? 'Fent' : 'Reoberta', CB_NOM[r.nivellCB] || '', r.estat === 'lliurada' ? r.nota : '', ...CB_ACTS.map((_, i) => r['a' + (i + 1)] ?? ''), r.temps ? Math.round(r.temps / 60) : '', dataExcel(r.fi), r.foraN || 0, ...CB_ITEMS.map(it => r.resp?.['i' + it.n]?.pts ?? '')]); }
   fulls.push([k === 'f' ? 'Competències' : 'Competències ' + UNITATS[k].nom.toLowerCase(), cbF]);
   }
   const dies = diesSeg();
@@ -3944,7 +3948,7 @@ function pintaDemo() {
   const barra = `<div class="fila-form"><b>Objectiu</b> <select class="camp" id="d-o">${grups.map(([u, l]) => `<optgroup label="${u.nom}">${l.map(o => `<option value="${o.id}" ${o.id === st.o ? 'selected' : ''}>${o.num} · ${o.titol}</option>`).join('')}</optgroup>`).join('')}</select>
       <b style="margin-left:12px">Nivell</b> <span class="segment" id="d-n">${[1, 2, 3].map(n => `<button data-n="${n}" class="${n === st.nivell ? 'activa' : ''}">${n}</button>`).join('')}</span>
       <span class="segment" id="d-m" style="margin-left:12px"><button data-m="un" class="${st.mode === 'un' ? 'activa' : ''}">Un exercici</button><button data-m="ronda" class="${st.mode === 'ronda' ? 'activa' : ''}">Ronda sencera</button></span>
-      <span style="margin-left:auto;display:flex;gap:8px"><button class="boto-petit" id="d-met" title="Obre el joc dels meteorits al nivell triat (no es desa res)">☄️ Meteorits</button><button class="boto-petit" id="d-metf" title="Meteorits amb fraccions al nivell triat (no es desa res)">☄️ Fraccions</button><button class="boto-petit" id="d-bac" title="Obre el joc dels bacteris al nivell triat (no es desa res)">🦠 Bacteris</button><button class="boto-petit" id="d-tor" title="Obre la torre de potències al nivell triat (no es desa res)">🏗️ Torre</button><button class="boto-petit" id="d-repas" title="Obre el taller de repàs d'enters per veure'l (no es desa res)">🔁 Taller de repàs</button><button class="boto-petit" id="d-nou">🎲 ${st.mode === 'ronda' ? 'Una altra ronda' : 'Un altre exercici'}</button><button class="boto taronja" id="d-previ" title="Fes l'objectiu com un alumne, sense desar res">👁 Prova-ho com a alumne</button></span></div>`;
+      <span style="margin-left:auto;display:flex;gap:8px"><button class="boto-petit" id="d-met" title="Obre el joc dels meteorits al nivell triat (no es desa res)">☄️ Meteorits</button><button class="boto-petit" id="d-metf" title="Meteorits amb fraccions al nivell triat (no es desa res)">☄️ Fraccions</button><button class="boto-petit" id="d-bal" title="La balança al nivell triat (no es desa res)">⚖️ Balança</button><button class="boto-petit" id="d-zom" title="Zombis al nivell triat (no es desa res)">🧟 Zombis</button><button class="boto-petit" id="d-bac" title="Obre el joc dels bacteris al nivell triat (no es desa res)">🦠 Bacteris</button><button class="boto-petit" id="d-tor" title="Obre la torre de potències al nivell triat (no es desa res)">🏗️ Torre</button><button class="boto-petit" id="d-repas" title="Obre el taller de repàs d'enters per veure'l (no es desa res)">🔁 Taller de repàs</button><button class="boto-petit" id="d-nou">🎲 ${st.mode === 'ronda' ? 'Una altra ronda' : 'Un altre exercici'}</button><button class="boto taronja" id="d-previ" title="Fes l'objectiu com un alumne, sense desar res">👁 Prova-ho com a alumne</button></span></div>`;
   let cos;
   if (st.mode === 'ronda') {
     if (!st.ronda) st.ronda = generaRonda(st.o, st.nivell);
@@ -3972,6 +3976,8 @@ function pintaDemo() {
   const dr = $('#d-repas'); if (dr) dr.onclick = () => obreRepas(st.nivell);
   const dm = $('#d-met'); if (dm) dm.onclick = () => obreMeteorits(st.nivell);
   const dmf = $('#d-metf'); if (dmf) dmf.onclick = () => obreJocExt('tmetf', st.nivell);
+  const dbl = $('#d-bal'); if (dbl) dbl.onclick = () => obreJocExt('tbal', st.nivell);
+  const dzm = $('#d-zom'); if (dzm) dzm.onclick = () => obreJocExt('tzom', st.nivell);
   const db2 = $('#d-bac'); if (db2) db2.onclick = () => obreJocExt('tbac', st.nivell);
   const dt2 = $('#d-tor'); if (dt2) dt2.onclick = () => obreJocExt('ttor', st.nivell);
   const dp = $('#d-pas'); if (dp) dp.onclick = () => { st.pas++; pintaDemo(); };

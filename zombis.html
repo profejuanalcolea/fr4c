@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zombis a l'institut · FR-4C</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,800&display=swap" rel="stylesheet">
+<style>
+/* Taller de l'app FR-4C · Equacions. Es pot obrir sol o dins de l'app (postMessage fr4c-zom-*). Estil dibuix animat, sense sang. */
+:root{--taronja:#f26b1d;--tinta:#1b1b1b;--ok:#2c9a58;--ko:#d64242}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;font-family:"Atkinson Hyperlegible",system-ui,sans-serif;background:#2b2440;color:#fff;overflow:hidden;user-select:none}
+#joc{position:relative;width:100%;height:100%;background:linear-gradient(#3b2f5c 0%,#5b4a7e 55%,#7a8a4a 55%,#5d6d35 100%)}
+.lluna{position:absolute;right:8%;top:12%;width:90px;height:90px;border-radius:50%;background:#fff6c9;box-shadow:0 0 60px #fff6c988}
+.inst{position:absolute;left:0;right:0;top:30%;height:25%;display:flex;align-items:flex-end;justify-content:center;gap:4px;opacity:.55}
+.inst i{display:block;width:12%;background:#24203a;border-radius:4px 4px 0 0}
+#barr{position:absolute;left:3%;bottom:18%;width:70px;height:150px;z-index:4}
+.cap{position:absolute;top:10px;left:16px;right:16px;display:flex;align-items:center;gap:14px;z-index:8;font-weight:700}
+.cap .tit{font-family:"Bricolage Grotesque",sans-serif;font-size:1.3rem}
+.cap .punts{margin-left:auto;font-size:1.7rem;font-family:"Bricolage Grotesque",sans-serif}
+.taulons{font-size:1.4rem;letter-spacing:3px}.taulons .perdut{opacity:.2;filter:grayscale(1)}
+.combo{color:var(--taronja);font-size:1.2rem;min-width:70px}
+.temps{position:absolute;top:52px;left:16px;right:16px;height:6px;border-radius:3px;background:#ffffff22;z-index:8}.temps i{display:block;height:100%;border-radius:3px;background:var(--taronja);transform-origin:left;transition:transform .25s linear}
+.btn{border:3px solid #fff;background:#ffffff14;color:#fff;border-radius:12px;padding:6px 12px;font:inherit;font-weight:700;cursor:pointer}
+.zombi{position:absolute;bottom:16%;left:0;width:150px;margin-left:-75px;display:flex;flex-direction:column;align-items:center;z-index:5;will-change:transform}
+.zombi svg{width:120px;height:170px;animation:balanceja 1s ease-in-out infinite alternate;transform-origin:50% 100%}
+@keyframes balanceja{from{transform:rotate(-4deg)}to{transform:rotate(4deg)}}
+.cartell{background:#fff;color:var(--tinta);border-radius:14px;padding:6px 12px;font-family:"Bricolage Grotesque",sans-serif;font-size:1.6rem;white-space:nowrap;border:3px solid var(--taronja);box-shadow:0 4px 0 #0005;margin-bottom:6px}
+.zombi.pop .cap-z{animation:pop .45s ease-out forwards;transform-origin:60px 50px;transform-box:view-box}
+@keyframes pop{40%{transform:scale(1.5)}100%{transform:scale(0);opacity:0}}
+.zombi.fora{transition:opacity .4s;opacity:0}
+.estel{position:absolute;font-size:1.6rem;z-index:6;animation:estel .7s ease-out forwards;pointer-events:none}
+@keyframes estel{to{transform:translate(var(--dx),var(--dy)) rotate(200deg);opacity:0}}
+.respostes{position:absolute;left:50%;bottom:3%;transform:translateX(-50%);display:flex;gap:18px;z-index:7}
+.resp{min-width:150px;font-family:"Bricolage Grotesque",sans-serif;font-size:2rem;padding:10px 18px;border-radius:18px;border:4px solid var(--tinta);background:#fff;color:var(--tinta);cursor:pointer;box-shadow:0 6px 0 #0007;position:relative}
+.resp small{position:absolute;top:4px;left:8px;font-size:.8rem;color:#999;font-family:"Atkinson Hyperlegible",sans-serif}
+.resp:hover{transform:translateY(-2px)}.resp:active{transform:translateY(3px);box-shadow:0 2px 0 #0007}
+.resp.be{background:var(--ok);color:#fff}.resp.mal{background:var(--ko);color:#fff}
+.resp:disabled{cursor:default}
+.avis{position:absolute;left:50%;top:18%;transform:translate(-50%,-50%);z-index:9;background:#fff;color:var(--tinta);border-radius:18px;padding:12px 22px;font-size:1.4rem;font-weight:700;border:4px solid var(--ko);box-shadow:0 8px 0 #0006;text-align:center;animation:apareix .25s;max-width:80%}
+.avis b{font-family:"Bricolage Grotesque",sans-serif;font-size:1.8rem}.avis.ok{border-color:var(--ok)}
+@keyframes apareix{from{transform:translate(-50%,-50%) scale(.6);opacity:0}}
+.mini{font-size:.95rem;color:#666}
+.sacseja{animation:sacseja .35s}@keyframes sacseja{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+.pantalla{position:absolute;inset:0;z-index:10;display:flex;align-items:center;justify-content:center;background:#1b1b1bcc}
+.panell{background:#fff;color:var(--tinta);border-radius:24px;border:4px solid var(--tinta);padding:24px 30px;max-width:780px;width:92%;box-shadow:0 10px 0 #0008;max-height:92vh;overflow:auto}
+.panell h1{font-family:"Bricolage Grotesque",sans-serif;margin:0 0 6px;font-size:2rem}
+.panell p{font-size:1.15rem;line-height:1.45;margin:8px 0}
+.panell .fila{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:14px}
+.big{font-family:"Bricolage Grotesque",sans-serif;font-size:1.3rem;border-radius:14px;padding:12px 26px;border:4px solid var(--tinta);cursor:pointer;background:var(--taronja);color:#fff;box-shadow:0 5px 0 #0006}
+.big.sec{background:#fff;color:var(--tinta)}
+.seg{display:inline-flex;border:3px solid var(--tinta);border-radius:12px;overflow:hidden}.seg button{border:0;background:#fff;padding:8px 14px;font:inherit;font-weight:700;cursor:pointer}.seg button.on{background:var(--tinta);color:#fff}
+.resum{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:12px 0}.resum div{background:#f5f3ef;border-radius:14px;padding:10px;text-align:center}.resum b{display:block;font-family:"Bricolage Grotesque",sans-serif;font-size:2rem}
+.fallades{columns:2;font-size:1.1rem;margin:6px 0 0;padding-left:20px}.fallades li{margin:2px 0}
+.rec{color:var(--taronja);font-weight:800}
+</style>
+</head>
+<body>
+<div id="joc">
+  <div class="lluna"></div>
+  <div class="inst"><i style="height:60%"></i><i style="height:100%"></i><i style="height:80%"></i><i style="height:95%"></i><i style="height:55%"></i></div>
+  <svg id="barr" viewBox="0 0 70 150" aria-hidden="true"><g id="taulons"></g><rect x="8" y="0" width="8" height="150" fill="#5b3a1e"/><rect x="54" y="0" width="8" height="150" fill="#5b3a1e"/></svg>
+  <div class="cap">
+    <span class="tit">🧟 Zombis a l'institut</span>
+    <span class="taulons" id="vides"></span>
+    <span class="combo" id="combo"></span>
+    <span class="punts" id="punts">0</span>
+    <button class="btn" id="so" title="So">🔊</button>
+    <button class="btn" id="surt" title="Surt">✕</button>
+  </div>
+  <div class="temps"><i id="tbar"></i></div>
+  <div id="camp"></div>
+  <div class="respostes" id="resp"></div>
+  <div class="pantalla" id="pant"></div>
+</div>
+<script>
+'use strict';
+const $ = s => document.querySelector(s);
+const rnd = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+const tria = a => a[Math.floor(Math.random() * a.length)];
+const barreja = a => { a = [...a]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const nz = v => v < 0 ? `−${-v}` : String(v);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const lin = (a, b) => { const ta = a === 1 ? 'x' : a === -1 ? '−x' : nz(a) + 'x'; return b ? `${ta} ${b < 0 ? '−' : '+'} ${Math.abs(b)}` : ta; };
+const DURADA = 120, VIDES = 3;
+const M = { nivell: 1, nom: '', record: 0, dinsApp: false, so: true, pantalla: 'inici' };
+window.__M = M;
+try { M.so = localStorage.getItem('fr4c_zom_so') !== '0'; } catch (e) {}
+const qs = new URLSearchParams(location.search); if (qs.get('nivell')) M.nivell = Math.max(1, Math.min(3, +qs.get('nivell')));
+try { M.record = +(localStorage.getItem('fr4c_zom_rec_' + M.nivell) || 0); } catch (e) {}
+
+/* ---------- equacions per nivell, amb distractors que són errors típics de la transposició ---------- */
+function novaEq() {
+  const L = M.nivell; let e, x, mals;
+  const t = L === 1 ? rnd(0, 3) : L === 2 ? rnd(0, 4) : rnd(0, 5);
+  if (L === 1) {
+    x = rnd(1, 12);
+    if (t === 0) { const a = rnd(1, 12); e = `x + ${a} = ${x + a}`; mals = [x + 2 * a, x + a + 1, a]; }
+    else if (t === 1) { const a = rnd(1, 9); e = `x − ${a} = ${x}`; x = x + a; e = `x − ${a} = ${x - a}`; mals = [x - 2 * a, x - a, a]; }
+    else if (t === 2) { const a = rnd(2, 9); e = `${a}x = ${a * x}`; mals = [a * x - a, a * a * x, a * x]; }
+    else { const a = rnd(2, 5); e = `x : ${a} = ${x}`; const y = a * x; mals = [x + a, Math.max(1, x - a), x]; x = y; }
+  } else if (L === 2) {
+    const a = rnd(2, 7), b = (Math.random() < .5 ? -1 : 1) * rnd(1, 12); x = rnd(-6, 9) || 2; const c = a * x + b;
+    if (t <= 3) { e = `${lin(a, b)} = ${nz(c)}`; mals = [(c + b) / a, c / a - b, c - b - a, -x]; }
+    else { e = `${nz(-1)}x = ${nz(-x)}`.replace('−1x', '−x'); mals = [-x, x + 1, x - 1]; }
+  } else {
+    if (t <= 2) { let a, c; do { a = rnd(2, 9); c = rnd(1, 8); } while (a === c); x = rnd(-5, 8) || 3; const b = (Math.random() < .5 ? -1 : 1) * rnd(1, 9); const d = (a - c) * x + b; e = `${lin(a, b)} = ${lin(c, d)}`; mals = [(d + b) / (a - c), (d - b) / (a + c), -x]; }
+    else if (t <= 4) { const k = rnd(2, 5), p = (Math.random() < .5 ? -1 : 1) * rnd(1, 6); x = rnd(-4, 8) || 2; const r = k * (x + p); e = `${k}(x ${p < 0 ? '−' : '+'} ${Math.abs(p)}) = ${nz(r)}`; mals = [(r - p) / k, r / k + p, -x]; }
+    else { const r = rnd(2, 10); e = `x² = ${r * r}`; x = r; mals = [r * r / 2, r + 1, r * r]; }
+  }
+  const set = new Set([x]); const ops = [x];
+  for (const m of barreja(mals)) if (Number.isInteger(m) && !set.has(m) && ops.length < 3) { set.add(m); ops.push(m); }
+  let g = 0; while (ops.length < 3 && g++ < 50) { const m = x + tria([-3, -2, -1, 1, 2, 3]); if (!set.has(m)) { set.add(m); ops.push(m); } }
+  return { e, x, opcions: barreja(ops), dos: e.startsWith('x²') };
+}
+window.__novaEq = novaEq;
+
+/* ---------- so ---------- */
+let AC = null;
+function to(f, d, tipus = 'square', v = .05, f2 = null, t0 = 0) {
+  if (!M.so) return; try {
+    AC = AC || new (window.AudioContext || window.webkitAudioContext)(); if (AC.state === 'suspended') AC.resume();
+    const t = AC.currentTime + t0, o = AC.createOscillator(), g = AC.createGain(); o.type = tipus; o.frequency.setValueAtTime(f, t); if (f2) o.frequency.exponentialRampToValueAtTime(f2, t + d);
+    g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(v, t + .01); g.gain.exponentialRampToValueAtTime(.0001, t + d); o.connect(g); g.connect(AC.destination); o.start(t); o.stop(t + d + .05);
+  } catch (e) {}
+}
+const SO = {
+  pop: () => { to(900, .08, 'square', .05, 1800); to(300, .15, 'triangle', .05, 120, .05); },
+  mal: () => to(220, .45, 'sawtooth', .05, 70),
+  cop: () => { to(90, .3, 'square', .07, 40); },
+  gemec: () => to(140, .6, 'sawtooth', .025, 90),
+  combo: () => [0, 4, 7].forEach((s, i) => to(660 * Math.pow(2, s / 12), .09, 'square', .035, null, i * .06)),
+  fi: () => [0, 4, 7, 12].forEach((s, i) => to(523 * Math.pow(2, s / 12), .2, 'square', .05, null, i * .12))
+};
+
+/* ---------- zombi en dibuix animat ---------- */
+const COLORS = ['#7fbf5a', '#8fcf8a', '#a0c060', '#6fb59a'];
+const zombiSVG = () => { const c = tria(COLORS); return `<svg viewBox="0 0 120 170"><g class="cos"><rect x="38" y="78" width="44" height="58" rx="10" fill="${tria(['#6a5acd', '#c0504d', '#4f81bd', '#9b59b6'])}" stroke="#1b1b1b" stroke-width="3"/>
+  <rect x="14" y="84" width="34" height="12" rx="6" fill="${c}" stroke="#1b1b1b" stroke-width="3" transform="rotate(-8 14 84)"/><rect x="74" y="88" width="34" height="12" rx="6" fill="${c}" stroke="#1b1b1b" stroke-width="3" transform="rotate(6 74 88)"/>
+  <rect x="42" y="134" width="14" height="30" rx="5" fill="#3d3d55" stroke="#1b1b1b" stroke-width="3"/><rect x="64" y="134" width="14" height="30" rx="5" fill="#3d3d55" stroke="#1b1b1b" stroke-width="3"/></g>
+  <g class="cap-z"><rect x="30" y="20" width="60" height="58" rx="18" fill="${c}" stroke="#1b1b1b" stroke-width="3"/><circle cx="48" cy="44" r="9" fill="#fff" stroke="#1b1b1b" stroke-width="2.5"/><circle cx="72" cy="46" r="7" fill="#fff" stroke="#1b1b1b" stroke-width="2.5"/><circle cx="49" cy="45" r="3.5" fill="#1b1b1b"/><circle cx="71" cy="47" r="3" fill="#1b1b1b"/>
+  <path d="M46 64 Q60 58 74 64" fill="none" stroke="#1b1b1b" stroke-width="3" stroke-linecap="round"/><rect x="53" y="60" width="6" height="6" fill="#fff" stroke="#1b1b1b" stroke-width="1.5"/><path d="M36 22 L42 12 L48 22 M70 20 L78 10 L82 22" fill="none" stroke="#1b1b1b" stroke-width="3"/></g></svg>`; };
+
+/* ---------- partida ---------- */
+const P = {}; window.__P = P;
+function comenca() {
+  Object.assign(P, { punts: 0, vides: VIDES, combo: 0, maxCombo: 0, encerts: 0, errors: 0, t0: performance.now(), fallades: [], vel: M.nivell === 1 ? 16 : M.nivell === 2 ? 18 : 20, bloc: false, z: null, acabada: false });
+  M.pantalla = 'joc'; $('#pant').style.display = 'none'; pintaCap(); pintaBarr(); surtZombi(); requestAnimationFrame(bucle);
+}
+function surtZombi() {
+  const o = novaEq(); const el = document.createElement('div'); el.className = 'zombi';
+  el.innerHTML = `<div class="cartell">${esc(o.e)}</div>${zombiSVG()}`; $('#camp').appendChild(el);
+  P.z = { o, el, t: performance.now(), dur: P.vel, x: 0 }; P.bloc = false; SO.gemec();
+  $('#resp').innerHTML = o.opcions.map((v, i) => `<button class="resp" data-i="${i}"><small>${i + 1}</small>${o.dos ? `x = ±${Math.abs(v)}` : `x = ${nz(v)}`}</button>`).join('');
+  document.querySelectorAll('.resp').forEach(b => b.onclick = () => respon(+b.dataset.i));
+}
+function bucle(ara) {
+  if (M.pantalla !== 'joc') return;
+  const W = $('#joc').clientWidth; const t = (ara - P.t0) / 1000; $('#tbar').style.transform = `scaleX(${Math.max(0, 1 - t / DURADA)})`;
+  if (t >= DURADA && !P.bloc) return acaba('temps');
+  const z = P.z; if (z && !P.bloc) { const f = (ara - z.t) / (z.dur * 1000); z.x = W * (.9 - f * .72); z.el.style.transform = `translateX(${z.x}px)`; if (z.x <= W * .18) arriba(); }
+  requestAnimationFrame(bucle);
+}
+function respon(i) {
+  if (P.bloc || !P.z) return; P.bloc = true; const o = P.z.o, ok = o.opcions[i] === o.x; const bs = document.querySelectorAll('.resp'); bs.forEach(b => b.disabled = true);
+  if (ok) {
+    bs[i].classList.add('be'); P.encerts++; P.combo++; P.maxCombo = Math.max(P.maxCombo, P.combo);
+    const mult = P.combo >= 6 ? 3 : P.combo >= 3 ? 2 : 1; const rest = Math.max(0, 1 - (performance.now() - P.z.t) / (P.z.dur * 1000));
+    const guany = Math.round((10 + 10 * rest) * mult); P.punts += guany; if (P.combo === 3 || P.combo === 6) SO.combo();
+    peta(P.z); avis(`💥 POP! +${guany}${mult > 1 ? ` · combo ×${mult}` : ''}`, true, 700);
+    P.vel = Math.max(M.nivell === 3 ? 10 : 9, P.vel - .5); setTimeout(seguent, 700);
+  } else {
+    bs[i].classList.add('mal'); bs[o.opcions.indexOf(o.x)].classList.add('be'); SO.mal(); fallada(o, false);
+  }
+  pintaCap();
+}
+function peta(z) {
+  SO.pop(); z.el.classList.add('pop'); const r = z.el.getBoundingClientRect(), j = $('#joc').getBoundingClientRect();
+  for (let k = 0; k < 10; k++) { const s = document.createElement('span'); s.className = 'estel'; s.textContent = tria(['⭐', '✨', '💫', '🎈']); const a = Math.random() * Math.PI * 2, d = 50 + Math.random() * 80;
+    s.style.cssText = `left:${r.left - j.left + r.width / 2}px;top:${r.top - j.top + 70}px;--dx:${Math.cos(a) * d}px;--dy:${Math.sin(a) * d}px`; $('#joc').appendChild(s); setTimeout(() => s.remove(), 750); }
+  setTimeout(() => z.el.classList.add('fora'), 450);
+}
+function arriba() { P.bloc = true; SO.cop(); const o = P.z.o; document.querySelectorAll('.resp').forEach((b, k) => { b.disabled = true; if (o.opcions[k] === o.x) b.classList.add('be'); }); fallada(o, true); }
+function fallada(o, cop) {
+  P.errors++; P.combo = 0; P.vides--; P.fallades.push(`${o.e} → x = ${o.dos ? '±' + o.x : nz(o.x)}`);
+  $('#joc').classList.remove('sacseja'); void $('#joc').offsetWidth; $('#joc').classList.add('sacseja'); pintaBarr();
+  avis(`${cop ? 'El zombi ha arribat a la barricada!' : 'Ui!'} ${esc(o.e)} → <b>x = ${o.dos ? '±' + o.x : nz(o.x)}</b>`, false, 1700);
+  P.z.el.classList.add('fora'); pintaCap(); setTimeout(() => P.vides <= 0 ? acaba('vides') : seguent(), 1800);
+}
+function seguent() { if (M.pantalla !== 'joc') return; P.z?.el.remove(); P.z = null; if ((performance.now() - P.t0) / 1000 >= DURADA) return acaba('temps'); surtZombi(); }
+function avis(html, ok, ms) { const d = document.createElement('div'); d.className = 'avis' + (ok ? ' ok' : ''); d.innerHTML = html; $('#joc').appendChild(d); setTimeout(() => d.remove(), ms); }
+function pintaCap() { $('#punts').textContent = P.punts ?? 0; $('#combo').textContent = P.combo >= 3 ? `combo ×${P.combo >= 6 ? 3 : 2}` : ''; $('#vides').innerHTML = Array.from({ length: VIDES }, (_, i) => `<span class="${i < (P.vides ?? VIDES) ? '' : 'perdut'}">🪵</span>`).join(''); }
+function pintaBarr() { const n = P.vides ?? VIDES; $('#taulons').innerHTML = Array.from({ length: VIDES }, (_, i) => i < n ? `<rect x="2" y="${20 + i * 42}" width="66" height="22" rx="4" fill="#a0702d" stroke="#1b1b1b" stroke-width="3" transform="rotate(${i % 2 ? 6 : -6} 35 ${31 + i * 42})"/>` : '').join(''); }
+function acaba(motiu) {
+  if (P.acabada) return; P.acabada = true; M.pantalla = 'fi'; P.z?.el.remove(); $('#resp').innerHTML = '';
+  SO.fi(); const nouRec = P.punts > M.record; if (nouRec) M.record = P.punts;
+  try { localStorage.setItem('fr4c_zom_rec_' + M.nivell, M.record); } catch (e) {}
+  const temps = Math.round((performance.now() - P.t0) / 1000);
+  envia({ tipus: 'fr4c-zom-fi', punts: P.punts, encerts: P.encerts, errors: P.errors, maxCombo: P.maxCombo, nivell: M.nivell, temps, fallades: P.fallades.slice(0, 20) });
+  const pct = P.encerts + P.errors ? Math.round(100 * P.encerts / (P.encerts + P.errors)) : 0;
+  pantalla(`<h1>${motiu === 'temps' ? 'Temps! L\'institut està a salvo 🏫' : 'La barricada ha caigut! 🧟'}</h1>
+    <p>${nouRec ? '<span class="rec">🏆 Nou rècord!</span> ' : ''}${M.nom ? `<b>${esc(M.nom)}</b>, h` : 'H'}as fet <b>${P.punts}</b> punts. ${!nouRec && M.record ? `El teu rècord és de <b>${M.record}</b>.` : ''}</p>
+    <div class="resum"><div><b>${P.encerts}</b>zombis aturats</div><div><b>${P.errors}</b>errors</div><div><b>${pct}%</b>d'encerts</div></div>
+    ${P.fallades.length ? `<p><b>Repassa les que has fallat:</b></p><ul class="fallades">${P.fallades.slice(0, 12).map(f => `<li>${esc(f)}</li>`).join('')}</ul>` : '<p>Cap error! 🌟</p>'}
+    <div class="fila"><button class="big" id="torna">Torna a jugar</button><button class="big sec" id="tanca2">Surt</button></div>`);
+  $('#torna').onclick = comenca; $('#tanca2').onclick = surt;
+}
+function pantalla(html) { const p = $('#pant'); p.innerHTML = `<div class="panell">${html}</div>`; p.style.display = 'flex'; }
+function inici() {
+  M.pantalla = 'inici'; pintaBarr();
+  const txtN = { 1: 'equacions d\'un pas (x + 5 = 12, 3x = 15)', 2: 'equacions de dos passos (3x + 4 = 19)', 3: 'x als dos costats, parèntesis i x² = 49' };
+  pantalla(`<h1>🧟 Zombis a l'institut</h1>
+    <p>${M.nom ? `Hola, <b>${esc(M.nom)}</b>! ` : ''}Uns zombis molt lents s'acosten a la barricada de l'institut. Cada zombi porta una <b>equació</b> al cartell: <b>toca la solució</b> (o prem 1, 2 o 3) i… <b>POP!</b> 🎈</p>
+    <p>La barricada té <b>3 taulons</b> 🪵🪵🪵: cada error o cada zombi que hi arriba en trenca un. La partida dura com a màxim 2 minuts. 3 encerts seguits: <b>combo ×2</b>; 6 seguits: <b>×3</b>.</p>
+    <p class="mini">Nivell ${M.nivell}: ${txtN[M.nivell]}.${M.record ? ` El teu rècord: <b>${M.record}</b> punts.` : ''} Pots fer servir paper i llapis!</p>
+    ${!M.dinsApp ? `<div class="fila"><b>Nivell:</b><span class="seg" id="nv">${[1, 2, 3].map(n => `<button data-n="${n}" class="${n === M.nivell ? 'on' : ''}">${n}</button>`).join('')}</span></div>` : ''}
+    <div class="fila"><button class="big" id="go">Comença! →</button>${M.dinsApp ? '<button class="big sec" id="tanca2">Surt</button>' : ''}</div>`);
+  $('#go').onclick = comenca; const t = $('#tanca2'); if (t) t.onclick = surt;
+  document.querySelectorAll('#nv button').forEach(b => b.onclick = () => { M.nivell = +b.dataset.n; try { M.record = +(localStorage.getItem('fr4c_zom_rec_' + M.nivell) || 0); } catch (e) {} inici(); });
+}
+const envia = m => { try { if (window.parent !== window) window.parent.postMessage(m, '*'); } catch (e) {} };
+function surt() { M.pantalla = 'fora'; envia({ tipus: 'fr4c-zom-tanca' }); if (window.parent === window) inici(); }
+window.addEventListener('message', ev => {
+  const d = ev.data || {}; if (d.tipus !== 'fr4c-zom-ini') return;
+  M.dinsApp = true; M.nom = d.nom || ''; M.nivell = Math.max(1, Math.min(3, d.nivell || 1)); M.record = Math.max(d.record || 0, 0);
+  if (d.so === false) M.so = false; $('#so').textContent = M.so ? '🔊' : '🔇';
+  if (M.pantalla === 'inici') inici();
+});
+document.addEventListener('keydown', e => { if (M.pantalla === 'joc' && ['1', '2', '3'].includes(e.key)) respon(+e.key - 1); else if (e.key === 'Enter' && M.pantalla !== 'joc') $('#go, #torna')?.click(); });
+$('#so').onclick = () => { M.so = !M.so; $('#so').textContent = M.so ? '🔊' : '🔇'; try { localStorage.setItem('fr4c_zom_so', M.so ? '1' : '0'); } catch (e) {} };
+$('#surt').onclick = () => { if (M.pantalla === 'joc') { P.acabada = true; P.z?.el.remove(); $('#resp').innerHTML = ''; } surt(); };
+$('#so').textContent = M.so ? '🔊' : '🔇';
+pintaCap(); inici(); envia({ tipus: 'fr4c-zom-llest' });
+</script>
+</body>
+</html>
