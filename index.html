@@ -990,7 +990,7 @@ const enllacaQualif = c => $$('.q-man', c).forEach(td => td.onclick = () => canv
 const unitatCompleta = u => u.obj.every(o => !o.properament);
 /* ---------- Fitxers a part: cada unitat i cada joc es carrega quan cal ----------
    Són scripts clàssics (funcionen a GitHub Pages i també obrint l'index des de l'ordinador). */
-const V_FITXERS = '4.8';
+const V_FITXERS = '4.9';
 const FITXERS_UNITAT = { f: 'fraccions.js', e: 'enters.js', p: 'potencies.js' };
 const FITXERS_JOC = { tcx: 'joc-caixa.js', tesc: 'joc-escape.js', tpz: 'joc-pizzeria.js', dimp: 'joc-impropies.js' };
 const CARREGUES = {};
@@ -1503,22 +1503,24 @@ const TALLERS = {
           return `<tr><td>${i + 1}. ${e.ic} ${e.titol}</td><td>${x.acabada ? '<span class="marca-ok">Feta</span>' : x.fets ? 'En curs' : '—'}</td><td>${x.fets || 0}</td><td>${x.primera || 0}</td><td>${x.errSigne || 0}</td><td>${x.errNum || 0}</td></tr>`; }).join('')}</table>
           <p class="ajuda" style="margin:6px 0 0">Si els errors de <b>signe</b> són molts més que els de càlcul, l'alumne sap calcular però no aplica bé la norma.</p>` };
     } },
-  tmet: { id: 'tmet', unitat: 'e', ic: '☄️', curt: 'Meteorits', titol: 'Defensa la base de Mart', sub: 'Joc individual · operacions amb enters', defecte: false, esJoc: true, obre: () => obreMeteorits(),
-    resum: r => {
-      const nv = r.nivells || {}; const hist = Object.values(r.historial || {}).sort((a, b) => b.t - a.t);
-      const darreres = Object.entries(r.historial || {}).sort((a, b) => b[0] - a[0]).slice(0, 5);
-      return { fet: false, prog: `🏆${r.record || 0}`, errors: r.errors || 0, ultima: r.darrer,
-        carta: r.partides ? `Rècord: ${r.record || 0} punts · ${r.partides} ${r.partides === 1 ? 'partida' : 'partides'} · torna-hi →` : 'Nou · Juga →',
-        detall: `<p style="margin:0 0 6px;color:var(--gris)">Partides ${r.partides || 0} · Meteorits destruïts ${r.encerts || 0} · Errors ${r.errors || 0} · ${(r.encerts || 0) + (r.errors || 0) ? Math.round(100 * (r.encerts || 0) / ((r.encerts || 0) + (r.errors || 0))) : 0}% d'encerts</p>
-          <table class="taula-mini"><tr><th>Nivell</th><th>Partides</th><th>Rècord</th></tr>${[1, 2, 3].map(n => `<tr><td>Nivell ${n}</td><td>${nv[n]?.partides || 0}</td><td>${nv[n]?.record || 0}</td></tr>`).join('')}</table>
-          ${darreres.length ? `<p style="margin:8px 0 2px;font-weight:700">Darreres partides</p><table class="taula-mini"><tr><th>Data</th><th>Nivell</th><th>Punts</th><th>Encerts</th><th>Errors</th><th>Ha fallat</th></tr>${darreres.map(([t, h]) => `<tr><td>${dataCurta(+t)}</td><td>${h.nivell}</td><td>${h.punts}</td><td>${h.encerts}</td><td>${h.errors}</td><td style="text-align:left;font-size:.85rem">${(h.fallades || []).slice(0, 4).map(esc).join(' · ')}</td></tr>`).join('')}</table>` : ''}` };
-    } },
+  tmet: { id: 'tmet', unitat: 'e', ic: '☄️', curt: 'Meteorits', titol: 'Defensa la base de Mart', sub: 'Joc individual · operacions amb enters', defecte: false, esJoc: true, obre: () => obreMeteorits(), resum: r => resumJocExt(r, 'Meteorits destruïts') },
+  tbac: { id: 'tbac', unitat: 'p', ic: '🦠', curt: 'Bacteris', titol: 'Brot de bacteris', sub: 'Joc individual · potències i regles', defecte: false, esJoc: true, obre: () => obreJocExt('tbac'), resum: r => resumJocExt(r, 'Encerts') },
+  ttor: { id: 'ttor', unitat: 'p', ic: '🏗️', curt: 'Torre', titol: 'Torre de potències', sub: 'Joc individual · producte, quocient i potència d\'una potència', defecte: false, esJoc: true, obre: () => obreJocExt('ttor'), resum: r => resumJocExt(r, 'Pisos posats') },
   tasc: { id: 'tasc', unitat: 'e', natiu: true, senseDades: true, ic: '🛗', curt: 'Ascensor', titol: "L'ascensor boig", sub: 'Joc per parelles · sumes i restes amb l\'ascensor', defecte: false }
 };
 const LOCALS_PZ = ['🏠 Barri (2–10)', '🍝 Trattoria (11–20)', '🎪 Festival (fins a 100)'];
 const TIPUS_PZ = ['🎫 Tiquets', '🙋 Client', '☎️ Telèfon', '👨‍🍳 Cuina', '✍️ Escriure', '⏱️ Hora punta'];
 const SALES_ESC = ["La capsa d'en Joan", "Com s'escriu?", 'Plàtans i metres', 'Pròpies o impròpies?', 'La recta real', 'Bessones', 'La partida de cartes', 'Suma i resta', 'Producte i divisió'];
-const ORDRE_TALLERS = ['t5b', 'tesc', 'tpz', 'tcx', 'tre', 'tmet', 'tasc'];
+function resumJocExt(r, nomEncerts) {
+      const nv = r.nivells || {}; const hist = Object.values(r.historial || {}).sort((a, b) => b.t - a.t);
+      const darreres = Object.entries(r.historial || {}).sort((a, b) => b[0] - a[0]).slice(0, 5);
+      return { fet: false, prog: `🏆${r.record || 0}`, errors: r.errors || 0, ultima: r.darrer,
+        carta: r.partides ? `Rècord: ${r.record || 0} punts · ${r.partides} ${r.partides === 1 ? 'partida' : 'partides'} · torna-hi →` : 'Nou · Juga →',
+        detall: `<p style="margin:0 0 6px;color:var(--gris)">Partides ${r.partides || 0} · ${nomEncerts} ${r.encerts || 0} · Errors ${r.errors || 0} · ${(r.encerts || 0) + (r.errors || 0) ? Math.round(100 * (r.encerts || 0) / ((r.encerts || 0) + (r.errors || 0))) : 0}% d'encerts</p>
+          <table class="taula-mini"><tr><th>Nivell</th><th>Partides</th><th>Rècord</th></tr>${[1, 2, 3].map(n => `<tr><td>Nivell ${n}</td><td>${nv[n]?.partides || 0}</td><td>${nv[n]?.record || 0}</td></tr>`).join('')}</table>
+          ${darreres.length ? `<p style="margin:8px 0 2px;font-weight:700">Darreres partides</p><table class="taula-mini"><tr><th>Data</th><th>Nivell</th><th>Punts</th><th>Encerts</th><th>Errors</th><th>Ha fallat</th></tr>${darreres.map(([t, h]) => `<tr><td>${dataCurta(+t)}</td><td>${h.nivell}</td><td>${h.punts}</td><td>${h.encerts}</td><td>${h.errors}</td><td style="text-align:left;font-size:.85rem">${(h.fallades || []).slice(0, 4).map(esc).join(' · ')}</td></tr>`).join('')}</table>` : ''}` };
+    }
+const ORDRE_TALLERS = ['t5b', 'tesc', 'tpz', 'tcx', 'tre', 'tmet', 'tasc', 'tbac', 'ttor'];
 const llistaTallers = () => ORDRE_TALLERS.map(k => TALLERS[k]).filter(Boolean);
 const tallerObert = t => S.config?.tallers?.[t.id] ?? !!t.defecte;
 function resumTaller(t, r) {
@@ -1617,39 +1619,45 @@ function targetaTaller(u, res) {
    El joc i l'app es parlen per postMessage. Desa a resultats/{alumne}/tmet:
    { record, partides, encerts, errors, darrer, nivells: { 1: { record, partides } }, historial: { t: { punts, encerts, errors, nivell } } }
    ===================================================================== */
-const FITXER_MET = 'meteorits.html?v=1';
+/* Jocs en fitxer a part (meteorits, bacteris, torre): mateix protocol fr4c-<prefix>-ini/llest/fi/tanca */
+const JOCS_EXT = {
+  tmet: { fitxer: 'meteorits.html?v=1', pref: 'fr4c-met', titol: 'Defensa la base de Mart' },
+  tbac: { fitxer: 'bacteris.html?v=1', pref: 'fr4c-bac', titol: 'Brot de bacteris' },
+  ttor: { fitxer: 'torre.html?v=1', pref: 'fr4c-tor', titol: 'Torre de potències' } };
 let MET = null;
-function obreMeteorits(nivellProva = null) {
+function obreJocExt(tid, nivellProva = null) {
   tancaJoc(true);
-  const id = S.alumne, a = id ? S.alumnes[id] : null;
-  const r = (id && S.resMeu?.tmet) || {};
+  const J = JOCS_EXT[tid]; const id = S.alumne, a = id ? S.alumnes[id] : null;
+  const r = (id && S.resMeu?.[tid]) || {};
   const nivell = nivellProva || (id ? nivellBase(id) : 2);
-  MET = { id, nom: a?.nom || '', nivell, record: r.nivells?.[nivell]?.record || 0, prova: !id };
-  document.body.insertAdjacentHTML('beforeend', `<div id="joc-capa"><iframe title="Defensa la base de Mart" allow="autoplay" src="${FITXER_MET}"></iframe><button id="joc-tanca" title="Torna al mapa de FR-4C">✕ Surt del taller</button></div>`);
+  MET = { tid, J, id, nom: a?.nom || '', nivell, record: r.nivells?.[nivell]?.record || 0, prova: !id };
+  document.body.insertAdjacentHTML('beforeend', `<div id="joc-capa"><iframe title="${esc(J.titol)}" allow="autoplay" src="${J.fitxer}"></iframe><button id="joc-tanca" title="Torna al mapa de FR-4C">✕ Surt del taller</button></div>`);
   $('#joc-tanca').onclick = tancaMeteorits;
   const ifr = $('#joc-capa iframe');
   ifr.onload = () => enviaMet(); // per si el joc ja estava llest abans d'escoltar
-  MET.timeout = setTimeout(() => { if (MET && !MET.llest) { const c = $('#joc-capa'); if (c) c.insertAdjacentHTML('beforeend', `<div class="met-err">No s'ha pogut carregar el joc (<b>meteorits.html</b>). Comprova que el fitxer està pujat a GitHub al costat de l'app.</div>`); } }, 8000);
+  MET.timeout = setTimeout(() => { if (MET && !MET.llest) { const c = $('#joc-capa'); if (c) c.insertAdjacentHTML('beforeend', `<div class="met-err">No s'ha pogut carregar el joc (<b>${J.fitxer.split('?')[0]}</b>). Comprova que el fitxer està pujat a GitHub al costat de l'app.</div>`); } }, 8000);
 }
-function enviaMet() { const f = $('#joc-capa iframe'); if (!f || !MET) return; try { f.contentWindow.postMessage({ tipus: 'fr4c-met-ini', nom: MET.nom, nivell: MET.nivell, record: MET.record, so: soActiu() }, '*'); } catch (e) { } }
+const obreMeteorits = (n = null) => obreJocExt('tmet', n);
+function enviaMet() { const f = $('#joc-capa iframe'); if (!f || !MET) return; try { f.contentWindow.postMessage({ tipus: MET.J.pref + '-ini', nom: MET.nom, nivell: MET.nivell, record: MET.record, so: soActiu() }, '*'); } catch (e) { } }
 function tancaMeteorits() { if (MET?.timeout) clearTimeout(MET.timeout); MET = null; tancaJoc(); }
 async function desaMeteorits(d) {
   if (!MET || MET.prova || !MET.id) return;
-  const r = S.resMeu?.tmet || {}; const nv = String(d.nivell || MET.nivell); const n = r.nivells?.[nv] || {};
+  const tid = MET.tid; const r = S.resMeu?.[tid] || {}; const nv = String(d.nivell || MET.nivell); const n = r.nivells?.[nv] || {};
   const upd = {
     record: Math.max(r.record || 0, d.punts || 0), partides: (r.partides || 0) + 1, encerts: (r.encerts || 0) + (d.encerts || 0), errors: (r.errors || 0) + (d.errors || 0), darrer: Date.now(),
     [`nivells/${nv}`]: { record: Math.max(n.record || 0, d.punts || 0), partides: (n.partides || 0) + 1 },
     [`historial/${Date.now()}`]: { punts: d.punts || 0, encerts: d.encerts || 0, errors: d.errors || 0, nivell: +nv, temps: d.temps || 0, fallades: (d.fallades || []).slice(0, 12) }
   };
   MET.record = Math.max(MET.record, d.punts || 0);
-  try { await DB.update(`${ARREL}/resultats/${MET.id}/tmet`, upd); } catch (e) { console.error(e); }
+  try { await DB.update(`${ARREL}/resultats/${MET.id}/${tid}`, upd); } catch (e) { console.error(e); }
 }
 window.addEventListener('message', ev => {
-  const d = ev.data || {}; if (!MET || typeof d.tipus !== 'string' || !d.tipus.startsWith('fr4c-met')) return;
+  const d = ev.data || {}; if (!MET || typeof d.tipus !== 'string' || !d.tipus.startsWith(MET.J.pref + '-')) return;
   const f = $('#joc-capa iframe'); if (!f || ev.source !== f.contentWindow) return;
-  if (d.tipus === 'fr4c-met-llest') { MET.llest = true; enviaMet(); }
-  else if (d.tipus === 'fr4c-met-fi') desaMeteorits(d);
-  else if (d.tipus === 'fr4c-met-tanca') tancaMeteorits();
+  const t = d.tipus.slice(MET.J.pref.length + 1);
+  if (t === 'llest') { MET.llest = true; enviaMet(); }
+  else if (t === 'fi') desaMeteorits(d);
+  else if (t === 'tanca') tancaMeteorits();
 });
 /* =====================================================================
    TALLER · L'ASCENSOR BOIG (per parelles al mateix ordinador; no desa res)
@@ -2711,7 +2719,7 @@ function mostraCredits() {
     <p style="font-size:1.1rem"><b>Ins Júlia Minguell</b> · Matemàtiques 4t ESO · Grup Flexible</p>
     <p style="margin-top:14px">Ideat per <b>J. Alcolea</b></p>
     <p style="color:var(--gris)">Desenvolupat amb Claude</p>
-    <p style="color:var(--gris);margin-top:10px">Versió 4.8</p>
+    <p style="color:var(--gris);margin-top:10px">Versió 4.9</p>
     <div class="accions"><button class="boto" data-tanca-modal>D'acord</button></div>`);
 }
 function entraAlumne(id) {
@@ -3892,7 +3900,7 @@ function pintaDemo() {
   const barra = `<div class="fila-form"><b>Objectiu</b> <select class="camp" id="d-o">${grups.map(([u, l]) => `<optgroup label="${u.nom}">${l.map(o => `<option value="${o.id}" ${o.id === st.o ? 'selected' : ''}>${o.num} · ${o.titol}</option>`).join('')}</optgroup>`).join('')}</select>
       <b style="margin-left:12px">Nivell</b> <span class="segment" id="d-n">${[1, 2, 3].map(n => `<button data-n="${n}" class="${n === st.nivell ? 'activa' : ''}">${n}</button>`).join('')}</span>
       <span class="segment" id="d-m" style="margin-left:12px"><button data-m="un" class="${st.mode === 'un' ? 'activa' : ''}">Un exercici</button><button data-m="ronda" class="${st.mode === 'ronda' ? 'activa' : ''}">Ronda sencera</button></span>
-      <span style="margin-left:auto;display:flex;gap:8px"><button class="boto-petit" id="d-met" title="Obre el joc dels meteorits al nivell triat (no es desa res)">☄️ Meteorits</button><button class="boto-petit" id="d-repas" title="Obre el taller de repàs d'enters per veure'l (no es desa res)">🔁 Taller de repàs</button><button class="boto-petit" id="d-nou">🎲 ${st.mode === 'ronda' ? 'Una altra ronda' : 'Un altre exercici'}</button><button class="boto taronja" id="d-previ" title="Fes l'objectiu com un alumne, sense desar res">👁 Prova-ho com a alumne</button></span></div>`;
+      <span style="margin-left:auto;display:flex;gap:8px"><button class="boto-petit" id="d-met" title="Obre el joc dels meteorits al nivell triat (no es desa res)">☄️ Meteorits</button><button class="boto-petit" id="d-bac" title="Obre el joc dels bacteris al nivell triat (no es desa res)">🦠 Bacteris</button><button class="boto-petit" id="d-tor" title="Obre la torre de potències al nivell triat (no es desa res)">🏗️ Torre</button><button class="boto-petit" id="d-repas" title="Obre el taller de repàs d'enters per veure'l (no es desa res)">🔁 Taller de repàs</button><button class="boto-petit" id="d-nou">🎲 ${st.mode === 'ronda' ? 'Una altra ronda' : 'Un altre exercici'}</button><button class="boto taronja" id="d-previ" title="Fes l'objectiu com un alumne, sense desar res">👁 Prova-ho com a alumne</button></span></div>`;
   let cos;
   if (st.mode === 'ronda') {
     if (!st.ronda) st.ronda = generaRonda(st.o, st.nivell);
@@ -3919,6 +3927,8 @@ function pintaDemo() {
   $('#d-previ').onclick = () => previsualitza(st.o, st.nivell);
   const dr = $('#d-repas'); if (dr) dr.onclick = () => obreRepas(st.nivell);
   const dm = $('#d-met'); if (dm) dm.onclick = () => obreMeteorits(st.nivell);
+  const db2 = $('#d-bac'); if (db2) db2.onclick = () => obreJocExt('tbac', st.nivell);
+  const dt2 = $('#d-tor'); if (dt2) dt2.onclick = () => obreJocExt('ttor', st.nivell);
   const dp = $('#d-pas'); if (dp) dp.onclick = () => { st.pas++; pintaDemo(); };
   c.insertAdjacentHTML('beforeend', `<div class="apps-extra"><span class="ae-ic">🎮</span><div><b>App extra · Fraccions impròpies</b><br><small>Joc per a tota la classe, per equips de fruites: llegir, pintar i posar a la recta fraccions més grans que 1. Per quan la cosa es posi avorrida. No desa res dels alumnes.</small></div><button class="boto taronja" id="d-impropies">Obre-la a pantalla completa</button></div>`);
   $('#d-impropies').onclick = () => obreAppDemo('dimp');

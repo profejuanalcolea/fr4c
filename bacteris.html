@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Brot de bacteris · FR-4C</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,800&display=swap" rel="stylesheet">
+<style>
+/* Taller de l'app FR-4C · Potències. Es pot obrir sol o dins de l'app (l'app li passa l'alumne i el nivell per postMessage). */
+:root{--taronja:#f26b1d;--blau:#2a6fd6;--tinta:#1b1b1b;--ok:#2c9a58;--ko:#d64242;--fons:#f6f4ef}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;font-family:"Atkinson Hyperlegible",system-ui,sans-serif;background:var(--fons);color:var(--tinta);overflow:hidden;user-select:none}
+#joc{position:relative;width:100%;height:100%;display:grid;grid-template-columns:1fr 1fr;gap:18px;padding:70px 24px 20px;background:linear-gradient(180deg,#fff 0%,var(--fons) 100%)}
+.cap{position:absolute;top:10px;left:16px;right:16px;display:flex;align-items:center;gap:14px;z-index:5;font-weight:700}
+.cap .tit{font-family:"Bricolage Grotesque",sans-serif;font-size:1.3rem}
+.cap .punts{margin-left:auto;font-size:1.7rem;font-family:"Bricolage Grotesque",sans-serif}
+.combo{color:var(--taronja);font-size:1.15rem;min-width:70px}
+.temps{position:absolute;top:52px;left:16px;right:16px;height:6px;border-radius:3px;background:#0001;z-index:5}.temps i{display:block;height:100%;border-radius:3px;background:var(--taronja);transform-origin:left;transition:transform .25s linear}
+.btn{border:3px solid var(--tinta);background:#fff;color:var(--tinta);border-radius:12px;padding:6px 12px;font:inherit;font-weight:700;cursor:pointer}
+.placa{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px}
+#placa{width:min(42vw,62vh);height:min(42vw,62vh)}
+.estat{font-family:"Bricolage Grotesque",sans-serif;font-size:1.6rem;text-align:center}
+.estat small{display:block;font-family:"Atkinson Hyperlegible",system-ui,sans-serif;font-size:1rem;color:#666;font-weight:400}
+.estat.perill{color:var(--ko)}
+.creix{height:14px;width:min(42vw,62vh);border:3px solid var(--tinta);border-radius:8px;overflow:hidden;background:#fff}.creix i{display:block;height:100%;background:var(--taronja);transform-origin:left}
+.repte{display:flex;flex-direction:column;justify-content:center;gap:18px}
+.op{background:#fff;border:4px solid var(--tinta);border-radius:22px;padding:22px 24px;box-shadow:0 6px 0 #0002;text-align:center}
+.op .q{font-size:1rem;color:#666;margin-bottom:6px}
+.op .e{font-family:"Bricolage Grotesque",sans-serif;font-size:2.6rem;line-height:1.2}
+.resps{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.resp{font-family:"Bricolage Grotesque",sans-serif;font-size:2rem;padding:14px 10px;border-radius:18px;border:4px solid var(--tinta);background:#fff;color:var(--tinta);cursor:pointer;box-shadow:0 6px 0 #0003;position:relative}
+.resp small{position:absolute;top:4px;left:8px;font-size:.8rem;color:#999;font-family:"Atkinson Hyperlegible",sans-serif}
+.resp:hover{transform:translateY(-2px)}.resp:active{transform:translateY(3px);box-shadow:0 2px 0 #0003}
+.resp.be{background:var(--ok);color:#fff;border-color:var(--ok)}.resp.mal{background:var(--ko);color:#fff;border-color:var(--ko)}
+.resp:disabled{cursor:default}
+.avis{position:absolute;left:50%;top:16%;transform:translate(-50%,-50%);z-index:7;background:#fff;color:var(--tinta);border-radius:18px;padding:12px 22px;font-size:1.4rem;font-weight:700;border:4px solid var(--ko);box-shadow:0 8px 0 #0003;text-align:center;animation:apareix .25s;max-width:80%}
+.avis b{font-family:"Bricolage Grotesque",sans-serif;font-size:1.8rem}
+.avis.ok{border-color:var(--ok)}
+@keyframes apareix{from{transform:translate(-50%,-50%) scale(.6);opacity:0}}
+.x2{position:absolute;font-family:"Bricolage Grotesque",sans-serif;font-size:2.4rem;color:var(--ko);animation:puja 1s ease-out forwards;pointer-events:none;z-index:6}
+@keyframes puja{to{transform:translateY(-60px);opacity:0}}
+.sacseja{animation:sacseja .35s}@keyframes sacseja{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+.pantalla{position:absolute;inset:0;z-index:10;display:flex;align-items:center;justify-content:center;background:#1b1b1b99}
+.panell{background:#fff;color:var(--tinta);border-radius:24px;border:4px solid var(--tinta);padding:24px 30px;max-width:780px;width:92%;box-shadow:0 10px 0 #0006;max-height:92vh;overflow:auto}
+.panell h1{font-family:"Bricolage Grotesque",sans-serif;margin:0 0 6px;font-size:2rem}
+.panell p{font-size:1.15rem;line-height:1.45;margin:8px 0}
+.panell .fila{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:14px}
+.big{font-family:"Bricolage Grotesque",sans-serif;font-size:1.3rem;border-radius:14px;padding:12px 26px;border:4px solid var(--tinta);cursor:pointer;background:var(--taronja);color:#fff;box-shadow:0 5px 0 #0004}
+.big.sec{background:#fff;color:var(--tinta)}
+.seg{display:inline-flex;border:3px solid var(--tinta);border-radius:12px;overflow:hidden}.seg button{border:0;background:#fff;padding:8px 14px;font:inherit;font-weight:700;cursor:pointer}.seg button.on{background:var(--tinta);color:#fff}
+.resum{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:12px 0}.resum div{background:#f5f3ef;border-radius:14px;padding:10px;text-align:center}.resum b{display:block;font-family:"Bricolage Grotesque",sans-serif;font-size:2rem}
+.fallades{columns:2;font-size:1.1rem;margin:6px 0 0;padding-left:20px}.fallades li{margin:2px 0}
+.rec{color:var(--taronja);font-weight:800}
+.mini{font-size:.95rem;color:#666}
+.regla{font-size:1rem;color:#555;margin-top:4px}
+</style>
+</head>
+<body>
+<div id="joc">
+  <div class="cap">
+    <span class="tit">🦠 Brot de bacteris</span>
+    <span class="combo" id="combo"></span>
+    <span class="punts" id="punts">0</span>
+    <button class="btn" id="so" title="So">🔊</button>
+    <button class="btn" id="surt" title="Surt">✕</button>
+  </div>
+  <div class="temps"><i id="tbar"></i></div>
+  <div class="placa">
+    <svg id="placa" viewBox="0 0 200 200" aria-label="Placa de Petri"></svg>
+    <div class="creix" title="Com més plena, més a prop de vessar"><i id="cbar"></i></div>
+    <div class="estat" id="estat"></div>
+  </div>
+  <div class="repte">
+    <div class="op"><div class="q" id="q"></div><div class="e" id="e"></div><div class="regla" id="regla"></div></div>
+    <div class="resps" id="resp"></div>
+  </div>
+  <div class="pantalla" id="pant"></div>
+</div>
+<script>
+'use strict';
+const $ = s => document.querySelector(s);
+const rnd = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+const tria = a => a[Math.floor(Math.random() * a.length)];
+const barreja = a => { a = [...a]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const SUP = '⁰¹²³⁴⁵⁶⁷⁸⁹';
+const sp = n => String(n).split('').map(c => SUP[+c]).join('');
+const pw = (b, e) => `${b}${sp(e)}`;
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const DURADA = 120, MAXL = 8;
+
+const M = { nivell: 1, nom: '', record: 0, dinsApp: false, so: true, pantalla: 'inici' };
+window.__M = M;
+try { M.so = localStorage.getItem('fr4c_bac_so') !== '0'; } catch (e) {}
+const qs = new URLSearchParams(location.search); if (qs.get('nivell')) M.nivell = Math.max(1, Math.min(3, +qs.get('nivell')));
+try { M.record = +(localStorage.getItem('fr4c_bac_rec_' + M.nivell) || 0); } catch (e) {}
+
+/* ---------- reptes: la bona + errors típics ---------- */
+function opcions(bo, mals) { const set = new Set([bo]); const ops = [bo]; for (const m of barreja(mals)) if (!set.has(m) && ops.length < 3) { set.add(m); ops.push(m); } return ops.length === 3 ? barreja(ops) : null; }
+const R1 = [
+  () => { const b = rnd(2, 5), e = rnd(3, 5); return { q: 'Escriu-ho com una potència', e: Array(e).fill(b).join(' · '), bo: pw(b, e), mals: [pw(e, b), `${b} · ${e}`, pw(b, e + 1)], regla: `${b} es repeteix ${e} vegades` }; },
+  () => { const b = rnd(2, 5), e = rnd(2, b === 2 ? 5 : 3); const v = b ** e; return { q: 'Calcula', e: pw(b, e), bo: String(v), mals: [String(b * e), String(b + e), String(e ** b)], regla: `${pw(b, e)} = ${Array(e).fill(b).join(' · ')}` }; },
+  () => { const h = rnd(3, 6); return { q: `Bacteris a l'hora ${h} (es dupliquen cada hora)`, e: pw(2, h) + ' = ?', bo: String(2 ** h), mals: [String(2 * h), String(h * h), String(2 ** (h - 1))], regla: `${pw(2, h)} = ${Array(h).fill(2).join(' · ')}` }; },
+  () => { const b = rnd(2, 9); const z = Math.random() < .5; return z ? { q: 'Calcula', e: pw(b, 0), bo: '1', mals: ['0', String(b), '10'], regla: 'Tot nombre elevat a 0 val 1' } : { q: 'Calcula', e: pw(b, 1), bo: String(b), mals: ['1', '0', String(b * b)], regla: 'Elevat a 1 és ell mateix' }; },
+  () => { const e = rnd(2, 6); return { q: 'Calcula', e: pw(10, e), bo: '1' + '0'.repeat(e), mals: ['1' + '0'.repeat(e - 1), String(10 * e), '1' + '0'.repeat(e + 1)], regla: `L'exponent diu quants zeros: ${e}` }; }
+];
+const prod = (a, m, n) => ({ q: 'Una sola potència', e: `${pw(a, m)} · ${pw(a, n)}`, bo: pw(a, m + n), mals: [pw(a * a, m + n), pw(a, m * n), pw(a * a, m * n)], regla: 'Producte: sumo els exponents' });
+const quoc = (a, m, n) => ({ q: 'Una sola potència', e: `${pw(a, m)} : ${pw(a, n)}`, bo: pw(a, m - n), mals: [pw(1, m - n), pw(a, m + n), ...(m % n === 0 ? [pw(a, m / n)] : []), pw(a, m - n + 1)], regla: 'Quocient: resto els exponents' });
+const ppot = (a, m, n) => ({ q: 'Una sola potència', e: `(${pw(a, m)})${sp(n)}`, bo: pw(a, m * n), mals: [pw(a, m + n), pw(a * n, m), pw(a, m * n + 1)], regla: "Potència d'una potència: multiplico" });
+const R2 = [
+  () => prod(rnd(2, 9), rnd(2, 6), rnd(2, 6)),
+  () => { const m = rnd(5, 10); return quoc(rnd(2, 9), m, rnd(2, m - 2)); },
+  () => ppot(rnd(2, 9), rnd(2, 4), rnd(2, 4)),
+  () => { const h = rnd(6, 10); return { q: `Bacteris a l'hora ${h}`, e: pw(2, h) + ' = ?', bo: String(2 ** h), mals: [String(2 * h), String(2 ** (h - 1)), String(2 ** (h + 1))], regla: `Cada hora es multiplica per 2` }; },
+  () => { const a = rnd(2, 9), m = rnd(2, 7); return { q: 'Calcula', e: `${pw(a, m)} : ${pw(a, m)}`, bo: '1', mals: ['0', String(a), pw(a, 1)], regla: `${m} − ${m} = 0, i ${pw(a, 0)} = 1` }; }
+];
+const R3 = [
+  () => { const a = rnd(2, 5), m = rnd(2, 4), n = rnd(2, 3), p = rnd(1, 5); return { q: 'Una sola potència', e: `(${pw(a, m)})${sp(n)} · ${pw(a, p)}`, bo: pw(a, m * n + p), mals: [pw(a, m + n + p), pw(a, m * n * p), pw(a, (m + p) * n)], regla: 'Primer multiplico, després sumo' }; },
+  () => { const a = rnd(2, 7), m = rnd(2, 5), n = rnd(2, 5), p = rnd(1, m + n - 1); return { q: 'Una sola potència', e: `${pw(a, m)} · ${pw(a, n)} : ${pw(a, p)}`, bo: pw(a, m + n - p), mals: [pw(a, m * n - p), pw(a, m + n + p), pw(a * a, m + n - p)], regla: 'Sumo i després resto' }; },
+  () => { const k = rnd(4, 15); return { q: 'Calcula', e: `√${k * k}`, bo: String(k), mals: [String(k * k / 2 | 0), String(k + 1), String(k * 2)], regla: `${k} · ${k} = ${k * k}` }; },
+  () => { const b = rnd(2, 4), e = rnd(2, 5); const v = (-b) ** e; return { q: 'Calcula', e: `(−${b})${sp(e)}`, bo: v < 0 ? `−${-v}` : String(v), mals: [v < 0 ? String(-v) : `−${v}`, `−${b * e}`, String(b * e)], regla: e % 2 ? 'Exponent senar → negatiu' : 'Exponent parell → positiu' }; },
+  () => { const x = tria(['x', 'a', 'm']), m = rnd(2, 6), n = rnd(2, 6); return { q: 'Una sola potència', e: `${x}${sp(m)} · ${x}${sp(n)}`, bo: x + sp(m + n), mals: [x + sp(m * n === m + n ? m * n + 1 : m * n), `2${x}${sp(m + n)}`, x + sp(m + n + 1)], regla: 'La regla també val amb lletres' }; },
+  () => prod(rnd(2, 12), rnd(3, 9), rnd(3, 9)),
+  () => { const m = rnd(8, 15); return quoc(rnd(2, 12), m, rnd(3, m - 2)); }
+];
+function nouRepte() {
+  const fonts = M.nivell === 1 ? R1 : M.nivell === 2 ? [...R2, ...R2.slice(0, 3), R1[1]] : [...R3, ...R2.slice(0, 3)];
+  for (let g = 0; g < 50; g++) { const r = tria(fonts)(); const o = opcions(r.bo, r.mals); if (o && r.e !== P.ultim) { r.opcions = o; P.ultim = r.e; return r; } }
+  return null;
+}
+
+/* ---------- so ---------- */
+let AC = null;
+function to(f, d, tipus = 'square', v = .05, f2 = null, t0 = 0) {
+  if (!M.so) return; try {
+    AC = AC || new (window.AudioContext || window.webkitAudioContext)(); if (AC.state === 'suspended') AC.resume();
+    const t = AC.currentTime + t0, o = AC.createOscillator(), g = AC.createGain(); o.type = tipus; o.frequency.setValueAtTime(f, t); if (f2) o.frequency.exponentialRampToValueAtTime(f2, t + d);
+    g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(v, t + .01); g.gain.exponentialRampToValueAtTime(.0001, t + d); o.connect(g); g.connect(AC.destination); o.start(t); o.stop(t + d + .05);
+  } catch (e) {}
+}
+const SO = {
+  be: () => { to(880, .1, 'square', .04); to(1320, .12, 'square', .04, null, .08); },
+  mal: () => to(260, .4, 'sawtooth', .05, 90),
+  creix: () => to(140, .25, 'triangle', .05, 220),
+  combo: () => [0, 4, 7].forEach((s, i) => to(660 * Math.pow(2, s / 12), .09, 'square', .035, null, i * .06)),
+  fi: () => [0, 4, 7, 12].forEach((s, i) => to(523 * Math.pow(2, s / 12), .2, 'square', .05, null, i * .12))
+};
+
+/* ---------- placa ---------- */
+const PUNTS = (() => { const a = []; let s = 7; const r = () => (s = (s * 16807) % 2147483647) / 2147483647; while (a.length < 256) { const x = r() * 160 + 20, y = r() * 160 + 20; if ((x - 100) ** 2 + (y - 100) ** 2 < 76 ** 2) a.push([x, y, r()]); } return a; })();
+function pintaPlaca() {
+  const n = Math.min(2 ** P.L, 256); const perill = P.L >= MAXL - 1;
+  $('#placa').innerHTML = `<circle cx="100" cy="100" r="92" fill="#fffdf6" stroke="#1b1b1b" stroke-width="5"/><circle cx="100" cy="100" r="84" fill="none" stroke="#ddd" stroke-width="2"/>` +
+    PUNTS.slice(0, n).map(([x, y, k]) => `<ellipse cx="${x}" cy="${y}" rx="4.2" ry="2.6" transform="rotate(${k * 180} ${x} ${y})" fill="${perill ? '#d64242' : k < .5 ? '#2c9a58' : '#4fb56f'}" stroke="#1b1b1b" stroke-width=".6"/>`).join('');
+  $('#estat').innerHTML = `Colònia: <b>${pw(2, P.L)}</b> = ${n} bacteris<small>${perill ? '⚠️ La placa està a punt de vessar!' : `Vessa a ${pw(2, MAXL + 1)}. Cada encert la divideix entre 2.`}</small>`;
+  $('#estat').classList.toggle('perill', perill);
+  $('#cbar').style.transform = `scaleX(${P.L / (MAXL + 1)})`;
+}
+
+/* ---------- partida ---------- */
+const P = {}; window.__P = P;
+const TICK = () => M.nivell === 1 ? 7 : M.nivell === 2 ? 6 : 5;
+function comenca() {
+  Object.assign(P, { punts: 0, L: 2, combo: 0, maxCombo: 0, encerts: 0, errors: 0, t0: performance.now(), tick: performance.now(), fallades: [], bloc: false, acabada: false, r: null, ultim: '' });
+  M.pantalla = 'joc'; $('#pant').style.display = 'none'; pintaCap(); pintaPlaca(); seguent(); requestAnimationFrame(bucle);
+}
+function seguent() { P.r = nouRepte(); P.bloc = false; P.tq = performance.now(); $('#q').textContent = P.r.q; $('#e').textContent = P.r.e; $('#regla').textContent = M.nivell === 1 ? P.r.regla : '';
+  $('#resp').innerHTML = P.r.opcions.map((v, i) => `<button class="resp" data-i="${i}"><small>${i + 1}</small>${esc(v)}</button>`).join('');
+  document.querySelectorAll('.resp').forEach(b => b.onclick = () => respon(+b.dataset.i)); }
+function bucle(ara) {
+  if (M.pantalla !== 'joc') return;
+  const t = (ara - P.t0) / 1000; $('#tbar').style.transform = `scaleX(${Math.max(0, 1 - t / DURADA)})`;
+  if (t >= DURADA) return acaba('temps');
+  if ((ara - P.tick) / 1000 >= TICK()) { P.tick = ara; creix('El temps passa: la colònia es duplica!'); if (M.pantalla !== 'joc') return; }
+  requestAnimationFrame(bucle);
+}
+function creix(txt) {
+  P.L++; SO.creix(); const d = document.createElement('div'); d.className = 'x2'; d.textContent = '× 2'; const r = $('#placa').getBoundingClientRect();
+  d.style.left = (r.left + r.width / 2 - 30) + 'px'; d.style.top = (r.top + r.height / 2) + 'px'; $('#joc').appendChild(d); setTimeout(() => d.remove(), 1000);
+  pintaPlaca(); if (P.L > MAXL) acaba('vessa');
+}
+function respon(i) {
+  if (P.bloc || !P.r) return; P.bloc = true;
+  const r = P.r, ok = r.opcions[i] === r.bo; const bs = document.querySelectorAll('.resp'); bs.forEach(b => b.disabled = true);
+  if (ok) {
+    bs[i].classList.add('be'); P.encerts++; P.combo++; P.maxCombo = Math.max(P.maxCombo, P.combo);
+    const mult = P.combo >= 6 ? 3 : P.combo >= 3 ? 2 : 1; const rapid = Math.max(0, 1 - (performance.now() - P.tq) / 8000);
+    const guany = Math.round((10 + 10 * rapid) * mult); P.punts += guany; if (P.combo === 3 || P.combo === 6) SO.combo(); else SO.be();
+    const baixa = P.combo >= 3 ? 2 : 1; P.L = Math.max(0, P.L - baixa); P.tick = performance.now();
+    avis(`💧 Antibiòtic! +${guany}${mult > 1 ? ` · combo ×${mult}` : ''}<br><span class="mini">La colònia es divideix entre ${baixa === 2 ? '4' : '2'}</span>`, true, 800);
+    pintaPlaca(); pintaCap(); setTimeout(seguent, 650);
+  } else {
+    bs[i].classList.add('mal'); bs[r.opcions.indexOf(r.bo)].classList.add('be'); P.errors++; P.combo = 0; SO.mal();
+    P.fallades.push(`${r.e} = ${r.bo}`);
+    $('#joc').classList.remove('sacseja'); void $('#joc').offsetWidth; $('#joc').classList.add('sacseja');
+    avis(`Ui! ${esc(r.e)} = <b>${esc(r.bo)}</b><br><span class="mini">${esc(r.regla)}</span>`, false, 1800);
+    pintaCap(); setTimeout(() => { if (M.pantalla !== 'joc') return; creix(); if (M.pantalla === 'joc') { P.tick = performance.now(); seguent(); } }, 1900);
+  }
+}
+function avis(html, ok, ms) { const d = document.createElement('div'); d.className = 'avis' + (ok ? ' ok' : ''); d.innerHTML = html; $('#joc').appendChild(d); setTimeout(() => d.remove(), ms); }
+function pintaCap() { $('#punts').textContent = P.punts ?? 0; $('#combo').textContent = P.combo >= 3 ? `combo ×${P.combo >= 6 ? 3 : 2}` : ''; }
+function acaba(motiu) {
+  if (P.acabada) return; P.acabada = true; M.pantalla = 'fi'; $('#resp').innerHTML = '';
+  if (motiu === 'temps') P.punts += 50;
+  SO.fi(); const nouRec = P.punts > M.record; if (nouRec) M.record = P.punts;
+  try { localStorage.setItem('fr4c_bac_rec_' + M.nivell, M.record); } catch (e) {}
+  const temps = Math.round((performance.now() - P.t0) / 1000);
+  envia({ tipus: 'fr4c-bac-fi', punts: P.punts, encerts: P.encerts, errors: P.errors, maxCombo: P.maxCombo, nivell: M.nivell, temps, fallades: P.fallades.slice(0, 20) });
+  const pct = P.encerts + P.errors ? Math.round(100 * P.encerts / (P.encerts + P.errors)) : 0;
+  pantalla(`<h1>${motiu === 'temps' ? 'Temps! Brot controlat 🧪 (+50)' : 'La placa ha vessat! 🦠'}</h1>
+    <p>${nouRec ? '<span class="rec">🏆 Nou rècord!</span> ' : ''}${M.nom ? `<b>${esc(M.nom)}</b>, h` : 'H'}as fet <b>${P.punts}</b> punts. ${!nouRec && M.record ? `El teu rècord és de <b>${M.record}</b>.` : ''}</p>
+    <div class="resum"><div><b>${P.encerts}</b>encerts</div><div><b>${P.errors}</b>errors</div><div><b>${pct}%</b>d'encerts</div></div>
+    ${P.fallades.length ? `<p><b>Repassa les que has fallat:</b></p><ul class="fallades">${P.fallades.slice(0, 12).map(f => `<li>${esc(f)}</li>`).join('')}</ul>` : '<p>Cap error! 🌟</p>'}
+    <div class="fila"><button class="big" id="torna">Torna a jugar</button><button class="big sec" id="tanca2">Surt</button></div>`);
+  $('#torna').onclick = comenca; $('#tanca2').onclick = surt;
+}
+function pantalla(html) { const p = $('#pant'); p.innerHTML = `<div class="panell">${html}</div>`; p.style.display = 'flex'; }
+function inici() {
+  M.pantalla = 'inici';
+  const txtN = { 1: 'què és una potència, calcular-la, potències de 10', 2: 'producte, quocient i potència d\'una potència', 3: 'regles combinades, base negativa i arrels' };
+  P.L = 2; pintaPlaca();
+  pantalla(`<h1>🦠 Brot de bacteris</h1>
+    <p>${M.nom ? `Hola, <b>${esc(M.nom)}</b>! ` : ''}Al laboratori d'en FR-4C hi ha un cultiu de bacteris que <b>es duplica</b> cada pocs segons: 2² → 2³ → 2⁴… Si arriba a ${pw(2, MAXL + 1)}, la placa vessa!</p>
+    <p>Cada <b>encert</b> hi tira una gota d'antibiòtic i la colònia es <b>divideix entre 2</b> (amb 3 encerts seguits, entre 4). Cada <b>error</b> la fa duplicar de cop. Si aguantes 2 minuts, +50 punts.</p>
+    <p class="mini">Nivell ${M.nivell}: ${txtN[M.nivell]}.${M.record ? ` El teu rècord: <b>${M.record}</b> punts.` : ''} Pots respondre amb les tecles 1, 2 i 3.</p>
+    ${!M.dinsApp ? `<div class="fila"><b>Nivell:</b><span class="seg" id="nv">${[1, 2, 3].map(n => `<button data-n="${n}" class="${n === M.nivell ? 'on' : ''}">${n}</button>`).join('')}</span></div>` : ''}
+    <div class="fila"><button class="big" id="go">Comença! →</button>${M.dinsApp ? '<button class="big sec" id="tanca2">Surt</button>' : ''}</div>`);
+  $('#go').onclick = comenca; const t = $('#tanca2'); if (t) t.onclick = surt;
+  document.querySelectorAll('#nv button').forEach(b => b.onclick = () => { M.nivell = +b.dataset.n; try { M.record = +(localStorage.getItem('fr4c_bac_rec_' + M.nivell) || 0); } catch (e) {} inici(); });
+}
+const envia = m => { try { if (window.parent !== window) window.parent.postMessage(m, '*'); } catch (e) {} };
+function surt() { M.pantalla = 'fora'; envia({ tipus: 'fr4c-bac-tanca' }); if (window.parent === window) inici(); }
+window.addEventListener('message', ev => {
+  const d = ev.data || {}; if (d.tipus !== 'fr4c-bac-ini') return;
+  M.dinsApp = true; M.nom = d.nom || ''; M.nivell = Math.max(1, Math.min(3, d.nivell || 1)); M.record = Math.max(d.record || 0, 0);
+  if (d.so === false) M.so = false; $('#so').textContent = M.so ? '🔊' : '🔇';
+  if (M.pantalla === 'inici') inici();
+});
+document.addEventListener('keydown', e => { if (M.pantalla === 'joc' && ['1', '2', '3'].includes(e.key)) respon(+e.key - 1); else if (e.key === 'Enter' && M.pantalla !== 'joc') $('#go, #torna')?.click(); });
+$('#so').onclick = () => { M.so = !M.so; $('#so').textContent = M.so ? '🔊' : '🔇'; try { localStorage.setItem('fr4c_bac_so', M.so ? '1' : '0'); } catch (e) {} };
+$('#surt').onclick = () => { if (M.pantalla === 'joc') { P.acabada = true; $('#resp').innerHTML = ''; } surt(); };
+$('#so').textContent = M.so ? '🔊' : '🔇';
+pintaCap(); inici(); envia({ tipus: 'fr4c-bac-llest' });
+window.__nouRepte = nouRepte;
+</script>
+</body>
+</html>
