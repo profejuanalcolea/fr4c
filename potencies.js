@@ -916,4 +916,93 @@ TEMES.w8 = {
   }
 };
 
+/* =====================================================================
+   PROVA DE COMPETÈNCIES · POTÈNCIES (inspirada en les CB 4t ESO)
+   3 activitats, 18 preguntes, 10 punts. Mateixa mecànica que les de fraccions i enters.
+   Activitat 1: notació científica (CB 2013-14, 2015-16, 2016-17). Activitat 2: àrees, volums i arrels (CB d'àrees,
+   volums i Pitàgores). Activitat 3: creixement en cadena (context propi, avalua les regles dels objectius 5-7).
+   ===================================================================== */
+const PC_P = { id: 'pcp', unitat: 'p', provaKey: 'provaCP', titol: 'Prova de competències · Potències' };
+const cbG = n => n.toLocaleString('ca-ES').replace(/ /g, '.');
+const cbMural = () => `<table class="cb-tbl"><thead><tr><th>Al mural de la classe</th><th>Nombre</th></tr></thead><tbody>
+  <tr><td>Habitants de la Terra</td><td><b>8.000.000.000</b></td></tr>
+  <tr><td>Distància de la Terra al Sol</td><td><b>150.000.000</b> km</td></tr>
+  <tr><td>Ous produïts a Catalunya en un any</td><td><b>1.500.000.000</b></td></tr>
+  <tr><td>Pilotes venudes en un dia</td><td><b>1.000</b> a <b>18,90 €</b></td></tr></tbody></table>`;
+function cbTaula10() { return `<table class="cb-tbl"><tbody><tr>${[3, 6, 7, 8, 9].map(e => `<td>10${sp(e)} = <b>${cbG(10 ** e)}</b></td>`).join('')}</tr></tbody></table>`; }
+const cbComa = () => `<div class="cb-chips" style="margin-top:6px"><span>💡 Amb decimals: <b>1,5 · 10³</b> = 1,5 · 1.000 = <b>1.500</b> (la coma es mou 3 llocs a la dreta)</span></div>`;
+const cbPati = () => `<table class="cb-tbl"><thead><tr><th>Projecte del pati</th><th>Dada</th></tr></thead><tbody>
+  <tr><td>Hort quadrat gran</td><td>àrea <b>144 m²</b></td></tr>
+  <tr><td>Jardinera en forma de cub</td><td>aresta <b>5 dm</b> (1 dm³ = 1 litre)</td></tr>
+  <tr><td>Caixa cúbica de cubets de fusta</td><td><b>64 cubets</b> d'1 cm d'aresta</td></tr>
+  <tr><td>Pantalla del marcador</td><td>diagonal: <b>d² = 2.500</b> (d en cm)</td></tr>
+  <tr><td>Hort quadrat petit</td><td>àrea <b>50 m²</b></td></tr></tbody></table>`;
+const cbQuads = () => `<table class="cb-tbl"><tbody><tr>${[4, 5, 6, 7, 8, 9, 10, 11, 12].map(k => `<td>${k}² = <b>${k * k}</b></td>`).join('')}</tr></tbody></table>`;
+const cbCubs = () => `<table class="cb-tbl"><tbody><tr>${[2, 3, 4, 5, 6].map(k => `<td>${k}³ = <b>${k ** 3}</b></td>`).join('')}</tr></tbody></table>`;
+const cbBact = (fins = 4) => `<table class="cb-tbl"><thead><tr><th>Hora</th>${Array.from({ length: fins + 1 }, (_, h) => `<th>${h}</th>`).join('')}<th>…</th></tr></thead><tbody><tr><td>Bacteris</td>${Array.from({ length: fins + 1 }, (_, h) => `<td><b>${2 ** h}</b></td>`).join('')}<td>…</td></tr></tbody></table>`;
+const CB_ACTS_P = [
+  { t: 'Nombres gegants', max: 3.5, ctx: L => `<p>L'Aina prepara un mural de <b>nombres gegants</b> per a la classe. Per no escriure tants zeros, els vol escriure amb <b>potències de 10</b>.</p>${cbMural()}<div class="cb-chips"><span>10⁹ = 1.000.000.000 (9 zeros)</span><span>3 · 10⁴ = 30.000</span></div>${cbComa()}${L === 'basic' ? cbTaula10() : ''}` },
+  { t: 'Quadrats i cubs al pati', max: 3.5, ctx: L => `<p>L'institut renova el pati. Els alumnes de 4t fan els càlculs del projecte:</p>${cbPati()}<div class="cb-chips"><span>Àrea d'un quadrat = costat²</span><span>Volum d'un cub = aresta³</span><span>Si costat² = A, el costat és √A</span></div>${L === 'basic' ? cbQuads() + cbCubs() : ''}` },
+  { t: 'Creixement en cadena', max: 3, ctx: L => `<p>Al laboratori de biologia, un cultiu comença amb <b>1 bacteri</b>. Cada hora, cada bacteri es divideix en <b>2</b>.</p>${cbBact(L === 'basic' ? 6 : 3)}<p>Així, a l'hora 3 hi ha 2 · 2 · 2 = <b>2³</b> = 8 bacteris.</p>` }];
+const CB_ITEMS_P = [
+  { n: 1, act: 0, type: 'mc', pts: P_A1, q: 'Com s\'escriu el nombre d\'habitants de la Terra amb una potència de 10?', opts: { a: '8 · 10⁹', b: '8 · 10⁸', c: '8⁹', d: '80 · 10⁹' }, ans: 'a',
+    hb: ['Compta els zeros que hi ha darrere del 8 a 8.000.000.000.', 'Hi ha 3 grups de tres zeros: 3 · 3 = 9 zeros. Per tant és 8 · 10 elevat a…'], hi: 'Compta els zeros que hi ha darrere del 8.' },
+  { n: 2, act: 0, type: 'mc', pts: P_A1, q: 'Quina expressió correspon a la distància de la Terra al Sol (150.000.000 km)?', opts: { a: '15 · 10⁶ km', b: '15 · 10⁷ km', c: '150 · 10⁷ km', d: '15⁷ km' }, ans: 'b',
+    hb: ['Totes les opcions comencen per 15 o 150. Si comences pel 15, quants zeros queden darrere?', '150.000.000 = 15 seguit de 7 zeros. Per tant és 15 · 10 elevat a 7.'], hi: 'Escriu 15 i compta quants zeros hi ha darrere.' },
+  { n: 3, act: 0, type: 'mc', pts: P_A1, amp: true, q: 'L\'any 2011 es van produir a Catalunya uns 1.500.000.000 d\'ous. Quina expressió hi correspon? <span class="cb-amp">ampliació · decimals</span>', opts: { a: '1,5 · 10⁹', b: '1,5 · 10¹⁰', c: '10¹⁵', d: '15 · 10⁹' }, ans: 'a',
+    hb: ['Mira el truc del mural: 1,5 · 10³ = 1.500. La coma es mou tants llocs com diu l\'exponent.', 'Prova l\'opció a: 1,5 · 10⁹ = 1,5 · 1.000.000.000. La coma es mou 9 llocs: 1.500.000.000.'], hi: 'Comprova cada opció movent la coma tants llocs com diu l\'exponent.' },
+  { n: 4, act: 0, type: 'mc', pts: P_A1, q: 'Quin d\'aquests nombres és el més gran?', opts: { a: '9 · 10⁸', b: '2 · 10⁹', c: '99 · 10⁶', d: '500.000.000' }, ans: 'b',
+    hb: ['Escriu cada nombre amb totes les xifres. Per exemple, 9 · 10⁸ = 900.000.000.', '9 · 10⁸ = 900.000.000 · 2 · 10⁹ = 2.000.000.000 · 99 · 10⁶ = 99.000.000. Quin té més xifres?'], hi: 'Escriu-los tots amb xifres i compara\'ls.' },
+  { n: 5, act: 0, type: 'mc', pts: P_A1, amp: true, q: 'L\'empresa ven les 1.000 pilotes a 18,90 € cada una. Quina expressió dona els ingressos totals? <span class="cb-amp">ampliació · decimals</span>', opts: { a: '1,89 · 10⁴ €', b: '1,89 · 10³ €', c: '18,9 · 10⁴ €', d: '189 · 10³ €' }, ans: 'a',
+    hb: ['Primer calcula els ingressos: 1.000 · 18,90 €. Multiplicar per 1.000 mou la coma 3 llocs.', '1.000 · 18,90 = 18.900 €. Ara mira quina opció dona 18.900: 1,89 · 10⁴ = 1,89 · 10.000 = …'], hi: 'Calcula 1.000 · 18,90 i després comprova cada opció.' },
+  { n: 6, act: 0, type: 'open', pts: P_OPEN, q: 'En Pol diu: «10⁶ és el doble de 10³, perquè 6 és el doble de 3.» Té raó?',
+    fields: [{ pre: '10³ =', ans: 1000, suf: '' }, { pre: '10⁶ =', ans: 1000000, suf: '' }, { pre: 'Quantes vegades és més gran 10⁶ que 10³?', ans: 1000, suf: 'vegades' }],
+    choice: { lab: 'Té raó en Pol?', opts: ['Sí, 10⁶ és el doble de 10³.', 'No, 10⁶ és molt més que el doble de 10³.', 'No, 10⁶ és més petit que 10³.'], ans: 1 },
+    grade: (v, c) => { const r = v[2] === 1000; if (c === 1) return r ? 2 : 1; return r ? 1 : 0; },
+    hb: ['Escriu 10³ i 10⁶ amb totes les xifres.', '10³ = 1.000 i 10⁶ = 1.000.000. Quantes vegades cap 1.000 dins d\'1.000.000? Fes 1.000.000 : 1.000.'], hi: 'Escriu els dos nombres amb xifres i divideix el gran entre el petit.' },
+  { n: 7, act: 1, type: 'mc', pts: P_A1, q: 'L\'hort quadrat gran fa 144 m². Quant fa cada costat?', opts: { a: '12 m', b: '72 m', c: '36 m', d: '14,4 m' }, ans: 'a',
+    hb: ['L\'àrea d\'un quadrat és costat · costat. Busca un nombre que, multiplicat per ell mateix, faci 144.', 'Prova-ho: 10 · 10 = 100, 11 · 11 = 121, 12 · 12 = …'], hi: 'Calcula √144.', aidB: () => cbQuads() },
+  { n: 8, act: 1, type: 'mc', pts: P_A1, q: 'Quants litres de terra caben a la jardinera cúbica de 5 dm d\'aresta?', opts: { a: '15 litres', b: '25 litres', c: '125 litres', d: '625 litres' }, ans: 'c',
+    hb: ['El volum d\'un cub és aresta · aresta · aresta = aresta³.', '5³ = 5 · 5 · 5. I recorda que 1 dm³ és 1 litre.'], hi: 'Calcula 5³.', aidB: () => cbCubs() },
+  { n: 9, act: 1, type: 'mc', pts: P_A1, q: 'La caixa cúbica està plena amb 64 cubets d\'1 cm d\'aresta. Quant fa l\'aresta de la caixa?', opts: { a: '4 cm', b: '8 cm', c: '16 cm', d: '32 cm' }, ans: 'a',
+    hb: ['La caixa és un cub: aresta · aresta · aresta = 64.', 'Busca un nombre que, multiplicat 3 vegades per ell mateix, faci 64. Prova 4 · 4 · 4.'], hi: 'Busca el nombre que al cub fa 64.', aidB: () => cbCubs() },
+  { n: 10, act: 1, type: 'mc', pts: P_A1, q: 'La diagonal d de la pantalla del marcador compleix d² = 2.500. Quant fa la diagonal?', opts: { a: '50 cm', b: '1.250 cm', c: '250 cm', d: '70 cm' }, ans: 'a',
+    hb: ['Si d² = 2.500, d és el nombre que, multiplicat per ell mateix, fa 2.500.', 'Pensa en 5 · 5 = 25. I 50 · 50?'], hi: 'Calcula √2.500.' },
+  { n: 11, act: 1, type: 'mc', pts: P_A1, q: 'L\'hort quadrat petit fa 50 m². Què podem dir del seu costat?', opts: { a: 'Fa entre 6 i 7 m', b: 'Fa entre 7 i 8 m', c: 'Fa 25 m', d: 'Fa entre 24 i 26 m' }, ans: 'b',
+    hb: ['50 no és un quadrat perfecte. Busca els quadrats perfectes que té a sota i a sobre.', '7² = 49 i 8² = 64. El 50 està entre 49 i 64.'], hi: 'Busca entre quins dos quadrats perfectes està el 50.', aidB: () => cbQuads() },
+  { n: 12, act: 1, type: 'open', pts: P_OPEN, q: 'La Laia diu: «Si fem un hort quadrat amb el doble de costat (24 m en lloc de 12 m), tindrem el doble d\'àrea.» Té raó?',
+    fields: [{ pre: 'Àrea de l\'hort de 12 m de costat:', ans: 144, suf: 'm²' }, { pre: 'Àrea de l\'hort de 24 m de costat:', ans: 576, suf: 'm²' }, { pre: 'Quantes vegades és més gran l\'àrea nova?', ans: 4, suf: 'vegades' }],
+    choice: { lab: 'Té raó la Laia?', opts: ['Sí, l\'àrea es duplica.', 'No, l\'àrea es fa més del doble de gran.', 'No, l\'àrea queda igual.'], ans: 1 },
+    grade: (v, c) => { const r = v[1] === 576 && v[2] === 4; if (c === 1) return r ? 2 : 1; return r ? 1 : 0; },
+    hb: ['Calcula l\'àrea de cada hort: costat · costat.', '12 · 12 = 144 i 24 · 24 = 576. Quantes vegades cap 144 dins de 576?'], hi: 'Calcula les dues àrees i divideix la gran entre la petita.' },
+  { n: 13, act: 2, type: 'mc', pts: P_A3, q: 'Quants bacteris hi haurà a l\'hora 5?', opts: { a: '10', b: '25', c: '32', d: '7' }, ans: 'c',
+    hb: ['Cada hora el nombre de bacteris es multiplica per 2.', 'Hora 3: 8 · hora 4: 16 · hora 5: …'], hi: 'Calcula 2⁵.' },
+  { n: 14, act: 2, type: 'mc', pts: P_A3, q: 'Quina expressió dona el nombre de bacteris a l\'hora n?', opts: { a: '2 · n', b: 'n²', c: '2ⁿ', d: '2 + n' }, ans: 'c',
+    hb: ['Prova cada expressió amb n = 3: a l\'hora 3 hi ha 8 bacteris.', '2 · 3 = 6 · 3² = 9 · 2³ = 8 · 2 + 3 = 5. Quina dona 8?'], hi: 'Comprova les expressions amb una hora de la taula.' },
+  { n: 15, act: 2, type: 'mc', pts: P_A3, q: 'A l\'hora 4 hi ha 2⁴ bacteris i a l\'hora 9 n\'hi ha 2⁹. Quantes vegades més bacteris hi ha a l\'hora 9?', opts: { a: '2⁵ vegades (32)', b: '5 vegades', c: '2¹³ vegades', d: '1⁵ vegades' }, ans: 'a',
+    hb: ['Per saber quantes vegades més, es divideix: 2⁹ : 2⁴.', 'Quocient de potències de la mateixa base: es resten els exponents, 9 − 4 = 5.'], hi: 'Calcula 2⁹ : 2⁴ amb la regla del quocient.' },
+  { n: 16, act: 2, type: 'mc', pts: P_A3, q: 'Un altre cultiu comença amb 2³ bacteris i es duplica cada hora durant 4 hores. Quants bacteris hi haurà al final?', opts: { a: '2⁷', b: '2¹²', c: '4⁷', d: '2³ + 2⁴' }, ans: 'a',
+    hb: ['Duplicar-se 4 vegades és multiplicar per 2 · 2 · 2 · 2 = 2⁴.', 'Al final hi ha 2³ · 2⁴. Producte de potències de la mateixa base: se sumen els exponents.'], hi: 'Calcula 2³ · 2⁴ amb la regla del producte.' },
+  { n: 17, act: 2, type: 'mc', pts: P_A3, q: 'En Marc envia un missatge a 3 amics. Cadascun el reenvia a 3 amics nous, i així successivament. Quantes persones el reben a la ronda 4?', opts: { a: '12', b: '81', c: '64', d: '7' }, ans: 'b',
+    hb: ['Ronda 1: 3 persones. Ronda 2: cadascuna l\'envia a 3, és a dir, 3 · 3.', 'Ronda 4: 3 · 3 · 3 · 3 = 3⁴.'], hi: 'Escriu-ho com una potència de 3.' },
+  { n: 18, act: 2, type: 'open', pts: P_OPEN, q: 'En Pau diu: «A l\'hora 10 hi haurà el doble de bacteris que a l\'hora 5.» Té raó?',
+    fields: [{ pre: 'Bacteris a l\'hora 5:', ans: 32, suf: '' }, { pre: 'Bacteris a l\'hora 10:', ans: 1024, suf: '' }, { pre: 'Quantes vegades més n\'hi ha a l\'hora 10?', ans: 32, suf: 'vegades' }],
+    choice: { lab: 'Té raó en Pau?', opts: ['Sí, n\'hi ha el doble.', 'No, n\'hi ha moltes més que el doble.', 'No, n\'hi ha menys.'], ans: 1 },
+    grade: (v, c) => { const r = v[2] === 32; if (c === 1) return r ? 2 : 1; return r ? 1 : 0; },
+    hb: ['Calcula 2⁵ i 2¹⁰ multiplicant per 2 cada hora.', '2⁵ = 32 i 2¹⁰ = 1.024. També pots fer 2¹⁰ : 2⁵ = 2⁵.'], hi: 'Calcula els bacteris de les dues hores i divideix.' }];
+const CB_INFO_P = `<h3>ⓘ Prova de competències · Potències</h3>
+  <p><b>Què és.</b> Una prova en format de competències bàsiques: 3 activitats amb context (nombres gegants, quadrats i cubs al pati, creixement en cadena) i 18 preguntes (15 de resposta tancada i 3 d'obertes). Compta com a <b>examen a part</b>: no toca els objectius ni l'AS de la unitat.</p>
+  <p><b>D'on surt.</b> L'activitat 1 segueix els ítems de notació científica de les CB (ous el 2013-14, habitants el 2015-16, pilotes el 2016-17). L'activitat 2 segueix les àrees, els volums i les arrels de Pitàgores (sense anomenar-lo: es dona d² directament). L'activitat 3 és pròpia: avalua les regles del producte i del quocient, que no surten mai a les CB.</p>
+  <p><b>Obertura.</b> Està tancada fins que l'obres (llibreta de Potències o Configuració). Cada alumne la fa <b>una vegada</b>; des de la seva casella li pots deixar fer un altre intent. Es pot deixar a mitges amb «Plego per avui».</p>
+  <p><b>Nivell.</b> Surt del nivell general de l'alumne: N1 → bàsic, N2 → intermedi, N3 → repte. Les preguntes són les mateixes per a tots els nivells; canvien els intents, les pistes i els suports.</p>
+  <table class="simple"><thead><tr><th>Nivell</th><th>Com respon</th><th>Pistes i suports</th><th>Correcció</th></tr></thead><tbody>
+    <tr><td><b>Bàsic</b></td><td>3 intents per pregunta. 1r intent: 100 % · 2n: 50 % · 3r: 25 %</td><td>2 pistes per pregunta, que no resten. Taula de potències de 10, taules de quadrats i cubs, i la taula de bacteris més llarga. Pot escoltar la pregunta (🔊)</td><td>Sap si l'ha encertada (necessari per als intents)</td></tr>
+    <tr><td><b>Intermedi</b></td><td>1 intent</td><td>1 pista per pregunta: si l'obre, la pregunta val el 75 %</td><td>No sap res fins al final</td></tr>
+    <tr><td><b>Repte</b></td><td>1 intent</td><td>Cap</td><td>No sap res fins al final</td></tr></tbody></table>
+  <p><b>Puntuació (sobre 10).</b> Activitat 1: 3,5 punts · Activitat 2: 3,5 punts · Activitat 3: 3 punts. Les tancades valen 0,5 punts (0,4 a l'activitat 3). Les obertes valen 1 punt amb puntuació parcial: conclusió i càlcul clau bons, 1 punt; només una de les dues coses, mig punt.</p>
+  <p><b>Calculadora.</b> Disponible, com a les CB, però sense tecla de potència.</p>
+  <p><b>Compte:</b> les preguntes 3 i 5 són d'<b>ampliació</b>: fan servir decimals (1,5 · 10⁹), que l'objectiu 3 no treballa. El context de l'activitat 1 inclou un recordatori de com es mou la coma. La 8 i la 9 fan servir el volum del cub, i la 10 i la 11 l'arrel en context geomètric.</p>`;
+CB_PROVES.p = { PC: PC_P, acts: CB_ACTS_P, items: CB_ITEMS_P, info: CB_INFO_P };
+document.head.insertAdjacentHTML('beforeend', `<style>.cb-amp{display:inline-block;margin-left:6px;padding:1px 8px;border-radius:999px;background:#fff3e6;border:1px solid var(--taronja);color:#b44f00;font-size:.75rem;font-weight:800;vertical-align:middle}</style>`);
+
 UNITATS.p.carregada = true;
