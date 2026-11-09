@@ -288,7 +288,7 @@ small.anul-txt{display:block;font-size:.68rem}
 .avis-fora{background:var(--groc-suau);border:2px solid var(--groc);color:#8a6400;font-weight:800;font-size:.85rem;padding:3px 10px;border-radius:999px}
 .modal-fora{display:flex;gap:18px;align-items:center}
 .modal-fora h3{margin-bottom:6px}.modal-fora p{margin-top:6px}
-.llib-barra{margin-bottom:10px}.avis-tancada{margin-top:18px;display:inline-block;padding:10px 18px;border:3px solid var(--taronja);border-radius:12px;font-weight:900;font-size:1.3rem;color:var(--taronja)}.xip.obj-tancat{border-color:var(--taronja);color:var(--taronja)}.th-tancat{background:var(--taronja)!important;color:#000!important}
+.llib-barra{margin-bottom:10px}.instr-tancada{margin-top:16px;max-width:520px;border:3px solid var(--taronja);border-radius:14px;overflow:hidden;background:#fff}.instr-tancada .cap{background:var(--taronja);color:#fff;font-weight:900;font-size:1.15rem;padding:8px 16px}.instr-tancada .txt{padding:12px 16px;font-size:1.15rem;line-height:1.45;max-height:42vh;overflow:auto;overflow-wrap:anywhere}.instr-tancada a{color:var(--taronja);font-weight:800}.avis-tancada{margin-top:18px;display:inline-block;padding:10px 18px;border:3px solid var(--taronja);border-radius:12px;font-weight:900;font-size:1.3rem;color:var(--taronja)}.xip.obj-tancat{border-color:var(--taronja);color:var(--taronja)}.th-tancat{background:var(--taronja)!important;color:#000!important}
 .c-prova{background:#efeafe}
 .fitxes{display:flex;flex-direction:column;gap:10px;width:100%;max-width:580px;margin:0 auto}
 .fx-obre{align-self:center;display:inline-flex;align-items:center;gap:8px;border:3px solid var(--tinta);background:#fff;border-radius:14px;padding:12px 20px;font-size:1.2rem;font-weight:800;cursor:pointer}.fx-obre:hover{background:#fff3ea}
@@ -966,7 +966,8 @@ function posaSostre(u, idx) { // idx = índex del primer objectiu tancat; null =
   const upd = {}; u.obj.forEach((o, i) => { upd[o.id] = idx !== null && i >= idx && !o.properament ? true : null; });
   return DB.update(`${ARREL}/config/tancats`, upd);
 }
-const htmlMsgTancada = () => esc(missatgeTancada()).replace(/\n/g, '<br>');
+// text del professor: es mostra escapat; *negreta*, salts de línia i enllaços (http…) actius
+const htmlMsgTancada = () => esc(missatgeTancada()).replace(/\*([^*\n]+)\*/g, '<b>$1</b>').replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" rel="noopener">$1</a>').replace(/\n/g, '<br>');
 const assolitsDe = (id, u) => u.obj.filter(o => estatCasella(id, o.id) === 'ok').length;
 const propostaAS = (id, u) => assolitsDe(id, u) >= minimDe(u) ? 'AS' : 'NA';
 const qualifDe = (id, u) => asAuto(u) ? propostaAS(id, u) : (S.qualif?.[u.id]?.[id] || '');
@@ -986,7 +987,7 @@ const enllacaQualif = c => $$('.q-man', c).forEach(td => td.onclick = () => canv
 const unitatCompleta = u => u.obj.every(o => !o.properament);
 /* ---------- Fitxers a part: cada unitat i cada joc es carrega quan cal ----------
    Són scripts clàssics (funcionen a GitHub Pages i també obrint l'index des de l'ordinador). */
-const V_FITXERS = '4.3';
+const V_FITXERS = '4.4';
 const FITXERS_UNITAT = { f: 'fraccions.js', e: 'enters.js', p: 'potencies.js' };
 const FITXERS_JOC = { tcx: 'joc-caixa.js', tesc: 'joc-escape.js', tpz: 'joc-pizzeria.js', dimp: 'joc-impropies.js' };
 const CARREGUES = {};
@@ -2537,11 +2538,11 @@ function pantallaPortada() {
   const llista = Object.entries(S.alumnes).sort(ordenaNoms);
   const sel = $('#sel-alumne')?.value || '';
   vista.innerHTML = `<section class="pantalla centrat"><div class="portada">
-    <div style="display:flex;align-items:center;justify-content:center;gap:14px"><div class="rob-portada" id="rob-portada" title="Toca'm!">${robot(190, 'normal', true)}</div><div class="bafarada">${appTancada() ? htmlMsgTancada() : 'Hola! Sóc <b>FR-4C</b>. Avui superarem objectius de matemàtiques.'}</div></div>
+    <div style="display:flex;align-items:center;justify-content:center;gap:14px"><div class="rob-portada" id="rob-portada" title="Toca'm!">${robot(190, 'normal', true)}</div><div class="bafarada">${appTancada() ? 'Llegeix les <b>instruccions</b> d\'avui 👉' : 'Hola! Sóc <b>FR-4C</b>. Avui superarem objectius de matemàtiques.'}</div></div>
     <div style="text-align:left">
       <h1 class="titol-portada">MATEMÀTIQUES <span style="white-space:nowrap">4t ESO</span></h1>
       <p class="sub portada-sub"><b>Grup flexible</b><br>Ins Júlia Minguell</p>
-      ${appTancada() ? `<p class="avis-tancada">🔒 L'app està tancada</p>` : llista.length ? `<form class="formulari" id="f-entra" autocomplete="off">
+      ${appTancada() ? `<div class="instr-tancada"><div class="cap">🔒 Avui l'app està tancada</div><div class="txt">${htmlMsgTancada()}</div></div>` : llista.length ? `<form class="formulari" id="f-entra" autocomplete="off">
         <label for="sel-alumne">Qui ets?</label>
         <select class="camp" id="sel-alumne"><option value="">Tria el teu nom…</option>${llista.map(([id, a]) => `<option value="${id}" ${id === sel ? 'selected' : ''}>${esc(a.nom)}</option>`).join('')}</select>
         <label for="codi-alumne">El teu codi</label>
@@ -2578,7 +2579,7 @@ function mostraCredits() {
     <p style="font-size:1.1rem"><b>Ins Júlia Minguell</b> · Matemàtiques 4t ESO · Grup Flexible</p>
     <p style="margin-top:14px">Ideat per <b>J. Alcolea</b></p>
     <p style="color:var(--gris)">Desenvolupat amb Claude</p>
-    <p style="color:var(--gris);margin-top:10px">Versió 4.3</p>
+    <p style="color:var(--gris);margin-top:10px">Versió 4.4</p>
     <div class="accions"><button class="boto" data-tanca-modal>D'acord</button></div>`);
 }
 function entraAlumne(id) {
@@ -3604,10 +3605,10 @@ function pintaConfig() {
   const c = $('#conf'); if (!c) return;
   const { nivellDefecte } = cfg();
   c.innerHTML = `<div class="seccio">
-    <div class="targeta-conf" style="border-color:var(--taronja)"><h3>App oberta o tancada</h3><p class="ajuda">Amb l'app <b>tancada</b> cap alumne hi pot entrar (ni des de casa) i els que hi són en surten. A la portada veuen aquest missatge. També la pots obrir i tancar des de la llibreta.</p>
+    <div class="targeta-conf" style="border-color:var(--taronja)"><h3>App oberta o tancada</h3><p class="ajuda">Amb l'app <b>tancada</b> cap alumne hi pot entrar (ni des de casa) i els que hi són en surten. A la portada veuen aquestes <b>instruccions</b> (fins a 1000 caràcters). Pots fer salts de línia, posar paraules en *negreta* entre asteriscs i enganxar enllaços (per exemple, al Classroom). També la pots obrir i tancar des de la llibreta.</p>
       <div class="segment" id="c-app"><button data-v="1" class="${appTancada() ? '' : 'activa'}">Oberta</button><button data-v="0" class="${appTancada() ? 'activa' : ''}">🔒 Tancada</button></div>
-      <div class="fila-form" style="margin-top:10px;align-items:flex-start"><textarea class="camp" id="c-msg" rows="2" maxlength="300" style="flex:1;min-width:260px" placeholder="${esc(MSG_TANCADA)}">${esc(S.config?.missatgeTancada || '')}</textarea><button class="boto" id="c-msg-desa">Desa el missatge</button></div>
-      <p class="ajuda" id="c-msg-ok" style="margin:4px 0 0">Si el deixes buit, surt: «${esc(MSG_TANCADA)}»</p></div>
+      <div class="fila-form" style="margin-top:10px;align-items:flex-start"><textarea class="camp" id="c-msg" rows="6" maxlength="1000" style="flex:1;min-width:260px" placeholder="${esc(MSG_TANCADA)}">${esc(S.config?.missatgeTancada || '')}</textarea><button class="boto" id="c-msg-desa">Desa les instruccions</button></div>
+      <p class="ajuda" id="c-msg-ok" style="margin:4px 0 0">Si ho deixes buit, surt: «${esc(MSG_TANCADA)}»</p></div>
     <div class="targeta-conf"><h3>Fins on poden avançar</h3><p class="ajuda">Els objectius de després del sostre queden tancats amb un cadenat («L'obrirem a classe»), encara que l'alumne hagi superat l'anterior. Poden repetir el que ja està obert. Tria el <b>darrer objectiu obert</b> de cada unitat.</p>
       ${LLISTA_UNITATS.map(k => { const u = UNITATS[k]; const s = sostreDe(u); const OB = u.obj.filter(o => !o.properament); return `<div class="fila-form" style="margin:6px 0;flex-wrap:wrap;gap:6px"><b style="width:110px">${u.nom}</b>${OB.map((o, i) => `<button class="xip ${s !== null && i >= s ? 'obj-tancat' : 'on'}" data-sos="${k}" data-i="${i + 1}" title="Obert fins a l'objectiu ${o.num}">${s !== null && i >= s ? '🔒 ' : ''}${o.num}</button>`).join('')}<button class="boto-petit" data-sos="${k}" data-i="">Tot obert</button><button class="boto-petit" data-sos="${k}" data-i="0">Tot tancat</button></div>`; }).join('')}</div>
     <div class="targeta-conf"><h3>Nivell per defecte dels alumnes nous</h3><p class="ajuda">Després pots pujar o baixar cada alumne des de la llibreta.</p>
@@ -3628,7 +3629,7 @@ function pintaConfig() {
   $$('#c-niv button', c).forEach(b => b.onclick = () => DB.update(`${ARREL}/config`, { nivellDefecte: Number(b.dataset.n) }));
   $$('#c-sons button', c).forEach(b => b.onclick = () => DB.update(`${ARREL}/config`, { sons: b.dataset.s === '1' }));
   $$('#c-app button', c).forEach(b => b.onclick = () => DB.update(`${ARREL}/config`, { tancada: b.dataset.v === '0' }));
-  $('#c-msg-desa', c).onclick = async () => { const t = $('#c-msg', c).value.trim().slice(0, 300); await DB.update(`${ARREL}/config`, { missatgeTancada: t || null }); const ok = $('#c-msg-ok'); if (ok) ok.textContent = '✓ Missatge desat'; };
+  $('#c-msg-desa', c).onclick = async () => { const t = $('#c-msg', c).value.trim().slice(0, 1000); await DB.update(`${ARREL}/config`, { missatgeTancada: t || null }); const ok = $('#c-msg-ok'); if (ok) ok.textContent = '✓ Instruccions desades'; };
   $$('[data-sos]', c).forEach(b => b.onclick = () => posaSostre(UNITATS[b.dataset.sos], b.dataset.i === '' ? null : Number(b.dataset.i)));
   $$('[data-as]', c).forEach(b => b.onclick = () => { const u = UNITATS[b.dataset.as]; DB.update(`${ARREL}/config`, { [u.minimKey]: Math.max(1, Math.min(u.obj.length, minimDe(u) + Number(b.dataset.d))) }); });
   $$('[data-asa]', c).forEach(b => b.onclick = () => DB.update(`${ARREL}/config/asAuto`, { [b.dataset.asa]: b.dataset.v === '1' }));
