@@ -941,9 +941,9 @@ const OBJ_POTENCIES = [
   { id: 'w2', num: '2', titol: 'Calcular potències', curt: 'Calcular' },
   { id: 'w3', num: '3', titol: 'Potències de 10', curt: 'De 10' },
   { id: 'w4', num: '4', titol: 'Potències de base negativa', curt: 'Base negativa' },
-  { id: 'w5', properament: true, num: '5', titol: 'Producte de potències de la mateixa base', curt: 'Producte' },
-  { id: 'w6', properament: true, num: '6', titol: 'Quocient de potències de la mateixa base', curt: 'Quocient' },
-  { id: 'w7', properament: true, num: '7', titol: 'Potència d\'una potència', curt: 'Pot. d\'una pot.' },
+  { id: 'w5', num: '5', titol: 'Producte de potències de la mateixa base', curt: 'Producte' },
+  { id: 'w6', num: '6', titol: 'Quocient de potències de la mateixa base', curt: 'Quocient' },
+  { id: 'w7', num: '7', titol: 'Potència d\'una potència', curt: 'Pot. d\'una pot.' },
   { id: 'w8', properament: true, num: '8', titol: 'L\'arrel quadrada', curt: 'Arrel' }
 ];
 const UNITATS = {
@@ -990,7 +990,7 @@ const enllacaQualif = c => $$('.q-man', c).forEach(td => td.onclick = () => canv
 const unitatCompleta = u => u.obj.every(o => !o.properament);
 /* ---------- Fitxers a part: cada unitat i cada joc es carrega quan cal ----------
    Són scripts clàssics (funcionen a GitHub Pages i també obrint l'index des de l'ordinador). */
-const V_FITXERS = '4.4';
+const V_FITXERS = '4.6';
 const FITXERS_UNITAT = { f: 'fraccions.js', e: 'enters.js', p: 'potencies.js' };
 const FITXERS_JOC = { tcx: 'joc-caixa.js', tesc: 'joc-escape.js', tpz: 'joc-pizzeria.js', dimp: 'joc-impropies.js' };
 const CARREGUES = {};
@@ -1305,7 +1305,7 @@ function apOk(it, st) {
 function apEtiq(it, st) {
   if (it.tipus === 'num') return it.errs?.[Number(st.n)] || null;
   if (it.tipus === 'tria' || it.tipus === 'signe') return it.etiq?.[st.v] || null;
-  if (it.tipus === 'pot') return Number(st.b) === it.exp && Number(st.e) === it.base ? 'swap' : null;
+  if (it.tipus === 'pot') return it.errs?.[`${Number(st.b)}^${Number(st.e)}`] || (Number(st.b) === it.exp && Number(st.e) === it.base ? 'swap' : null);
   if (it.tipus === 'factors') { const q = st.seq || []; if (q.length === 2 && q.includes(it.base) && q.includes(it.exp)) return 'baseExp'; if (q.length === it.base && q.every(v => v === it.exp)) return 'swap'; return null; }
   return null;
 }
@@ -2711,7 +2711,7 @@ function mostraCredits() {
     <p style="font-size:1.1rem"><b>Ins Júlia Minguell</b> · Matemàtiques 4t ESO · Grup Flexible</p>
     <p style="margin-top:14px">Ideat per <b>J. Alcolea</b></p>
     <p style="color:var(--gris)">Desenvolupat amb Claude</p>
-    <p style="color:var(--gris);margin-top:10px">Versió 4.4</p>
+    <p style="color:var(--gris);margin-top:10px">Versió 4.6</p>
     <div class="accions"><button class="boto" data-tanca-modal>D'acord</button></div>`);
 }
 function entraAlumne(id) {

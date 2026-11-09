@@ -469,4 +469,328 @@ TEMES.w4 = {
   }
 };
 
+/* =====================================================================
+   OBJECTIUS 5, 6 i 7 · OPERACIONS AMB POTÈNCIES DE LA MATEIXA BASE
+   5: producte (sumar exponents) · 6: quocient (restar) · 7: potència d'una potència (multiplicar) + barreja
+   ===================================================================== */
+Object.assign(ETIQ_ERR, {
+  multBases: 'multiplica les bases (2³·2⁴ = 4⁷)', multExp: 'multiplica els exponents en el producte (2³·2⁴ = 2¹²)',
+  divBases: 'divideix les bases (6⁵ : 6² = 1³)', divExp: 'divideix els exponents (2⁶ : 2² = 2³)', sumaQ: 'suma els exponents en el quocient',
+  sumaPP: 'suma els exponents a la potència d\'una potència ((2³)² = 2⁵)', basesDif: 'ajunta potències de bases diferents (2³·3² = 6⁵)',
+  exp1: 'oblida que a = a¹ (a · a⁴ = a⁴)', reglaErr: 'aplica una regla que no toca'
+});
+Object.assign(AVIS_ERR, {
+  multBases: 'La <b>base no canvia</b>: es queda igual. Només es <b>sumen els exponents</b>.',
+  multExp: 'Al producte els exponents es <b>sumen</b>, no es multipliquen: 2³·2⁴ = 2⁷.',
+  divBases: 'La <b>base no canvia</b>: es queda igual. Només es <b>resten els exponents</b>.',
+  divExp: 'Al quocient els exponents es <b>resten</b>, no es divideixen: 2⁶ : 2² = 2⁴.',
+  sumaQ: 'Al quocient els exponents es <b>resten</b>: el de dalt menys el de baix.',
+  sumaPP: 'A la potència d\'una potència els exponents es <b>multipliquen</b>: (2³)² = 2³·2³ = 2⁶.',
+  basesDif: 'Només es poden ajuntar potències amb la <b>mateixa base</b>.',
+  exp1: 'Recorda que un nombre sol té exponent <b>1</b>: 5 = 5¹.', reglaErr: 'Mira bé l\'operació: <b>producte → sumar</b>, <b>quocient → restar</b>, <b>potència d\'una potència → multiplicar</b>.'
+});
+document.head.insertAdjacentHTML('beforeend', `<style>
+.w5-grups{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px;font-size:1.45rem;font-weight:800}
+.w5-g{display:inline-flex;gap:4px;padding:6px 8px;border-radius:12px;border:3px solid}.w5-g span{min-width:1.6ch;text-align:center}
+.w5-g.a{border-color:var(--taronja);background:#fff3e6}.w5-g.b{border-color:#2a6fd6;background:#eef4ff}.w5-g.c{border-color:#1b9a5a;background:#eafaf1}
+.w5-g span.tx{text-decoration:line-through;text-decoration-thickness:3px;color:#c33;opacity:.75}
+.w5-g.pop{animation:pop .5s both}.w5-op{font-size:1.6rem;font-weight:900}
+.w5-regla{display:grid;gap:8px;min-width:280px}.w5-regla div{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;align-items:center;padding:8px 12px;border-radius:10px;border:2px solid #999;background:#fff;font-size:1.05rem}
+.w5-regla b.r{font-size:1.25rem}.w5-regla .on{border-color:var(--taronja);background:#fff3e6;box-shadow:0 0 0 3px #ffd7b0}
+.w5-al{display:grid;gap:10px;min-width:280px}.w5-al>div{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:10px 16px;border-radius:12px;border:3px solid;font-size:1.5rem;font-weight:800}.w5-al .ex{display:flex;align-items:center;gap:8px}.w5-al .ex b{font-weight:900}.w5-al .bo{border-color:#1b9a5a;background:#eafaf1}.w5-al .mal{border-color:#d33;background:#fdecec}.w5-al .mal .ex b{text-decoration:line-through;text-decoration-color:#d33}.w5-al em{font-style:normal;font-size:1.6rem}.w5-al .bo em{color:#1b9a5a}.w5-al .mal em{color:#d33}
+.w5-frac{display:inline-grid;text-align:center;vertical-align:middle;margin:0 4px}.w5-frac>span:first-child{border-bottom:3px solid #000;padding:0 6px 2px}.w5-frac>span:last-child{padding-top:2px}
+</style>`);
+const grup = (a, n, cls, { tx = 0, del = 0 } = {}) => `<span class="w5-g ${cls} pop" style="animation-delay:${del}s">${Array.from({ length: n }, (_, i) => `<span class="${i < tx ? 'tx' : ''}">${a}</span>`).join('<i>·</i>')}</span>`;
+const pwPP = (a, m, n) => `(${pw(a, m)})${sp(n)}`; // (2³)²
+const pwX = (a, m) => m === 1 ? String(a) : pw(a, m); // a¹ s'escriu a
+const keyP = (b, e) => `${b}^${e}`;
+function errsP(base, exp, cands) { // cands: [[b, e, tag]...] → {"b^e": tag}, sense la bona ni repetits
+  const o = {}; for (const [b, e, t] of cands) { if (!Number.isInteger(e) || e < 0 || !Number.isInteger(b)) continue; const k = keyP(b, e); if (b === base && e === exp) continue; if (!(k in o)) o[k] = t; } return o;
+}
+const reglaHtml = (on) => `<div class="w5-regla">
+  <div class="${on === 'p' ? 'on' : ''}"><b class="r">aᵐ · aⁿ = aᵐ⁺ⁿ</b><span>Producte: <b>sumo</b> els exponents</span></div>
+  <div class="${on === 'q' ? 'on' : ''}"><b class="r">aᵐ : aⁿ = aᵐ⁻ⁿ</b><span>Quocient: <b>resto</b> els exponents</span></div>
+  <div class="${on === 'pp' ? 'on' : ''}"><b class="r">(aᵐ)ⁿ = aᵐ·ⁿ</b><span>Potència d'una potència: <b>multiplico</b></span></div></div>`;
+const vfOps = [{ html: 'Vertader', val: 'si' }, { html: 'Fals', val: 'no' }];
+const baseP = nv => nv === 1 ? rnd(2, 5) : nv === 2 ? rnd(2, 9) : rnd(2, 12);
+function unics(n, fer, clau) { const out = [], vist = new Set(); for (let g = 0; out.length < n && g < 200; g++) { const x = fer(); const k = clau(x); if (vist.has(k)) continue; vist.add(k); out.push(x); } return out; }
+
+/* ---------- OBJECTIU 5 · PRODUCTE ---------- */
+const PISTA_W5 = { completa: `Mateixa base: la <b>base es queda igual</b> i els exponents es <b>sumen</b>. ${pw(2, 3)} · ${pw(2, 4)} = 2<sup>3+4</sup> = ${pw(2, 7)}.`, mitja: `Base igual, exponents sumats.` };
+const itemProd = (a, ms) => { const s = ms.reduce((x, y) => x + y, 0); const prod = ms.reduce((x, y) => x * y, 1);
+  return { tipus: 'pot', html: ms.map(m => pwX(a, m)).join(' · ') + ' =', base: a, exp: s, ms,
+    errs: errsP(a, s, [[a ** ms.length, s, 'multBases'], [a, prod, 'multExp'], [a ** ms.length, prod, 'multBases'], ...(ms.includes(1) ? [[a, s - 1, 'exp1']] : [])]) }; };
+const W5 = {};
+W5.agrupa = (nv) => {
+  const a = rnd(2, nv === 1 ? 5 : 9), m = rnd(2, 4), n = rnd(2, nv === 1 ? 3 : 4);
+  const it = itemProd(a, [m, n]);
+  return { sig: `p0-${a}-${m}-${n}`, enunciat: `Desplega i compta: quantes vegades surt el ${a}?`, visual: () => `<div class="w5-grups">${grup(a, m, 'a')}<span class="w5-op">·</span>${grup(a, n, 'b', { del: .3 })}</div>`,
+    pista: PISTA_W5, ...apartats([it]), explicacio: `${pw(a, m)} · ${pw(a, n)}: ${m} vegades més ${n} vegades = ${m + n} vegades.`, solucio: [`${it.html} <b>${pw(a, m + n)}</b> (${m} + ${n} = ${m + n})`] };
+};
+W5.pot = (nv, { n = 3, tres = false } = {}) => {
+  const its = unics(n, () => { const a = baseP(nv); const k = tres ? 3 : 2; const ms = Array.from({ length: k }, () => rnd(nv === 2 && Math.random() < .25 ? 1 : 2, nv === 1 ? 4 : 7)); return itemProd(a, ms); }, it => it.html);
+  return { sig: `p1-${its.map(i => i.html).join('|')}`, enunciat: `Escriu com una sola potència.`, visual: nv === 1 ? () => reglaHtml('p') : null, pista: PISTA_W5, ...apartats(its),
+    explicacio: `Base igual i exponents sumats.`, solucio: its.map(it => `${it.html} ${it.base}<sup>${it.ms.join('+')}</sup> = <b>${pw(it.base, it.exp)}</b>`) };
+};
+W5.tria = (nv, { n = 3 } = {}) => {
+  const its = unics(n, () => { const a = baseP(nv), m = rnd(2, 6), k = rnd(2, 6); const s = m + k;
+    const ops = barreja([{ html: pw(a, s), val: 'b' }, { html: pw(a * a, s), val: 'mb', tag: 'multBases' }, { html: pw(a, m * k === s ? s + 1 : m * k), val: 'me', tag: 'multExp' }, { html: pw(a * a, m * k), val: 'x', tag: 'multBases' }].filter((o, i, v) => v.findIndex(y => y.html === o.html) === i));
+    return { tipus: 'tria', html: `${pw(a, m)} · ${pw(a, k)} =`, opcions: ops, correcta: 'b', etiq: etiqDe(ops), s, a, m, k }; }, it => it.html);
+  return { sig: `p2-${its.map(i => i.html).join('|')}`, enunciat: `Tria el resultat correcte.`, visual: null, pista: PISTA_W5, ...apartats(its),
+    explicacio: `La base no canvia; els exponents se sumen.`, solucio: its.map(it => `${it.html} <b>${pw(it.a, it.s)}</b>`) };
+};
+W5.falta = (nv, { n = 3 } = {}) => {
+  const its = unics(n, () => { const a = baseP(nv), m = rnd(2, 6), f = rnd(2, 6); const t = m + f;
+    return { tipus: 'num', llarg: true, html: `${pw(a, m)} · ${a}<sup>?</sup> = ${pw(a, t)} &nbsp;→&nbsp; l'exponent que falta és:`, valor: f, errs: { [t + m]: 'reglaErr' }, a, m, t }; }, it => it.html);
+  return { sig: `p3-${its.map(i => i.html).join('|')}`, enunciat: `Troba l'exponent que falta.`, visual: null, pista: { completa: `Quant he de sumar a ${its[0].m} per arribar a ${its[0].t}?`, mitja: `Pensa en una suma: ${its[0].m} + ? = ${its[0].t}.` }, ...apartats(its),
+    explicacio: `Com que els exponents se sumen, l'exponent que falta és la diferència.`, solucio: its.map(it => `${it.m} + <b>${it.valor}</b> = ${it.t}`) };
+};
+W5.valor = (nv, { n = 3 } = {}) => {
+  const its = unics(n, () => { const a = rnd(2, 3), m = rnd(1, 3), k = rnd(1, a === 2 ? 4 : 2); const v = a ** (m + k);
+    return { tipus: 'num', html: `${pwX(a, m)} · ${pwX(a, k)}`, valor: v, errs: { [(a * a) ** (m + k)]: 'multBases', [a ** (m * k)]: 'multExp' }, a, m, k }; }, it => it.html);
+  its.forEach(it => { delete it.errs[it.valor]; });
+  return { sig: `p4-${its.map(i => i.html).join('|')}`, enunciat: `Primer ajunta-ho en una sola potència i després calcula.`, visual: null, pista: PISTA_W5, ...apartats(its),
+    explicacio: `Ajunta-ho (sumant exponents) i calcula la potència.`, solucio: its.map(it => `${it.html} = ${pw(it.a, it.m + it.k)} = <b>${it.valor}</b>`) };
+};
+const VF_W5 = [
+  () => { const a = rnd(2, 7), m = rnd(2, 5), k = rnd(2, 5); return { h: `${pw(a, m)} · ${pw(a, k)} = ${pw(a, m + k)}`, ok: true, s: `Base igual, ${m} + ${k} = ${m + k}.` }; },
+  () => { const a = rnd(2, 5), m = rnd(2, 5), k = rnd(2, 5); return { h: `${pw(a, m)} · ${pw(a, k)} = ${pw(a * a, m + k)}`, ok: false, etiq: { si: 'multBases' }, s: `La base no es multiplica: és ${pw(a, m + k)}.` }; },
+  () => { const a = rnd(2, 7), m = rnd(3, 5), k = rnd(3, 5); return { h: `${pw(a, m)} · ${pw(a, k)} = ${pw(a, m * k)}`, ok: false, etiq: { si: 'multExp' }, s: `Els exponents se sumen: ${pw(a, m + k)}.` }; },
+  () => { const a = rnd(2, 4), b = a + rnd(1, 3), m = rnd(2, 4), k = rnd(2, 4); return { h: `${pw(a, m)} · ${pw(b, k)} = ${pw(a * b, m + k)}`, ok: false, etiq: { si: 'basesDif' }, s: `Les bases són diferents: no es poden ajuntar així.` }; },
+  () => { const a = rnd(2, 9), k = rnd(2, 6); return { h: `${a} · ${pw(a, k)} = ${pw(a, k + 1)}`, ok: true, s: `${a} = ${a}¹, i 1 + ${k} = ${k + 1}.` }; },
+  () => { const a = rnd(2, 9), k = rnd(2, 6); return { h: `${a} · ${pw(a, k)} = ${pw(a, k)}`, ok: false, etiq: { si: 'exp1' }, s: `${a} = ${a}¹: el resultat és ${pw(a, k + 1)}.` }; }
+];
+W5.vf = (nv, { n = 3 } = {}) => {
+  const ds = barreja(VF_W5).slice(0, n).map(f => f());
+  const its = ds.map(d => ({ tipus: 'tria', html: d.h, opcions: vfOps, correcta: d.ok ? 'si' : 'no', etiq: d.etiq || {}, llarg: true }));
+  return { sig: `p5-${ds.map(d => d.h).join('|')}`, enunciat: `Vertader o fals?`, visual: null, pista: PISTA_W5, ...apartats(its),
+    explicacio: `Mira la base (ha de ser la mateixa) i els exponents (se sumen).`, solucio: ds.map(d => `${d.h}: <b>${d.ok ? 'vertader' : 'fals'}</b>. ${d.s}`) };
+};
+W5.lletres = (nv, { n = 3 } = {}) => {
+  const L = ['x', 'a', 'm'];
+  const its = unics(n, () => { const x = tria(L), m = rnd(2, 6), k = rnd(1, 6), s = m + k;
+    const ops = barreja([{ html: `${x}${sp(s)}`, val: 'b' }, { html: `${x}${sp(m * k === s ? s + 2 : m * k)}`, val: 'me', tag: 'multExp' }, { html: `2${x}${sp(s)}`, val: 'd', tag: 'multBases' }]);
+    return { tipus: 'tria', html: `${x}${sp(m)} · ${k === 1 ? x : x + sp(k)} =`, opcions: ops, correcta: 'b', etiq: etiqDe(ops), s, x }; }, it => it.html);
+  return { sig: `p6-${its.map(i => i.html).join('|')}`, enunciat: `La regla també funciona amb lletres. Tria el resultat.`, visual: null, pista: PISTA_W5, ...apartats(its),
+    explicacio: `x³ · x⁴ = x⁷: la regla és la mateixa encara que la base sigui una lletra.`, solucio: its.map(it => `${it.html} <b>${it.x}${sp(it.s)}</b>`) };
+};
+W5.esPot = (nv, { n = 4 } = {}) => {
+  const its = unics(n, () => { const si = Math.random() < .5; const a = rnd(2, 6), b = si ? a : a + rnd(1, 3), m = rnd(2, 5), k = rnd(2, 5);
+    return { tipus: 'tria', html: `${pw(a, m)} · ${pw(b, k)}`, opcions: [{ html: 'Sí', val: 'si' }, { html: 'No', val: 'no' }], correcta: si ? 'si' : 'no', etiq: si ? {} : { si: 'basesDif' }, a, b, m, k }; }, it => it.html);
+  return { sig: `p7-${its.map(i => i.html).join('|')}`, enunciat: `Es pot escriure com <b>una sola potència</b>?`, visual: null, pista: { completa: `Només si les dues potències tenen la <b>mateixa base</b>.`, mitja: `Mira les bases.` }, ...apartats(its),
+    explicacio: `La regla només val per a la mateixa base.`, solucio: its.map(it => `${it.html}: <b>${it.correcta === 'si' ? `sí, ${pw(it.a, it.m + it.k)}` : 'no (bases diferents)'}</b>`) };
+};
+TEMES.w5 = {
+  gen: W5, senseCalc: true,
+  sequencia: {
+    1: [['agrupa'], ['pot', { n: 3 }], ['tria', { n: 3 }], ['agrupa'], ['valor', { n: 3 }], ['vf', { n: 3 }], ['pot', { n: 4 }], ['falta', { n: 2 }]],
+    2: [['pot', { n: 4 }], ['tria', { n: 3 }], ['falta', { n: 3 }], ['vf', { n: 4 }], ['pot', { n: 3, tres: true }], ['esPot', { n: 4 }], ['valor', { n: 3 }], ['pot', { n: 4 }]],
+    3: [['pot', { n: 4 }], ['pot', { n: 3, tres: true }], ['falta', { n: 3 }], ['vf', { n: 4 }], ['lletres', { n: 3 }], ['esPot', { n: 4 }], ['pot', { n: 3, tres: true }], ['lletres', { n: 3 }]]
+  },
+  explicacio: [
+    { text: `<p>Volem fer <b>${pw(2, 3)} · ${pw(2, 4)}</b>. Desplegem cada potència:</p><p class="petit">${pw(2, 3)} = 2 · 2 · 2 &nbsp;i&nbsp; ${pw(2, 4)} = 2 · 2 · 2 · 2</p>`,
+      vis: () => `<div class="w5-grups">${grup(2, 3, 'a')}<span class="w5-op">·</span>${grup(2, 4, 'b', { del: .4 })}</div>` },
+    { text: `<p>Ajuntem-ho tot: el 2 surt <b class="parpelleja">3 + 4 = 7 vegades</b>.</p><p>${pw(2, 3)} · ${pw(2, 4)} = <b>${pw(2, 7)}</b></p>`,
+      vis: () => `<div style="display:flex;flex-direction:column;align-items:center;gap:10px"><div class="w5-grups">${grup(2, 3, 'a')}${grup(2, 4, 'b', { del: .2 })}</div><div>${pwH(2, 7, 'gran')}</div></div>` },
+    { text: `<p>La regla: amb la <b>mateixa base</b>, la base <b class="parpelleja">es queda igual</b> i els exponents <b class="parpelleja-2">es sumen</b>.</p><p class="expr-gran" style="margin:6px 0">aᵐ · aⁿ = aᵐ⁺ⁿ</p>`, vis: () => reglaHtml('p') },
+    { text: `<p><b class="parpelleja">Alerta</b> amb dos errors molt típics:</p><p class="petit">${pw(2, 3)} · ${pw(2, 4)} <b>no</b> és ${pw(4, 7)} (la base no es multiplica) ni ${pw(2, 12)} (els exponents no es multipliquen).</p><p class="petit">I ${pw(2, 3)} · ${pw(3, 2)} no es pot ajuntar: les bases són diferents.</p>`,
+      vis: () => `<div class="w5-al"><div class="bo"><span class="ex">${pwH(2, 3)} · ${pwH(2, 4)}<span>=</span><b>${pwH(2, 7)}</b></span><em>✓</em></div><div class="mal"><span class="ex">${pwH(2, 3)} · ${pwH(2, 4)}<span>=</span><b>${pwH(4, 7)}</b></span><em>✗</em></div><div class="mal"><span class="ex">${pwH(2, 3)} · ${pwH(2, 4)}<span>=</span><b>${pwH(2, 12)}</b></span><em>✗</em></div></div>` }
+  ],
+  exemple: (nv) => {
+    if (nv === 1) return { enunciat: `Escriu <b>${pw(3, 2)} · ${pw(3, 4)}</b> com una sola potència.`, passos: [
+      { text: `Desplego: el 3 surt 2 vegades i després 4 vegades.`, vis: `<div class="w5-grups">${grup(3, 2, 'a')}<span class="w5-op">·</span>${grup(3, 4, 'b')}</div>` },
+      { text: `En total, 2 + 4 = <b>6</b> vegades: <b>${pw(3, 6)}</b>. <span class="marca-ok">✓</span>`, vis: `<div>${pwH(3, 6, 'gran')}</div>` }] };
+    if (nv === 2) return { enunciat: `Escriu <b>${pw(5, 2)} · 5 · ${pw(5, 3)}</b> com una sola potència.`, passos: [
+      { text: `El 5 sol és ${pw(5, 1)}.`, vis: `<div class="expr-gran">${pw(5, 2)} · ${pw(5, 1)} · ${pw(5, 3)}</div>` },
+      { text: `Sumo els exponents: 2 + 1 + 3 = 6 → <b>${pw(5, 6)}</b>. <span class="marca-ok">✓</span>`, vis: `<div>${pwH(5, 6, 'gran')}</div>` }] };
+    return { enunciat: `Troba l'exponent: <b>${pw(7, 4)} · 7<sup>?</sup> = ${pw(7, 11)}</b>.`, passos: [
+      { text: `Els exponents se sumen: 4 + ? = 11.`, vis: `<div class="expr-gran">4 + ? = 11</div>` },
+      { text: `? = 11 − 4 = <b>7</b>. Comprovo: ${pw(7, 4)} · ${pw(7, 7)} = ${pw(7, 11)}. <span class="marca-ok">✓</span>`, vis: `<div class="expr-gran">? = 7</div>` }] };
+  }
+};
+
+/* ---------- OBJECTIU 6 · QUOCIENT ---------- */
+const PISTA_W6 = { completa: `Mateixa base: la <b>base es queda igual</b> i els exponents es <b>resten</b> (el de dalt menys el de baix). ${pw(2, 6)} : ${pw(2, 2)} = 2<sup>6−2</sup> = ${pw(2, 4)}.`, mitja: `Base igual, exponents restats.` };
+const fracP = (dalt, baix) => `<span class="w5-frac"><span>${dalt}</span><span>${baix}</span></span>`;
+const itemQuoc = (a, m, k, { frac = false } = {}) => { const d = m - k;
+  return { tipus: 'pot', html: (frac ? fracP(pw(a, m), pw(a, k)) : `${pw(a, m)} : ${pw(a, k)}`) + ' =', base: a, exp: d, m, k, a,
+    errs: errsP(a, d, [[1, d, 'divBases'], ...(m % k === 0 ? [[a, m / k, 'divExp']] : []), [a, m + k, 'sumaQ'], [1, m / k, 'divBases'], [a, k - m, 'sumaQ']]) }; };
+const parellaQ = nv => { const m = rnd(3, nv === 1 ? 7 : 12); const k = rnd(1, m - 1); return [m, k]; };
+const W6 = {};
+W6.ratlla = (nv) => {
+  const a = rnd(2, nv === 1 ? 5 : 9); const m = rnd(4, 6), k = rnd(2, m - 2); const it = itemQuoc(a, m, k);
+  return { sig: `q0-${a}-${m}-${k}`, enunciat: `Ratlla els que es van i compta els que queden.`, visual: () => `<div style="display:flex;flex-direction:column;align-items:center;gap:4px">${grup(a, m, 'a', { tx: k })}<div style="width:100%;max-width:340px;border-top:4px solid #000"></div>${grup(a, k, 'b', { tx: k, del: .3 })}</div>`,
+    pista: PISTA_W6, ...apartats([it]), explicacio: `De dalt i de baix se'n van ${k}: en queden ${m} − ${k} = ${m - k}.`, solucio: [`${it.html} <b>${pw(a, m - k)}</b> (${m} − ${k} = ${m - k})`] };
+};
+W6.pot = (nv, { n = 3, frac = false } = {}) => {
+  const its = unics(n, () => { const [m, k] = parellaQ(nv); return itemQuoc(baseP(nv), m, k, { frac: frac && Math.random() < .5 }); }, it => it.html);
+  return { sig: `q1-${its.map(i => i.html).join('|')}`, enunciat: `Escriu com una sola potència.${frac ? ' Una fracció també és una divisió.' : ''}`, visual: nv === 1 ? () => reglaHtml('q') : null, pista: PISTA_W6, ...apartats(its),
+    explicacio: `Base igual i exponents restats.`, solucio: its.map(it => `${it.html} ${it.a}<sup>${it.m}−${it.k}</sup> = <b>${pw(it.a, it.exp)}</b>`) };
+};
+W6.tria = (nv, { n = 3 } = {}) => {
+  const its = unics(n, () => { const a = baseP(nv); let m, k; do { [m, k] = parellaQ(nv); } while (m % k !== 0 || m / k === m - k || k === 1);
+    const ops = barreja([{ html: pw(a, m - k), val: 'b' }, { html: pw(1, m - k), val: 'db', tag: 'divBases' }, { html: pw(a, m / k), val: 'de', tag: 'divExp' }, { html: pw(a, m + k), val: 's', tag: 'sumaQ' }]);
+    return { tipus: 'tria', html: `${pw(a, m)} : ${pw(a, k)} =`, opcions: ops, correcta: 'b', etiq: etiqDe(ops), a, m, k }; }, it => it.html);
+  return { sig: `q2-${its.map(i => i.html).join('|')}`, enunciat: `Tria el resultat correcte.`, visual: null, pista: PISTA_W6, ...apartats(its),
+    explicacio: `La base no canvia; els exponents es resten.`, solucio: its.map(it => `${it.html} <b>${pw(it.a, it.m - it.k)}</b> (${it.m} − ${it.k})`) };
+};
+W6.falta = (nv, { n = 3 } = {}) => {
+  const its = unics(n, () => { const a = baseP(nv), [m, k] = parellaQ(nv); const d = m - k; const quin = Math.random() < .5 ? 'baix' : 'dalt';
+    return quin === 'baix'
+      ? { tipus: 'num', llarg: true, html: `${pw(a, m)} : ${a}<sup>?</sup> = ${pw(a, d)} &nbsp;→&nbsp; l'exponent que falta és:`, valor: k, errs: { [m + d]: 'sumaQ' }, m, d, k, quin }
+      : { tipus: 'num', llarg: true, html: `${a}<sup>?</sup> : ${pw(a, k)} = ${pw(a, d)} &nbsp;→&nbsp; l'exponent que falta és:`, valor: m, errs: { [Math.abs(d - k) || -1]: 'sumaQ' }, m, d, k, quin }; }, it => it.html);
+  return { sig: `q3-${its.map(i => i.html).join('|')}`, enunciat: `Troba l'exponent que falta.`, visual: null, pista: { completa: `Els exponents es resten: dalt − baix = resultat. Pensa quin nombre fa que la resta surti bé.`, mitja: `Fes la resta al revés.` }, ...apartats(its),
+    explicacio: `Al quocient, exponent de dalt − exponent de baix = exponent del resultat.`, solucio: its.map(it => `${it.m} − ${it.k} = ${it.d}: falta el <b>${it.valor}</b>`) };
+};
+W6.igual = (nv, { n = 3 } = {}) => {
+  const its = unics(n, () => { const a = baseP(nv), m = rnd(2, 8); return { tipus: 'num', html: `${pw(a, m)} : ${pw(a, m)}`, valor: 1, errs: { 0: 'exp0' }, a, m }; }, it => it.html);
+  return { sig: `q4-${its.map(i => i.html).join('|')}`, enunciat: `Calcula. Compte: el resultat és un nombre, no una potència.`, visual: () => `<div class="w5-al"><div class="bo"><span class="ex">${pwH(5, 3)} : ${pwH(5, 3)}<span>= ${pwH(5, 0)} =</span><b>1</b></span><em>✓</em></div><div class="mal"><span class="ex">${pwH(5, 3)} : ${pwH(5, 3)}<span>=</span><b>0</b></span><em>✗</em></div></div>`,
+    pista: { completa: `Un nombre dividit entre ell mateix fa <b>1</b>. I amb la regla: 3 − 3 = 0, i a⁰ = 1.`, mitja: `Qualsevol nombre dividit per ell mateix…` }, ...apartats(its),
+    explicacio: `aᵐ : aᵐ = a⁰ = 1. Per això l'exponent 0 dona 1!`, solucio: its.map(it => `${it.html} = ${pw(it.a, 0)} = <b>1</b>`) };
+};
+W6.valor = (nv, { n = 3 } = {}) => {
+  const its = unics(n, () => { const a = rnd(2, 3), d = rnd(1, a === 2 ? 5 : 3), k = rnd(2, 6), m = d + k;
+    const errs = { [a ** (m + k)]: 'sumaQ', ...(m % k === 0 ? { [a ** (m / k)]: 'divExp' } : {}), 1: 'divBases' }; delete errs[a ** d];
+    return { tipus: 'num', html: `${pw(a, m)} : ${pw(a, k)}`, valor: a ** d, errs, a, m, k, d }; }, it => it.html);
+  return { sig: `q5-${its.map(i => i.html).join('|')}`, enunciat: `Primer fes-ne una sola potència i després calcula.`, visual: null, pista: PISTA_W6, ...apartats(its),
+    explicacio: `Sense la regla seria molt llarg: ${pw(2, 9)} = 512! Amb la regla és fàcil.`, solucio: its.map(it => `${it.html} = ${pw(it.a, it.d)} = <b>${it.valor}</b>`) };
+};
+const VF_W6 = [
+  () => { const a = rnd(2, 9), m = rnd(5, 9), k = rnd(2, m - 2); return { h: `${pw(a, m)} : ${pw(a, k)} = ${pw(a, m - k)}`, ok: true, s: `${m} − ${k} = ${m - k}.` }; },
+  () => { const a = rnd(2, 9), m = rnd(5, 9), k = rnd(2, m - 2); return { h: `${pw(a, m)} : ${pw(a, k)} = ${pw(1, m - k)}`, ok: false, etiq: { si: 'divBases' }, s: `La base no es divideix: és ${pw(a, m - k)}.` }; },
+  () => { const a = rnd(2, 9); const [m, k] = tria([[8, 2], [9, 3], [6, 3], [10, 2], [12, 4]]); return { h: `${pw(a, m)} : ${pw(a, k)} = ${pw(a, m / k)}`, ok: false, etiq: { si: 'divExp' }, s: `Els exponents es resten: ${pw(a, m - k)}.` }; },
+  () => { const a = rnd(2, 9), m = rnd(2, 7); return { h: `${pw(a, m)} : ${pw(a, m)} = 1`, ok: true, s: `${pw(a, 0)} = 1.` }; },
+  () => { const a = rnd(2, 9), m = rnd(2, 7); return { h: `${pw(a, m)} : ${pw(a, m)} = 0`, ok: false, etiq: { si: 'exp0' }, s: `És ${pw(a, 0)}, que val 1.` }; },
+  () => { const a = rnd(2, 9), m = rnd(4, 8); return { h: `${pw(a, m)} : ${a} = ${pw(a, m - 1)}`, ok: true, s: `${a} = ${a}¹: ${m} − 1 = ${m - 1}.` }; }
+];
+W6.vf = (nv, { n = 3 } = {}) => {
+  const ds = barreja(VF_W6).slice(0, n).map(f => f());
+  const its = ds.map(d => ({ tipus: 'tria', html: d.h, opcions: vfOps, correcta: d.ok ? 'si' : 'no', etiq: d.etiq || {}, llarg: true }));
+  return { sig: `q6-${ds.map(d => d.h).join('|')}`, enunciat: `Vertader o fals?`, visual: null, pista: PISTA_W6, ...apartats(its),
+    explicacio: `Base igual i exponents restats.`, solucio: ds.map(d => `${d.h}: <b>${d.ok ? 'vertader' : 'fals'}</b>. ${d.s}`) };
+};
+TEMES.w6 = {
+  gen: W6, senseCalc: true,
+  sequencia: {
+    1: [['ratlla'], ['pot', { n: 3 }], ['tria', { n: 3 }], ['ratlla'], ['igual', { n: 2 }], ['valor', { n: 3 }], ['vf', { n: 3 }], ['pot', { n: 4 }]],
+    2: [['pot', { n: 4 }], ['tria', { n: 3 }], ['igual', { n: 3 }], ['falta', { n: 3 }], ['vf', { n: 4 }], ['pot', { n: 4, frac: true }], ['valor', { n: 3 }], ['falta', { n: 3 }]],
+    3: [['pot', { n: 4, frac: true }], ['falta', { n: 3 }], ['vf', { n: 4 }], ['igual', { n: 3 }], ['tria', { n: 3 }], ['pot', { n: 4, frac: true }], ['falta', { n: 3 }], ['valor', { n: 3 }]]
+  },
+  explicacio: [
+    { text: `<p>Volem fer <b>${pw(2, 5)} : ${pw(2, 2)}</b>. Una divisió és com una fracció:</p><p class="petit">a dalt hi ha cinc 2 i a baix, dos 2.</p>`,
+      vis: () => `<div style="display:flex;flex-direction:column;align-items:center;gap:4px">${grup(2, 5, 'a')}<div style="width:100%;max-width:340px;border-top:4px solid #000"></div>${grup(2, 2, 'b')}</div>` },
+    { text: `<p>Els que estan a dalt i a baix <b class="parpelleja">es van</b> (2 : 2 = 1).</p><p>En queden <b>5 − 2 = 3</b>: ${pw(2, 5)} : ${pw(2, 2)} = <b>${pw(2, 3)}</b>.</p>`,
+      vis: () => `<div style="display:flex;flex-direction:column;align-items:center;gap:4px">${grup(2, 5, 'a', { tx: 2 })}<div style="width:100%;max-width:340px;border-top:4px solid #000"></div>${grup(2, 2, 'b', { tx: 2 })}<div style="margin-top:8px">${pwH(2, 3, 'gran')}</div></div>` },
+    { text: `<p>La regla: amb la <b>mateixa base</b>, la base <b class="parpelleja">es queda igual</b> i els exponents <b class="parpelleja-2">es resten</b>.</p><p class="expr-gran" style="margin:6px 0">aᵐ : aⁿ = aᵐ⁻ⁿ</p>`, vis: () => reglaHtml('q') },
+    { text: `<p>I si són iguals? ${pw(5, 3)} : ${pw(5, 3)} = 5<sup>3−3</sup> = ${pw(5, 0)} = <b class="parpelleja">1</b>.</p><p class="petit">Un nombre dividit per ell mateix fa 1. Per això a⁰ = 1!</p><p class="petit"><b>Alerta:</b> ${pw(6, 5)} : ${pw(6, 2)} no és ${pw(1, 3)}: la base <b>no</b> es divideix.</p>`,
+      vis: () => `<div class="w5-al"><div class="bo"><span class="ex">${pwH(5, 3)} : ${pwH(5, 3)}<span>=</span><b>1</b></span><em>✓</em></div><div class="mal"><span class="ex">${pwH(6, 5)} : ${pwH(6, 2)}<span>=</span><b>${pwH(1, 3)}</b></span><em>✗</em></div></div>` }
+  ],
+  exemple: (nv) => {
+    if (nv === 1) return { enunciat: `Escriu <b>${pw(3, 6)} : ${pw(3, 2)}</b> com una sola potència.`, passos: [
+      { text: `A dalt sis 3, a baix dos 3. Ratllo els que es van.`, vis: `<div style="display:flex;flex-direction:column;align-items:center;gap:4px">${grup(3, 6, 'a', { tx: 2 })}<div style="width:100%;max-width:340px;border-top:4px solid #000"></div>${grup(3, 2, 'b', { tx: 2 })}</div>` },
+      { text: `En queden 6 − 2 = <b>4</b>: <b>${pw(3, 4)}</b>. <span class="marca-ok">✓</span>`, vis: `<div>${pwH(3, 4, 'gran')}</div>` }] };
+    if (nv === 2) return { enunciat: `Calcula <b>${pw(2, 9)} : ${pw(2, 6)}</b>.`, passos: [
+      { text: `Resto els exponents: 9 − 6 = 3 → ${pw(2, 3)}.`, vis: `<div class="expr-gran">${pw(2, 9)} : ${pw(2, 6)} = ${pw(2, 3)}</div>` },
+      { text: `${pw(2, 3)} = 2 · 2 · 2 = <b>8</b>. <span class="marca-ok">✓</span>`, vis: `<div class="expr-gran">8</div>` }] };
+    return { enunciat: `Troba l'exponent: <b>5<sup>?</sup> : ${pw(5, 4)} = ${pw(5, 3)}</b>.`, passos: [
+      { text: `? − 4 = 3.`, vis: `<div class="expr-gran">? − 4 = 3</div>` },
+      { text: `? = 3 + 4 = <b>7</b>. Comprovo: ${pw(5, 7)} : ${pw(5, 4)} = ${pw(5, 3)}. <span class="marca-ok">✓</span>`, vis: `<div class="expr-gran">? = 7</div>` }] };
+  }
+};
+
+/* ---------- OBJECTIU 7 · POTÈNCIA D'UNA POTÈNCIA + BARREJA ---------- */
+const PISTA_W7 = { completa: `Potència d'una potència: la base es queda igual i els exponents es <b>multipliquen</b>. (${pw(2, 3)})² = ${pw(2, 3)} · ${pw(2, 3)} = ${pw(2, 6)}.`, mitja: `Exponents multiplicats.` };
+const PISTA_MIX = { completa: `Primer mira l'operació: <b>producte → sumo</b>, <b>quocient → resto</b>, <b>potència d'una potència → multiplico</b>.`, mitja: `Quina operació és?` };
+const itemPP = (a, m, k) => ({ tipus: 'pot', html: `${pwPP(a, m, k)} =`, base: a, exp: m * k, a, m, k, regla: 'pp',
+  errs: errsP(a, m * k, [[a, m + k, 'sumaPP'], [a * k, m, 'baseExp'], [a, m ** k, 'reglaErr']]) });
+function itemMix(nv, quina = tria(['p', 'q', 'pp'])) {
+  const a = baseP(nv);
+  if (quina === 'p') { const m = rnd(2, 6), k = rnd(2, 6); return { ...itemProd(a, [m, k]), errs: errsP(a, m + k, [[a * a, m + k, 'multBases'], [a, m * k, 'reglaErr'], [a, Math.abs(m - k), 'reglaErr']]), regla: 'p', sol: `${m} + ${k}` }; }
+  if (quina === 'q') { const m = rnd(5, 10), k = rnd(2, m - 2); return { ...itemQuoc(a, m, k), errs: errsP(a, m - k, [[1, m - k, 'divBases'], [a, m + k, 'reglaErr'], [a, m * k, 'reglaErr'], ...(m % k === 0 ? [[a, m / k, 'divExp']] : [])]), regla: 'q', sol: `${m} − ${k}` }; }
+  const m = rnd(2, 4), k = rnd(2, 4); return { ...itemPP(a, m, k), errs: errsP(a, m * k, [[a, m + k, 'sumaPP'], [a, Math.abs(m - k), 'reglaErr']]), sol: `${m} · ${k}` };
+}
+const W7 = {};
+W7.desplega = (nv) => {
+  const a = rnd(2, nv === 1 ? 5 : 9), m = rnd(2, 4), k = rnd(2, 3); const it = itemPP(a, m, k);
+  return { sig: `r0-${a}-${m}-${k}`, enunciat: `${pwPP(a, m, k)} vol dir ${pw(a, m)} multiplicat ${k} vegades. Compta quantes vegades surt el ${a}.`,
+    visual: () => `<div class="w5-grups">${Array.from({ length: k }, (_, i) => grup(a, m, ['a', 'b', 'c'][i % 3], { del: i * .3 })).join('<span class="w5-op">·</span>')}</div>`,
+    pista: PISTA_W7, ...apartats([it]), explicacio: `${k} grups de ${m}: ${m} · ${k} = ${m * k} vegades.`, solucio: [`${it.html} ${Array(k).fill(pw(a, m)).join(' · ')} = <b>${pw(a, m * k)}</b>`] };
+};
+W7.pot = (nv, { n = 3 } = {}) => {
+  const its = unics(n, () => itemPP(baseP(nv), rnd(2, nv === 1 ? 3 : 5), rnd(2, nv === 1 ? 3 : 5)), it => it.html);
+  return { sig: `r1-${its.map(i => i.html).join('|')}`, enunciat: `Escriu com una sola potència.`, visual: nv === 1 ? () => reglaHtml('pp') : null, pista: PISTA_W7, ...apartats(its),
+    explicacio: `Base igual i exponents multiplicats.`, solucio: its.map(it => `${it.html} ${it.a}<sup>${it.m}·${it.k}</sup> = <b>${pw(it.a, it.exp)}</b>`) };
+};
+W7.tria = (nv, { n = 3 } = {}) => {
+  const its = unics(n, () => { const a = baseP(nv); let m, k; do { m = rnd(2, 5); k = rnd(2, 5); } while (m * k === m + k);
+    const ops = barreja([{ html: pw(a, m * k), val: 'b' }, { html: pw(a, m + k), val: 's', tag: 'sumaPP' }, { html: pw(a * k, m), val: 'x', tag: 'baseExp' }]);
+    return { tipus: 'tria', html: `${pwPP(a, m, k)} =`, opcions: ops, correcta: 'b', etiq: etiqDe(ops), a, m, k }; }, it => it.html);
+  return { sig: `r2-${its.map(i => i.html).join('|')}`, enunciat: `Tria el resultat correcte.`, visual: null, pista: PISTA_W7, ...apartats(its),
+    explicacio: `Els exponents es multipliquen.`, solucio: its.map(it => `${it.html} <b>${pw(it.a, it.m * it.k)}</b>`) };
+};
+const OPS_REGLA = [{ html: '➕ Sumo els exponents', val: 'p' }, { html: '➖ Resto els exponents', val: 'q' }, { html: '✖️ Multiplico els exponents', val: 'pp' }];
+W7.regla = (nv, { n = 3 } = {}) => {
+  const quines = barreja(['p', 'q', 'pp', tria(['p', 'q', 'pp'])]).slice(0, n);
+  const its = quines.map(q => { const it = itemMix(nv, q); return { tipus: 'tria', html: it.html.replace(/ =$/, ''), opcions: OPS_REGLA, correcta: q, etiq: Object.fromEntries(OPS_REGLA.filter(o => o.val !== q).map(o => [o.val, 'reglaErr'])), llarg: true }; });
+  return { sig: `r3-${its.map(i => i.html).join('|')}`, enunciat: `Què he de fer amb els <b>exponents</b>?`, visual: () => reglaHtml(), pista: PISTA_MIX, ...apartats(its),
+    explicacio: `Producte → sumar · Quocient → restar · Potència d'una potència → multiplicar.`, solucio: its.map(it => `${it.html}: <b>${OPS_REGLA.find(o => o.val === it.correcta).html}</b>`) };
+};
+W7.barreja = (nv, { n = 4 } = {}) => {
+  const quines = barreja(['p', 'q', 'pp', ...Array.from({ length: Math.max(0, n - 3) }, () => tria(['p', 'q', 'pp']))]).slice(0, n);
+  const its = quines.map(q => itemMix(nv, q));
+  return { sig: `r4-${its.map(i => i.html).join('|')}`, enunciat: `Barreja de regles: escriu cada una com una sola potència.`, visual: nv === 1 ? () => reglaHtml() : null, pista: PISTA_MIX, ...apartats(its),
+    explicacio: `Primer decideix quina regla toca i després aplica-la.`, solucio: its.map(it => `${it.html} ${it.base}<sup>${it.sol}</sup> = <b>${pw(it.base, it.exp)}</b>`) };
+};
+W7.combina = (nv, { n = 3 } = {}) => {
+  const fer = () => { const a = rnd(2, 7), m = rnd(2, 4), k = rnd(2, 3), p = rnd(1, 5);
+    const t = tria([0, 1, 2]);
+    if (t === 0) return { tipus: 'pot', html: `${pwPP(a, m, k)} · ${pwX(a, p)} =`, base: a, exp: m * k + p, a, sol: `${m}·${k} + ${p}`, errs: errsP(a, m * k + p, [[a, m + k + p, 'sumaPP'], [a, m * k * p, 'reglaErr']]) };
+    if (t === 1) { const q = rnd(1, m * k - 1); return { tipus: 'pot', html: `${pwPP(a, m, k)} : ${pwX(a, q)} =`, base: a, exp: m * k - q, a, sol: `${m}·${k} − ${q}`, errs: errsP(a, m * k - q, [[a, m + k - q, 'sumaPP'], [a, m * k + q, 'sumaQ']]) }; }
+    const r = rnd(2, 4); return { tipus: 'pot', html: `(${pw(a, m)} · ${pw(a, p)})${sp(r)} =`, base: a, exp: (m + p) * r, a, sol: `(${m} + ${p})·${r}`, errs: errsP(a, (m + p) * r, [[a, m + p + r, 'sumaPP'], [a, m * p * r, 'multExp'], [a * a, (m + p) * r, 'multBases']]) };
+  };
+  const its = unics(n, fer, it => it.html);
+  return { sig: `r5-${its.map(i => i.html).join('|')}`, enunciat: `Dues regles seguides: escriu cada una com una sola potència.`, visual: () => reglaHtml(), pista: { completa: `Fes-ho per passos: primer el parèntesi o la potència d'una potència, i després el producte o el quocient.`, mitja: `Pas a pas.` }, ...apartats(its),
+    explicacio: `Pas a pas, aplicant una regla cada vegada.`, solucio: its.map(it => `${it.html} ${it.a}<sup>${it.sol}</sup> = <b>${pw(it.a, it.exp)}</b>`) };
+};
+const VF_W7 = [
+  () => { const a = rnd(2, 9), m = rnd(2, 5), k = rnd(2, 4); return { h: `${pwPP(a, m, k)} = ${pw(a, m * k)}`, ok: true, s: `${m} · ${k} = ${m * k}.` }; },
+  () => { const a = rnd(2, 9); const [m, k] = tria([[3, 4], [2, 5], [4, 3], [5, 2], [3, 3]]); return { h: `${pwPP(a, m, k)} = ${pw(a, m + k)}`, ok: false, etiq: { si: 'sumaPP' }, s: `Es multipliquen: ${pw(a, m * k)}.` }; },
+  () => { const a = rnd(2, 9), m = rnd(2, 5), k = rnd(2, 5); return { h: `${pw(a, m)} · ${pw(a, k)} = ${pw(a, m * k === m + k ? m * k + 1 : m * k)}`, ok: false, etiq: { si: 'reglaErr' }, s: `És un producte: se sumen, ${pw(a, m + k)}.` }; },
+  () => { const a = rnd(2, 9), m = rnd(6, 9), k = rnd(2, 4); return { h: `${pw(a, m)} : ${pw(a, k)} = ${pw(a, m - k)}`, ok: true, s: `Quocient: ${m} − ${k}.` }; },
+  () => { const a = rnd(2, 9), m = rnd(2, 4), k = rnd(2, 3); return { h: `${pwPP(a, m, k)} = ${Array(k).fill(pw(a, m)).join(' · ')}`, ok: true, s: `És la definició: ${pw(a, m)} multiplicat ${k} vegades.` }; }
+];
+W7.vf = (nv, { n = 4 } = {}) => {
+  const ds = barreja(VF_W7).slice(0, n).map(f => f());
+  const its = ds.map(d => ({ tipus: 'tria', html: d.h, opcions: vfOps, correcta: d.ok ? 'si' : 'no', etiq: d.etiq || {}, llarg: true }));
+  return { sig: `r6-${ds.map(d => d.h).join('|')}`, enunciat: `Vertader o fals?`, visual: null, pista: PISTA_MIX, ...apartats(its),
+    explicacio: `Mira quina operació és abans d'aplicar la regla.`, solucio: ds.map(d => `${d.h}: <b>${d.ok ? 'vertader' : 'fals'}</b>. ${d.s}`) };
+};
+TEMES.w7 = {
+  gen: W7, senseCalc: true,
+  sequencia: {
+    1: [['desplega'], ['pot', { n: 3 }], ['tria', { n: 3 }], ['regla', { n: 3 }], ['desplega'], ['barreja', { n: 3 }], ['vf', { n: 3 }], ['barreja', { n: 4 }]],
+    2: [['pot', { n: 4 }], ['tria', { n: 3 }], ['regla', { n: 4 }], ['barreja', { n: 4 }], ['vf', { n: 4 }], ['barreja', { n: 4 }], ['combina', { n: 2 }], ['barreja', { n: 4 }]],
+    3: [['pot', { n: 4 }], ['regla', { n: 4 }], ['barreja', { n: 4 }], ['combina', { n: 3 }], ['vf', { n: 4 }], ['barreja', { n: 5 }], ['combina', { n: 3 }], ['barreja', { n: 5 }]]
+  },
+  explicacio: [
+    { text: `<p>Què vol dir <b>(${pw(2, 3)})²</b>? Que ${pw(2, 3)} està <b class="parpelleja">al quadrat</b>: el multipliquem per ell mateix.</p><p class="petit">(${pw(2, 3)})² = ${pw(2, 3)} · ${pw(2, 3)}</p>`,
+      vis: () => `<div class="w5-grups">${grup(2, 3, 'a')}<span class="w5-op">·</span>${grup(2, 3, 'b', { del: .4 })}</div>` },
+    { text: `<p>Són <b>2 grups de 3</b>: el 2 surt <b class="parpelleja">3 · 2 = 6 vegades</b>.</p><p>(${pw(2, 3)})² = <b>${pw(2, 6)}</b></p>`,
+      vis: () => `<div style="display:flex;flex-direction:column;align-items:center;gap:10px"><div class="w5-grups">${grup(2, 3, 'a')}${grup(2, 3, 'b', { del: .2 })}</div><div>${pwH(2, 6, 'gran')}</div></div>` },
+    { text: `<p>La regla: la base es queda igual i els exponents <b class="parpelleja">es multipliquen</b>.</p><p class="expr-gran" style="margin:6px 0">(aᵐ)ⁿ = aᵐ·ⁿ</p><p class="petit"><b>Alerta:</b> (${pw(2, 3)})² <b>no</b> és ${pw(2, 5)}.</p>`, vis: () => reglaHtml('pp') },
+    { text: `<p>Ara ja tens <b>tres regles</b>. El truc és <b class="parpelleja">mirar l'operació</b> abans de fer res:</p><p class="petit">${pw(3, 4)} · ${pw(3, 2)} → sumo → ${pw(3, 6)} &nbsp;·&nbsp; ${pw(3, 4)} : ${pw(3, 2)} → resto → ${pw(3, 2)} &nbsp;·&nbsp; (${pw(3, 4)})² → multiplico → ${pw(3, 8)}</p>`, vis: () => reglaHtml() }
+  ],
+  exemple: (nv) => {
+    if (nv === 1) return { enunciat: `Escriu <b>(${pw(5, 2)})³</b> com una sola potència.`, passos: [
+      { text: `(${pw(5, 2)})³ = ${pw(5, 2)} · ${pw(5, 2)} · ${pw(5, 2)}: tres grups de 2.`, vis: `<div class="w5-grups">${grup(5, 2, 'a')}${grup(5, 2, 'b')}${grup(5, 2, 'c')}</div>` },
+      { text: `2 · 3 = <b>6</b>: <b>${pw(5, 6)}</b>. <span class="marca-ok">✓</span>`, vis: `<div>${pwH(5, 6, 'gran')}</div>` }] };
+    if (nv === 2) return { enunciat: `Escriu com una sola potència: <b>${pw(7, 8)} : ${pw(7, 3)}</b> i <b>(${pw(7, 4)})²</b>.`, passos: [
+      { text: `El primer és un <b>quocient</b>: resto, 8 − 3 = 5 → ${pw(7, 5)}.`, vis: reglaHtml('q') },
+      { text: `El segon és una <b>potència d'una potència</b>: multiplico, 4 · 2 = 8 → ${pw(7, 8)}. <span class="marca-ok">✓</span>`, vis: reglaHtml('pp') }] };
+    return { enunciat: `Escriu com una sola potència: <b>(${pw(2, 3)})⁴ · ${pw(2, 5)}</b>.`, passos: [
+      { text: `Primer la potència d'una potència: (${pw(2, 3)})⁴ = ${pw(2, 12)}.`, vis: `<div class="expr-gran">${pw(2, 12)} · ${pw(2, 5)}</div>` },
+      { text: `Ara el producte: 12 + 5 = 17 → <b>${pw(2, 17)}</b>. <span class="marca-ok">✓</span>`, vis: `<div>${pwH(2, 17, 'gran')}</div>` }] };
+  }
+};
+
 UNITATS.p.carregada = true;
