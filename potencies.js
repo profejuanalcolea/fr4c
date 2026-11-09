@@ -793,4 +793,127 @@ TEMES.w7 = {
   }
 };
 
+/* ---------- OBJECTIU 8 · L'ARREL QUADRADA ---------- */
+Object.assign(ETIQ_ERR, { arrelMeitat: 'divideix entre 2 en lloc de fer l\'arrel (√16 = 8)', arrelSuma: 'reparteix l\'arrel en una suma (√(9+16) = 3+4)', arrelAprox: 'tria malament els dos quadrats perfectes del voltant', arrelQuad: 'fa el quadrat en lloc de l\'arrel (√9 = 81)' });
+Object.assign(AVIS_ERR, {
+  arrelMeitat: 'L\'arrel <b>no és la meitat</b>: busca el nombre que, multiplicat <b>per ell mateix</b>, dona el de dins. √16 = 4, perquè 4 · 4 = 16.',
+  arrelSuma: 'Primer fes la suma de dins: √(9 + 16) = √25 = 5, no 3 + 4.',
+  arrelAprox: 'Busca els dos <b>quadrats perfectes</b> més propers: un per sota i un per sobre.',
+  arrelQuad: 'L\'arrel <b>desfà</b> el quadrat: √9 = 3, perquè 3² = 9.'
+});
+document.head.insertAdjacentHTML('beforeend', `<style>
+.w8r{white-space:nowrap}.w8r>span{border-top:3px solid currentColor;padding:0 3px;margin-left:1px}
+.w8-taula{display:grid;grid-template-columns:repeat(4,auto);gap:6px 10px;font-size:1.15rem}.w8-taula div{padding:4px 10px;border-radius:8px;background:#fff;border:2px solid #ddd;text-align:center}.w8-taula b{color:var(--taronja)}
+.w8-taula div.on{border-color:var(--taronja);background:#fff3e6}
+.w8-recta{display:flex;align-items:flex-end;gap:0;font-weight:800;font-size:1.6rem}.w8-recta div{display:flex;flex-direction:column;align-items:center;min-width:120px}.w8-recta .t{height:22px;border-left:3px solid #000}.w8-recta .l{border-top:3px solid #000;width:100%}
+.w8-recta .q{font-size:1rem;color:#777}.w8-recta .x{color:var(--taronja);font-size:1.9rem}
+.w8-par{display:flex;align-items:center;gap:16px;font-size:1.6rem;font-weight:900}.w8-par i{font-style:normal;font-size:1.2rem;color:#777}
+</style>`);
+const rt = n => `<span class="w8r">√<span>${n}</span></span>`; // √49 amb ratlla
+const rtT = n => `√${n}`; // en text pla
+const QUADS = Array.from({ length: 21 }, (_, i) => i * i);
+const errsArrel = r => { const n = r * r, o = { [n / 2]: 'arrelMeitat', [n * n]: 'arrelQuad', [n]: 'arrelQuad' }; delete o[r]; for (const k of Object.keys(o)) if (!Number.isInteger(+k)) delete o[k]; return o; };
+const PISTA_W8 = { completa: `L'arrel quadrada busca el nombre que, <b>multiplicat per ell mateix</b>, dona el de dins: √49 = 7, perquè 7 · 7 = 49.`, mitja: `Quin nombre per ell mateix fa el de dins?` };
+const taulaQuads = (fins = 12, on = -1) => `<div class="w8-taula">${Array.from({ length: fins }, (_, i) => i + 1).map(k => `<div class="${k === on ? 'on' : ''}">${k}² = <b>${k * k}</b></div>`).join('')}</div>`;
+const maxArrel = nv => nv === 1 ? 10 : nv === 2 ? 12 : 20;
+const W8 = {};
+W8.calc = (nv, { n = 4 } = {}) => {
+  const rs = barreja(Array.from({ length: maxArrel(nv) - 1 }, (_, i) => i + 2)).slice(0, n).sort((a, b) => a - b);
+  if (nv >= 2 && Math.random() < .5) rs[0] = tria([0, 1]);
+  const its = rs.map(r => ({ tipus: 'num', html: rt(r * r), valor: r, errs: errsArrel(r), r }));
+  return { sig: `s1-${rs.join('_')}`, enunciat: `Calcula l'arrel quadrada.`, visual: nv === 1 ? () => taulaQuads(10) : null, pista: PISTA_W8, ...apartats(its),
+    explicacio: `Busca el nombre que, multiplicat per ell mateix, dona el de dins.`, solucio: its.map(it => `${rtT(it.r * it.r)} = <b>${it.r}</b>, perquè ${it.r} · ${it.r} = ${it.r * it.r}`) };
+};
+W8.graella = (nv) => {
+  const r = rnd(3, nv === 1 ? 6 : 8);
+  const it = { tipus: 'num', llarg: true, html: `Aquest quadrat té <b>${r * r}</b> quadradets. Quants n'hi ha a cada costat? &nbsp; ${rt(r * r)} =`, valor: r, errs: errsArrel(r), r };
+  return { sig: `s0-${r}`, enunciat: `Arrel quadrada amb un dibuix.`, visual: () => graellaSVG(r), pista: { completa: `Compta els quadradets d'un costat. Ha de ser un nombre que, per ell mateix, faci ${r * r}.`, mitja: `Compta un costat.` }, ...apartats([it]),
+    explicacio: `Si un quadrat té ${r * r} quadradets, el costat en té ${rtT(r * r)} = ${r}.`, solucio: [`${rtT(r * r)} = <b>${r}</b>, perquè ${r} · ${r} = ${r * r}`] };
+};
+W8.inversa = (nv, { n = 3 } = {}) => {
+  const rs = barreja(Array.from({ length: maxArrel(nv) - 2 }, (_, i) => i + 3)).slice(0, n);
+  const its = rs.map((r, k) => k % 2 === 0
+    ? { tipus: 'num', llarg: true, html: `Si ${pw(r, 2)} = ${r * r}, llavors ${rt(r * r)} =`, valor: r, errs: errsArrel(r), r }
+    : { tipus: 'num', llarg: true, html: `Si ${rt(r * r)} = ${r}, llavors ${pw(r, 2)} =`, valor: r * r, errs: { [r * 2]: 'baseExp' }, r });
+  return { sig: `s2-${rs.join('_')}`, enunciat: `L'arrel <b>desfà</b> el quadrat (i el quadrat desfà l'arrel).`, visual: () => `<div class="w8-par">${pwH(7, 2, 'gran')}<i>= 49</i><span>⇄</span>${rt(49)}<i>= 7</i></div>`, pista: { completa: `El quadrat i l'arrel són operacions <b>inverses</b>: una desfà l'altra.`, mitja: `Mira la igualtat que et donen.` }, ...apartats(its),
+    explicacio: `${pw(7, 2)} = 49 i ${rtT(49)} = 7: són operacions inverses.`, solucio: its.map(it => `<b>${it.valor}</b>`) };
+};
+W8.perfectes = (nv) => {
+  const q = barreja([4, 9, 16, 25, 36, 49, 64, 81, 100, ...(nv > 1 ? [121, 144] : [])]).slice(0, 4);
+  const no = barreja([8, 12, 18, 20, 24, 27, 32, 40, 45, 50, 60, 72, 80, 90, ...(nv > 1 ? [99, 120] : [])]).slice(0, 4);
+  const nums = barreja([...q, ...no]);
+  const it = { tipus: 'marca', nat: true, html: 'Toca els <b>quadrats perfectes</b>:', nums, bons: nums.map((v, i) => q.includes(v) ? i : -1).filter(i => i >= 0) };
+  return { sig: `s3-${nums.join('_')}`, enunciat: `Un <b>quadrat perfecte</b> té una arrel exacta (és un nombre al quadrat).`, visual: nv === 1 ? () => taulaQuads(10) : null, pista: { completa: `Mira si el nombre surt a la taula dels quadrats: 1, 4, 9, 16, 25, 36, 49, 64, 81, 100…`, mitja: `És algun nombre per ell mateix?` }, ...apartats([it]),
+    explicacio: `Els quadrats perfectes són 1, 4, 9, 16, 25… (1², 2², 3², 4², 5²…).`, solucio: [`<b>${q.sort((a, b) => a - b).join(', ')}</b> (${q.map(v => `${Math.sqrt(v)}²`).join(', ')})`] };
+};
+const VF_W8 = [
+  () => { const r = rnd(2, 10); return { h: `${rt(r * r)} = ${r}`, ok: true, s: `${r} · ${r} = ${r * r}.` }; },
+  () => { const r = tria([4, 6, 8, 10]); return { h: `${rt(r * r)} = ${r * r / 2}`, ok: false, etiq: { si: 'arrelMeitat' }, s: `L'arrel no és la meitat: ${rtT(r * r)} = ${r}.` }; },
+  () => ({ h: `${rt(1)} = 1`, ok: true, s: `1 · 1 = 1.` }),
+  () => ({ h: `${rt(0)} = 0`, ok: true, s: `0 · 0 = 0.` }),
+  () => { const r = rnd(3, 9); return { h: `${rt(r * r)} = ${r ** 4}`, ok: false, etiq: { si: 'arrelQuad' }, s: `${rtT(r * r)} = ${r}.` }; },
+  () => { const [a, b] = tria([[9, 16], [36, 64]]); return { h: `${rt(`${a} + ${b}`)} = ${Math.sqrt(a) + Math.sqrt(b)}`, ok: false, etiq: { si: 'arrelSuma' }, s: `Primer la suma: ${rtT(a + b)} = ${Math.sqrt(a + b)}.` }; }
+];
+W8.vf = (nv, { n = 3 } = {}) => {
+  const ds = barreja(nv === 3 ? VF_W8 : VF_W8.slice(0, 5)).slice(0, n).map(f => f());
+  const its = ds.map(d => ({ tipus: 'tria', html: d.h, opcions: vfOps, correcta: d.ok ? 'si' : 'no', etiq: d.etiq || {}, llarg: true }));
+  return { sig: `s4-${ds.map(d => d.h).join('|')}`, enunciat: `Vertader o fals?`, visual: null, pista: PISTA_W8, ...apartats(its),
+    explicacio: `Comprova-ho multiplicant el resultat per ell mateix.`, solucio: ds.map(d => `${d.h}: <b>${d.ok ? 'vertader' : 'fals'}</b>. ${d.s}`) };
+};
+W8.context = (nv, { n = 2 } = {}) => {
+  const C = [
+    r => ({ t: `Un hort quadrat fa <b>${r * r} m²</b>. Quants metres fa cada costat?`, r }),
+    r => ({ t: `Una sala quadrada té <b>${r * r}</b> rajoles quadrades iguals. Quantes rajoles hi ha a cada costat?`, r }),
+    r => ({ t: `Volem col·locar <b>${r * r}</b> cadires formant un quadrat. Quantes files hi haurà?`, r }),
+    r => ({ t: `Un mosaic quadrat té <b>${r * r}</b> peces. Quantes peces té cada costat?`, r })
+  ];
+  const rs = barreja(Array.from({ length: maxArrel(nv) - 3 }, (_, i) => i + 4)).slice(0, n);
+  const fs = barreja(C).slice(0, n).map((f, k) => f(rs[k]));
+  const its = fs.map(f => ({ tipus: 'num', llarg: true, html: f.t, valor: f.r, errs: errsArrel(f.r) }));
+  return { sig: `s5-${fs.map(f => f.t.slice(0, 10) + f.r).join('|')}`, enunciat: `Problemes amb quadrats.`, visual: null, pista: { completa: `Si el quadrat té <b>N</b> peces o metres quadrats, el costat és ${rtT('N')}.`, mitja: `Fes l'arrel quadrada.` }, ...apartats(its),
+    explicacio: `El costat d'un quadrat és l'arrel quadrada de l'àrea.`, solucio: fs.map(f => `${rtT(f.r * f.r)} = <b>${f.r}</b>`) };
+};
+const rectaAprox = (n) => { const a = Math.floor(Math.sqrt(n)), b = a + 1;
+  return `<div class="w8-recta">${[a, null, b].map(v => v === null ? `<div><span class="x">${rt(n)}</span><span class="q">≈ ?</span><span class="t" style="border-color:var(--taronja)"></span><span class="l"></span></div>` : `<div><b>${v}</b><span class="q">${rtT(v * v)}</span><span class="t"></span><span class="l"></span></div>`).join('')}</div>`; };
+W8.entre = (nv, { n = 3 } = {}) => {
+  const its = unics(n, () => { let x; do { x = rnd(5, nv === 3 ? 380 : 140); } while (Number.isInteger(Math.sqrt(x))); const a = Math.floor(Math.sqrt(x));
+    const ops = barreja([{ html: `entre ${a} i ${a + 1}`, val: 'b' }, { html: `entre ${a - 1} i ${a}`, val: 'm', tag: 'arrelAprox' }, { html: `entre ${a + 1} i ${a + 2}`, val: 'p', tag: 'arrelAprox' }, ...(x / 2 > a + 3 ? [{ html: `entre ${Math.floor(x / 2)} i ${Math.floor(x / 2) + 1}`, val: 'h', tag: 'arrelMeitat' }] : [])]);
+    return { tipus: 'tria', html: `${rt(x)} està…`, opcions: ops, correcta: 'b', etiq: etiqDe(ops), x, a, llarg: true }; }, it => it.x);
+  return { sig: `s6-${its.map(i => i.x).join('_')}`, enunciat: `Arrels <b>no exactes</b>: entre quins dos nombres està?`, visual: () => rectaAprox(its[0].x), pista: { completa: `Busca el quadrat perfecte de <b>sota</b> i el de <b>sobre</b>: 25 &lt; 30 &lt; 36, per tant √30 està entre 5 i 6.`, mitja: `Quins quadrats perfectes té a prop?` }, ...apartats(its),
+    explicacio: `Els quadrats perfectes del voltant diuen entre quins nombres està l'arrel.`, solucio: its.map(it => `${it.a * it.a} &lt; ${it.x} &lt; ${(it.a + 1) ** 2}, per tant ${rtT(it.x)} està <b>entre ${it.a} i ${it.a + 1}</b>`) };
+};
+W8.aprox = (nv, { n = 3 } = {}) => {
+  const its = unics(n, () => { let x, a, d1, d2; do { x = rnd(10, 300); a = Math.floor(Math.sqrt(x)); d1 = x - a * a; d2 = (a + 1) ** 2 - x; } while (d1 === 0 || d1 === d2);
+    const v = d1 < d2 ? a : a + 1; return { tipus: 'num', llarg: true, html: `${rt(x)} ≈ (el nombre enter més proper)`, valor: v, errs: { [v === a ? a + 1 : a]: 'arrelAprox', [Math.round(x / 2)]: 'arrelMeitat' }, x, a, d1, d2 }; }, it => it.x);
+  its.forEach(it => delete it.errs[it.valor]);
+  return { sig: `s7-${its.map(i => i.x).join('_')}`, enunciat: `Aproxima l'arrel al <b>nombre enter més proper</b>.`, visual: () => rectaAprox(its[0].x), pista: { completa: `Mira de quin quadrat perfecte està més a prop: si ${rtT(30)}, 30 està a 5 de 25 i a 6 de 36, per tant √30 ≈ 5.`, mitja: `Quin quadrat perfecte és més a prop?` }, ...apartats(its),
+    explicacio: `L'arrel s'aproxima al nombre del quadrat perfecte més proper.`, solucio: its.map(it => `${it.a * it.a} (a ${it.d1}) i ${(it.a + 1) ** 2} (a ${it.d2}): ${rtT(it.x)} ≈ <b>${it.valor}</b>`) };
+};
+TEMES.w8 = {
+  gen: W8, senseCalc: true,
+  sequencia: {
+    1: [['graella'], ['calc', { n: 4 }], ['inversa', { n: 2 }], ['perfectes'], ['graella'], ['calc', { n: 4 }], ['vf', { n: 3 }], ['context', { n: 2 }]],
+    2: [['calc', { n: 4 }], ['inversa', { n: 3 }], ['perfectes'], ['vf', { n: 4 }], ['context', { n: 2 }], ['entre', { n: 3 }], ['calc', { n: 4 }], ['entre', { n: 3 }]],
+    3: [['calc', { n: 4 }], ['vf', { n: 4 }], ['entre', { n: 3 }], ['aprox', { n: 3 }], ['context', { n: 2 }], ['perfectes'], ['aprox', { n: 3 }], ['entre', { n: 3 }]]
+  },
+  explicacio: [
+    { text: `<p>Aquest quadrat té <b>25</b> quadradets. Quants n'hi ha a cada <b class="parpelleja">costat</b>?</p><p class="petit">Busquem un nombre que, multiplicat <b>per ell mateix</b>, faci 25: 5 · 5 = 25. El costat és <b>5</b>.</p>`, vis: () => graellaSVG(5) },
+    { text: `<p>Això és l'<b class="parpelleja">arrel quadrada</b>: ${rt(25)} = 5.</p><p class="petit">L'arrel <b>desfà</b> el quadrat: ${pw(5, 2)} = 25 i ${rtT(25)} = 5. Són operacions inverses.</p>`,
+      vis: () => `<div class="w8-par">${pwH(5, 2, 'gran')}<i>= 25</i><span>⇄</span><span style="font-size:2.4rem">${rt(25)}</span><i>= 5</i></div>` },
+    { text: `<p>Els nombres amb arrel exacta són els <b class="parpelleja">quadrats perfectes</b>: 1, 4, 9, 16, 25, 36…</p><p class="petit"><b>Alerta:</b> ${rtT(16)} <b>no</b> és 8 (la meitat). És 4, perquè 4 · 4 = 16.</p>`, vis: () => taulaQuads(12, 4) },
+    { text: `<p>I ${rt(30)}? 30 no és un quadrat perfecte. Està <b class="parpelleja">entre</b> 25 i 36:</p><p class="petit">${rtT(25)} = 5 &lt; ${rtT(30)} &lt; ${rtT(36)} = 6. Per tant, ${rtT(30)} està entre 5 i 6, i més a prop del 5.</p>`, vis: () => rectaAprox(30) }
+  ],
+  exemple: (nv) => {
+    if (nv === 1) return { enunciat: `Calcula <b>${rt(36)}</b>.`, passos: [
+      { text: `Busco un nombre que per ell mateix faci 36. Miro la taula.`, vis: taulaQuads(8, 6) },
+      { text: `6 · 6 = 36, per tant <b>${rtT(36)} = 6</b>. <span class="marca-ok">✓</span>`, vis: `<div class="expr-gran">${rt(36)} = 6</div>` }] };
+    if (nv === 2) return { enunciat: `Un hort quadrat fa <b>81 m²</b>. Quant fa cada costat?`, passos: [
+      { text: `El costat és l'arrel de l'àrea: ${rtT(81)}.`, vis: graellaSVG(9, { anim: false }) },
+      { text: `9 · 9 = 81, per tant el costat fa <b>9 m</b>. <span class="marca-ok">✓</span>`, vis: `<div class="expr-gran">${rt(81)} = 9</div>` }] };
+    return { enunciat: `Aproxima <b>${rt(70)}</b> al nombre enter més proper.`, passos: [
+      { text: `Quadrats perfectes del voltant: 64 = 8² i 81 = 9².`, vis: rectaAprox(70) },
+      { text: `70 està a 6 de 64 i a 11 de 81: és més a prop del 64. <b>${rtT(70)} ≈ 8</b>. <span class="marca-ok">✓</span>`, vis: `<div class="expr-gran">${rt(70)} ≈ 8</div>` }] };
+  }
+};
+
 UNITATS.p.carregada = true;

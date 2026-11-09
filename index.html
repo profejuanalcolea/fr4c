@@ -944,7 +944,7 @@ const OBJ_POTENCIES = [
   { id: 'w5', num: '5', titol: 'Producte de potències de la mateixa base', curt: 'Producte' },
   { id: 'w6', num: '6', titol: 'Quocient de potències de la mateixa base', curt: 'Quocient' },
   { id: 'w7', num: '7', titol: 'Potència d\'una potència', curt: 'Pot. d\'una pot.' },
-  { id: 'w8', properament: true, num: '8', titol: 'L\'arrel quadrada', curt: 'Arrel' }
+  { id: 'w8', num: '8', titol: 'L\'arrel quadrada', curt: 'Arrel' }
 ];
 const UNITATS = {
   f: { id: 'f', nom: 'Fraccions', obj: OBJ_FRACCIONS, prova: 'pf', minimKey: 'minimAS', minimDef: 6, provaKey: 'provaF' },
@@ -990,7 +990,7 @@ const enllacaQualif = c => $$('.q-man', c).forEach(td => td.onclick = () => canv
 const unitatCompleta = u => u.obj.every(o => !o.properament);
 /* ---------- Fitxers a part: cada unitat i cada joc es carrega quan cal ----------
    Són scripts clàssics (funcionen a GitHub Pages i també obrint l'index des de l'ordinador). */
-const V_FITXERS = '4.6';
+const V_FITXERS = '4.7';
 const FITXERS_UNITAT = { f: 'fraccions.js', e: 'enters.js', p: 'potencies.js' };
 const FITXERS_JOC = { tcx: 'joc-caixa.js', tesc: 'joc-escape.js', tpz: 'joc-pizzeria.js', dimp: 'joc-impropies.js' };
 const CARREGUES = {};
@@ -1249,7 +1249,7 @@ function apCorrHtml(it) {
   if (it.tipus === 'enter') return it.llarg ? `<b>${fz(it.valor)}${it.unitat ? ' ' + it.unitat : ''}</b>` : `${it.html} = <b>${fz(it.valor)}</b>${it.unitat ? ' ' + it.unitat : ''}`;
   if (it.tipus === 'tria') return `<b>${it.opcions.find(o => o.val === it.correcta).html}</b>`;
   if (it.tipus === 'ordena') return ordenats(it).map(fz).join(it.ordre === 'asc' ? ' &lt; ' : ' &gt; ');
-  if (it.tipus === 'marca') return it.nums.filter((_, i) => it.bons.includes(i)).map(fz).join(', ');
+  if (it.tipus === 'marca') return it.nums.filter((_, i) => it.bons.includes(i)).map(v => it.nat ? v : fz(v)).join(', ');
 }
 const apCorrTxt = it => textPla(apCorrHtml(it));
 // llegeix un enter escrit: accepta − o -, + opcional i espais («- 3», «+3», «3»)
@@ -1282,7 +1282,7 @@ function apHtml(it, k, st, actiu) {
       <div class="ap-ord-fila">${it.nums.map((_, p) => seq[p] != null ? `<button data-k="${k}" data-tr="${p}" style="color:${colZ(it.nums[seq[p]])}" ${dis}>${fz(it.nums[seq[p]])}</button>` : `<span class="buit"></span>`).join(`<i>${it.ordre === 'asc' ? '&lt;' : '&gt;'}</i>`)}</div>
       <div class="ap-ord-pool">${it.nums.map((v, i) => seq.includes(i) ? `<span class="usat">${fz(v)}</span>` : `<button data-k="${k}" data-po="${i}" style="color:${colZ(v)}" ${dis}>${fz(v)}</button>`).join('')}</div></div>`;
   }
-  if (it.tipus === 'marca') return `<div class="ap-ord"><div class="ap-ord-cap">${it.html}</div><div class="ap-ord-pool">${it.nums.map((v, i) => `<button data-k="${k}" data-mc="${i}" class="${st.sel?.has(i) ? 'triat' : ''}" style="color:${colZ(v)}" ${dis}>${fz(v)}</button>`).join('')}</div></div>`;
+  if (it.tipus === 'marca') return `<div class="ap-ord"><div class="ap-ord-cap">${it.html}</div><div class="ap-ord-pool">${it.nums.map((v, i) => `<button data-k="${k}" data-mc="${i}" class="${st.sel?.has(i) ? 'triat' : ''}" ${it.nat ? '' : `style="color:${colZ(v)}"`} ${dis}>${it.nat ? v : fz(v)}</button>`).join('')}</div></div>`;
   return '';
 }
 const apFet = (it, st) => it.tipus === 'signe' || it.tipus === 'tria' ? st.v != null
@@ -2711,7 +2711,7 @@ function mostraCredits() {
     <p style="font-size:1.1rem"><b>Ins Júlia Minguell</b> · Matemàtiques 4t ESO · Grup Flexible</p>
     <p style="margin-top:14px">Ideat per <b>J. Alcolea</b></p>
     <p style="color:var(--gris)">Desenvolupat amb Claude</p>
-    <p style="color:var(--gris);margin-top:10px">Versió 4.6</p>
+    <p style="color:var(--gris);margin-top:10px">Versió 4.7</p>
     <div class="accions"><button class="boto" data-tanca-modal>D'acord</button></div>`);
 }
 function entraAlumne(id) {
