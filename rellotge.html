@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quina hora és? · FR-4C</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,800&display=swap" rel="stylesheet">
+<style>
+/* Taller de l'app FR-4C · Mesura: el rellotge d'agulles i les hores en català, amb els quarts (postMessage fr4c-rel-*). */
+:root{--taronja:#f26b1d;--blau:#2a6fd6;--tinta:#1b1b1b;--ok:#2c9a58;--ko:#d64242;--fons:#f6f4ef}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;font-family:"Atkinson Hyperlegible",system-ui,sans-serif;background:var(--fons);color:var(--tinta);overflow:hidden;user-select:none}
+#joc{position:relative;width:100%;height:100%;display:grid;grid-template-columns:1fr 1.1fr;gap:18px;padding:64px 24px 18px}
+.cap{position:absolute;top:10px;left:16px;right:16px;display:flex;align-items:center;gap:14px;font-weight:700}
+.cap .tit{font-family:"Bricolage Grotesque",sans-serif;font-size:1.3rem}.cap .punts{margin-left:auto;font-size:1.6rem;font-family:"Bricolage Grotesque",sans-serif}
+.btn{border:3px solid var(--tinta);background:#fff;color:var(--tinta);border-radius:12px;padding:6px 12px;font:inherit;font-weight:700;cursor:pointer}
+.esq{display:flex;align-items:center;justify-content:center;gap:6px;min-height:0}
+#rell{height:100%;max-height:74vh;width:auto;max-width:100%}
+#bot{width:120px;flex:none;align-self:flex-end;margin-bottom:6vh}
+.dre{display:flex;flex-direction:column;gap:12px;justify-content:center;min-width:0}
+.caixa{background:#fff;border:4px solid var(--tinta);border-radius:20px;padding:16px 18px;box-shadow:0 6px 0 #0002}
+.caixa h3{margin:0 0 8px;font-family:"Bricolage Grotesque",sans-serif;font-size:1.15rem;color:#555}
+.frase{font-family:"Bricolage Grotesque",sans-serif;font-size:2.2rem;line-height:1.15;margin:0}
+.frase small{display:block;font-family:"Atkinson Hyperlegible",sans-serif;font-size:1rem;color:#666;font-weight:400;margin-top:4px}
+.ops{display:grid;gap:10px}
+.op{font:inherit;font-weight:800;font-size:1.35rem;padding:13px 14px;border-radius:14px;border:3px solid var(--tinta);background:#fff;cursor:pointer;box-shadow:0 4px 0 #0003;text-align:left}
+.op:hover:not(:disabled){background:#fff3e6}.op:disabled{cursor:default;box-shadow:none}.op.be{background:var(--ok);color:#fff;border-color:var(--ok)}.op.mal{background:var(--ko);color:#fff;border-color:var(--ko)}
+.mans{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.grup{display:inline-flex;align-items:center;gap:6px;font-weight:800;border:2px dashed #bbb;border-radius:14px;padding:6px 10px}
+.grup button{font:inherit;font-weight:800;font-size:1.2rem;min-width:58px;height:48px;border-radius:12px;border:3px solid var(--tinta);background:#fff;cursor:pointer;box-shadow:0 3px 0 #0003}
+.grup button:hover:not(:disabled){background:#fff3e6}.grup button:active{transform:translateY(2px)}.grup button:disabled{opacity:.4}
+.big{font-family:"Bricolage Grotesque",sans-serif;font-size:1.3rem;border-radius:14px;padding:12px 26px;border:4px solid var(--tinta);cursor:pointer;background:var(--taronja);color:#fff;box-shadow:0 5px 0 #0004}
+.big.sec{background:#fff;color:var(--tinta)}.big:disabled{opacity:.4}
+.msg{min-height:3.4em;font-size:1.15rem;font-weight:700;line-height:1.35}.msg.ko{color:var(--ko)}.msg.ok{color:var(--ok)}
+.prog{display:flex;gap:5px}.prog i{width:18px;height:18px;border-radius:50%;border:3px solid var(--tinta);background:#fff}.prog i.f{background:var(--ok)}.prog i.e{background:var(--ko)}.prog i.a{background:var(--taronja)}
+.pantalla{position:absolute;inset:0;z-index:10;display:flex;align-items:center;justify-content:center;background:#1b1b1b99}
+.panell{background:#fff;border-radius:24px;border:4px solid var(--tinta);padding:22px 28px;max-width:860px;width:94%;box-shadow:0 10px 0 #0006;max-height:94vh;overflow:auto}
+.panell h1{font-family:"Bricolage Grotesque",sans-serif;margin:0 0 6px;font-size:2rem}.panell p{font-size:1.12rem;line-height:1.45;margin:8px 0}
+.panell .fila{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:14px}
+.quarts{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:10px 0}.quarts div{text-align:center;font-weight:800;font-size:1rem;line-height:1.25}.quarts svg{width:100%;max-width:130px;height:auto;display:block;margin:0 auto 4px}.quarts b{color:var(--taronja)}
+.seg{display:inline-flex;border:3px solid var(--tinta);border-radius:12px;overflow:hidden}.seg button{border:0;background:#fff;padding:8px 14px;font:inherit;font-weight:700;cursor:pointer}.seg button.on{background:var(--tinta);color:#fff}
+.mini{font-size:.95rem;color:#666}.rec{color:var(--taronja);font-weight:800}
+.agulla{transition:transform .5s cubic-bezier(.3,1.5,.5,1);transform-origin:150px 150px}
+#sector{transition:opacity .3s}
+@keyframes salt{0%,100%{transform:translateY(0)}40%{transform:translateY(-16px)}}#bot.salta{animation:salt .5s}
+@keyframes tremola{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}#bot.tremola{animation:tremola .3s 2}
+</style>
+</head>
+<body>
+<div id="joc">
+  <div class="cap"><span class="tit">🕓 Quina hora és?</span><span class="prog" id="prog"></span><span class="punts" id="punts">0</span><button class="btn" id="so">🔊</button><button class="btn" id="surt">✕</button></div>
+  <div class="esq"><div id="bot"></div><svg id="rell" viewBox="0 0 300 300"></svg></div>
+  <div class="dre">
+    <div class="caixa"><h3 id="titol"></h3><p class="frase" id="frase"></p></div>
+    <div class="caixa" id="zona"></div>
+    <div class="msg" id="msg"></div>
+  </div>
+  <div class="pantalla" id="pant"></div>
+</div>
+<script>
+'use strict';
+const $ = s => document.querySelector(s);
+const rnd = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+const tria = l => l[Math.floor(Math.random() * l.length)];
+const barreja = l => { const a = [...l]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const RONDES = 10, T = '#f26b1d', N = '#1b1b1b';
+const M = { nivell: 1, nom: '', record: 0, dinsApp: false, so: true, pantalla: 'inici' }; window.__M = M;
+try { M.so = localStorage.getItem('fr4c_rel_so') !== '0'; } catch (e) {}
+const qs = new URLSearchParams(location.search); if (qs.get('nivell')) M.nivell = Math.max(1, Math.min(3, +qs.get('nivell')));
+try { M.record = +(localStorage.getItem('fr4c_rel_rec_' + M.nivell) || 0); } catch (e) {}
+let AC = null;
+function to(f, d, tipus = 'triangle', v = .05, t0 = 0, f2 = null) { if (!M.so) return; try { AC = AC || new (window.AudioContext || window.webkitAudioContext)(); if (AC.state === 'suspended') AC.resume(); const t = AC.currentTime + t0, o = AC.createOscillator(), g = AC.createGain(); o.type = tipus; o.frequency.setValueAtTime(f, t); if (f2) o.frequency.exponentialRampToValueAtTime(f2, t + d); g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(v, t + .01); g.gain.exponentialRampToValueAtTime(.0001, t + d); o.connect(g); g.connect(AC.destination); o.start(t); o.stop(t + d + .05); } catch (e) {} }
+const SO = { tic: () => to(1100, .03, 'square', .03), toc: () => to(700, .04, 'square', .035), be: () => [0, 4, 7, 12].forEach((s, i) => to(660 * 2 ** (s / 12), .12, 'square', .04, i * .07)), mal: () => to(220, .35, 'sawtooth', .04, 0, 110), cucut: () => { to(880, .16, 'sine', .07); to(700, .22, 'sine', .07, .18); } };
+
+/* ---------- les hores en català (sistema de quarts) ---------- */
+const NOM = ['', 'la una', 'les dues', 'les tres', 'les quatre', 'les cinc', 'les sis', 'les set', 'les vuit', 'les nou', 'les deu', 'les onze', 'les dotze'];
+const DE = ['', 'd\'una', 'de dues', 'de tres', 'de quatre', 'de cinc', 'de sis', 'de set', 'de vuit', 'de nou', 'de deu', 'd\'onze', 'de dotze'];
+const maj = s => s[0].toUpperCase() + s.slice(1);
+// t: minuts des de les 12:00 (0..719), sempre múltiple de 5
+function frase(t) {
+  const h = Math.floor(t / 60) % 12 || 12, m = t % 60, seg = h % 12 + 1; const q = Math.floor(m / 15), r = m % 15;
+  if (q === 0) return maj(NOM[h]) + (r === 0 ? ' en punt' : r === 5 ? ' i cinc' : ' i deu');
+  const quarts = ['', 'un quart', 'dos quarts', 'tres quarts'][q];
+  return maj(quarts) + (r === 5 ? ' i cinc' : r === 10 ? ' i deu' : '') + ' ' + DE[seg];
+}
+const digital = t => `${Math.floor(t / 60) % 12 || 12}:${String(t % 60).padStart(2, '0')}`;
+const digital24 = (t, tarda) => `${(Math.floor(t / 60) % 12) + (tarda ? 12 : 0)}:${String(t % 60).padStart(2, '0')}`;
+// per què es diu així (explicació curta que es mostra en fallar)
+function perque(t) {
+  const h = Math.floor(t / 60) % 12 || 12, m = t % 60, seg = h % 12 + 1, q = Math.floor(m / 15), r = m % 15;
+  if (q === 0) return r ? `Passen ${r} minuts de ${NOM[h]}.` : `L'agulla llarga és a dalt de tot: és l'hora en punt.`;
+  return `Ja ha passat ${['', 'un quart', 'dos quarts (mitja hora)', 'tres quarts'][q]} de l'hora que <b>ve</b>, que és ${NOM[seg]}${r ? `, i ${r} minuts més` : ''}. Per això es diu «${DE[seg]}», encara que el rellotge marqui les ${digital(t)}.`;
+}
+
+/* ---------- dibuixos ---------- */
+function robotSvg(estat = 'normal') {
+  const ulls = estat === 'content' ? `<path d="M48 68 q7 -10 14 0 M78 68 q7 -10 14 0" stroke="${T}" stroke-width="5" fill="none" stroke-linecap="round"/>` : estat === 'pensa' ? `<rect x="48" y="62" width="14" height="7" rx="3.5" fill="${T}"/><rect x="78" y="62" width="14" height="7" rx="3.5" fill="${T}"/>` : `<circle cx="55" cy="66" r="7.5" fill="${T}"/><circle cx="85" cy="66" r="7.5" fill="${T}"/>`;
+  const boca = estat === 'pensa' ? `<path d="M62 84 h16" stroke="${T}" stroke-width="5" stroke-linecap="round"/>` : `<path d="M60 ${estat === 'content' ? 80 : 81} q10 ${estat === 'content' ? 11 : 8} 20 0" stroke="${T}" stroke-width="5" fill="none" stroke-linecap="round"/>`;
+  return `<svg viewBox="0 0 150 160" width="100%"><line x1="70" y1="34" x2="70" y2="19" stroke="${N}" stroke-width="5"/><circle cx="70" cy="13" r="8" fill="${T}" stroke="${N}" stroke-width="4"/><line x1="48" y1="132" x2="31" y2="147" stroke="${N}" stroke-width="5" stroke-linecap="round"/><circle cx="27" cy="150" r="7" fill="${T}" stroke="${N}" stroke-width="4"/><path d="M92 128 L110 117 L116 101" fill="none" stroke="${N}" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="117" cy="95" r="7" fill="${T}" stroke="${N}" stroke-width="4"/><rect x="14" y="56" width="14" height="32" rx="6" fill="#fff" stroke="${N}" stroke-width="4"/><rect x="112" y="56" width="14" height="32" rx="6" fill="#fff" stroke="${N}" stroke-width="4"/><rect x="24" y="34" width="92" height="78" rx="22" fill="#fff" stroke="${N}" stroke-width="7"/><rect x="36" y="46" width="68" height="52" rx="12" fill="${N}"/>${ulls}${boca}<rect x="48" y="114" width="44" height="34" rx="10" fill="${T}" stroke="${N}" stroke-width="5"/><text x="70" y="136" text-anchor="middle" font-size="12.5" font-weight="900" fill="${N}" font-family="system-ui,sans-serif">FR-4C</text></svg>`;
+}
+const cara = e => { $('#bot').innerHTML = robotSvg(e); };
+function botFa(c) { const b = $('#bot'); b.classList.remove('salta', 'tremola'); void b.offsetWidth; b.classList.add(c); }
+// sector pintat des de les 12 fins a l'agulla dels minuts: es VEUEN els quarts que han passat
+function sectorPath(m, cx = 150, cy = 150, r = 118) { if (!m) return ''; const a = m * 6 * Math.PI / 180; return `M${cx} ${cy}L${cx} ${cy - r}A${r} ${r} 0 ${m > 30 ? 1 : 0} 1 ${(cx + r * Math.sin(a)).toFixed(1)} ${(cy - r * Math.cos(a)).toFixed(1)}Z`; }
+function rellotgeBase() {
+  let marques = '', nums = '';
+  for (let i = 0; i < 60; i++) { const a = i * 6 * Math.PI / 180, r1 = i % 5 ? 132 : 124; marques += `M${(150 + 138 * Math.sin(a)).toFixed(1)} ${(150 - 138 * Math.cos(a)).toFixed(1)}L${(150 + r1 * Math.sin(a)).toFixed(1)} ${(150 - r1 * Math.cos(a)).toFixed(1)}`; }
+  for (let h = 1; h <= 12; h++) { const a = h * 30 * Math.PI / 180; nums += `<text x="${(150 + 104 * Math.sin(a)).toFixed(1)}" y="${(150 - 104 * Math.cos(a) + 10).toFixed(1)}" text-anchor="middle" font-size="28" font-weight="900" fill="${N}" font-family="Bricolage Grotesque,system-ui,sans-serif">${h}</text>`; }
+  $('#rell').innerHTML = `<circle cx="150" cy="150" r="143" fill="#fff" stroke="${N}" stroke-width="7"/><path id="sector" d="" fill="#ffd9b0"/><path d="M150 32V268M32 150H268" stroke="#e3ddd2" stroke-width="2" stroke-dasharray="5 5"/><path d="${marques}" stroke="${N}" stroke-width="2.4"/>${nums}
+    <g class="agulla" id="ah"><path d="M150 164L150 78" stroke="${N}" stroke-width="12" stroke-linecap="round"/></g><g class="agulla" id="am"><path d="M150 170L150 36" stroke="${T}" stroke-width="7" stroke-linecap="round"/></g><circle cx="150" cy="150" r="9" fill="${N}"/>`;
+}
+// tt: minuts acumulats (poden créixer o baixar sense límit, perquè les agulles girin seguit)
+function posaAgulles(tt, sector = M.nivell < 3) { $('#ah').style.transform = `rotate(${tt * .5}deg)`; $('#am').style.transform = `rotate(${tt * 6}deg)`; const m = ((tt % 60) + 60) % 60; $('#sector').setAttribute('d', sector ? sectorPath(m) : ''); }
+function miniRell(t) { const m = t % 60; return `<svg viewBox="0 0 300 300"><circle cx="150" cy="150" r="143" fill="#fff" stroke="${N}" stroke-width="9"/><path d="${sectorPath(m)}" fill="#ffd9b0"/><path d="M150 32V268M32 150H268" stroke="#ddd" stroke-width="3" stroke-dasharray="7 7"/><path d="M150 164L150 78" stroke="${N}" stroke-width="16" stroke-linecap="round" transform="rotate(${t * .5} 150 150)"/><path d="M150 170L150 36" stroke="${T}" stroke-width="10" stroke-linecap="round" transform="rotate(${m * 6} 150 150)"/><circle cx="150" cy="150" r="12" fill="${N}"/></svg>`; }
+
+/* ---------- partida ---------- */
+const P = {}; window.__P = P;
+const envia = m => { try { if (window.parent !== window) window.parent.postMessage(m, '*'); } catch (e) {} };
+const msg = (t, cls = '') => { $('#msg').className = 'msg ' + cls; $('#msg').innerHTML = t; };
+function novaHora() { // segons el nivell: 1 → en punt i quarts · 2 i 3 → de cinc en cinc
+  const h = rnd(0, 11); const m = M.nivell === 1 ? tria([0, 15, 30, 45, 15, 30, 45]) : rnd(0, 11) * 5; return h * 60 + m;
+}
+window.__frase = frase; window.__novaHora = novaHora;
+function novaRonda() {
+  let t; do t = novaHora(); while (P.vistes.includes(t)); P.vistes.push(t);
+  const tipus = M.nivell === 3 ? tria(['llegeix', 'posa', 'digital', 'posa']) : P.ronda % 2 === 0 ? 'llegeix' : 'posa';
+  P.r = { t, tipus, intent: 0, fet: false, tarda: Math.random() < .5 }; P.tt = 0; cara('normal'); msg(''); pinta();
+}
+function opcionsLlegeix(t) { // la bona i errors típics: dir l'hora que marca en lloc de la que ve, o un quart de més o de menys
+  const h = Math.floor(t / 60), m = t % 60, bo = frase(t); const c = [];
+  if (m >= 15) c.push(frase(((h + 11) % 12) * 60 + m)); // «un quart de quatre» quan són les 4:15
+  c.push(frase((t + 15) % 720), frase((t + 705) % 720), frase((t + 60) % 720), frase((t + 30) % 720));
+  const mals = []; for (const x of c) if (x !== bo && !mals.includes(x) && mals.length < 2) mals.push(x);
+  return barreja([bo, ...mals]);
+}
+function pinta() {
+  const r = P.r, bo = frase(r.t);
+  $('#prog').innerHTML = Array.from({ length: RONDES }, (_, i) => `<i class="${i < P.ronda ? (P.res[i] ? 'f' : 'e') : i === P.ronda ? 'a' : ''}"></i>`).join('');
+  $('#punts').textContent = P.punts;
+  if (r.tipus === 'llegeix') {
+    posaAgulles(r.t); $('#titol').textContent = 'Mira el rellotge'; $('#frase').innerHTML = 'Quina hora és?';
+    $('#zona').innerHTML = `<div class="ops">${opcionsLlegeix(r.t).map(o => `<button class="op" data-o="${esc(o)}">${o}</button>`).join('')}</div>`;
+    document.querySelectorAll('.op').forEach(b => b.onclick = () => respon(b));
+  } else if (r.tipus === 'digital') {
+    posaAgulles(r.t, false); $('#titol').textContent = 'Com surt en un rellotge digital?'; $('#frase').innerHTML = `${bo}<small>${r.tarda ? 'de la tarda' : 'del matí'}</small>`;
+    const h = Math.floor(r.t / 60), m = r.t % 60, b = digital24(r.t, r.tarda);
+    const c = [digital24(((h + 1) % 12) * 60 + m, r.tarda), digital24(r.t, !r.tarda), digital24((r.t + 15) % 720, r.tarda), digital24(((h + 11) % 12) * 60 + m, r.tarda)]; const mals = []; for (const x of c) if (x !== b && !mals.includes(x) && mals.length < 2) mals.push(x);
+    $('#zona').innerHTML = `<div class="ops">${barreja([b, ...mals]).map(o => `<button class="op" data-o="${o}" data-bo="${o === b ? 1 : 0}">${o}</button>`).join('')}</div>`;
+    document.querySelectorAll('.op').forEach(b2 => b2.onclick = () => respon(b2));
+  } else {
+    P.tt = 7200; posaAgulles(P.tt); $('#titol').textContent = 'Posa el rellotge a…'; $('#frase').innerHTML = bo;
+    $('#zona').innerHTML = `<div class="mans"><span class="grup">Hores <button data-d="-60">−</button><button data-d="60">+</button></span><span class="grup">Minuts <button data-d="-5">−5</button><button data-d="5">+5</button></span>${M.nivell === 1 ? '<span class="grup">Quarts <button data-d="15">+ un quart</button></span>' : ''}<button class="big" id="fet">Fet!</button></div>`;
+    document.querySelectorAll('.grup button').forEach(b => b.onclick = () => { if (P.r.fet) return; P.tt += +b.dataset.d; Math.abs(+b.dataset.d) >= 60 ? SO.toc() : SO.tic(); posaAgulles(P.tt); });
+    $('#fet').onclick = comprovaPosa;
+  }
+}
+function encert() {
+  const r = P.r; r.fet = true; const guany = r.intent === 0 ? 10 : 5; P.punts += guany; if (r.intent === 0) P.encerts++; P.res[P.ronda] = r.intent === 0;
+  SO.be(); cara('content'); botFa('salta'); msg(`Molt bé! +${guany}. ${perque(r.t)}`, 'ok'); seguent(2600);
+}
+function fallada(triat) {
+  const r = P.r; r.intent++; SO.mal(); cara('pensa'); botFa('tremola');
+  if (r.intent === 1) { P.errors++; P.fallades.push(`${digital(r.t)} = «${frase(r.t)}»${triat ? ` (ha dit: ${triat})` : ''}`); }
+  if (r.intent >= 2) { r.fet = true; P.res[P.ronda] = false; posaAgulles(r.tipus === 'posa' ? Math.round((P.tt - r.t) / 720) * 720 + r.t : r.t, true);
+    document.querySelectorAll('.op').forEach(b => { b.disabled = true; if (b.dataset.o === frase(r.t) || b.dataset.bo === '1') b.classList.add('be'); });
+    msg(`Era <b>${frase(r.t).toLowerCase()}</b> (${digital(r.t)}). ${perque(r.t)}`, 'ko'); seguent(5200); return true; }
+  return false;
+}
+function respon(b) {
+  const r = P.r; if (r.fet || b.disabled) return; const bo = r.tipus === 'digital' ? b.dataset.bo === '1' : b.dataset.o === frase(r.t);
+  if (bo) { document.querySelectorAll('.op').forEach(x => x.disabled = true); b.classList.add('be'); return encert(); }
+  b.classList.add('mal'); b.disabled = true; if (!fallada(b.dataset.o)) msg(r.tipus === 'digital' ? 'No. Pensa primer quina hora marca el rellotge, i després si és matí o tarda.' : `No. Mira la part pintada: quants <b>quarts</b> han passat? I de quina hora, de la que marca o de la que <b>ve</b>?`, 'ko');
+}
+function comprovaPosa() {
+  const r = P.r; if (r.fet) return; const ara = ((P.tt % 720) + 720) % 720;
+  if (ara === r.t) { document.querySelectorAll('.grup button, #fet').forEach(x => x.disabled = true); return encert(); }
+  const m = r.t % 60, hSeg = (Math.floor(r.t / 60) + 1) % 12;
+  const pista = m >= 15 && ara === hSeg * 60 + m ? `Compte! «${frase(r.t)}» vol dir que encara <b>no</b> hem arribat a ${NOM[hSeg || 12]}: l'agulla curta ha de ser abans.` : ara % 60 !== m ? `Mira l'agulla taronja: quants quarts ha de marcar?` : `Els minuts estan bé. Ara mira l'agulla curta: de quina hora parlem?`;
+  if (!fallada(digital(ara))) msg(`Encara no. ${pista}`, 'ko'); else document.querySelectorAll('.grup button, #fet').forEach(x => x.disabled = true);
+}
+function seguent(ms) { clearTimeout(P.tm); P.tm = setTimeout(() => { P.ronda++; P.ronda >= RONDES ? acaba() : novaRonda(); }, ms); }
+function comenca() { clearTimeout(P.tm); Object.assign(P, { punts: 0, ronda: 0, encerts: 0, errors: 0, res: [], vistes: [], fallades: [], t0: performance.now() }); M.pantalla = 'joc'; $('#pant').style.display = 'none'; novaRonda(); }
+function acaba() {
+  M.pantalla = 'fi'; const nouRec = P.punts > M.record; if (nouRec) M.record = P.punts; try { localStorage.setItem('fr4c_rel_rec_' + M.nivell, M.record); } catch (e) {}
+  envia({ tipus: 'fr4c-rel-fi', punts: P.punts, encerts: P.encerts, errors: P.errors, nivell: M.nivell, temps: Math.round((performance.now() - P.t0) / 1000), fallades: P.fallades.slice(0, 12) });
+  SO.cucut(); cara('content');
+  pantalla(`<h1>Ja saps quina hora és! 🕓</h1><p>${nouRec ? '<span class="rec">🏆 Nou rècord!</span> ' : ''}Has encertat a la primera <b>${P.encerts}</b> de ${RONDES} hores i has fet <b>${P.punts}</b> punts.</p>
+    <p class="mini">Recorda: els quarts sempre es diuen de l'hora que <b>ve</b>. A les 4:15 ja ha passat un quart de la cinquena hora: «un quart de cinc».</p>
+    <div class="fila"><button class="big" id="torna">Torna a jugar</button><button class="big sec" id="tanca2">Surt</button></div>`);
+  $('#torna').onclick = comenca; $('#tanca2').onclick = surt;
+}
+function pantalla(html) { const p = $('#pant'); p.innerHTML = `<div class="panell">${html}</div>`; p.style.display = 'flex'; }
+function surt() { clearTimeout(P.tm); M.pantalla = 'fora'; envia({ tipus: 'fr4c-rel-tanca' }); if (window.parent === window) inici(); }
+function inici() {
+  M.pantalla = 'inici'; rellotgeBase(); posaAgulles(4 * 60 + 15, true); cara('normal'); $('#titol').textContent = ''; $('#frase').textContent = ''; $('#zona').innerHTML = ''; msg(''); $('#prog').innerHTML = ''; $('#punts').textContent = '0';
+  const txtN = { 1: 'les hores en punt i els quarts', 2: 'totes les hores de cinc en cinc minuts (un quart i cinc, dos quarts i deu…)', 3: 'totes les hores, sense la part pintada, i el rellotge digital de 24 hores' };
+  pantalla(`<h1>🕓 Quina hora és?</h1><p>${M.nom ? `Hola, <b>${esc(M.nom)}</b>! ` : ''}En un rellotge d'agulles, la <b>curta</b> marca les hores i la <b style="color:${T}">llarga</b>, els minuts. En català, l'hora es parteix en <b>quatre quarts</b>, i es diuen de l'hora que <b>ve</b>:</p>
+    <div class="quarts"><div>${miniRell(240)}Les quatre<br>en punt<br><b>4:00</b></div><div>${miniRell(255)}Un quart<br>de cinc<br><b>4:15</b></div><div>${miniRell(270)}Dos quarts<br>de cinc<br><b>4:30</b></div><div>${miniRell(285)}Tres quarts<br>de cinc<br><b>4:45</b></div></div>
+    <p class="mini">Nivell ${M.nivell}: ${txtN[M.nivell]}. ${RONDES} hores per partida: unes les has de llegir i d'altres les has de posar tu al rellotge.${M.record ? ` El teu rècord: <b>${M.record}</b>.` : ''}</p>
+    ${!M.dinsApp ? `<div class="fila"><b>Nivell:</b><span class="seg" id="nv">${[1, 2, 3].map(n => `<button data-n="${n}" class="${n === M.nivell ? 'on' : ''}">${n}</button>`).join('')}</span></div>` : ''}
+    <div class="fila"><button class="big" id="go">Comença! →</button>${M.dinsApp ? '<button class="big sec" id="tanca2">Surt</button>' : ''}</div>`);
+  $('#go').onclick = comenca; const t = $('#tanca2'); if (t) t.onclick = surt;
+  document.querySelectorAll('#nv button').forEach(b => b.onclick = () => { M.nivell = +b.dataset.n; try { M.record = +(localStorage.getItem('fr4c_rel_rec_' + M.nivell) || 0); } catch (e) {} inici(); });
+}
+window.addEventListener('message', ev => { const d = ev.data || {}; if (d.tipus !== 'fr4c-rel-ini') return; M.dinsApp = true; M.nom = d.nom || ''; M.nivell = Math.max(1, Math.min(3, d.nivell || 1)); M.record = Math.max(d.record || 0, 0); if (d.so === false) M.so = false; $('#so').textContent = M.so ? '🔊' : '🔇'; if (M.pantalla === 'inici') inici(); });
+$('#so').onclick = () => { M.so = !M.so; $('#so').textContent = M.so ? '🔊' : '🔇'; try { localStorage.setItem('fr4c_rel_so', M.so ? '1' : '0'); } catch (e) {} };
+$('#surt').onclick = surt; $('#so').textContent = M.so ? '🔊' : '🔇';
+inici(); envia({ tipus: 'fr4c-rel-llest' });
+</script>
+</body>
+</html>

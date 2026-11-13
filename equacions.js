@@ -21,6 +21,12 @@ Object.assign(AVIS_ERR, {
   oblidaNeg: 'x² = 49 té <b>dues</b> solucions: 7 i −7, perquè (−7)² també fa 49.', divQuad: 'x² vol dir x · x: per desfer-ho fas l\'<b>arrel</b>, no la meitat.', perdZero: 'Si x · (x − 5) = 0, també és solució x = 0.'
 });
 document.head.insertAdjacentHTML('beforeend', `<style>
+.q-col{display:inline-grid;grid-template-columns:auto auto auto auto;column-gap:.4em;row-gap:.18em;font-size:1.75rem;font-weight:800;align-items:baseline;text-align:left;line-height:1.3}
+.q-col>div{display:contents}.q-col .e{text-align:right;white-space:nowrap}.q-col .d{white-space:nowrap}.q-col .m{color:var(--taronja)}.q-col .b{color:#2a6fd6}
+.q-col .nota{font-size:.9rem;font-weight:800;color:#555;padding-left:1em;white-space:nowrap}.q-col .vell>span{opacity:.4}.q-col .nou>span{animation:msPopQ .35s both}
+.q-col.petita{font-size:1.12rem;row-gap:.05em}.q-col.petita .nota{font-size:.74rem}
+@keyframes msPopQ{0%{opacity:0;transform:translateY(-8px)}100%{opacity:1;transform:none}}
+.costat:has(.q-col.petita) .sol-pas{display:inline-block;vertical-align:top;margin:0 22px 10px 0}
 .q-eq{font-size:1.9rem;font-weight:800;text-align:center;line-height:1.5}.q-eq .m{color:var(--taronja)}.q-eq .b{color:#2a6fd6}.q-eq s{color:#c33;text-decoration-thickness:3px}
 .q-passos{display:grid;gap:8px;font-size:1.25rem}.q-passos div{display:grid;grid-template-columns:2.2em 1fr;gap:10px;align-items:center;padding:8px 12px;border-radius:10px;background:#fff;border:2px solid #ddd}.q-passos b.n{display:inline-flex;align-items:center;justify-content:center;width:1.9em;height:1.9em;border-radius:50%;background:var(--taronja);color:#fff}
 .q-passos .on{border-color:var(--taronja);background:#fff3e6}
@@ -36,6 +42,45 @@ const qEtiq = ops => Object.fromEntries(ops.filter(o => o.tag).map(o => [o.val, 
 function qUnics(n, fer, clau) { const out = [], vist = new Set(); for (let g = 0; out.length < n && g < 300; g++) { const x = fer(); if (!x) continue; const k = clau(x); if (vist.has(k)) continue; vist.add(k); out.push(x); } return out; }
 const qOps = (bo, mals) => { const vist = new Set([bo.html]); const o = [{ ...bo, val: 'b' }]; mals.forEach((m, i) => { if (!vist.has(m.html) && o.length < 4) { vist.add(m.html); o.push({ ...m, val: 'm' + i }); } }); return barreja(o); };
 const qX = (v, x) => ({ tipus: 'enter', escrit: true, senseMes: true, llarg: true, html: v, valor: x });
+/* ---------- resolució en columna ----------
+   Sempre cap avall: una equació a cada línia, alineades pel signe =. El terme que canvia de costat es pinta del mateix
+   color a la línia d'on surt i a la línia on arriba. El resultat de l'operació s'escriu A SOTA, mai al costat (res de «2x = 11 − 3 = 8»). */
+const qM = t => `<span class="m">${t}</span>`, qBl = t => `<span class="b">${t}</span>`;
+const qCol = (lin, { petita = false, nou = 0 } = {}) => `<div class="q-col${petita ? ' petita' : ''}">${lin.map(([e, d, nota], i) => `<div class="${nou ? (i < lin.length - nou ? 'vell' : 'nou') : ''}"><span class="e">${e}</span><span class="ig">=</span><span class="d">${d}</span><span class="nota">${nota ? '← ' + nota : ''}</span></div>`).join('')}</div>`;
+const qSg = b => b < 0 ? `− ${-b}` : `+ ${b}`; // el terme tal com és
+const qOp = b => b < 0 ? `+ ${-b}` : `− ${b}`; // el terme quan canvia de costat
+const qAx = a => a === 1 ? 'x' : a === -1 ? '−x' : `${qNz(a)}x`;
+// ax + b = c: primer passa el que suma o resta, després el que multiplica
+function qLinPassos(a, b, c, x) {
+  const L = [];
+  if (b) { L.push([`${qAx(a)} ${qM(qSg(b))}`, qNz(c)]); L.push([qAx(a), `${qNz(c)} ${qM(qOp(b))}`, b > 0 ? 'passa restant' : 'passa sumant']); }
+  const r = c - b;
+  if (a === 1) { L.push(['x', qNz(r)]); return L; }
+  if (a === -1) { L.push(['−x', qNz(r)]); L.push(['x', qNz(-r), 'canvio el signe als dos costats']); return L; }
+  L.push([`${qBl(qNz(a))}x`, qNz(r)]); L.push(['x', `${qNz(r)} ${qBl(': ' + qP(a))}`, 'passa dividint']); L.push(['x', qNz(x)]); return L;
+}
+// ax + b = cx + d: les x a l'esquerra, els números a la dreta
+function qDosCostatsPassos(a, b, c, d, x) {
+  const cx = qAx(c), L = [[`${qAx(a)}${b ? ' ' + qBl(qSg(b)) : ''}`, `${qM(cx)}${d ? ' ' + qSg(d) : ''}`]];
+  const dre = d ? `${qNz(d)}${b ? ' ' + qBl(qOp(b)) : ''}` : (b ? qBl(qNz(-b)) : '0');
+  L.push([`${qAx(a)} ${qM((c < 0 ? '+ ' : '− ') + qAx(Math.abs(c)))}`, dre, 'les x a l\'esquerra, els números a la dreta']);
+  return [...L, ...qLinPassos(a - c, 0, d - b, x)];
+}
+// k(x + p) + m = r
+function qParenPassos({ k, p, m, r, x }) {
+  const L = [[`${qBl(k)}(x ${qSg(p)})${m ? ' ' + qSg(m) : ''}`, qNz(r)]]; const R = qLinPassos(k, k * p + m, r, x);
+  if (m) { L.push([`${k}x ${qSg(k * p)} ${qSg(m)}`, qNz(r), `trec el parèntesi: ${k} · x i ${k} · ${qP(p)}`]); R[0][2] = 'ajunto els números'; } else R[0][2] = `trec el parèntesi: ${k} · x i ${k} · ${qP(p)}`;
+  return [...L, ...R];
+}
+// ax² + b = c, amb solucions r i −r
+function qQuadPassos(a, b, c, r) {
+  const L = [], ax = `${a === 1 ? '' : a}x²`;
+  if (b) { L.push([`${ax} ${qM(qSg(b))}`, c]); L.push([ax, `${c} ${qM(qOp(b))}`, 'passa restant']); }
+  if (a !== 1) { L.push([`${qBl(a)}x²`, c - b]); L.push(['x²', `${c - b} ${qBl(': ' + a)}`, 'passa dividint']); }
+  L.push(['x²', r * r]); L.push(['x', `${qM('±')}√${r * r}`, 'arrel quadrada: dues solucions']); L.push(['x', `${r} &nbsp;i&nbsp; x = −${r}`]); return L;
+}
+// ax² − a·s·x = 0, amb solucions 0 i s
+const qFactorPassos = (a, s) => { const dins = `${a === 1 ? '' : a}x ${qSg(-a * s)}`; return [[`${a === 1 ? '' : a}x² ${qSg(-a * s)}x`, '0'], [`${qM('x')} · (${dins})`, '0', 'trec la x factor comú'], ['x', '0', 'el primer factor val 0'], [dins, '0', 'o el segon factor val 0'], ['x', qNz(s)]]; };
 const qErrs = (bo, cands) => { const o = {}; for (const [v, t] of cands) if (Number.isInteger(v) && v !== bo && !(v in o)) o[v] = t; return o; };
 
 /* ---------- dibuix de la balança ---------- */
@@ -139,7 +184,7 @@ const qValLin = (a, b, x) => { const v = a * x + b; return { tipus: 'enter', esc
 const Q2 = {};
 Q2.lin = (nv, { n = 3 } = {}) => {
   const its = qUnics(n, () => { const a = nv === 1 ? qR(2, 6) : (Math.random() < .3 ? -qR(2, 5) : qR(2, 7)); const b = (Math.random() < .5 ? -1 : 1) * qR(1, 9); const x = nv === 1 ? qR(1, 6) : (Math.random() < .6 ? -qR(1, 6) : qR(1, 6)); return qValLin(a, b, x); }, it => it.html);
-  return { sig: `b1-${its.map(i => i.html).join('|')}`, enunciat: `Calcula el valor de cada expressió.`, visual: nv === 1 ? () => `<div class="q-eq">2x + 1 &nbsp;si x = 3<br>2 · <span class="m">3</span> + 1 = 6 + 1 = <span class="m">7</span></div>` : null, pista: PISTA_Q2, ...apartats(its),
+  return { sig: `b1-${its.map(i => i.html).join('|')}`, enunciat: `Calcula el valor de cada expressió.`, visual: nv === 1 ? () => `<div class="q-eq">2x + 1 &nbsp;si x = 3<br>2 · <span class="m">3</span> + 1<br>= 6 + 1<br>= <span class="m">7</span></div>` : null, pista: PISTA_Q2, ...apartats(its),
     explicacio: `Substitueix la x i calcula.`, solucio: its.map(it => `${qNz(it.a)} · ${qP(it.x)} ${it.b < 0 ? '−' : '+'} ${Math.abs(it.b)} = <b>${qNz(it.valor)}</b>`) };
 };
 Q2.taula = (nv) => {
@@ -176,20 +221,20 @@ TEMES.q2 = {
   },
   explicacio: [
     { text: `<p>Si sabem quant val la x, podem calcular l'expressió: és el <b class="parpelleja">valor numèric</b>.</p><p class="petit">2x + 1 si x = 3 → 2 · 3 + 1 = <b>7</b></p>`, vis: () => `<div class="q-eq">2x + 1<br><span class="m">x = 3</span> ↓<br>2 · 3 + 1 = 7</div>` },
-    { text: `<p>Recorda la <b class="parpelleja">prioritat</b>: primer multipliquem i després sumem.</p><p class="petit">2 · 3 + 1 = 6 + 1 = 7 (no 2 · 4 = 8!)</p>`, vis: () => `<div class="q-eq">2 · 3 + 1<br>= <span class="m">6</span> + 1 = 7</div>` },
+    { text: `<p>Recorda la <b class="parpelleja">prioritat</b>: primer multipliquem i després sumem.</p><p class="petit">2 · 3 + 1 = 6 + 1 = 7 (no 2 · 4 = 8!)</p>`, vis: () => `<div class="q-eq">2 · 3 + 1<br>= <span class="m">6</span> + 1<br>= 7</div>` },
     { text: `<p>Si la x és <b class="parpelleja">negativa</b>, posa-la entre parèntesis.</p><p class="petit">3x − 2 si x = −4 → 3 · (−4) − 2 = −12 − 2 = <b>−14</b></p>`, vis: () => `<div class="q-eq">3 · <span class="b">(−4)</span> − 2<br>= −12 − 2 = −14</div>` },
     { text: `<p>Les fórmules de la vida real funcionen igual.</p><p class="petit">Un taxi: 2x + 3 euros per x km. Per 10 km: 2 · 10 + 3 = <b>23 €</b>.</p>`, vis: () => `<div class="q-eq">🚕 2x + 3<br>x = 10 → <span class="m">23 €</span></div>` }
   ],
   exemple: (nv) => {
     if (nv === 1) return { enunciat: `Calcula 4x − 3 si x = 2.`, passos: [
       { text: `Canvio la x per 2: 4 · 2 − 3.`, vis: `<div class="q-eq">4 · <span class="m">2</span> − 3</div>` },
-      { text: `8 − 3 = <b>5</b>. <span class="marca-ok">✓</span>`, vis: `<div class="q-eq">= 8 − 3 = 5</div>` }] };
+      { text: `8 − 3 = <b>5</b>. <span class="marca-ok">✓</span>`, vis: `<div class="q-eq">4 · 2 − 3<br>= 8 − 3<br>= <span class="m">5</span></div>` }] };
     if (nv === 2) return { enunciat: `Calcula 5x + 4 si x = −2.`, passos: [
       { text: `x és negativa: la poso entre parèntesis. 5 · (−2) + 4.`, vis: `<div class="q-eq">5 · <span class="b">(−2)</span> + 4</div>` },
-      { text: `−10 + 4 = <b>−6</b>. <span class="marca-ok">✓</span>`, vis: `<div class="q-eq">= −10 + 4 = −6</div>` }] };
+      { text: `−10 + 4 = <b>−6</b>. <span class="marca-ok">✓</span>`, vis: `<div class="q-eq">5 · (−2) + 4<br>= −10 + 4<br>= <span class="m">−6</span></div>` }] };
     return { enunciat: `Calcula x² − 3x si x = −2.`, passos: [
       { text: `(−2)² − 3 · (−2).`, vis: `<div class="q-eq">(−2)² − 3 · (−2)</div>` },
-      { text: `4 + 6 = <b>10</b>. <span class="marca-ok">✓</span>`, vis: `<div class="q-eq">= 4 + 6 = 10</div>` }] };
+      { text: `4 + 6 = <b>10</b>. <span class="marca-ok">✓</span>`, vis: `<div class="q-eq">(−2)² − 3 · (−2)<br>= 4 + 6<br>= <span class="m">10</span></div>` }] };
   }
 };
 
@@ -309,24 +354,24 @@ TEMES.q4 = {
 const PISTA_Q5 = { completa: `Què <b>molesta</b> a la x? Passa-ho a l'altra banda amb l'operació <b>contrària</b>: el que suma passa restant, el que resta passa sumant, el que multiplica passa dividint i el que divideix passa multiplicant.`, mitja: `Operació contrària a l'altra banda.` };
 function qUnPas(nv) {
   const t = qR(0, 4); const neg = nv >= 2; const x = neg ? qR(-8, 9) || 3 : qR(1, 12);
-  if (t === 0) { const a = qR(1, 12); const b = x + a; return { e: `x + ${a} = ${qNz(b)}`, x, errs: qErrs(x, [[b + a, 'transSigne']]), pas: `x = ${qNz(b)} − ${a}` }; }
-  if (t === 1) { const a = qR(1, 12); const b = x - a; return { e: `x − ${a} = ${qNz(b)}`, x, errs: qErrs(x, [[b - a, 'transSigne']]), pas: `x = ${qNz(b)} + ${a}` }; }
-  if (t === 2) { const a = qR(2, 9) * (nv === 3 && Math.random() < .4 ? -1 : 1); const b = a * x; return { e: `${qNz(a)}x = ${qNz(b)}`, x, errs: qErrs(x, [[b - a, 'passaRestant'], [-x, 'signeDiv'], [b * a, 'passaMult']]), pas: `x = ${qNz(b)} : ${qP(a)}` }; }
-  if (t === 3) { const a = qR(2, 6); const q = neg ? qR(-6, 8) || 2 : qR(1, 8); return { e: `x : ${a} = ${qNz(q)}`, x: q * a, errs: qErrs(q * a, [[a === 0 ? 0 : Math.trunc(q / a), 'passaMult'], [q - a, 'passaRestant'], [q + a, 'passaRestant']]), pas: `x = ${qNz(q)} · ${a}` }; }
-  if (nv === 1) { const a = qR(1, 9); return { e: `${a} + x = ${x + a}`, x, errs: qErrs(x, [[x + 2 * a, 'transSigne']]), pas: `x = ${x + a} − ${a}` }; }
-  const b = qR(1, 9) * (Math.random() < .5 ? -1 : 1); return { e: `−x = ${qNz(b)}`, x: -b, errs: qErrs(-b, [[b, 'menysX']]), pas: `x = ${qNz(-b)}` };
+  if (t === 0) { const a = qR(1, 12); const b = x + a; return { e: `x + ${a} = ${qNz(b)}`, x, errs: qErrs(x, [[b + a, 'transSigne']]), col: [[`x ${qM('+ ' + a)}`, qNz(b)], ['x', `${qNz(b)} ${qM('− ' + a)}`, 'passa restant'], ['x', qNz(x)]] }; }
+  if (t === 1) { const a = qR(1, 12); const b = x - a; return { e: `x − ${a} = ${qNz(b)}`, x, errs: qErrs(x, [[b - a, 'transSigne']]), col: [[`x ${qM('− ' + a)}`, qNz(b)], ['x', `${qNz(b)} ${qM('+ ' + a)}`, 'passa sumant'], ['x', qNz(x)]] }; }
+  if (t === 2) { const a = qR(2, 9) * (nv === 3 && Math.random() < .4 ? -1 : 1); const b = a * x; return { e: `${qNz(a)}x = ${qNz(b)}`, x, errs: qErrs(x, [[b - a, 'passaRestant'], [-x, 'signeDiv'], [b * a, 'passaMult']]), col: [[`${qM(qNz(a))}x`, qNz(b)], ['x', `${qNz(b)} ${qM(': ' + qP(a))}`, 'passa dividint'], ['x', qNz(x)]] }; }
+  if (t === 3) { const a = qR(2, 6); const q = neg ? qR(-6, 8) || 2 : qR(1, 8); return { e: `x : ${a} = ${qNz(q)}`, x: q * a, errs: qErrs(q * a, [[a === 0 ? 0 : Math.trunc(q / a), 'passaMult'], [q - a, 'passaRestant'], [q + a, 'passaRestant']]), col: [[`x ${qM(': ' + a)}`, qNz(q)], ['x', `${qNz(q)} ${qM('· ' + a)}`, 'passa multiplicant'], ['x', qNz(q * a)]] }; }
+  if (nv === 1) { const a = qR(1, 9); return { e: `${a} + x = ${x + a}`, x, errs: qErrs(x, [[x + 2 * a, 'transSigne']]), col: [[`${qM(a + ' +')} x`, x + a], ['x', `${x + a} ${qM('− ' + a)}`, 'passa restant'], ['x', x]] }; }
+  const b = qR(1, 9) * (Math.random() < .5 ? -1 : 1); return { e: `−x = ${qNz(b)}`, x: -b, errs: qErrs(-b, [[b, 'menysX']]), col: [['−x', qNz(b)], ['x', qNz(-b), 'canvio el signe als dos costats']] };
 }
 const Q5 = {};
 Q5.resol = (nv, { n = 4, tipus = null } = {}) => {
   const its = qUnics(n, () => { const q = qUnPas(nv); return { ...qX(`<b>${q.e}</b> &nbsp; x =`, q.x), errs: q.errs, q }; }, it => it.html);
   return { sig: `e1-${its.map(i => i.html).join('|')}`, enunciat: `Resol: deixa la x sola.`, visual: nv === 1 ? () => qContraria : null, pista: PISTA_Q5, ...apartats(its),
-    explicacio: `El que molesta passa a l'altra banda amb l'operació contrària.`, solucio: its.map(it => `${it.q.e} → ${it.q.pas} → <b>x = ${qNz(it.valor)}</b>`) };
+    explicacio: `El que molesta passa a l'altra banda amb l'operació contrària.`, solucio: its.map(it => qCol(it.q.col, { petita: true })) };
 };
 Q5.balanca = (nv) => {
   const a = qR(2, 5), x = qR(1, 5);
   const it = { ...qX(`<b>x + ${a} = ${x + a}</b> &nbsp; x =`, x), errs: qErrs(x, [[x + 2 * a, 'transSigne']]) };
   return { sig: `e2-${a}-${x}`, enunciat: `La balança està equilibrada. Si traiem ${a} de cada plat, què queda?`, visual: () => `<div style="display:flex;flex-direction:column;align-items:center;gap:4px">${qBalanca(['x', a], [x + a])}<div class="petit">A l'esquerra: una caixa x i un pes de ${a}. A la dreta: un pes de ${x + a}.</div></div>`, pista: { completa: `Treu ${a} de cada plat: a l'esquerra queda la x i a la dreta, ${x + a} − ${a}. És el mateix que «el +${a} passa restant».`, mitja: `Treu el mateix dels dos plats.` }, ...apartats([it]),
-    explicacio: `Treure ${a} dels dos plats = passar el +${a} a l'altra banda restant.`, solucio: [`x = ${x + a} − ${a} = <b>${x}</b>`] };
+    explicacio: `Treure ${a} dels dos plats = passar el +${a} a l'altra banda restant.`, solucio: [qCol([[`x ${qM('+ ' + a)}`, x + a], ['x', `${x + a} ${qM('− ' + a)}`, `trec ${a} de cada plat`], ['x', x]], { petita: true })] };
 };
 Q5.quinaOp = (nv, { n = 3 } = {}) => {
   const OPS = [{ html: 'Restant', val: '-' }, { html: 'Sumant', val: '+' }, { html: 'Dividint', val: ':' }, { html: 'Multiplicant', val: '·' }];
@@ -345,27 +390,22 @@ TEMES.q5 = {
   },
   explicacio: [
     { text: `<p>Una equació és com una <b class="parpelleja">balança equilibrada</b>: les dues bandes pesen el mateix.</p><p class="petit">x + 3 = 8: una caixa x i 3 quilos pesen igual que 8 quilos.</p>`, vis: () => qBalanca(['x', 3], [8]) },
-    { text: `<p>Si traiem 3 de <b>cada plat</b>, la balança continua equilibrada i la x es queda sola: x = 8 − 3 = <b>5</b>.</p><p class="petit">Per això diem que el +3 <b class="parpelleja">passa a l'altra banda restant</b>.</p>`, vis: () => qBalanca(['x', 3], [8], { ratlla: ['e1'] }) },
+    { text: `<p>Si traiem 3 de <b>cada plat</b>, la balança continua equilibrada i la x es queda sola.</p><p class="petit">Per això diem que el +3 <b class="parpelleja">passa a l'altra banda restant</b>.</p>`, vis: () => qBalanca(['x', 3], [8], { ratlla: ['e1'] }) },
     { text: `<p>La regla curta: el que <b class="parpelleja">molesta</b> passa a l'altra banda amb l'operació <b>contrària</b>.</p>`, vis: () => qContraria },
-    { text: `<p>Si el número <b>multiplica</b> la x, passa <b class="parpelleja">dividint</b>.</p><p class="petit">3x = 12 → x = 12 : 3 = <b>4</b> (no 12 − 3!)</p>`, vis: () => `<div class="q-eq"><span class="m">3</span>x = 12<br>x = 12 <span class="m">: 3</span> = 4</div>` }
+    { text: `<p>Si el número <b>multiplica</b> la x, passa <b class="parpelleja">dividint</b> (no restant!).</p><p class="petit">Fixa't com s'escriu: primer el número canvia de costat, i <b>a sota</b>, el resultat.</p>`, vis: () => qCol([[`${qM('3')}x`, '12'], ['x', `12 ${qM(': 3')}`, 'passa dividint'], ['x', '4']]) }
   ],
   exemple: (nv) => {
-    if (nv === 1) return { enunciat: `Resol x + 5 = 12.`, passos: [
-      { text: `El <b>+5</b> molesta. El passo a l'altra banda <b>restant</b>.`, vis: `<div class="q-eq">x = 12 <span class="m">− 5</span></div>` },
-      { text: `Opero: <b>x = 7</b>. Comprovo: 7 + 5 = 12 ✓ <span class="marca-ok">✓</span>`, vis: `<div class="q-eq"><span class="m">x = 7</span></div>` }] };
-    if (nv === 2) return { enunciat: `Resol 4x = −20.`, passos: [
-      { text: `El <b>4</b> multiplica la x: passa <b>dividint</b>.`, vis: `<div class="q-eq">x = −20 <span class="m">: 4</span></div>` },
-      { text: `Opero: <b>x = −5</b>. Comprovo: 4 · (−5) = −20 ✓ <span class="marca-ok">✓</span>`, vis: `<div class="q-eq"><span class="m">x = −5</span></div>` }] };
-    return { enunciat: `Resol x : 3 = −4.`, passos: [
-      { text: `El <b>3</b> divideix la x: passa <b>multiplicant</b>.`, vis: `<div class="q-eq">x = −4 <span class="m">· 3</span></div>` },
-      { text: `Opero: <b>x = −12</b>. Comprovo: −12 : 3 = −4 ✓ <span class="marca-ok">✓</span>`, vis: `<div class="q-eq"><span class="m">x = −12</span></div>` }] };
+    const ex = (enun, C, t1, t2) => ({ enunciat: enun, passos: [{ text: t1, vis: qCol(C.slice(0, 2), { nou: 1 }) }, { text: t2 + ' <span class="marca-ok">✓</span>', vis: qCol(C, { nou: 1 }) }] });
+    if (nv === 1) return ex(`Resol x + 5 = 12.`, [[`x ${qM('+ 5')}`, '12'], ['x', `12 ${qM('− 5')}`, 'passa restant'], ['x', '7']], `El <b>+5</b> molesta. El passo a l'altra banda <b>restant</b>.`, `Faig la resta i escric el resultat <b>a sota</b>: x = 7. Comprovo: 7 + 5 = 12.`);
+    if (nv === 2) return ex(`Resol 4x = −20.`, [[`${qM('4')}x`, '−20'], ['x', `−20 ${qM(': 4')}`, 'passa dividint'], ['x', '−5']], `El <b>4</b> multiplica la x: passa a l'altra banda <b>dividint</b>.`, `Faig la divisió i escric el resultat <b>a sota</b>: x = −5. Comprovo: 4 · (−5) = −20.`);
+    return ex(`Resol x : 3 = −4.`, [[`x ${qM(': 3')}`, '−4'], ['x', `−4 ${qM('· 3')}`, 'passa multiplicant'], ['x', '−12']], `El <b>3</b> divideix la x: passa a l'altra banda <b>multiplicant</b>.`, `Faig la multiplicació i escric el resultat <b>a sota</b>: x = −12. Comprovo: −12 : 3 = −4.`);
   }
 };
 
 /* =====================================================================
    OBJECTIU 6 · EQUACIONS DE DOS PASSOS
    ===================================================================== */
-const PISTA_Q6 = { completa: `Primer passa el número que <b>suma o resta</b>, i després el que <b>multiplica</b>. 3x + 4 = 19 → 3x = 19 − 4 = 15 → x = 15 : 3 = 5.`, mitja: `1r el que suma o resta, 2n el que multiplica.` };
+const PISTA_Q6 = { completa: `Primer passa el número que <b>suma o resta</b>, i després el que <b>multiplica</b>. Escriu cada pas <b>a sota</b> de l'anterior:<br>${qCol(qLinPassos(3, 4, 19, 5), { petita: true })}`, mitja: `1r el que suma o resta, 2n el que multiplica.` };
 function qDosPassos(nv) {
   const a = qR(2, nv === 1 ? 6 : 9) * (nv === 3 && Math.random() < .3 ? -1 : 1); const x = nv === 1 ? qR(1, 9) : qR(-6, 9) || 2; const b = (Math.random() < .5 ? -1 : 1) * qR(1, 12); const c = a * x + b;
   const errs = qErrs(x, [[(c + b) / a, 'transSigne'], [c / a - b, 'ordrePassos'], [c - b - a, 'passaRestant'], [-x, 'signeDiv']]);
@@ -375,7 +415,7 @@ const Q6 = {};
 Q6.resol = (nv, { n = 3 } = {}) => {
   const its = qUnics(n, () => { const q = qDosPassos(nv); return { ...qX(`<b>${q.e}</b> &nbsp; x =`, q.x), errs: q.errs, q }; }, it => it.html);
   return { sig: `f1-${its.map(i => i.html).join('|')}`, enunciat: `Resol les equacions.`, visual: nv === 1 ? () => qPassos() : null, pista: PISTA_Q6, ...apartats(its),
-    explicacio: `Dos passos: primer el que suma o resta, després el que multiplica.`, solucio: its.map(({ q }) => `${q.e} → ${qNz(q.a)}x = ${qNz(q.c)} ${q.b < 0 ? '+' : '−'} ${Math.abs(q.b)} = ${qNz(q.c - q.b)} → x = ${qNz(q.c - q.b)} : ${qP(q.a)} = <b>${qNz(q.x)}</b>`) };
+    explicacio: `Dos passos: primer el que suma o resta, després el que multiplica.`, solucio: its.map(({ q }) => qCol(qLinPassos(q.a, q.b, q.c, q.x), { petita: true })) };
 };
 Q6.pasAPas = (nv) => {
   const q = qDosPassos(nv); const OPS = [{ html: `el ${q.b < 0 ? '−' : '+'}${Math.abs(q.b)}`, val: 'b' }, { html: `el ${qNz(q.a)} que multiplica`, val: 'a' }];
@@ -385,7 +425,7 @@ Q6.pasAPas = (nv) => {
     { ...qX(`Ara passo el ${qNz(q.a)} dividint: x =`, q.x), errs: qErrs(q.x, [[q.c - q.b - q.a, 'passaRestant'], [-q.x, 'signeDiv']]) }
   ];
   return { sig: `f2-${q.e}`, enunciat: `Resol pas a pas.`, visual: () => qPassos(1), pista: PISTA_Q6, ...apartats(its),
-    explicacio: `Primer el que suma o resta.`, solucio: [`el ${q.b < 0 ? '−' : '+'}${Math.abs(q.b)}`, `${qNz(q.a)}x = <b>${qNz(q.c - q.b)}</b>`, `x = <b>${qNz(q.x)}</b>`] };
+    explicacio: `Primer el que suma o resta.`, solucio: [`Primer, el ${q.b < 0 ? '−' : '+'}${Math.abs(q.b)}.`, qCol(qLinPassos(q.a, q.b, q.c, q.x).slice(0, 3), { petita: true }), qCol(qLinPassos(q.a, q.b, q.c, q.x).slice(2), { petita: true })] };
 };
 Q6.problema = (nv, { n = 2 } = {}) => {
   const C = [
@@ -398,7 +438,7 @@ Q6.problema = (nv, { n = 2 } = {}) => {
   const fs = barreja(C).slice(0, n).map(f => f());
   const its = fs.map(f => ({ ...qX(f.t + ' &nbsp; x =', f.x), e: f.e }));
   return { sig: `f3-${fs.map(f => f.e).join('|')}`, enunciat: `Problemes: escriu l'equació (mentalment o al paper) i resol-la.`, visual: null, pista: { completa: `Equacions: ${fs.map(f => '<b>' + f.e + '</b>').join(' · ')}`, mitja: `Escriu primer l'equació amb x.` }, ...apartats(its),
-    explicacio: `Primer l'equació, després els dos passos.`, solucio: its.map(it => `${it.e} → <b>x = ${it.valor}</b>`) };
+    explicacio: `Primer l'equació, després els dos passos.`, solucio: its.map(it => { const m = it.e.match(/^(\d+)x \+ (\d+) = (\d+)$/); return m ? qCol(qLinPassos(+m[1], +m[2], +m[3], it.valor), { petita: true }) : `${it.e}: <b>x = ${it.valor}</b>`; }) };
 };
 TEMES.q6 = {
   gen: Q6, signeEscrit: true,
@@ -408,21 +448,21 @@ TEMES.q6 = {
     3: [['resol', { n: 3 }], ['problema', { n: 2 }], ['resol', { n: 4 }], ['resol', { n: 4 }], ['problema', { n: 2 }], ['resol', { n: 4 }], ['problema', { n: 2 }], ['resol', { n: 4 }]]
   },
   explicacio: [
-    { text: `<p>A <b>3x + 4 = 19</b> molesten <b>dues</b> coses: el +4 i el 3.</p><p class="petit">Primer traiem el que <b class="parpelleja">suma o resta</b>, i després el que multiplica.</p>`, vis: () => `<div class="q-eq"><span class="b">3</span>x <span class="m">+ 4</span> = 19</div>` },
-    { text: `<p><b>Pas 1:</b> el +4 passa <b class="parpelleja">restant</b>.</p><p class="petit">3x = 19 − 4 = 15</p>`, vis: () => `<div class="q-eq">3x = 19 <span class="m">− 4</span><br>3x = 15</div>` },
-    { text: `<p><b>Pas 2:</b> el 3 multiplica, passa <b class="parpelleja">dividint</b>.</p><p class="petit">x = 15 : 3 = <b>5</b></p>`, vis: () => `<div class="q-eq">x = 15 <span class="m">: 3</span><br>x = 5</div>` },
+    { text: `<p>A <b>3x + 4 = 19</b> molesten <b>dues</b> coses: el +4 i el 3.</p><p class="petit">Primer traiem el que <b class="parpelleja">suma o resta</b>, i després el que multiplica.</p>`, vis: () => qCol([[`${qBl('3')}x ${qM('+ 4')}`, '19']]) },
+    { text: `<p><b>Pas 1:</b> el +4 passa a l'altra banda <b class="parpelleja">restant</b>.</p><p class="petit">I <b>a sota</b>, tornem a escriure l'equació amb la resta feta: 3x = 15.</p>`, vis: () => qCol(qLinPassos(3, 4, 19, 5).slice(0, 3)) },
+    { text: `<p><b>Pas 2:</b> el 3 multiplica: passa a l'altra banda <b class="parpelleja">dividint</b>.</p><p class="petit">I <b>a sota</b>, la divisió feta: x = 5. Sempre cap avall, un pas a cada línia.</p>`, vis: () => qCol(qLinPassos(3, 4, 19, 5), { nou: 3 }) },
     { text: `<p>I sempre <b class="parpelleja">comprovem</b>: 3 · 5 + 4 = 19 ✓</p><p class="petit">El guió de cada equació:</p>`, vis: () => qPassos() }
   ],
   exemple: (nv) => {
-    if (nv === 1) return { enunciat: `Resol 2x + 3 = 11.`, passos: [
-      { text: `Primer el <b>+3</b>: passa restant. 2x = 11 − 3 = 8.`, vis: `<div class="q-eq">2x = 11 <span class="m">− 3</span> = 8</div>` },
-      { text: `Ara el <b>2</b>: passa dividint. x = 8 : 2 = <b>4</b>. Comprovo: 2 · 4 + 3 = 11 ✓ <span class="marca-ok">✓</span>`, vis: `<div class="q-eq">x = 8 <span class="m">: 2</span> = 4</div>` }] };
-    if (nv === 2) return { enunciat: `Resol 5x − 7 = −22.`, passos: [
-      { text: `El <b>−7</b> passa sumant: 5x = −22 + 7 = −15.`, vis: `<div class="q-eq">5x = −22 <span class="m">+ 7</span> = −15</div>` },
-      { text: `El <b>5</b> passa dividint: x = −15 : 5 = <b>−3</b>. <span class="marca-ok">✓</span>`, vis: `<div class="q-eq">x = −15 <span class="m">: 5</span> = −3</div>` }] };
-    return { enunciat: `Penso un nombre, el multiplico per 4 i li resto 6. Dona 30. Quin és?`, passos: [
-      { text: `L'equació: <b>4x − 6 = 30</b>.`, vis: `<div class="q-eq">4x − 6 = 30</div>` },
-      { text: `4x = 36 → x = 36 : 4 = <b>9</b>. <span class="marca-ok">✓</span>`, vis: `<div class="q-eq">x = 9</div>` }] };
+    const ex = (enun, a, b, c, x, intro) => { const C = qLinPassos(a, b, c, x); const t = b > 0 ? 'restant' : 'sumant';
+      return { enunciat: enun, passos: [...(intro ? [{ text: intro, vis: qCol([[`${qAx(a)} ${qSg(b)}`, qNz(c)]]) }] : []),
+        { text: `Primer el <b>${b > 0 ? '+' : '−'}${Math.abs(b)}</b>: passa a l'altra banda <b>${t}</b>.`, vis: qCol(C.slice(0, 2), { nou: 1 }) },
+        { text: `Faig l'operació i escric el resultat <b>a sota</b>: ${qAx(a)} = ${qNz(c - b)}.`, vis: qCol(C.slice(0, 3), { nou: 1 }) },
+        { text: `Ara el <b>${a}</b>, que multiplica: passa <b>dividint</b>.`, vis: qCol(C.slice(0, 4), { nou: 1 }) },
+        { text: `Faig la divisió, a sota: <b>x = ${qNz(x)}</b>. Comprovo: ${a} · ${qP(x)} ${qSg(b)} = ${qNz(c)}. <span class="marca-ok">✓</span>`, vis: qCol(C, { nou: 1 }) }] }; };
+    if (nv === 1) return ex(`Resol 2x + 3 = 11.`, 2, 3, 11, 4);
+    if (nv === 2) return ex(`Resol 5x − 7 = −22.`, 5, -7, -22, -3);
+    return ex(`Penso un nombre, el multiplico per 4 i li resto 6. Dona 30. Quin és?`, 4, -6, 30, 9, `El nombre és la x. L'equació: <b>4x − 6 = 30</b>.`);
   }
 };
 
@@ -445,27 +485,27 @@ function qParen(nv) {
 const Q7 = {};
 Q7.dosCostats = (nv, { n = 3 } = {}) => {
   const its = qUnics(n, () => { const q = qDosCostats(nv); return { ...qX(`<b>${q.e}</b> &nbsp; x =`, q.x), errs: q.errs, q }; }, it => it.html);
-  return { sig: `g1-${its.map(i => i.html).join('|')}`, enunciat: `Resol: les x a l'esquerra i els números a la dreta.`, visual: nv === 1 ? () => `<div class="q-eq"><span class="m">5x</span> − 3 = <span class="m">2x</span> + 9<br><span class="m">5x − 2x</span> = 9 + 3<br>3x = 12 → x = 4</div>` : null, pista: PISTA_Q7, ...apartats(its),
-    explicacio: `Les x a un costat, els números a l'altre.`, solucio: its.map(({ q }) => `${q.e} → ${q.a}x − ${q.c}x = ${qNz(q.d)} ${q.b < 0 ? '+' : '−'} ${Math.abs(q.b)} → ${q.a - q.c}x = ${qNz(q.d - q.b)} → <b>x = ${qNz(q.x)}</b>`) };
+  return { sig: `g1-${its.map(i => i.html).join('|')}`, enunciat: `Resol: les x a l'esquerra i els números a la dreta.`, visual: nv === 1 ? () => qCol(qDosCostatsPassos(5, -3, 2, 9, 4)) : null, pista: PISTA_Q7, ...apartats(its),
+    explicacio: `Les x a un costat, els números a l'altre.`, solucio: its.map(({ q }) => qCol(qDosCostatsPassos(q.a, q.b, q.c, q.d, q.x), { petita: true })) };
 };
 Q7.treuParen = (nv, { n = 3 } = {}) => {
   const its = qUnics(n, () => { const k = (nv === 3 && Math.random() < .3 ? -1 : 1) * qR(2, 6), p = (Math.random() < .5 ? -1 : 1) * qR(1, 9);
     const errs = { [`${k}|${p}`]: 'parentesi', [`${k}|${-k * p}`]: 'signeTerme' }; delete errs[`${k}|${k * p}`];
     return { tipus: 'lin', html: `${qNz(k)}(x ${p < 0 ? '−' : '+'} ${Math.abs(p)}) =`, a: k, b: k * p, errs }; }, it => it.html);
-  return { sig: `g2-${its.map(i => i.html).join('|')}`, enunciat: `Treu els parèntesis: el de fora multiplica <b>tots</b> els de dins.`, visual: () => `<div class="q-eq"><span class="m">3</span>(x − 2) = <span class="m">3</span> · x <span class="m">− 3</span> · 2 = 3x − 6</div>`, pista: PISTA_Q7, ...apartats(its),
+  return { sig: `g2-${its.map(i => i.html).join('|')}`, enunciat: `Treu els parèntesis: el de fora multiplica <b>tots</b> els de dins.`, visual: () => qCol([[`${qM('3')}(x − 2)`, `${qM('3')} · x ${qM('− 3')} · 2`, 'el 3 multiplica la x i el 2'], ['', '3x − 6']]), pista: PISTA_Q7, ...apartats(its),
     explicacio: `Multiplica el número de fora per cada terme de dins.`, solucio: its.map(it => `${it.html} <b>${qL(it.a, it.b)}</b>`) };
 };
 Q7.paren = (nv, { n = 3 } = {}) => {
   const its = qUnics(n, () => { const q = qParen(nv); return { ...qX(`<b>${q.e}</b> &nbsp; x =`, q.x), errs: q.errs, q }; }, it => it.html);
   return { sig: `g3-${its.map(i => i.html).join('|')}`, enunciat: `Resol: primer treu els parèntesis.`, visual: null, pista: PISTA_Q7, ...apartats(its),
-    explicacio: `Parèntesis, reduir, passar i dividir.`, solucio: its.map(({ q }) => `${q.e} → ${qL(q.k, q.k * q.p + q.m)} = ${qNz(q.r)} → ${q.k}x = ${qNz(q.r - q.k * q.p - q.m)} → <b>x = ${qNz(q.x)}</b>`) };
+    explicacio: `Parèntesis, reduir, passar i dividir.`, solucio: its.map(({ q }) => qCol(qParenPassos(q), { petita: true })) };
 };
 Q7.denom = (nv, { n = 2 } = {}) => {
   const its = qUnics(n, () => { const [p, q] = tria([[2, 3], [2, 4], [3, 4], [2, 5], [3, 6], [4, 6]]); const m = p * q / mcdQ(p, q); const x = m * qR(1, 4) * (Math.random() < .3 ? -1 : 1); const b = qR(1, 9);
     const d = x / p + b - x / q; if (!Number.isInteger(d)) return null;
     return { ...qX(`<b>x/${p} + ${b} = x/${q} ${d < 0 ? '−' : '+'} ${Math.abs(d)}</b> &nbsp; x =`, x), errs: qErrs(x, [[-x, 'signeDiv']]), p, q, b, d, m }; }, it => it.html);
-  return { sig: `g4-${its.map(i => i.html).join('|')}`, enunciat: `Equacions amb denominadors (ampliació): multiplica-ho tot pel <b>mcm</b> dels denominadors.`, visual: () => `<div class="q-eq">x/2 + 1 = x/3 + 2<br><span class="m">· 6</span> → 3x + 6 = 2x + 12<br>x = 6</div>`, pista: { completa: `Calcula el mcm dels denominadors i multiplica <b>tots</b> els termes per aquest número. Així desapareixen les fraccions.`, mitja: `Multiplica-ho tot pel mcm.` }, ...apartats(its),
-    explicacio: `Amb el mcm les fraccions desapareixen i queda una equació com les d'abans.`, solucio: its.map(it => `mcm(${it.p}, ${it.q}) = ${it.m} → <b>x = ${qNz(it.valor)}</b>`) };
+  return { sig: `g4-${its.map(i => i.html).join('|')}`, enunciat: `Equacions amb denominadors (ampliació): multiplica-ho tot pel <b>mcm</b> dels denominadors.`, visual: () => qCol([['x/2 + 1', 'x/3 + 2'], [`${qM('6 ·')} x/2 + ${qM('6 ·')} 1`, `${qM('6 ·')} x/3 + ${qM('6 ·')} 2`, 'multiplico tot per 6 (el mcm)'], ...qDosCostatsPassos(3, 6, 2, 12, 6)]), pista: { completa: `Calcula el mcm dels denominadors i multiplica <b>tots</b> els termes per aquest número. Així desapareixen les fraccions.`, mitja: `Multiplica-ho tot pel mcm.` }, ...apartats(its),
+    explicacio: `Amb el mcm les fraccions desapareixen i queda una equació com les d'abans.`, solucio: its.map(it => { const D = qDosCostatsPassos(it.m / it.p, it.m * it.b, it.m / it.q, it.m * it.d, it.valor); D[0][2] = `multiplico tot per ${it.m} (el mcm)`; return qCol([[`x/${it.p} + ${it.b}`, `x/${it.q} ${qSg(it.d)}`], ...D], { petita: true }); }) };
 };
 const mcdQ = (a, b) => b ? mcdQ(b, a % b) : a;
 TEMES.q7 = {
@@ -476,21 +516,26 @@ TEMES.q7 = {
     3: [['dosCostats', { n: 3 }], ['paren', { n: 3 }], ['treuParen', { n: 4 }], ['denom', { n: 2 }], ['paren', { n: 3 }], ['dosCostats', { n: 3 }], ['denom', { n: 2 }], ['paren', { n: 3 }]]
   },
   explicacio: [
-    { text: `<p>A <b>5x − 3 = 2x + 9</b> hi ha x a les <b>dues</b> bandes.</p><p class="petit">Passem les x a l'esquerra i els números a la dreta: el <b>2x</b> passa <b class="parpelleja">restant</b> i el <b>−3</b> passa <b>sumant</b>.</p>`, vis: () => `<div class="q-eq">5x <span class="b">− 3</span> = <span class="m">2x</span> + 9<br>5x <span class="m">− 2x</span> = 9 <span class="b">+ 3</span></div>` },
-    { text: `<p>Reduïm i acabem com sempre:</p><p class="petit">3x = 12 → x = 12 : 3 = <b>4</b></p>`, vis: () => `<div class="q-eq">3x = 12<br>x = 4</div>` },
+    { text: `<p>A <b>5x − 3 = 2x + 9</b> hi ha x a les <b>dues</b> bandes.</p><p class="petit">Passem les x a l'esquerra i els números a la dreta: el <b>2x</b> passa <b class="parpelleja">restant</b> i el <b>−3</b> passa <b>sumant</b>. Cada terme que es mou va del mateix color.</p>`, vis: () => qCol(qDosCostatsPassos(5, -3, 2, 9, 4).slice(0, 2)) },
+    { text: `<p>Reduïm cada costat i acabem com sempre, <b class="parpelleja">cap avall</b>.</p><p class="petit">A sota: 3x = 12. El 3 passa dividint i, a sota, x = 4.</p>`, vis: () => qCol(qDosCostatsPassos(5, -3, 2, 9, 4), { nou: 3 }) },
     { text: `<p>Si hi ha <b class="parpelleja">parèntesis</b>, primer els traiem: el número de fora multiplica <b>tots</b> els de dins.</p><p class="petit">3(x − 2) = 3x − 6 (no 3x − 2!)</p>`, vis: () => `<div class="q-eq"><span class="m">3</span>(x − 2) = 3x − 6</div>` },
     { text: `<p>L'ordre de feina:</p><p class="petit">1. Parèntesis → 2. x a un costat, números a l'altre → 3. Reduir → 4. Passar el que multiplica → 5. Comprovar.</p>`, vis: () => qPassos() }
   ],
   exemple: (nv) => {
-    if (nv === 1) return { enunciat: `Resol 4x + 1 = x + 10.`, passos: [
-      { text: `La <b>x</b> de la dreta passa restant i el <b>+1</b> passa restant: 4x − x = 10 − 1.`, vis: `<div class="q-eq">4x − x = 10 − 1</div>` },
-      { text: `3x = 9 → <b>x = 3</b>. Comprovo: 4 · 3 + 1 = 13 i 3 + 10 = 13 ✓ <span class="marca-ok">✓</span>`, vis: `<div class="q-eq">x = 3</div>` }] };
-    if (nv === 2) return { enunciat: `Resol 2(x + 3) = 14.`, passos: [
-      { text: `Treu el parèntesi: 2x + 6 = 14.`, vis: `<div class="q-eq">2x + 6 = 14</div>` },
-      { text: `2x = 8 → <b>x = 4</b>. <span class="marca-ok">✓</span>`, vis: `<div class="q-eq">x = 4</div>` }] };
+    const pas = (text, C, k, nou = 1) => ({ text, vis: qCol(C.slice(0, k), { nou }) });
+    if (nv === 1) { const C = qDosCostatsPassos(4, 1, 1, 10, 3); return { enunciat: `Resol 4x + 1 = x + 10.`, passos: [
+      pas(`La <b>x</b> de la dreta passa a l'esquerra <b>restant</b>, i el <b>+1</b> passa a la dreta <b>restant</b>.`, C, 2),
+      pas(`Redueixo cada costat i ho escric <b>a sota</b>: 3x = 9.`, C, 3),
+      pas(`El <b>3</b> passa dividint i, a sota, <b>x = 3</b>. Comprovo: 4 · 3 + 1 = 13 i 3 + 10 = 13. <span class="marca-ok">✓</span>`, C, 5, 2)] }; }
+    if (nv === 2) { const C = qParenPassos({ k: 2, p: 3, m: 0, r: 14, x: 4 }); return { enunciat: `Resol 2(x + 3) = 14.`, passos: [
+      pas(`Trec el parèntesi: el 2 multiplica la <b>x</b> i també el <b>3</b>.`, C, 2),
+      pas(`El <b>+6</b> passa restant i, a sota, el resultat: 2x = 8.`, C, 4, 2),
+      pas(`El <b>2</b> passa dividint i, a sota, <b>x = 4</b>. <span class="marca-ok">✓</span>`, C, 6, 2)] }; }
+    const C = [[`${qBl('3')}(x − 2) + 4`, `${qBl('2')}(x + 3)`], ['3x − 6 + 4', '2x + 6', 'trec els parèntesis'], ...(() => { const D = qDosCostatsPassos(3, -2, 2, 6, 8); D[0][2] = 'ajunto els números'; return D; })()];
     return { enunciat: `Resol 3(x − 2) + 4 = 2(x + 3).`, passos: [
-      { text: `Parèntesis: 3x − 6 + 4 = 2x + 6 → 3x − 2 = 2x + 6.`, vis: `<div class="q-eq">3x − 2 = 2x + 6</div>` },
-      { text: `3x − 2x = 6 + 2 → <b>x = 8</b>. <span class="marca-ok">✓</span>`, vis: `<div class="q-eq">x = 8</div>` }] };
+      pas(`Trec els parèntesis dels dos costats i ajunto els números.`, C, 3, 2),
+      pas(`Les x a l'esquerra i els números a la dreta: el <b>2x</b> passa restant i el <b>−2</b>, sumant.`, C, 4),
+      pas(`Redueixo, a sota: <b>x = 8</b>. <span class="marca-ok">✓</span>`, C, C.length)] };
   }
 };
 
@@ -504,12 +549,12 @@ Q8.quadrat = (nv, { n = 3 } = {}) => {
     const e = `${a === 1 ? '' : a}x² ${b ? '+ ' + b + ' ' : ''}= ${c}`;
     const ops = qOps({ html: `x = ${r} i x = −${r}` }, [{ html: `x = ${r}`, tag: 'oblidaNeg' }, { html: `x = ${(c - b) / a / 2}`, tag: 'divQuad' }, { html: `x = ${(c - b) / a}`, tag: 'divQuad' }]);
     return { tipus: 'tria', llarg: true, html: `<b>${e}</b>`, opcions: ops, correcta: 'b', etiq: qEtiq(ops), a, b, c, r, e }; }, it => it.html);
-  return { sig: `h1-${its.map(i => i.html).join('|')}`, enunciat: `Tria les solucions de cada equació.`, visual: () => `<div class="q-eq">x² = 49<br>x = <span class="m">±</span>√49<br>x = 7 &nbsp;i&nbsp; x = −7</div>`, pista: PISTA_Q8, ...apartats(its),
-    explicacio: `Deixa x² sol i fes l'arrel. Dues solucions!`, solucio: its.map(it => `${it.e} → ${it.a !== 1 || it.b ? `x² = ${it.r * it.r} → ` : ''}<b>x = ${it.r} i x = −${it.r}</b>`) };
+  return { sig: `h1-${its.map(i => i.html).join('|')}`, enunciat: `Tria les solucions de cada equació.`, visual: () => qCol(qQuadPassos(1, 0, 49, 7)), pista: PISTA_Q8, ...apartats(its),
+    explicacio: `Deixa x² sol i fes l'arrel. Dues solucions!`, solucio: its.map(it => qCol(qQuadPassos(it.a, it.b, it.c, it.r), { petita: true })) };
 };
 Q8.arrel = (nv, { n = 3 } = {}) => {
   const its = qUnics(n, () => { const r = qR(2, 12); return { tipus: 'num', llarg: true, html: `x² = ${r * r} &nbsp;→&nbsp; la solució positiva és x =`, valor: r, errs: { [r * r / 2]: 'divQuad', [r * r]: 'divQuad' } }; }, it => it.html);
-  return { sig: `h2-${its.map(i => i.html).join('|')}`, enunciat: `Quin nombre al quadrat fa…? (l'altra solució és la negativa)`, visual: nv === 1 ? () => `<div class="q-eq">x² = 36<br>? · ? = 36 → <span class="m">6</span></div>` : null, pista: PISTA_Q8, ...apartats(its),
+  return { sig: `h2-${its.map(i => i.html).join('|')}`, enunciat: `Quin nombre al quadrat fa…? (l'altra solució és la negativa)`, visual: nv === 1 ? () => qCol([['x²', '36'], ['? · ?', '36', 'quin nombre per ell mateix?'], ['x', `${qM('6')} &nbsp;(i també −6)`]]) : null, pista: PISTA_Q8, ...apartats(its),
     explicacio: `Busca el nombre que multiplicat per ell mateix dona el de la dreta.`, solucio: its.map(it => `<b>${it.valor}</b> (i també −${it.valor})`) };
 };
 Q8.pasAPas = (nv) => {
@@ -519,16 +564,16 @@ Q8.pasAPas = (nv) => {
     { tipus: 'num', llarg: true, html: `Fes l'arrel: la solució positiva és x =`, valor: r, errs: { [r * r / 2]: 'divQuad' } },
     { tipus: 'tria', llarg: true, html: `I la negativa?`, opcions: [{ html: `x = −${r}`, val: 'b' }, { html: 'No n\'hi ha', val: 'n' }], correcta: 'b', etiq: { n: 'oblidaNeg' } }
   ];
-  return { sig: `h3-${a}-${r}`, enunciat: `Resol pas a pas.`, visual: () => `<div class="q-eq">2x² = 50<br>x² = 50 : 2 = 25<br>x = ±5</div>`, pista: PISTA_Q8, ...apartats(its),
-    explicacio: `Primer deixa x² sol, després l'arrel.`, solucio: [`x² = <b>${r * r}</b>`, `x = <b>${r}</b>`, `<b>x = −${r}</b>`] };
+  return { sig: `h3-${a}-${r}`, enunciat: `Resol pas a pas.`, visual: () => qCol(qQuadPassos(2, 0, 50, 5)), pista: PISTA_Q8, ...apartats(its),
+    explicacio: `Primer deixa x² sol, després l'arrel.`, solucio: [qCol(qQuadPassos(a, 0, c, r).slice(0, 3), { petita: true }), qCol(qQuadPassos(a, 0, c, r).slice(2), { petita: true }), `No t'oblidis de la negativa: <b>x = −${r}</b>`] };
 };
 Q8.factor = (nv, { n = 2 } = {}) => {
   const its = qUnics(n, () => { const a = Math.random() < .6 ? 1 : qR(2, 3); const s = qR(1, 9) * (Math.random() < .3 ? -1 : 1); const b = -a * s; // ax² + bx = 0 → x = 0 i x = s
     const e = `${a === 1 ? '' : a}x² ${b < 0 ? '−' : '+'} ${Math.abs(b)}x = 0`;
     const ops = qOps({ html: `x = 0 i x = ${qNz(s)}` }, [{ html: `x = ${qNz(s)}`, tag: 'perdZero' }, { html: `x = 0 i x = ${qNz(-s)}`, tag: 'transSigne' }, { html: `x = ${qNz(s)} i x = ${qNz(-s)}`, tag: 'perdZero' }]);
     return { tipus: 'tria', llarg: true, html: `<b>${e}</b>`, opcions: ops, correcta: 'b', etiq: qEtiq(ops), e, a, s }; }, it => it.html);
-  return { sig: `h4-${its.map(i => i.html).join('|')}`, enunciat: `Ampliació: treu la x <b>factor comú</b>. Si un producte fa 0, algun dels factors és 0.`, visual: () => `<div class="q-eq">x² − 5x = 0<br>x · (x − 5) = 0<br>x = 0 &nbsp;o&nbsp; x − 5 = 0 → x = 5</div>`, pista: { completa: `x² − 5x = x · (x − 5). Perquè el producte doni 0: o bé x = 0, o bé x − 5 = 0.`, mitja: `Una de les solucions sempre és 0.` }, ...apartats(its),
-    explicacio: `Factor comú i cada factor igual a 0.`, solucio: its.map(it => `${it.e} → x · (${it.a === 1 ? '' : it.a}x ${it.s * it.a < 0 ? '+' : '−'} ${Math.abs(it.a * it.s)}) = 0 → <b>x = 0 i x = ${qNz(it.s)}</b>`) };
+  return { sig: `h4-${its.map(i => i.html).join('|')}`, enunciat: `Ampliació: treu la x <b>factor comú</b>. Si un producte fa 0, algun dels factors és 0.`, visual: () => qCol(qFactorPassos(1, 5)), pista: { completa: `x² − 5x = x · (x − 5). Perquè el producte doni 0: o bé x = 0, o bé x − 5 = 0.`, mitja: `Una de les solucions sempre és 0.` }, ...apartats(its),
+    explicacio: `Factor comú i cada factor igual a 0.`, solucio: its.map(it => qCol(qFactorPassos(it.a, it.s), { petita: true })) };
 };
 TEMES.q8 = {
   gen: Q8,
@@ -540,19 +585,20 @@ TEMES.q8 = {
   explicacio: [
     { text: `<p>A <b>x² = 49</b> la x està <b class="parpelleja">al quadrat</b>.</p><p class="petit">Busquem un nombre que per ell mateix faci 49: 7 · 7 = 49.</p>`, vis: () => `<div class="q-eq">x · x = 49<br><span class="m">7 · 7 = 49</span></div>` },
     { text: `<p>Però també (−7) · (−7) = 49! Hi ha <b class="parpelleja">dues solucions</b>:</p><p class="petit">x = 7 i x = −7. S'escriu <b>x = ±7</b>.</p>`, vis: () => `<div class="q-eq">x = ±√49<br>x = <span class="m">7</span> &nbsp;i&nbsp; x = <span class="b">−7</span></div>` },
-    { text: `<p>Si el x² porta un número, primer el passem <b class="parpelleja">dividint</b>.</p><p class="petit">2x² = 50 → x² = 25 → x = ±5</p>`, vis: () => `<div class="q-eq">2x² = 50<br>x² = 25<br>x = ±5</div>` },
+    { text: `<p>Si el x² porta un número, primer el passem <b class="parpelleja">dividint</b>.</p><p class="petit">Cada pas, a sota de l'anterior: primer x² sol, i després l'arrel.</p>`, vis: () => qCol(qQuadPassos(2, 0, 50, 5)) },
     { text: `<p><b>Alerta:</b> l'arrel <b class="parpelleja">no és la meitat</b>.</p><p class="petit">x² = 16 → x = ±4 (no 8!)</p>`, vis: () => `<div class="q-eq">√16 = 4 <span class="b">≠</span> 16 : 2</div>` }
   ],
   exemple: (nv) => {
-    if (nv === 1) return { enunciat: `Resol x² = 81.`, passos: [
-      { text: `Quin nombre per ell mateix fa 81? 9 · 9 = 81.`, vis: `<div class="q-eq">9 · 9 = 81</div>` },
-      { text: `I també el negatiu: <b>x = 9 i x = −9</b>. <span class="marca-ok">✓</span>`, vis: `<div class="q-eq">x = ±9</div>` }] };
-    if (nv === 2) return { enunciat: `Resol 3x² = 75.`, passos: [
-      { text: `El 3 passa dividint: x² = 75 : 3 = 25.`, vis: `<div class="q-eq">x² = 25</div>` },
-      { text: `Arrel: <b>x = 5 i x = −5</b>. <span class="marca-ok">✓</span>`, vis: `<div class="q-eq">x = ±5</div>` }] };
-    return { enunciat: `Resol x² − 6x = 0.`, passos: [
-      { text: `Trec la x factor comú: x · (x − 6) = 0.`, vis: `<div class="q-eq">x · (x − 6) = 0</div>` },
-      { text: `x = 0, o bé x − 6 = 0 → x = 6. <b>x = 0 i x = 6</b>. <span class="marca-ok">✓</span>`, vis: `<div class="q-eq">x = 0 &nbsp;i&nbsp; x = 6</div>` }] };
+    const pas = (text, C, k, nou = 1) => ({ text, vis: qCol(C.slice(0, k), { nou }) });
+    if (nv === 1) { const C = qQuadPassos(1, 0, 81, 9); return { enunciat: `Resol x² = 81.`, passos: [
+      pas(`Quin nombre per ell mateix fa 81? Faig l'<b>arrel quadrada</b>: 9 · 9 = 81.`, C, 2),
+      pas(`I també el negatiu, perquè (−9) · (−9) = 81: <b>x = 9 i x = −9</b>. <span class="marca-ok">✓</span>`, C, 3)] }; }
+    if (nv === 2) { const C = qQuadPassos(3, 0, 75, 5); return { enunciat: `Resol 3x² = 75.`, passos: [
+      pas(`El <b>3</b> multiplica: passa <b>dividint</b>. A sota, el resultat: x² = 25.`, C, 3, 2),
+      pas(`Ara l'arrel quadrada, amb les dues solucions: <b>x = 5 i x = −5</b>. <span class="marca-ok">✓</span>`, C, 5, 2)] }; }
+    const C = qFactorPassos(1, 6); return { enunciat: `Resol x² − 6x = 0.`, passos: [
+      pas(`Trec la <b>x</b> factor comú.`, C, 2),
+      pas(`Si un producte fa 0, un dels factors és 0: o bé x = 0, o bé x − 6 = 0. <b>x = 0 i x = 6</b>. <span class="marca-ok">✓</span>`, C, 5, 3)] };
   }
 };
 /* =====================================================================
@@ -569,14 +615,14 @@ const CB_ITEMS_Q = [
   { n: 2, act: 0, type: 'mc', pts: 1, q: 'Quina equació permet calcular els punts d\'en Joan?', opts: { a: 'x + (x + 32) = 120', b: 'x + 32 = 120', c: 'x − (x + 32) = 120', d: '2x = 120 + 32' }, ans: 'a',
     hb: ['Entre els dos fan 120: punts d\'en Joan + punts de la Carla = 120.', 'En Joan té x i la Carla x + 32. Suma-ho.'], hi: 'Escriu la suma dels punts dels dos.' },
   { n: 3, act: 0, type: 'mc', pts: 1, q: 'Quants punts ha fet en Joan?', opts: { a: '44 punts', b: '76 punts', c: '88 punts', d: '60 punts' }, ans: 'a',
-    hb: ['Resol x + x + 32 = 120: ajunta les x, 2x + 32 = 120.', '2x = 120 − 32 = 88. Ara passa el 2 dividint.'], hi: 'Resol l\'equació de la pregunta anterior.' },
+    hb: ['Resol x + x + 32 = 120: ajunta les x, 2x + 32 = 120.', 'El +32 passa restant: 2x = 120 − 32. A sota: 2x = 88. Ara el 2 passa dividint.'], hi: 'Resol l\'equació de la pregunta anterior.' },
   { n: 4, act: 0, type: 'mc', pts: 1, q: 'Si <b>x</b> són els cromos d\'en Pau, quina equació permet trobar-los?', opts: { a: 'x + 3x = 48', b: '3x = 48', c: 'x + 3 = 48', d: 'x + x + 3 = 48' }, ans: 'a',
     hb: ['En Pau en té x. La Laia en té el triple: 3x.', 'Entre els dos en tenen 48: cromos d\'en Pau + cromos de la Laia = 48.'], hi: 'Suma els cromos dels dos.' },
   { n: 5, act: 0, type: 'open', pts: 1, q: 'En Pau diu: «Jo tinc 16 cromos.» Té raó?',
     fields: [{ pre: 'Cromos d\'en Pau (x):', ans: 12, suf: '' }, { pre: 'Cromos de la Laia:', ans: 36, suf: '' }],
     choice: { lab: 'Té raó en Pau?', opts: ['Sí, en té 16.', 'No, en té menys de 16.', 'No, en té més de 16.'], ans: 1 },
     grade: (v, c) => { const r = v[0] === 12; if (c === 1) return r ? 2 : 1; return r ? 1 : 0; },
-    hb: ['Resol x + 3x = 48: ajunta les x.', '4x = 48 → x = 48 : 4. La Laia en té el triple.'], hi: 'Resol l\'equació i comprova el total.' },
+    hb: ['Resol x + 3x = 48: ajunta les x.', 'Queda 4x = 48. El 4 passa dividint: x = 48 : 4. La Laia en té el triple.'], hi: 'Resol l\'equació i comprova el total.' },
   { n: 6, act: 1, type: 'mc', pts: 1, q: 'Quant costa la sortida si hi van 20 alumnes?', opts: { a: '600 €', b: '315 €', c: '6.300 €', d: '335 €' }, ans: 'a',
     hb: ['Canvia la x per 20 a la fórmula C = 15x + 300.', '15 · 20 = 300. Ara suma-hi els 300 € de l\'autocar.'], hi: 'Substitueix x = 20.' },
   { n: 7, act: 1, type: 'mc', pts: 1, q: 'La sortida ha costat 750 €. Quina equació permet saber quants alumnes hi han anat?', opts: { a: '15x + 300 = 750', b: '15x = 750', c: '300x + 15 = 750', d: '15 + 300x = 750' }, ans: 'a',
@@ -584,7 +630,7 @@ const CB_ITEMS_Q = [
   { n: 8, act: 1, type: 'mc', pts: 1, q: 'Quants alumnes hi han anat?', opts: { a: '30 alumnes', b: '50 alumnes', c: '70 alumnes', d: '21 alumnes' }, ans: 'a',
     hb: ['Resol 15x + 300 = 750. Primer el +300 passa restant.', '15x = 450. Ara el 15 passa dividint.'], hi: 'Resol l\'equació de la pregunta anterior.' },
   { n: 9, act: 1, type: 'mc', pts: 1, q: 'Cada alumne paga 25 €. Quants alumnes han d\'anar perquè els diners recollits paguin exactament la sortida? (25x = 15x + 300)', opts: { a: '30 alumnes', b: '12 alumnes', c: '20 alumnes', d: '7 alumnes' }, ans: 'a',
-    hb: ['Passa el 15x a l\'esquerra restant: 25x − 15x = 300.', '10x = 300 → x = 300 : 10.'], hi: 'Les x a un costat i els números a l\'altre.' },
+    hb: ['Passa el 15x a l\'esquerra restant: 25x − 15x = 300.', 'Queda 10x = 300. El 10 passa dividint: x = 300 : 10.'], hi: 'Les x a un costat i els números a l\'altre.' },
   { n: 10, act: 1, type: 'open', pts: 1, q: 'La tutora diu: «Si som el doble d\'alumnes, la sortida costarà el doble.» Comprova-ho amb 20 i amb 40 alumnes.',
     fields: [{ pre: 'Cost amb 20 alumnes:', ans: 600, suf: '€' }, { pre: 'Cost amb 40 alumnes:', ans: 900, suf: '€' }],
     choice: { lab: 'Té raó la tutora?', opts: ['Sí, costa el doble.', 'No, costa menys del doble.', 'No, costa més del doble.'], ans: 1 },

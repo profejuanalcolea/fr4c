@@ -108,9 +108,12 @@ function comprova() {
   const v = +$('#rx').value; if (!$('#rx').value) return;
   if (v === P.e.x) {
     SO.be(); const guany = P.intent === 0 ? 20 : 10; P.punts += guany; P.encerts++;
-    const ini = P.ini; const curt = ini.c === 0 ? `${lin(ini.a, ini.b)} = ${ini.d} → ${ini.a === 1 ? '' : ini.a}x = ${ini.d} − ${ini.b}${ini.a > 1 ? ` → x = ${ini.d - ini.b} : ${ini.a}` : ''}` : `${lin(ini.a, ini.b)} = ${lin(ini.c, ini.d)} → ${ini.a}x − ${ini.c === 1 ? '' : ini.c}x = ${ini.d} − ${ini.b}`;
-    log(`<b style="color:var(--ok)">✓ x = ${v}</b> · Amb la regla curta: ${curt}`); msg(`Molt bé! +${guany}. Treure ${P.ini.b || 'pesos'} dels dos plats és el mateix que «passar-lo restant».`, 'ok');
-    P.ronda++; $('#rx').value = ''; setTimeout(() => P.ronda >= RONDES ? acaba() : novaRonda(), 1600); pinta();
+    const ini = P.ini, T = t => `<span style="color:var(--taronja)">${t}</span>`, B = t => `<span style="color:#2a6fd6">${t}</span>`; const ax = k => `${k === 1 ? '' : k}x`;
+    const L = ini.c === 0 ? [[`${ax(ini.a)} ${T('+ ' + ini.b)}`, ini.d], [ax(ini.a), `${ini.d} ${T('− ' + ini.b)}`, 'passa restant']] : [[`${ax(ini.a)}${ini.b ? ' ' + B('+ ' + ini.b) : ''}`, `${T(ax(ini.c))} + ${ini.d}`], [`${ax(ini.a)} ${T('− ' + ax(ini.c))}`, `${ini.d}${ini.b ? ' ' + B('− ' + ini.b) : ''}`, 'les x a l\'esquerra']];
+    const k = ini.a - ini.c, r = ini.d - ini.b; if (k === 1) L.push(['x', r]); else { L.push([`${B(k)}x`, r]); L.push(['x', `${r} ${B(': ' + k)}`, 'passa dividint']); L.push(['x', v]); }
+    const col = `<div style="display:inline-grid;grid-template-columns:auto auto auto auto;column-gap:.4em;font-size:1.25rem;font-weight:800;margin-top:4px">${L.map(([e, d, n]) => `<span style="text-align:right">${e}</span><span>=</span><span>${d}</span><span style="font-size:.8rem;color:#555;padding-left:.8em;align-self:center">${n ? '← ' + n : ''}</span>`).join('')}</div>`;
+    log(`<b style="color:var(--ok)">✓ x = ${v}</b> · Amb la regla curta, pas a pas i cap avall:<br>${col}`); msg(`Molt bé! +${guany}. Treure ${P.ini.b || 'pesos'} dels dos plats és el mateix que «passar-lo restant».`, 'ok');
+    P.ronda++; $('#rx').value = ''; setTimeout(() => P.ronda >= RONDES ? acaba() : novaRonda(), 5200); pinta();
   } else { SO.mal(); P.errors++; P.intent++; P.fallades.push(`${lin(P.ini.a, P.ini.b)} = ${lin(P.ini.c, P.ini.d)} → x = ${P.e.x}`); msg(`No. Si ${P.e.a || P.e.c} ${(P.e.a || P.e.c) === 1 ? 'caixa pesa' : 'caixes pesen'} ${P.e.d || P.e.b}, quant pesa <b>una</b> caixa? Reparteix-ho.`, 'ko'); $('#rx').select(); }
 }
 function novaRonda() { P.e = novaEq(); P.ini = { ...P.e }; P.intent = 0; P.passos = []; $('#log').innerHTML = ''; log(`Comencem: <b>${eqTxt()}</b>`); msg('Treu el mateix dels dos plats fins que la x quedi sola.'); pinta(); }

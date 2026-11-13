@@ -157,12 +157,12 @@ function opFrac() {
 }
 /* ---------- paquet MESURA (moure la coma i canvis d'unitats) ---------- */
 const nr = x => Math.round(x * 1e6) / 1e6;
-const fmtN = x => { const t = dec(nr(x)); const [e, d] = t.split(','); const eg = e.length > 4 ? e.replace(/\B(?=(\d{3})+$)/g, '.') : e; return d ? eg + ',' + d : eg; };
+const fmtN = x => { const t = dec(nr(x)); const [e, d] = t.split(','); const eg = e.length > 4 ? e.replace(/\B(?=(\d{3})+$)/g, '\u202f') : e; // milers amb un espai fi, mai amb punt return d ? eg + ',' + d : eg; };
 function opMesura() {
   const L = M.nivell;
   if (L === 1 || Math.random() < .25) { const f = tria([10, 100, 1000]); const per = Math.random() < .5; const x = tria([3.4, 0.7, 25, 4.56, 0.08, 12, 1.5, 7.25, 360, 52]);
     const v = per ? x * f : x / f; const alt = [per ? x * f * 10 : x / f / 10, per ? x * f / 10 : x / f * 10, per ? x / f : x * f];
-    return { html: `${fmtN(x)} ${per ? '·' : ':'} ${String(f).replace(/(\d)(?=(\d{3})+$)/g, '$1.')}`, r: fmtN(v), mals: alt.map(fmtN) }; }
+    return { html: `${fmtN(x)} ${per ? '·' : ':'} ${String(f)}`, r: fmtN(v), mals: alt.map(fmtN) }; }
   const LONG = ['km', 'hm', 'dam', 'm', 'dm', 'cm', 'mm'], MASSA = ['kg', 'hg', 'dag', 'g', 'dg', 'cg', 'mg'], CAP = ['kL', 'hL', 'daL', 'L', 'dL', 'cL', 'mL'];
   if (L === 3 && Math.random() < .35) {
     const t = rnd(0, 2);
