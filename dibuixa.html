@@ -127,7 +127,7 @@ const P = {};
 function pintaCap() { $('#punts').textContent = M.pantalla === 'joc' ? P.punts : ''; $('#compta').textContent = M.pantalla === 'joc' ? `Exercici ${Math.min(P.i + 1, 6)} de 6` : ''; }
 function comenca() { Object.assign(P, { i: 0, punts: 0, encerts: 0, errors: 0, fallades: [], t0: performance.now(), ex: exercicis() }); $('#pant').style.display = 'none'; M.pantalla = 'joc'; nouEx(); }
 function nouEx() {
-  const E = P.ex[P.i]; P.E = E; P.pas = E.tipus === 'quina' ? 'quina' : 'taula'; P.intents = 0; P.posats = []; P.bloc = false; E.ys = xsDe(E.F).map(x => f(E.F, x)); pintaCap();
+  const E = P.ex[P.i]; P.E = E; P.pas = E.tipus === 'quina' ? 'quina' : 'taula'; P.intents = 0; P.taulaOk = null; P.errCasella = null; P.pistes = 0; P.posats = []; P.bloc = false; E.ys = xsDe(E.F).map(x => f(E.F, x)); pintaCap();
   if (E.tipus === 'quina') { E.ops = distractors(E.F); pintaGraf({ corba: E.F, anim: true }); SO.dibuixa(); } else pintaGraf();
   pintaPanel();
 }
@@ -135,7 +135,8 @@ const PASSOS = E => E.tipus === 'quina' ? [] : [['taula', '1. Taula'], ['punts',
 function capPanel() { const E = P.E, ordre = PASSOS(E).map(p => p[0]); return E.tipus === 'quina' ? `<h2>Quina és la fórmula?</h2>` : `<h2>Representa <span class="formula">${fTxt(E.F)}</span></h2><div class="passos">${PASSOS(E).map(([k, t]) => `<span class="${k === P.pas ? 'ara' : ordre.indexOf(k) < ordre.indexOf(P.pas) ? 'fet' : ''}">${t}</span>`).join('')}</div>`; }
 function pintaPanel(extra = '') {
   const E = P.E, xs = xsDe(E.F); let cos = '';
-  if (P.pas === 'taula') cos = `<p>Calcula la y de cada x substituint a la fórmula.</p><table class="taula"><tr><th>x</th>${xs.map(x => `<td>${zs(x)}</td>`).join('')}</tr><tr><th>y</th>${xs.map((x, k) => `<td id="c${k}"><input data-k="${k}" inputmode="numeric" autocomplete="off"></td>`).join('')}</tr></table><div class="fila"><button class="big" id="ok">Comprova</button></div>`;
+  if (P.pas === 'taula') cos = `<p>Calcula la y de cada x substituint a la fórmula. Cada número es corregeix quan prems <b>Enter</b> o canvies de casella.</p><table class="taula"><tr><th>x</th>${xs.map(x => `<td>${zs(x)}</td>`).join('')}</tr><tr><th>y</th>${xs.map((x, k) => `<td id="c${k}"><input data-k="${k}" inputmode="numeric" autocomplete="off"></td>`).join('')}</tr><tr class="marques"><th></th>${xs.map((x, k) => `<td id="m${k}" style="border:0;font-size:1.3rem"></td>`).join('')}</tr></table>
+    <div id="pistaT"></div><div class="fila"><button class="big sec" id="bpista">💡 Pista</button><button class="big" id="ok">Comprova-ho tot</button></div>`;
   if (P.pas === 'punts') cos = `<p>Ara <b>clica la quadrícula</b> per posar els ${xs.length} punts de la taula.</p><table class="taula"><tr><th>x</th>${xs.map(x => `<td>${zs(x)}</td>`).join('')}</tr><tr><th>y</th>${E.ys.map((y, k) => `<td class="${P.posats.some(p => p[0] === xs[k]) ? 'be' : ''}">${zs(y)}</td>`).join('')}</tr></table><p class="mini" id="nposats">Punts posats: ${P.posats.length} de ${xs.length}</p>`;
   if (P.pas === 'llegeix') { const F = E.F;
     cos = F.t === 'r' ? `<p class="preg"><b>a)</b> La recta és…</p><div class="opcions" id="o1"><button class="opc" data-v="cr">creixent ↗</button><button class="opc" data-v="de">decreixent ↘</button></div><p><b>b)</b> On talla l'eix y? (escriu la y)</p><div class="entra">y =<input id="i1" inputmode="numeric" autocomplete="off"></div><div class="fila"><button class="big" id="ok">Comprova</button></div>`
@@ -145,22 +146,54 @@ function pintaPanel(extra = '') {
   $('#graf').classList.toggle('posa', P.pas === 'punts');
   const ok = $('#ok'); if (ok) ok.onclick = comprova;
   $$('#tq input').forEach((inp, i, a) => inp.onkeydown = e => { if (e.key === 'Enter') { e.preventDefault(); (a[i + 1] || ok)?.focus?.(); if (!a[i + 1]) ok?.click(); } });
+  if (P.pas === 'taula') {
+    P.taulaOk = P.taulaOk?.length === xs.length ? P.taulaOk : xs.map(() => false); P.errCasella = P.errCasella?.length === xs.length ? P.errCasella : xs.map(() => 0);
+    $$('#tq input[data-k]').forEach(inp => inp.onchange = () => { corregeixCasella(+inp.dataset.k); if (P.taulaOk.every(Boolean)) taulaFeta(); });
+    $('#bpista').onclick = () => { P.pistes = (P.pistes || 0) + 1; const k = P.taulaOk.findIndex(o => !o); if (k < 0) return; $('#pistaT').innerHTML = `<div class="msg" style="color:#4a3596;background:#f1ecff;border-radius:12px;padding:8px 12px">💡 ${pistaCasella(k, 2)}</div>`; };
+  }
   $$('#o1 .opc').forEach(b => b.onclick = () => { P.tria = b.dataset.v; $$('#o1 .opc').forEach(x => x.classList.toggle('be', x === b)); });
   $$('.opc[data-k]').forEach(b => b.onclick = () => triaFormula(+b.dataset.k, b));
   $('#tq input')?.focus();
 }
 const sacseja = () => { const t = $('#tq'); t.classList.add('sacseja'); setTimeout(() => t.classList.remove('sacseja'), 400); };
+// correcció de cada casella de la taula, amb pista concreta
+function substitucio(F, x) { return F.t === 'r' ? `y = ${zs(F.a)} · ${zp(x)} ${F.b >= 0 ? '+' : '−'} ${Math.abs(F.b)}` : `y = ${F.s < 0 ? '−' : ''}${F.h === 0 ? `${zp(x)}²` : `(${zs(x)} ${F.h > 0 ? '−' : '+'} ${Math.abs(F.h)})²`} ${F.k >= 0 ? '+' : '−'} ${Math.abs(F.k)}`; }
+function pistaCasella(k, nivell) {
+  const F = P.E.F, x = xsDe(F)[k];
+  if (nivell === 1) return `Per a x = ${zs(x)}, canvia la x pel ${zs(x)}: ${substitucio(F, x)}`;
+  if (F.t === 'r') return `Per a x = ${zs(x)}<br>${substitucio(F, x)}<br>Primer la multiplicació: ${zs(F.a)} · ${zp(x)} = ${zs(F.a * x)}<br>Després ${F.b >= 0 ? 'suma' : 'resta'} ${Math.abs(F.b)}`;
+  const base = x - F.h; return `Per a x = ${zs(x)}<br>${substitucio(F, x)}<br>Primer el quadrat: ${zp(base)}² = ${base * base}${base < 0 ? ' (un negatiu al quadrat dona positiu!)' : ''}<br>${F.s < 0 ? `Després el menys de davant: −${base * base}<br>` : ''}Al final ${F.k >= 0 ? 'suma' : 'resta'} ${Math.abs(F.k)}`;
+}
+function consellCasella(F, x, v) {
+  if (F.t === 'p') { const b = x - F.h; if (b < 0 && v === F.s * -(b * b) + F.k) return 'Compte: un número negatiu al quadrat dona <b>positiu</b>. Per exemple, (−2)² = 4.'; if (v === F.s * 2 * b + F.k) return 'Al quadrat no és multiplicar per 2: és multiplicar el número per ell mateix.'; }
+  if (F.t === 'r' && v === F.a + x + F.b) return 'Entre el número i la x hi ha una <b>multiplicació</b>, no una suma.';
+  if (F.t === 'r' && v === -(F.a * x) + F.b) return 'Revisa el signe de la multiplicació: menys per menys fa més.';
+  return '';
+}
+function corregeixCasella(k, silenci = false) {
+  const F = P.E.F, x = xsDe(F)[k], inp = $(`#tq input[data-k="${k}"]`), td = $('#c' + k), m = $('#m' + k); if (!inp) return;
+  const v = llegeix(inp.value); if (v == null) { td.className = ''; m.textContent = ''; return; }
+  const ok = v === P.E.ys[k]; const abans = P.taulaOk[k]; P.taulaOk[k] = ok; td.className = ok ? 'be' : 'mal'; m.innerHTML = ok ? '<span style="color:#2c9a58">✓</span>' : '<span style="color:#d64242">✗</span>';
+  if (ok) { if (!abans && !silenci) SO.punt(k); if (!silenci) $('#msg').innerHTML = `<p class="msg ok">✓ x = ${zs(x)} → y = ${zs(v)}. Molt bé!</p>`; inp.disabled = true; return; }
+  P.errCasella[k]++; P.errors++; if (!silenci) SO.mal();
+  const cons = consellCasella(F, x, v);
+  $('#msg').innerHTML = `<p class="msg ko">✗ Per a x = ${zs(x)} no surt ${zs(v)}. ${cons}</p><div class="calc" style="color:#4a3596">💡 ${pistaCasella(k, P.errCasella[k] >= 2 ? 2 : 1)}</div>`;
+}
+function taulaFeta() {
+  if (P.pas !== 'taula') return; const errs = P.errCasella.reduce((a, b) => a + b, 0); const pts = errs === 0 && !P.pistes ? 3 : errs <= 2 ? 2 : 1;
+  if (errs > 2) P.fallades.push(`Taula de ${fTxt(P.E.F)}`);
+  SO.be(); suma(pts, true); P.encerts++; P.taulaOk = null; P.errCasella = null; P.pistes = 0;
+  $('#msg').innerHTML = `<p class="msg ok">Taula completa! +${pts} · Ara posa els punts.</p>`; $('#ok').disabled = true;
+  setTimeout(() => { P.pas = 'punts'; P.intents = 0; pintaPanel(); }, 1100);
+}
 function suma(pts, ok) { if (ok) { P.punts += pts; } pintaCap(); }
 function solTaula(F) { return xsDe(F).map(x => F.t === 'r' ? `x = ${zs(x)} → y = ${zs(F.a)} · ${zp(x)} ${F.b >= 0 ? '+' : '−'} ${Math.abs(F.b)} = <b>${zs(f(F, x))}</b>` : `x = ${zs(x)} → y = ${F.s < 0 ? '−' : ''}${F.h === 0 ? `${zp(x)}²` : `(${zs(x)} ${F.h > 0 ? '−' : '+'} ${Math.abs(F.h)})²`} ${F.k >= 0 ? '+' : '−'} ${Math.abs(F.k)} = <b>${zs(f(F, x))}</b>`); }
 async function comprova() {
   const E = P.E, F = E.F;
-  if (P.pas === 'taula') {
-    const v = $$('#tq input').map(i => llegeix(i.value)); if (v.some(x => x == null)) return sacseja();
-    const oks = v.map((x, k) => x === E.ys[k]); oks.forEach((o, k) => $('#c' + k).className = o ? 'be' : 'mal'); P.intents++;
-    if (oks.every(Boolean)) { SO.be(); suma(P.intents === 1 ? 3 : 2, true); P.encerts++; await espera(500); P.pas = 'punts'; P.intents = 0; return pintaPanel(); }
-    P.errors++; SO.mal();
-    if (P.intents < 2) { $('#msg').innerHTML = `<p class="msg ko">Hi ha ${oks.filter(o => !o).length} ${oks.filter(o => !o).length === 1 ? 'valor malament' : 'valors malament'} (en vermell). Recorda: primer la potència, després la multiplicació i al final la suma.</p>`; return; }
-    P.fallades.push(`Taula de ${fTxt(F)}`); P.pas = 'punts'; P.intents = 0; return pintaPanel(`<p class="msg ko">Mira com es calcula:</p><div class="calc">${solTaula(F).join('<br>')}</div>`);
+  if (P.pas === 'taula') { // comprova-ho tot de cop (les caselles ja es corregeixen una a una)
+    xsDe(F).forEach((x, k) => corregeixCasella(k, true));
+    if (P.taulaOk.every(Boolean)) return taulaFeta();
+    SO.mal(); const n = P.taulaOk.filter(o => !o).length; $('#msg').innerHTML = `<p class="msg ko">Encara hi ha ${n} ${n === 1 ? 'casella' : 'caselles'} per arreglar (en vermell).</p>`; return;
   }
   if (P.pas === 'llegeix') {
     if (F.t === 'r') { const t = llegeix($('#i1').value); if (!P.tria || t == null) return sacseja(); const ok1 = P.tria === (F.a > 0 ? 'cr' : 'de'), ok2 = t === F.b; return fiLlegeix(ok1 && ok2, [`El pendent és ${zs(F.a)}: ${F.a > 0 ? 'positiu, la recta <b>puja</b>' : 'negatiu, la recta <b>baixa</b>'}`, `Amb x = 0 surt y = <b>${zs(F.b)}</b>`, `Talla l'eix y a (0, ${zs(F.b)})`], (ok1 ? 2 : 0) + (ok2 ? 2 : 0)); }
