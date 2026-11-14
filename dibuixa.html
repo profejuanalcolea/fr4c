@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dibuixa gràfiques · FR-4C</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,800&display=swap" rel="stylesheet">
+<style>
+/* Taller d'ampliació de l'app FR-4C · Gràfiques: de la fórmula a la taula, als punts i a la corba (rectes i paràboles). Protocol fr4c-dib-ini/llest/fi/tanca. */
+:root{--taronja:#f26b1d;--tinta:#1b1b1b;--ok:#2c9a58;--ko:#d64242;--fons:#f4f2ec;--blau:#2a6fd6;--lila:#7c5cd6}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;font-family:"Atkinson Hyperlegible",system-ui,sans-serif;background:var(--fons);color:var(--tinta);overflow:hidden;user-select:none}
+#joc{position:relative;width:100%;height:100%;display:grid;grid-template-columns:minmax(0,1.25fr) minmax(330px,1fr);gap:14px;padding:62px 16px 14px}
+.cap{position:absolute;top:10px;left:16px;right:16px;display:flex;align-items:center;gap:14px;z-index:5;font-weight:700}
+.cap .tit{font-family:"Bricolage Grotesque",sans-serif;font-size:1.3rem}.cap .compta{font-size:1.05rem;color:#555}
+.cap .punts{margin-left:auto;font-size:1.7rem;font-family:"Bricolage Grotesque",sans-serif}
+.btn{border:3px solid var(--tinta);background:#fff;color:var(--tinta);border-radius:12px;padding:6px 12px;font:inherit;font-weight:700;cursor:pointer}
+#graf{width:100%;height:100%;min-height:0;border:4px solid var(--tinta);border-radius:20px;background:#fff;display:block}
+#graf.posa{cursor:crosshair}
+.panel{display:flex;flex-direction:column;gap:10px;min-height:0;overflow:auto;padding-bottom:4px}
+.targ{background:#fff;border:4px solid var(--tinta);border-radius:20px;padding:12px 16px;box-shadow:0 5px 0 #0002}
+.targ h2{font-family:"Bricolage Grotesque",sans-serif;font-size:1.3rem;margin:0 0 4px}
+.targ p{margin:5px 0;font-size:1.08rem;line-height:1.4}
+.formula{font-family:"Bricolage Grotesque",sans-serif;font-size:2rem;background:#fff1e6;border-radius:14px;padding:6px 14px;display:inline-block;margin:4px 0}
+.passos{display:flex;gap:6px;margin:6px 0}.passos span{font-size:.95rem;border-radius:10px;padding:3px 10px;background:#f1efe9;color:#999;font-weight:700}.passos span.ara{background:var(--tinta);color:#fff}.passos span.fet{background:#e3f4e8;color:var(--ok)}
+.taula{border-collapse:collapse;font-family:"Bricolage Grotesque",sans-serif;font-size:1.3rem;margin-top:6px}.taula td,.taula th{border:3px solid var(--tinta);padding:3px 6px;min-width:56px;text-align:center}.taula th{background:#f3eee3}
+.taula input{width:56px;font-family:"Bricolage Grotesque",sans-serif;font-size:1.25rem;border:0;text-align:center;background:transparent}
+.taula td.mal{background:#ffd9d9}.taula td.be{background:#dff3e6}
+.big{font-family:"Bricolage Grotesque",sans-serif;font-size:1.15rem;border-radius:14px;padding:9px 18px;border:4px solid var(--tinta);cursor:pointer;background:var(--taronja);color:#fff;box-shadow:0 5px 0 #0004}
+.big.sec{background:#fff;color:var(--tinta)}.big:disabled{opacity:.4;cursor:default}
+.fila{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:8px}
+.entra{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-family:"Bricolage Grotesque",sans-serif;font-size:1.4rem}
+.entra input{font-family:"Bricolage Grotesque",sans-serif;font-size:1.4rem;width:76px;padding:4px 6px;border:4px solid var(--tinta);border-radius:12px;text-align:center}
+.opcions{display:grid;gap:8px;margin-top:6px}.opc{font-family:"Bricolage Grotesque",sans-serif;font-size:1.3rem;padding:8px 12px;border-radius:14px;border:4px solid var(--tinta);background:#fff;cursor:pointer;text-align:left}
+.opc:disabled{opacity:.45}.opc.be{background:var(--ok);color:#fff;border-color:var(--ok);opacity:1}
+.msg{font-weight:700;font-size:1.06rem;margin-top:6px}.msg.ok{color:var(--ok)}.msg.ko{color:var(--ko)}
+.calc{font-family:"Bricolage Grotesque",sans-serif;font-size:1.15rem;line-height:1.45;margin-top:4px}
+.pantalla{position:absolute;inset:0;z-index:10;display:flex;align-items:center;justify-content:center;background:#1b1b1b99}
+.panell{background:#fff;border-radius:24px;border:4px solid var(--tinta);padding:20px 26px;max-width:820px;width:92%;box-shadow:0 10px 0 #0006;max-height:94vh;overflow:auto}
+.panell h1{font-family:"Bricolage Grotesque",sans-serif;margin:0 0 6px;font-size:2rem}.panell p{font-size:1.12rem;line-height:1.45;margin:8px 0}
+.big2{font-size:1.3rem;padding:12px 24px}
+.resum{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:12px 0}.resum div{background:#f5f3ef;border-radius:14px;padding:10px;text-align:center}.resum b{display:block;font-family:"Bricolage Grotesque",sans-serif;font-size:2rem}
+.mini{font-size:.95rem;color:#666}.rec{color:var(--taronja);font-weight:800}
+.sacseja{animation:sacseja .35s}@keyframes sacseja{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+.pop{animation:pop .35s ease-out;transform-box:fill-box;transform-origin:center}@keyframes pop{from{transform:scale(0)}60%{transform:scale(1.5)}}
+.creu{animation:creu .9s ease-out forwards}@keyframes creu{to{opacity:0}}
+</style>
+</head>
+<body>
+<div id="joc">
+  <div class="cap"><span class="tit">📈 Dibuixa gràfiques <small style="font-weight:600;color:#7c5cd6">· ampliació</small></span><span class="compta" id="compta"></span><span class="punts" id="punts"></span>
+    <button class="btn" id="so" title="So">🔊</button><button class="btn" id="surt" title="Surt">✕</button></div>
+  <svg id="graf" viewBox="0 0 640 600" preserveAspectRatio="xMidYMid meet" aria-label="Quadrícula"></svg>
+  <div class="panel" id="panel"></div>
+</div>
+<div class="pantalla" id="pant" style="display:none"></div>
+<script>
+'use strict';
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const rnd = (a, b) => a + Math.floor(Math.random() * (b - a + 1)), tria = a => a[Math.floor(Math.random() * a.length)];
+const barreja = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const espera = ms => new Promise(r => setTimeout(r, ms));
+const N = '#1b1b1b', T = '#f26b1d';
+const M = { nom: '', nivell: 3, dinsApp: false, so: true, pantalla: 'inici', record: 0 };
+try { M.so = localStorage.getItem('fr4c_dib_so') !== '0'; } catch (e) {}
+const zs = n => n < 0 ? `−${-n}` : String(n), zp = n => n < 0 ? `(−${-n})` : String(n);
+const llegeix = s => { s = String(s ?? '').trim().replace(/\s/g, '').replace('−', '-').replace(',', '.'); if (s === '' || s === '-' || isNaN(+s)) return null; return +s; };
+
+/* ================= SONS ================= */
+const SO = {
+  ctx: null,
+  ac() { if (!M.so) return null; try { this.ctx = this.ctx || new (window.AudioContext || window.webkitAudioContext)(); if (this.ctx.state === 'suspended') this.ctx.resume(); return this.ctx; } catch (e) { return null; } },
+  to(f, d, { ona = 'triangle', vol = .05, t0 = 0, f2 = null } = {}) { const ac = this.ac(); if (!ac) return; const t = ac.currentTime + t0, o = ac.createOscillator(), g = ac.createGain(); o.type = ona; o.frequency.setValueAtTime(f, t); if (f2) o.frequency.exponentialRampToValueAtTime(f2, t + d); g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + .02); g.gain.exponentialRampToValueAtTime(.0001, t + d); o.connect(g); g.connect(ac.destination); o.start(t); o.stop(t + d + .05); },
+  punt(i = 0) { this.to(600 + i * 90, .1, { vol: .05 }); },
+  dibuixa() { this.to(300, 1.4, { ona: 'sine', vol: .04, f2: 900 }); },
+  be() { [523, 659, 784].forEach((f, i) => this.to(f, .2, { t0: i * .1, vol: .055 })); },
+  mal() { this.to(320, .3, { ona: 'sine', vol: .06, f2: 140 }); },
+  fi() { [392, 523, 659, 784, 659, 784, 1047].forEach((f, i) => this.to(f, .24, { t0: i * .14, vol: .055 })); }
+};
+
+/* ================= FUNCIONS ================= */
+const f = (F, x) => F.t === 'r' ? F.a * x + F.b : F.s * (x - F.h) ** 2 + F.k;
+function fTxt(F) {
+  if (F.t === 'r') { const ax = F.a === 1 ? 'x' : F.a === -1 ? '−x' : `${zs(F.a)}x`; return `y = ${ax}${F.b > 0 ? ` + ${F.b}` : F.b < 0 ? ` − ${-F.b}` : ''}`; }
+  const base = F.h === 0 ? 'x²' : `(x ${F.h > 0 ? '−' : '+'} ${Math.abs(F.h)})²`; return `y = ${F.s < 0 ? '−' : ''}${base}${F.k > 0 ? ` + ${F.k}` : F.k < 0 ? ` − ${-F.k}` : ''}`;
+}
+const xsDe = F => F.t === 'r' ? [-2, -1, 0, 1, 2] : [F.h - 2, F.h - 1, F.h, F.h + 1, F.h + 2];
+function exercicis() {
+  const r1 = { t: 'r', a: tria([1, 2, 3]), b: rnd(-3, 3) }, r2 = { t: 'r', a: tria([-1, -2]), b: rnd(-2, 4) };
+  const p1 = { t: 'p', s: 1, h: 0, k: rnd(-4, 2) }, p2 = tria([{ t: 'p', s: -1, h: 0, k: rnd(2, 6) }, { t: 'p', s: 1, h: tria([1, 2, -1]), k: rnd(-3, 1) }]);
+  const q1 = { t: 'r', a: tria([2, -2, 3, -1]), b: rnd(-3, 4) }, q2 = tria([{ t: 'p', s: 1, h: tria([1, -2, 2]), k: rnd(-3, 2) }, { t: 'p', s: -1, h: 0, k: rnd(1, 5) }]);
+  return [{ tipus: 'dib', F: r1 }, { tipus: 'dib', F: r2 }, { tipus: 'dib', F: p1 }, { tipus: 'dib', F: p2 }, { tipus: 'quina', F: q1 }, { tipus: 'quina', F: q2 }];
+}
+function distractors(F) {
+  const op = F.t === 'r' ? [{ ...F, a: -F.a }, { ...F, b: F.b === 0 ? 2 : -F.b }, { ...F, a: F.a + (F.a > 0 ? 1 : -1) }] : [{ ...F, s: -F.s }, { ...F, h: -F.h || 1 }, { ...F, k: F.k === 0 ? 2 : -F.k }];
+  const vist = new Set([fTxt(F)]); const r = [F]; for (const o of barreja(op)) if (!vist.has(fTxt(o)) && r.length < 3) { vist.add(fTxt(o)); r.push(o); } return barreja(r);
+}
+
+/* ================= QUADRÍCULA ================= */
+const X0 = -5, X1 = 5, Y0 = -8, Y1 = 10, OX = 50, OY = 30, PX = 54, PY = 29; // quadrícula de x −5..5 i y −8..10
+const sx = x => OX + (x - X0) * PX, sy = y => OY + (Y1 - y) * PY;
+function quadricula() {
+  let g = `<rect width="640" height="600" fill="#fff"/>`;
+  for (let x = X0; x <= X1; x++) g += `<path d="M${sx(x)} ${sy(Y0)}V${sy(Y1)}" stroke="${x === 0 ? N : '#e4e4e4'}" stroke-width="${x === 0 ? 2.5 : 1}"/>${x ? `<text x="${sx(x)}" y="${sy(0) + 18}" text-anchor="middle" font-size="13" fill="#666">${zs(x)}</text>` : ''}`;
+  for (let y = Y0; y <= Y1; y++) g += `<path d="M${sx(X0)} ${sy(y)}H${sx(X1)}" stroke="${y === 0 ? N : '#e4e4e4'}" stroke-width="${y === 0 ? 2.5 : 1}"/>${y && y % 2 === 0 ? `<text x="${sx(0) - 7}" y="${sy(y) + 4}" text-anchor="end" font-size="13" fill="#666">${zs(y)}</text>` : ''}`;
+  g += `<text x="${sx(X1) + 6}" y="${sy(0) + 5}" font-size="16" font-weight="800">x</text><text x="${sx(0) + 6}" y="${sy(Y1) - 4}" font-size="16" font-weight="800">y</text>`;
+  return g;
+}
+function corbaPath(F) { const pts = []; for (let x = X0 - .5; x <= X1 + .5 + 1e-9; x += .05) { const y = f(F, x); if (y > Y1 + 2 || y < Y0 - 2) { pts.push(null); continue; } pts.push([sx(x), sy(y)]); } let d = '', on = false; for (const p of pts) { if (!p) { on = false; continue; } d += `${on ? 'L' : 'M'}${p[0].toFixed(1)} ${p[1].toFixed(1)}`; on = true; } return d; }
+const comaMini = () => `<g transform="translate(-16 -30) scale(.4)"><ellipse cx="40" cy="54" rx="21" ry="18" fill="${T}" stroke="${N}" stroke-width="4"/><ellipse cx="40" cy="60" rx="10" ry="10" fill="#fff"/><path d="M25 20L20 3L35 12Z M55 20L60 3L45 12Z" fill="${T}" stroke="${N}" stroke-width="4" stroke-linejoin="round"/><circle cx="40" cy="27" r="17" fill="${T}" stroke="${N}" stroke-width="4"/><ellipse cx="33.5" cy="26" rx="3" ry="4" fill="${N}"/><ellipse cx="46.5" cy="26" rx="3" ry="4" fill="${N}"/></g>`;
+function pintaGraf({ punts = [], corba = null, anim = false, extra = '' } = {}) {
+  const d = corba ? corbaPath(corba) : '';
+  $('#graf').innerHTML = quadricula() + (d ? `<clipPath id="cp"><rect x="${OX}" y="${OY}" width="${(X1 - X0) * PX}" height="${(Y1 - Y0) * PY}"/></clipPath><path id="cv" clip-path="url(#cp)" d="${d}" fill="none" stroke="${T}" stroke-width="4.5" stroke-linecap="round" ${anim ? 'stroke-dasharray="3000" stroke-dashoffset="3000"' : ''}>${anim ? '<animate attributeName="stroke-dashoffset" from="3000" to="0" dur="1.6s" fill="freeze"/>' : ''}</path>` : '')
+    + punts.map(([x, y, col], i) => `<circle class="pop" cx="${sx(x)}" cy="${sy(y)}" r="8" fill="${col || '#2a6fd6'}" stroke="${N}" stroke-width="2"/>`).join('') + `<g id="capa">${extra}</g>`;
+}
+// en Coma llisca per sobre de la corba
+async function comaLlisca(F) {
+  const xs = []; for (let x = X0; x <= X1; x += .08) { const y = f(F, x); if (y <= Y1 && y >= Y0) xs.push(x); } if (!xs.length) return;
+  for (const x of xs) { const y = f(F, x), dy = F.t === 'r' ? F.a : 2 * F.s * (x - F.h); const ang = -Math.atan(dy * PY / PX) * 180 / Math.PI; const c = $('#capa'); if (!c) return; c.innerHTML = `<g transform="translate(${sx(x)} ${sy(y)}) rotate(${ang})">${comaMini()}</g>`; await espera(18); }
+  await espera(300); const c = $('#capa'); if (c) c.innerHTML = '';
+}
+
+/* ================= PARTIDA ================= */
+const P = {};
+function pintaCap() { $('#punts').textContent = M.pantalla === 'joc' ? P.punts : ''; $('#compta').textContent = M.pantalla === 'joc' ? `Exercici ${Math.min(P.i + 1, 6)} de 6` : ''; }
+function comenca() { Object.assign(P, { i: 0, punts: 0, encerts: 0, errors: 0, fallades: [], t0: performance.now(), ex: exercicis() }); $('#pant').style.display = 'none'; M.pantalla = 'joc'; nouEx(); }
+function nouEx() {
+  const E = P.ex[P.i]; P.E = E; P.pas = E.tipus === 'quina' ? 'quina' : 'taula'; P.intents = 0; P.posats = []; P.bloc = false; E.ys = xsDe(E.F).map(x => f(E.F, x)); pintaCap();
+  if (E.tipus === 'quina') { E.ops = distractors(E.F); pintaGraf({ corba: E.F, anim: true }); SO.dibuixa(); } else pintaGraf();
+  pintaPanel();
+}
+const PASSOS = E => E.tipus === 'quina' ? [] : [['taula', '1. Taula'], ['punts', '2. Punts'], ['llegeix', '3. Llegeix']];
+function capPanel() { const E = P.E, ordre = PASSOS(E).map(p => p[0]); return E.tipus === 'quina' ? `<h2>Quina és la fórmula?</h2>` : `<h2>Representa <span class="formula">${fTxt(E.F)}</span></h2><div class="passos">${PASSOS(E).map(([k, t]) => `<span class="${k === P.pas ? 'ara' : ordre.indexOf(k) < ordre.indexOf(P.pas) ? 'fet' : ''}">${t}</span>`).join('')}</div>`; }
+function pintaPanel(extra = '') {
+  const E = P.E, xs = xsDe(E.F); let cos = '';
+  if (P.pas === 'taula') cos = `<p>Calcula la y de cada x substituint a la fórmula.</p><table class="taula"><tr><th>x</th>${xs.map(x => `<td>${zs(x)}</td>`).join('')}</tr><tr><th>y</th>${xs.map((x, k) => `<td id="c${k}"><input data-k="${k}" inputmode="numeric" autocomplete="off"></td>`).join('')}</tr></table><div class="fila"><button class="big" id="ok">Comprova</button></div>`;
+  if (P.pas === 'punts') cos = `<p>Ara <b>clica la quadrícula</b> per posar els ${xs.length} punts de la taula.</p><table class="taula"><tr><th>x</th>${xs.map(x => `<td>${zs(x)}</td>`).join('')}</tr><tr><th>y</th>${E.ys.map((y, k) => `<td class="${P.posats.some(p => p[0] === xs[k]) ? 'be' : ''}">${zs(y)}</td>`).join('')}</tr></table><p class="mini" id="nposats">Punts posats: ${P.posats.length} de ${xs.length}</p>`;
+  if (P.pas === 'llegeix') { const F = E.F;
+    cos = F.t === 'r' ? `<p class="preg"><b>a)</b> La recta és…</p><div class="opcions" id="o1"><button class="opc" data-v="cr">creixent ↗</button><button class="opc" data-v="de">decreixent ↘</button></div><p><b>b)</b> On talla l'eix y? (escriu la y)</p><div class="entra">y =<input id="i1" inputmode="numeric" autocomplete="off"></div><div class="fila"><button class="big" id="ok">Comprova</button></div>`
+      : `<p><b>a)</b> Quin és el vèrtex?</p><div class="entra">(<input id="vx" inputmode="numeric" autocomplete="off">,<input id="vy" inputmode="numeric" autocomplete="off">)</div><p><b>b)</b> El vèrtex és…</p><div class="opcions" id="o1"><button class="opc" data-v="min">un mínim (la paràbola obre cap amunt ∪)</button><button class="opc" data-v="max">un màxim (la paràbola obre cap avall ∩)</button></div><div class="fila"><button class="big" id="ok">Comprova</button></div>`; }
+  if (P.pas === 'quina') cos = `<p>Mira la gràfica. Quina fórmula té?</p><div class="opcions">${E.ops.map((o, k) => `<button class="opc" data-k="${k}">${fTxt(o)}</button>`).join('')}</div>`;
+  $('#panel').innerHTML = `<div class="targ" id="tq">${capPanel()}${cos}<div id="msg">${extra}</div></div>`;
+  $('#graf').classList.toggle('posa', P.pas === 'punts');
+  const ok = $('#ok'); if (ok) ok.onclick = comprova;
+  $$('#tq input').forEach((inp, i, a) => inp.onkeydown = e => { if (e.key === 'Enter') { e.preventDefault(); (a[i + 1] || ok)?.focus?.(); if (!a[i + 1]) ok?.click(); } });
+  $$('#o1 .opc').forEach(b => b.onclick = () => { P.tria = b.dataset.v; $$('#o1 .opc').forEach(x => x.classList.toggle('be', x === b)); });
+  $$('.opc[data-k]').forEach(b => b.onclick = () => triaFormula(+b.dataset.k, b));
+  $('#tq input')?.focus();
+}
+const sacseja = () => { const t = $('#tq'); t.classList.add('sacseja'); setTimeout(() => t.classList.remove('sacseja'), 400); };
+function suma(pts, ok) { if (ok) { P.punts += pts; } pintaCap(); }
+function solTaula(F) { return xsDe(F).map(x => F.t === 'r' ? `x = ${zs(x)} → y = ${zs(F.a)} · ${zp(x)} ${F.b >= 0 ? '+' : '−'} ${Math.abs(F.b)} = <b>${zs(f(F, x))}</b>` : `x = ${zs(x)} → y = ${F.s < 0 ? '−' : ''}${F.h === 0 ? `${zp(x)}²` : `(${zs(x)} ${F.h > 0 ? '−' : '+'} ${Math.abs(F.h)})²`} ${F.k >= 0 ? '+' : '−'} ${Math.abs(F.k)} = <b>${zs(f(F, x))}</b>`); }
+async function comprova() {
+  const E = P.E, F = E.F;
+  if (P.pas === 'taula') {
+    const v = $$('#tq input').map(i => llegeix(i.value)); if (v.some(x => x == null)) return sacseja();
+    const oks = v.map((x, k) => x === E.ys[k]); oks.forEach((o, k) => $('#c' + k).className = o ? 'be' : 'mal'); P.intents++;
+    if (oks.every(Boolean)) { SO.be(); suma(P.intents === 1 ? 3 : 2, true); P.encerts++; await espera(500); P.pas = 'punts'; P.intents = 0; return pintaPanel(); }
+    P.errors++; SO.mal();
+    if (P.intents < 2) { $('#msg').innerHTML = `<p class="msg ko">Hi ha ${oks.filter(o => !o).length} ${oks.filter(o => !o).length === 1 ? 'valor malament' : 'valors malament'} (en vermell). Recorda: primer la potència, després la multiplicació i al final la suma.</p>`; return; }
+    P.fallades.push(`Taula de ${fTxt(F)}`); P.pas = 'punts'; P.intents = 0; return pintaPanel(`<p class="msg ko">Mira com es calcula:</p><div class="calc">${solTaula(F).join('<br>')}</div>`);
+  }
+  if (P.pas === 'llegeix') {
+    if (F.t === 'r') { const t = llegeix($('#i1').value); if (!P.tria || t == null) return sacseja(); const ok1 = P.tria === (F.a > 0 ? 'cr' : 'de'), ok2 = t === F.b; return fiLlegeix(ok1 && ok2, [`El pendent és ${zs(F.a)}: ${F.a > 0 ? 'positiu, la recta <b>puja</b>' : 'negatiu, la recta <b>baixa</b>'}`, `Amb x = 0 surt y = <b>${zs(F.b)}</b>`, `Talla l'eix y a (0, ${zs(F.b)})`], (ok1 ? 2 : 0) + (ok2 ? 2 : 0)); }
+    const vx = llegeix($('#vx').value), vy = llegeix($('#vy').value); if (vx == null || vy == null || !P.tria) return sacseja();
+    const ok1 = vx === F.h && vy === F.k, ok2 = P.tria === (F.s > 0 ? 'min' : 'max');
+    return fiLlegeix(ok1 && ok2, [`El vèrtex és el punt de dalt o de baix de tot`, `Vèrtex = <b>(${zs(F.h)}, ${zs(F.k)})</b>`, F.s > 0 ? 'El x² és positiu: obre cap amunt, és un <b>mínim</b>' : 'Hi ha un menys davant del x²: obre cap avall, és un <b>màxim</b>'], (ok1 ? 2 : 0) + (ok2 ? 2 : 0));
+  }
+}
+function fiLlegeix(ok, sol, pts) {
+  P.bloc = true; suma(pts, true); if (ok) { P.encerts++; SO.be(); } else { P.errors++; SO.mal(); P.fallades.push(`Llegir ${fTxt(P.E.F)}`); }
+  $('#ok').disabled = true;
+  $('#msg').innerHTML = `<p class="msg ${ok ? 'ok' : 'ko'}">${ok ? 'Correcte!' : 'No del tot.'} +${pts}</p><div class="calc">${sol.join('<br>')}</div><div class="fila"><button class="big" id="seg">${P.i < 5 ? 'Següent exercici ▸' : 'Acaba ▸'}</button></div>`;
+  $('#seg').onclick = seguent; $('#seg').focus();
+}
+function triaFormula(k, b) {
+  if (P.bloc) return; const E = P.E, ok = fTxt(E.ops[k]) === fTxt(E.F); P.intents++;
+  if (!ok && P.intents === 1) { P.errors++; SO.mal(); b.disabled = true; pintaGraf({ corba: E.F, extra: `<path d="${corbaPath(E.ops[k])}" fill="none" stroke="#7c5cd6" stroke-width="3" stroke-dasharray="8 6" clip-path="url(#cp)"/>` }); $('#msg').innerHTML = `<p class="msg ko">No. En lila tens la gràfica de ${fTxt(E.ops[k])}: no és la mateixa. Torna-ho a provar.</p>`; return; }
+  P.bloc = true; $$('.opc').forEach(x => x.disabled = true); b.classList.add('be');
+  if (ok) { P.encerts++; SO.be(); suma(P.intents === 1 ? 10 : 5, true); comaLlisca(E.F); } else { P.errors++; SO.mal(); P.fallades.push(`Quina fórmula: ${fTxt(E.F)}`); }
+  const F = E.F, sol = F.t === 'r' ? [`Talla l'eix y a ${zs(F.b)}`, `Cada pas a la dreta ${F.a > 0 ? 'puja' : 'baixa'} ${Math.abs(F.a)}`, `<b>${fTxt(F)}</b>`] : [`Vèrtex a (${zs(F.h)}, ${zs(F.k)})`, F.s > 0 ? 'Obre cap amunt' : 'Obre cap avall', `<b>${fTxt(F)}</b>`];
+  $('#msg').innerHTML = `<p class="msg ${ok ? 'ok' : 'ko'}">${ok ? `Correcte! +${P.intents === 1 ? 10 : 5}` : 'La bona era aquesta:'}</p><div class="calc">${sol.join('<br>')}</div><div class="fila"><button class="big" id="seg">${P.i < 5 ? 'Següent exercici ▸' : 'Acaba ▸'}</button></div>`;
+  $('#seg').onclick = seguent; $('#seg').focus();
+}
+function seguent() { P.i++; if (P.i >= 6) return acaba(); nouEx(); }
+// clic a la quadrícula: posar punts
+$('#graf').addEventListener('click', async ev => {
+  if (M.pantalla !== 'joc' || P.pas !== 'punts' || P.bloc) return;
+  const sv = $('#graf'), pt = sv.createSVGPoint(); pt.x = ev.clientX; pt.y = ev.clientY; const p = pt.matrixTransform(sv.getScreenCTM().inverse());
+  const x = Math.round((p.x - OX) / PX + X0), y = Math.round(Y1 - (p.y - OY) / PY); if (x < X0 || x > X1 || y < Y0 || y > Y1) return;
+  const E = P.E, xs = xsDe(E.F), k = xs.indexOf(x);
+  if (k >= 0 && E.ys[k] === y) { if (P.posats.some(q => q[0] === x)) return; P.posats.push([x, y]); SO.punt(P.posats.length); pintaGraf({ punts: P.posats }); $$('#tq .taula td')[xs.length + k]?.classList.add('be'); $('#nposats').textContent = `Punts posats: ${P.posats.length} de ${xs.length}`; }
+  else { P.errorsPunts = (P.errorsPunts || 0) + 1; SO.mal(); $('#capa').innerHTML = `<g class="creu"><path d="M${sx(x) - 9} ${sy(y) - 9}l18 18M${sx(x) + 9} ${sy(y) - 9}l-18 18" stroke="${'#d64242'}" stroke-width="4"/></g>`;
+    $('#msg').innerHTML = `<p class="msg ko">El punt (${zs(x)}, ${zs(y)}) no és de la taula. Primer la x (cap a la dreta o l'esquerra), després la y (amunt o avall).</p>`; }
+  if (P.posats.length === xs.length) {
+    P.bloc = true; const pts = P.errorsPunts > 2 ? 1 : P.errorsPunts ? 2 : 3; suma(pts, true); P.errorsPunts = 0;
+    $('#msg').innerHTML = `<p class="msg ok">Tots els punts! +${pts} · Ara els unim…</p>`; await espera(500); SO.dibuixa();
+    pintaGraf({ punts: P.posats, corba: E.F, anim: true }); await espera(1700); await comaLlisca(E.F);
+    P.bloc = false; P.pas = 'llegeix'; P.tria = null; pintaPanel(); pintaGraf({ punts: P.posats, corba: E.F });
+  }
+});
+function acaba() {
+  M.pantalla = 'fi'; SO.fi(); const nouRec = P.punts > M.record; if (nouRec) M.record = P.punts; try { localStorage.setItem('fr4c_dib_rec', M.record); } catch (e) {}
+  const temps = Math.round((performance.now() - P.t0) / 1000);
+  envia({ tipus: 'fr4c-dib-fi', punts: P.punts, encerts: P.encerts, errors: P.errors, nivell: M.nivell, temps, fallades: P.fallades.slice(0, 12) });
+  pantalla(`<h1>📈 Gràfiques dibuixades!</h1><p>${M.nom ? `<b>${esc(M.nom)}</b>, h` : 'H'}as fet <b>${P.punts}</b> punts de 60. ${nouRec ? '<span class="rec">🏆 Nou rècord!</span>' : M.record ? `Rècord: <b>${M.record}</b>.` : ''}</p>
+    <div class="resum"><div><b>${P.encerts}</b>encerts</div><div><b>${P.errors}</b>errors</div><div><b>${Math.floor(temps / 60)}:${String(temps % 60).padStart(2, '0')}</b>temps</div></div>
+    ${P.fallades.length ? `<p><b>Repassa:</b></p><ul>${P.fallades.map(x => `<li>${esc(x)}</li>`).join('')}</ul>` : ''}
+    <div class="fila"><button class="big big2" id="torna">Torna a jugar</button><button class="big sec big2" id="tanca2">Surt</button></div>`);
+  $('#torna').onclick = comenca; $('#tanca2').onclick = surt;
+}
+function inici() {
+  M.pantalla = 'inici'; pintaCap(); pintaGraf({ corba: { t: 'p', s: 1, h: 0, k: -3 }, anim: true }); $('#panel').innerHTML = '';
+  try { M.record = Math.max(M.record, +(localStorage.getItem('fr4c_dib_rec') || 0)); } catch (e) {}
+  pantalla(`<h1>📈 Dibuixa gràfiques <small style="color:#7c5cd6">· ampliació</small></h1><p>${M.nom ? `Hola, <b>${esc(M.nom)}</b>! ` : ''}Aprendràs a representar <b>rectes</b> i <b>paràboles</b> com ho fan a 4t: de la <b>fórmula</b> a la <b>taula</b>, de la taula als <b>punts</b>, i dels punts a la <b>gràfica</b>. Al final, hauràs de reconèixer la fórmula d'una gràfica.</p>
+    <p class="mini">Una paràbola és la gràfica d'una fórmula amb x². Té forma de U (o de U al revés), i el punt de baix (o de dalt) de tot es diu <b>vèrtex</b>.${M.record ? ` Rècord: <b>${M.record}</b>.` : ''}</p>
+    <div class="fila"><button class="big big2" id="go">Som-hi! ✏️</button></div>`);
+  $('#go').onclick = comenca;
+}
+function pantalla(html) { const p = $('#pant'); p.innerHTML = `<div class="panell">${html}</div>`; p.style.display = 'flex'; }
+const envia = m => { try { if (window.parent !== window) window.parent.postMessage(m, '*'); } catch (e) {} };
+function surt() { M.pantalla = 'fora'; envia({ tipus: 'fr4c-dib-tanca' }); if (window.parent === window) inici(); }
+window.addEventListener('message', ev => { const d = ev.data || {}; if (d.tipus !== 'fr4c-dib-ini') return; M.dinsApp = true; M.nom = d.nom || ''; M.record = Math.max(d.record || 0, 0); if (d.so === false) M.so = false; $('#so').textContent = M.so ? '🔊' : '🔇'; if (M.pantalla === 'inici') inici(); });
+document.addEventListener('keydown', e => { if (e.key === 'Enter') { const s = $('#seg') || (M.pantalla !== 'joc' && ($('#go') || $('#torna'))); if (s) { e.preventDefault(); s.click(); } } });
+$('#so').onclick = () => { M.so = !M.so; $('#so').textContent = M.so ? '🔊' : '🔇'; try { localStorage.setItem('fr4c_dib_so', M.so ? '1' : '0'); } catch (e) {} };
+$('#surt').onclick = surt; $('#so').textContent = M.so ? '🔊' : '🔇';
+inici(); envia({ tipus: 'fr4c-dib-llest' });
+window.__dib = { P, M, f, xsDe, comprova, sx, sy };
+</script>
+</body>
+</html>

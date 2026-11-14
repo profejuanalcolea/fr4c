@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>La màquina d'en Don Salvatore · FR-4C</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,800&display=swap" rel="stylesheet">
+<style>
+/* Taller de l'app FR-4C · Gràfiques: endevinar la regla d'una funció (màquina d'engranatges). Protocol fr4c-eng-ini/llest/fi/tanca. */
+:root{--taronja:#f26b1d;--tinta:#1b1b1b;--ok:#2c9a58;--ko:#d64242;--fons:#fbf4e8;--blau:#2a6fd6;--verd:#1d9a5a}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;font-family:"Atkinson Hyperlegible",system-ui,sans-serif;background:var(--fons);color:var(--tinta);overflow:hidden;user-select:none}
+#joc{position:relative;width:100%;height:100%;display:grid;grid-template-columns:minmax(0,1.35fr) minmax(330px,1fr);gap:14px;padding:62px 16px 14px}
+.cap{position:absolute;top:10px;left:16px;right:16px;display:flex;align-items:center;gap:14px;z-index:5;font-weight:700}
+.cap .tit{font-family:"Bricolage Grotesque",sans-serif;font-size:1.3rem}.cap .compta{font-size:1.05rem;color:#555}
+.cap .punts{margin-left:auto;font-size:1.7rem;font-family:"Bricolage Grotesque",sans-serif}
+.btn{border:3px solid var(--tinta);background:#fff;color:var(--tinta);border-radius:12px;padding:6px 12px;font:inherit;font-weight:700;cursor:pointer}
+#esc{width:100%;height:100%;min-height:0;border:4px solid var(--tinta);border-radius:20px;background:#fff7ea;display:block}
+.panel{display:flex;flex-direction:column;gap:10px;min-height:0;overflow:auto;padding-bottom:4px}
+.targ{background:#fff;border:4px solid var(--tinta);border-radius:20px;padding:12px 16px;box-shadow:0 5px 0 #0002}
+.targ h2{font-family:"Bricolage Grotesque",sans-serif;font-size:1.3rem;margin:0 0 4px}
+.targ p{margin:5px 0;font-size:1.08rem;line-height:1.4}
+.entra{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-family:"Bricolage Grotesque",sans-serif;font-size:1.45rem}
+.entra input{font-family:"Bricolage Grotesque",sans-serif;font-size:1.45rem;width:86px;padding:5px 6px;border:4px solid var(--tinta);border-radius:12px;text-align:center}
+.big{font-family:"Bricolage Grotesque",sans-serif;font-size:1.15rem;border-radius:14px;padding:9px 18px;border:4px solid var(--tinta);cursor:pointer;background:var(--taronja);color:#fff;box-shadow:0 5px 0 #0004}
+.big.sec{background:#fff;color:var(--tinta)}.big:disabled{opacity:.4;cursor:default}
+.fila{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:8px}
+.taula{border-collapse:collapse;font-family:"Bricolage Grotesque",sans-serif;font-size:1.25rem}.taula td,.taula th{border:3px solid var(--tinta);padding:3px 12px;min-width:46px;text-align:center}
+.taula th{background:#f3eee3}.taula td.nou{background:#fff1b8;animation:apareix .5s}
+@keyframes apareix{from{transform:scale(.5);opacity:0}}
+.seg{display:inline-flex;border:3px solid var(--tinta);border-radius:12px;overflow:hidden}.seg button{border:0;background:#fff;padding:7px 12px;font:inherit;font-weight:700;cursor:pointer;font-family:"Bricolage Grotesque",sans-serif;font-size:1.1rem}.seg button.on{background:var(--tinta);color:#fff}
+.msg{font-weight:700;font-size:1.08rem;margin-top:6px}.msg.ok{color:var(--ok)}.msg.ko{color:var(--ko)}
+.calc{font-family:"Bricolage Grotesque",sans-serif;font-size:1.2rem;line-height:1.45}
+.graf{width:100%;height:auto;max-height:200px;display:block;background:#fff;border-radius:12px}
+.pantalla{position:absolute;inset:0;z-index:10;display:flex;align-items:center;justify-content:center;background:#1b1b1b99}
+.panell{background:#fff;border-radius:24px;border:4px solid var(--tinta);padding:20px 26px;max-width:820px;width:92%;box-shadow:0 10px 0 #0006;max-height:94vh;overflow:auto}
+.panell h1{font-family:"Bricolage Grotesque",sans-serif;margin:0 0 6px;font-size:2rem}.panell p{font-size:1.12rem;line-height:1.45;margin:8px 0}
+.big2{font-size:1.3rem;padding:12px 24px}
+.resum{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:12px 0}.resum div{background:#f5f3ef;border-radius:14px;padding:10px;text-align:center}.resum b{display:block;font-family:"Bricolage Grotesque",sans-serif;font-size:2rem}
+.mini{font-size:.95rem;color:#666}.rec{color:var(--taronja);font-weight:800}
+.sacseja{animation:sacseja .35s}@keyframes sacseja{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+/* animacions de l'escena */
+.engr{transform-box:fill-box;transform-origin:center}
+.vapor{animation:vapor 1.8s ease-out infinite;transform-box:fill-box;transform-origin:center;opacity:0}.vapor.b{animation-delay:.6s}.vapor.c{animation-delay:1.2s}
+@keyframes vapor{0%{opacity:0;transform:translateY(0) scale(.5)}20%{opacity:.8}100%{opacity:0;transform:translateY(-60px) scale(1.6)}}
+.llum{animation:llum .6s steps(2) infinite}.llum.b{animation-delay:.3s}@keyframes llum{50%{opacity:.25}}
+.bigoti{transform-box:fill-box;transform-origin:50% 0;}
+.parla .bigoti{animation:bigoti .2s ease-in-out infinite alternate}@keyframes bigoti{to{transform:rotate(4deg) translateY(1px)}}
+.braç{transform-box:fill-box;transform-origin:10% 90%;}
+.saluda .braç{animation:saluda .5s ease-in-out 4 alternate}@keyframes saluda{to{transform:rotate(-24deg)}}
+.salta{animation:saltaS .45s ease-in-out 2 alternate;transform-box:fill-box;transform-origin:50% 100%}@keyframes saltaS{to{transform:translateY(-16px)}}
+.tremola{animation:tremola .08s linear infinite}@keyframes tremola{50%{transform:translateX(1.5px)}}
+</style>
+</head>
+<body>
+<div id="joc">
+  <div class="cap"><span class="tit">⚙️ La màquina d'en Don Salvatore</span><span class="compta" id="compta"></span><span class="punts" id="punts"></span>
+    <button class="btn" id="so" title="So">🔊</button><button class="btn" id="surt" title="Surt">✕</button></div>
+  <svg id="esc" viewBox="0 0 760 600" preserveAspectRatio="xMidYMid meet" aria-label="La màquina de nombres"></svg>
+  <div class="panel" id="panel"></div>
+</div>
+<div class="pantalla" id="pant" style="display:none"></div>
+<script>
+'use strict';
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const rnd = (a, b) => a + Math.floor(Math.random() * (b - a + 1)), tria = a => a[Math.floor(Math.random() * a.length)];
+const barreja = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const espera = ms => new Promise(r => setTimeout(r, ms));
+const N = '#1b1b1b', T = '#f26b1d';
+const M = { nom: '', nivell: 1, dinsApp: false, so: true, pantalla: 'inici', record: 0 };
+try { M.so = localStorage.getItem('fr4c_eng_so') !== '0'; } catch (e) {}
+const zs = n => n < 0 ? `−${-n}` : String(n);
+const llegeix = s => { s = String(s ?? '').trim().replace(/\s/g, '').replace('−', '-').replace(',', '.'); if (s === '' || s === '-' || isNaN(+s)) return null; return +s; };
+const MAQUINES = 6;
+
+/* ================= SONS ================= */
+const SO = {
+  ctx: null,
+  ac() { if (!M.so) return null; try { this.ctx = this.ctx || new (window.AudioContext || window.webkitAudioContext)(); if (this.ctx.state === 'suspended') this.ctx.resume(); return this.ctx; } catch (e) { return null; } },
+  to(f, d, { ona = 'triangle', vol = .05, t0 = 0, f2 = null } = {}) { const ac = this.ac(); if (!ac) return; const t = ac.currentTime + t0, o = ac.createOscillator(), g = ac.createGain(); o.type = ona; o.frequency.setValueAtTime(f, t); if (f2) o.frequency.exponentialRampToValueAtTime(f2, t + d); g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + .02); g.gain.exponentialRampToValueAtTime(.0001, t + d); o.connect(g); g.connect(ac.destination); o.start(t); o.stop(t + d + .05); },
+  soroll(d, { vol = .05, t0 = 0, freq = 3000 } = {}) { const ac = this.ac(); if (!ac) return; const n = Math.floor(ac.sampleRate * d), b = ac.createBuffer(1, n, ac.sampleRate), x = b.getChannelData(0); for (let i = 0; i < n; i++) x[i] = Math.random() * 2 - 1;
+    const s = ac.createBufferSource(), f = ac.createBiquadFilter(), g = ac.createGain(), t = ac.currentTime + t0; s.buffer = b; f.type = 'highpass'; f.frequency.value = freq; g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + .05); g.gain.exponentialRampToValueAtTime(.0001, t + d); s.connect(f); f.connect(g); g.connect(ac.destination); s.start(t); s.stop(t + d); },
+  engranatges(d = 1.6) { for (let i = 0; i < d * 9; i++) this.to(i % 2 ? 180 : 140, .05, { ona: 'square', vol: .022, t0: i / 9 }); this.soroll(.6, { vol: .03, t0: d * .7 }); },
+  entra() { this.to(500, .15, { vol: .04, f2: 240 }); },
+  ding() { this.to(1047, .25, { ona: 'sine', vol: .06 }); this.to(1568, .4, { ona: 'sine', vol: .05, t0: .1 }); },
+  be() { [523, 659, 784, 1047].forEach((f, i) => this.to(f, .22, { t0: i * .11, vol: .055 })); },
+  mal() { this.to(300, .35, { ona: 'sine', vol: .06, f2: 120 }); },
+  clic() { this.to(900, .04, { vol: .03 }); },
+  tarantella() { [659, 659, 587, 659, 698, 659, 587, 523, 587, 659, 523, 440].forEach((f, i) => this.to(f, .16, { t0: i * .14, vol: .05 })); },
+  fi() { [392, 523, 659, 784, 659, 784, 1047].forEach((f, i) => this.to(f, .24, { t0: i * .14, vol: .055 })); }
+};
+
+/* ================= DIBUIXOS ================= */
+const st = (w = 3) => `stroke="${N}" stroke-width="${w}" stroke-linejoin="round" stroke-linecap="round"`;
+// Don Salvatore (cuiner inventat): barret alt de cuiner, bigoti negre, mocador verd, jaqueta blanca i cullera de fusta
+const salvatore = () => `<g id="salva">
+  <ellipse cx="80" cy="292" rx="66" ry="8" fill="#0002"/>
+  <path d="M30 290 Q28 200 80 188 Q132 200 130 290Z" fill="#fff" ${st()}/>
+  <path d="M80 194 V290" stroke="#ddd" stroke-width="2"/>${[214, 238, 262].map(y => `<circle cx="66" cy="${y}" r="3.5" fill="${N}"/><circle cx="94" cy="${y}" r="3.5" fill="${N}"/>`).join('')}
+  <path d="M38 250 Q80 244 122 250 L118 290 H42Z" fill="#f3e6cf" ${st(2.5)}/><circle cx="96" cy="266" r="5" fill="#d94a3a" opacity=".85"/><circle cx="62" cy="276" r="3" fill="#d94a3a" opacity=".7"/>
+  <path d="M58 188 L80 206 L102 188 L94 180 H66Z" fill="#1d9a5a" ${st(2.5)}/>
+  <g class="braç"><path d="M128 214 Q150 206 156 180" fill="none" stroke="${N}" stroke-width="18" stroke-linecap="round"/><path d="M128 214 Q150 206 156 180" fill="none" stroke="#fff" stroke-width="12" stroke-linecap="round"/><circle cx="157" cy="176" r="9" fill="#f6d2b0" ${st(2.5)}/><path d="M158 170 L170 118" stroke="#a0662f" stroke-width="6" stroke-linecap="round"/><ellipse cx="172" cy="110" rx="8" ry="12" fill="#c98a4b" ${st(2.5)}/></g>
+  <path d="M32 214 Q14 236 26 258" fill="none" stroke="${N}" stroke-width="18" stroke-linecap="round"/><path d="M32 214 Q14 236 26 258" fill="none" stroke="#fff" stroke-width="12" stroke-linecap="round"/><circle cx="27" cy="262" r="9" fill="#f6d2b0" ${st(2.5)}/>
+  <circle cx="80" cy="140" r="40" fill="#f6d2b0" ${st()}/><circle cx="58" cy="154" r="8" fill="#f2a7a0" opacity=".7"/><circle cx="102" cy="154" r="8" fill="#f2a7a0" opacity=".7"/>
+  <circle cx="66" cy="132" r="5" fill="${N}"/><circle cx="94" cy="132" r="5" fill="${N}"/><path d="M58 120 Q66 114 74 120 M86 120 Q94 114 102 120" fill="none" ${st(4)}/>
+  <ellipse cx="80" cy="146" rx="9" ry="7" fill="#eab08f" ${st(2)}/>
+  <g class="bigoti"><path d="M80 154 Q66 150 56 160 Q50 168 42 162 Q50 174 66 166 Q74 162 80 160 Q86 162 94 166 Q110 174 118 162 Q110 168 104 160 Q94 150 80 154Z" fill="${N}"/></g>
+  <path d="M70 172 Q80 178 90 172" fill="none" ${st(2.5)}/>
+  <path d="M46 112 Q40 60 60 66 Q60 40 80 46 Q100 40 100 66 Q120 60 114 112Z" fill="#fff" ${st()}/><rect x="44" y="104" width="72" height="14" rx="5" fill="#fff" ${st()}/>
+</g>`;
+// la màquina d'engranatges
+const engranatge = (cx, cy, r, dents, col, id) => { let p = ''; const n = dents * 2; for (let i = 0; i < n; i++) { const a0 = i / n * 2 * Math.PI, a1 = (i + 1) / n * 2 * Math.PI, R = i % 2 ? r : r + r * .18; p += `${i ? 'L' : 'M'}${cx + R * Math.cos(a0)} ${cy + R * Math.sin(a0)} A${R} ${R} 0 0 1 ${cx + R * Math.cos(a1)} ${cy + R * Math.sin(a1)}`; }
+  return `<g class="engr" id="${id}"><path d="${p}Z" fill="${col}" ${st(2.5)}/><circle cx="${cx}" cy="${cy}" r="${r * .45}" fill="#fff" ${st(2.5)}/><circle cx="${cx}" cy="${cy}" r="${r * .15}" fill="${N}"/></g>`; };
+const maquina = nom => `<g id="maq">
+  <rect x="250" y="150" width="420" height="330" rx="26" fill="#c0392b" ${st(5)}/><rect x="266" y="166" width="388" height="298" rx="18" fill="#d8513f"/>
+  <path d="M330 150 L300 70 H420 L390 150Z" fill="#9aa3ad" ${st(4)}/><rect x="292" y="58" width="136" height="18" rx="6" fill="#7a838d" ${st(4)}/>
+  <rect x="560" y="70" width="40" height="80" fill="#7a838d" ${st(4)}/><rect x="552" y="60" width="56" height="14" rx="4" fill="#5f666e" ${st(3)}/>
+  <circle class="vapor" cx="580" cy="46" r="16" fill="#fff"/><circle class="vapor b" cx="586" cy="40" r="14" fill="#fff"/><circle class="vapor c" cx="574" cy="44" r="18" fill="#fff"/>
+  <rect x="290" y="190" width="340" height="190" rx="16" fill="#3b2f2a" ${st(4)}/>
+  ${engranatge(370, 285, 52, 10, '#f2c14e', 'g1')}${engranatge(470, 250, 36, 7, '#9aa3ad', 'g2')}${engranatge(548, 310, 44, 9, T, 'g3')}
+  <rect x="290" y="190" width="340" height="190" rx="16" fill="#ffffff14"/>
+  <rect x="300" y="398" width="320" height="56" rx="12" fill="#fff3d6" ${st(4)}/><text x="460" y="434" text-anchor="middle" font-size="24" font-weight="800" font-family="Bricolage Grotesque,system-ui" fill="${N}">${esc(nom)}</text>
+  <circle class="llum" cx="286" cy="176" r="8" fill="#ffe14d" ${st(2)}/><circle class="llum b" cx="634" cy="176" r="8" fill="#7cf"  ${st(2)}/>
+  <path d="M670 360 H730 L720 420 H670Z" fill="#9aa3ad" ${st(4)}/>
+  <rect x="270" y="480" width="40" height="40" fill="#5f666e" ${st(3)}/><rect x="610" y="480" width="40" height="40" fill="#5f666e" ${st(3)}/>
+  <text x="360" y="104" text-anchor="middle" font-size="20" font-weight="800" font-family="Bricolage Grotesque,system-ui">ENTRA x</text><text x="702" y="350" text-anchor="middle" font-size="20" font-weight="800" font-family="Bricolage Grotesque,system-ui">SURT y</text>
+</g>`;
+const targeta = (txt, col) => `<g><rect x="-38" y="-26" width="76" height="52" rx="10" fill="${col}" ${st(3.5)}/><text x="0" y="11" text-anchor="middle" font-size="30" font-weight="800" font-family="Bricolage Grotesque,system-ui" fill="${N}">${txt}</text></g>`;
+function pintaEscena(nom) {
+  $('#esc').innerHTML = `<rect width="760" height="600" fill="#fff7ea"/><rect y="520" width="760" height="80" fill="#e8d3b0"/>${Array.from({ length: 10 }, (_, i) => `<rect x="${i * 80}" y="520" width="40" height="80" fill="#dcc29a"/>`).join('')}
+    <g transform="translate(-6 196) scale(1.12)" id="gsalva">${salvatore()}</g>${maquina(nom)}<g id="cartes"></g><g id="baf"></g>`;
+}
+let girTm = null, angle = 0;
+function giraEngranatges(ms) {
+  return new Promise(res => { const t0 = performance.now(); const g = ['#g1', '#g2', '#g3'].map(s => $(s)); $('#maq')?.classList.add('tremola');
+    const pas = t => { const u = (t - t0) / ms; angle += 7; if (g[0]) { g[0].style.transform = `rotate(${angle}deg)`; g[1].style.transform = `rotate(${-angle * 1.45}deg)`; g[2].style.transform = `rotate(${angle * 1.18}deg)`; }
+      if (u < 1) requestAnimationFrame(pas); else { $('#maq')?.classList.remove('tremola'); res(); } }; requestAnimationFrame(pas); });
+}
+async function animaCarta(el, x0, y0, x1, y1, ms, salt = 0) { const t0 = performance.now(); return new Promise(res => { const pas = t => { const u = Math.min(1, (t - t0) / ms), e = u < .5 ? 2 * u * u : 1 - (-2 * u + 2) ** 2 / 2; el.setAttribute('transform', `translate(${x0 + (x1 - x0) * e} ${y0 + (y1 - y0) * e - Math.sin(Math.PI * e) * salt}) scale(${1 - .15 * Math.sin(Math.PI * u)})`); if (u < 1) requestAnimationFrame(pas); else res(); }; requestAnimationFrame(pas); }); }
+function diu(txt, ms = 2600) { // bafarada d'en Salvatore
+  const w = Math.min(330, Math.max(...txt.split('<br>').map(l => l.replace(/<[^>]+>/g, '').length)) * 9.6 + 30), linies = txt.split('<br>');
+  $('#baf').innerHTML = `<g transform="translate(14 40)"><rect width="${w}" height="${linies.length * 26 + 22}" rx="16" fill="#fff" ${st(3)}/><path d="M60 ${linies.length * 26 + 20} L70 ${linies.length * 26 + 46} L86 ${linies.length * 26 + 20}Z" fill="#fff" ${st(3)}/><rect x="56" y="${linies.length * 26 + 16}" width="34" height="6" fill="#fff"/>${linies.map((l, i) => `<text x="${w / 2}" y="${32 + i * 26}" text-anchor="middle" font-size="19" font-weight="700" font-family="Atkinson Hyperlegible,system-ui">${l.replace(/<b>/g, '<tspan font-weight="900" fill="#c0392b">').replace(/<i>/g, '<tspan font-style="italic">').replace(/<\/[bi]>/g, '</tspan>')}</text>`).join('')}</g>`;
+  const s = $('#gsalva'); s?.classList.add('parla'); clearTimeout(diu.t); diu.t = setTimeout(() => { s?.classList.remove('parla'); }, ms);
+}
+const salvaAnim = cls => { const s = $('#gsalva'); if (!s) return; s.classList.remove('saluda', 'salta'); void s.getBBox(); s.classList.add(cls); };
+
+/* ================= REGLES ================= */
+const f = (R, x) => R.t === 'q' ? R.a * x * x + R.b : R.a * x + R.b;
+function reglaTxt(R) {
+  const coef = (a, v) => a === 1 ? v : a === -1 ? `−${v}` : `${zs(a)}${v}`; const terme = R.t === 'q' ? coef(R.a, 'x²') : coef(R.a, 'x');
+  if (R.a === 0) return `y = ${zs(R.b)}`; return `y = ${terme}${R.b > 0 ? ` + ${R.b}` : R.b < 0 ? ` − ${-R.b}` : ''}`;
+}
+const NOMS = ['Màquina de la mozzarella', 'Màquina dels tomàquets', 'Màquina de l\'orenga', 'Màquina de les olives', 'Màquina del pebrot', 'Màquina de la massa', 'Màquina de l\'alfàbrega', 'Màquina dels xampinyons'];
+function novaRegla(L, i) {
+  if (L === 1) { const t = i % 3; if (t === 0) return { t: 'l', a: 1, b: rnd(2, 9) }; if (t === 1) return { t: 'l', a: rnd(2, 5), b: 0 }; return { t: 'l', a: 1, b: -rnd(1, 5) }; }
+  if (L === 2) { const a = rnd(2, 5); let b; do b = rnd(-6, 9); while (b === 0); return { t: 'l', a, b }; }
+  const t = [0, 1, 2, 0, 1, 2][i];
+  if (t === 0) { const a = tria([-1, -2, -3, -4, 3, 4]); return { t: 'l', a, b: rnd(-5, 8) }; }
+  if (t === 1) return { t: 'q', a: 1, b: rnd(-5, 5) };
+  return { t: 'q', a: tria([2, -1]), b: rnd(-3, 4) };
+}
+
+/* ================= PARTIDA ================= */
+const P = {};
+function pintaCap() { $('#punts').textContent = M.pantalla === 'joc' ? P.punts : ''; $('#compta').textContent = M.pantalla === 'joc' ? `Màquina ${Math.min(P.i + 1, MAQUINES)} de ${MAQUINES}` : ''; }
+function comenca() {
+  Object.assign(P, { i: 0, punts: 0, encerts: 0, errors: 0, fallades: [], t0: performance.now(), noms: barreja(NOMS) });
+  $('#pant').style.display = 'none'; M.pantalla = 'joc'; SO.tarantella(); novaMaquina(true);
+}
+function novaMaquina(primera = false) {
+  P.R = novaRegla(M.nivell, P.i); P.proves = []; P.intentsRegla = 0; P.bloc = false; P.resolt = false; P.forma = M.nivell === 3 ? 'l' : M.nivell === 1 ? 'x+' : 'l';
+  pintaCap(); pintaEscena(P.noms[P.i % P.noms.length]); salvaAnim('saluda');
+  diu(primera ? `<i>Buongiorno!</i> Sóc en Don Salvatore.<br>Aquesta màquina té una regla secreta.<br>Hi poses una x i et dona una y!` : tria([`<i>Mamma mia!</i> Una màquina nova!`, `Aquesta és la meva preferida!`, `Ecco! Una altra regla secreta!`]), 3600);
+  pintaPanel();
+}
+function grafSvg({ amb = true } = {}) { // els punts provats i, si s'ha resolt, la gràfica de la regla
+  const W = 320, H = 240, xs = P.proves.map(p => p[0]), ys = P.proves.map(p => p[1]);
+  const xmin = Math.min(-2, ...xs) - 1, xmax = Math.max(6, ...xs) + 1; let ymin = Math.min(-2, ...ys), ymax = Math.max(8, ...ys); if (P.resolt) for (let x = xmin; x <= xmax; x += .25) { const y = f(P.R, x); if (Math.abs(y) < 60) { ymin = Math.min(ymin, y); ymax = Math.max(ymax, y); } } ymin -= 1; ymax += 1;
+  const sx = v => 24 + (v - xmin) / (xmax - xmin) * (W - 34), sy = v => H - 18 - (v - ymin) / (ymax - ymin) * (H - 30);
+  const pasX = xmax - xmin > 24 ? 5 : xmax - xmin > 12 ? 2 : 1, pasY = ymax - ymin > 60 ? 10 : ymax - ymin > 24 ? 5 : ymax - ymin > 12 ? 2 : 1;
+  let g = ''; for (let x = Math.ceil(xmin / pasX) * pasX; x <= xmax; x += pasX) g += `<path d="M${sx(x)} ${sy(ymin)}V${sy(ymax)}" stroke="#eee"/><text x="${sx(x)}" y="${H - 4}" font-size="11" text-anchor="middle" fill="#777">${zs(x)}</text>`;
+  for (let y = Math.ceil(ymin / pasY) * pasY; y <= ymax; y += pasY) g += `<path d="M${sx(xmin)} ${sy(y)}H${sx(xmax)}" stroke="#eee"/><text x="${sx(xmin) - 3}" y="${sy(y) + 4}" font-size="11" text-anchor="end" fill="#777">${zs(y)}</text>`;
+  if (xmin < 0 && xmax > 0) g += `<path d="M${sx(0)} ${sy(ymin)}V${sy(ymax)}" stroke="${N}" stroke-width="1.6"/>`; if (ymin < 0 && ymax > 0) g += `<path d="M${sx(xmin)} ${sy(0)}H${sx(xmax)}" stroke="${N}" stroke-width="1.6"/>`;
+  let corba = ''; if (P.resolt && amb) { const pts = []; for (let x = xmin; x <= xmax + 1e-9; x += .1) pts.push(`${sx(x).toFixed(1)},${sy(f(P.R, x)).toFixed(1)}`); corba = `<polyline id="corba" points="${pts.join(' ')}" fill="none" stroke="${T}" stroke-width="3.5" stroke-dasharray="2000" stroke-dashoffset="2000"><animate attributeName="stroke-dashoffset" from="2000" to="0" dur="1.6s" fill="freeze"/></polyline>`; }
+  const punts = P.proves.map(([x, y], k) => `<circle cx="${sx(x)}" cy="${sy(y)}" r="5.5" fill="${k === P.proves.length - 1 ? T : '#2a6fd6'}" stroke="${N}" stroke-width="1.5"/>`).join('');
+  return `<svg class="graf" viewBox="0 0 ${W} ${H}"><defs><clipPath id="cl"><rect x="20" y="8" width="${W - 26}" height="${H - 24}"/></clipPath></defs>${g}<g clip-path="url(#cl)">${corba}</g>${punts}</svg>`;
+}
+function taulaHtml() {
+  if (!P.proves.length) return '<p class="mini">Encara no has provat cap número.</p>';
+  return `<div style="overflow-x:auto"><table class="taula"><tr><th>x</th>${P.proves.map(([x], k) => `<td class="${k === P.proves.length - 1 ? 'nou' : ''}">${zs(x)}</td>`).join('')}</tr><tr><th>y</th>${P.proves.map(([, y], k) => `<td class="${k === P.proves.length - 1 ? 'nou' : ''}">${zs(y)}</td>`).join('')}</tr></table></div>`;
+}
+function formulari() {
+  const L = M.nivell;
+  if (L === 1) return `<div class="seg" id="forma">${[['x+', 'y = x + □'], ['x-', 'y = x − □'], ['ax', 'y = □ · x']].map(([v, t]) => `<button data-v="${v}" class="${P.forma === v ? 'on' : ''}">${t}</button>`).join('')}</div>
+    <div class="entra" style="margin-top:8px">${P.forma === 'x+' ? 'y = x +' : P.forma === 'x-' ? 'y = x −' : 'y ='}<input id="ra" inputmode="numeric" autocomplete="off">${P.forma === 'ax' ? '· x' : ''}</div>`;
+  const quad = L === 3 ? `<div class="seg" id="forma"><button data-v="l" class="${P.forma === 'l' ? 'on' : ''}">y = □·x + □</button><button data-v="q" class="${P.forma === 'q' ? 'on' : ''}">y = □·x² + □</button></div>` : '';
+  return `${quad}<div class="entra" style="margin-top:8px">y =<input id="ra" inputmode="numeric" autocomplete="off">· ${P.forma === 'q' ? 'x²' : 'x'} +<input id="rb" inputmode="numeric" autocomplete="off"></div><p class="mini">Si el número que suma és negatiu, escriu-lo amb el signe menys (−).</p>`;
+}
+function pintaPanel(msg = '') {
+  const L = M.nivell, minX = L === 1 ? 0 : -10, maxX = L === 1 ? 20 : 10;
+  $('#panel').innerHTML = `<div class="targ"><h2>1. Prova números</h2><div class="entra"><span>x =</span><input id="ix" inputmode="numeric" autocomplete="off" placeholder="${L === 1 ? '0 a 20' : '−10 a 10'}"><button class="big" id="bgira" ${P.resolt ? 'disabled' : ''}>⚙️ Gira!</button></div>
+      <div style="margin-top:8px">${taulaHtml()}</div><div style="margin-top:8px">${grafSvg()}</div></div>
+    <div class="targ" id="tq"><h2>2. Quina és la regla?</h2>${P.resolt ? `<p class="calc"><b>${reglaTxt(P.R)}</b></p>` : `${formulari()}<div class="fila"><button class="big" id="bregla" ${P.proves.length < 2 ? 'disabled' : ''}>Ja ho sé!</button>${P.proves.length < 2 ? '<span class="mini">Prova almenys 2 números.</span>' : ''}</div>`}<div id="msg">${msg}</div></div>`;
+  const ix = $('#ix'); ix.onkeydown = e => { if (e.key === 'Enter') { e.preventDefault(); $('#bgira').click(); } };
+  $('#bgira').onclick = () => { const x = llegeix(ix.value); if (x == null || !Number.isInteger(x) || x < minX || x > maxX) { ix.classList.add('sacseja'); setTimeout(() => ix.classList.remove('sacseja'), 400); return; } prova(x); };
+  $$('#forma button').forEach(b => b.onclick = () => { P.forma = b.dataset.v; SO.clic(); pintaPanel(); });
+  const br = $('#bregla'); if (br) br.onclick = comprovaRegla;
+  ['#ra', '#rb'].forEach(s => { const i = $(s); if (i) i.onkeydown = e => { if (e.key === 'Enter') { e.preventDefault(); $('#bregla')?.click(); } }; });
+  if (!P.resolt && !P.bloc) (P.proves.length >= 2 && P.enfocaRegla ? $('#ra') : ix)?.focus();
+}
+async function prova(x, perComprovar = false) {
+  if (P.bloc) return; P.bloc = true; const y = f(P.R, x);
+  const cartes = $('#cartes'); cartes.innerHTML = `<g id="cin">${targeta(zs(x), '#cfe5ff')}</g>`; const cin = $('#cin');
+  SO.entra(); await animaCarta(cin, 150, 130, 360, 40, 650, 60); await animaCarta(cin, 360, 40, 360, 150, 300); cin.remove();
+  SO.engranatges(1.6); diu(tria(['Gira, gira, macchina!', 'Clic, clac, clic…', 'Pensa, pensa…', 'Un momento…']), 1500); await giraEngranatges(1600);
+  cartes.innerHTML = `<g id="cout">${targeta(zs(y), '#fff1b8')}</g>`; const co = $('#cout'); SO.ding(); await animaCarta(co, 700, 380, 700, 470, 450, 0);
+  if (!P.proves.some(p => p[0] === x)) P.proves.push([x, y]); else { P.proves = P.proves.filter(p => p[0] !== x); P.proves.push([x, y]); }
+  P.nProves = (P.nProves || 0) + 1; P.bloc = false; P.enfocaRegla = P.proves.length >= 2 && !perComprovar;
+  diu(`Entra <b>${zs(x)}</b> i surt <b>${zs(y)}</b>!`, 1800); pintaPanel(perComprovar ? P.msgPend : '');
+}
+function reglaAlumne() {
+  const a = llegeix($('#ra')?.value), b = llegeix($('#rb')?.value);
+  if (M.nivell === 1) { if (a == null) return null; return P.forma === 'x+' ? { t: 'l', a: 1, b: a } : P.forma === 'x-' ? { t: 'l', a: 1, b: -a } : { t: 'l', a, b: 0 }; }
+  if (a == null) return null; return { t: P.forma === 'q' ? 'q' : 'l', a, b: b ?? 0 };
+}
+async function comprovaRegla() {
+  if (P.bloc || P.resolt) return; const S = reglaAlumne(); if (!S) { $('#tq').classList.add('sacseja'); setTimeout(() => $('#tq')?.classList.remove('sacseja'), 400); return; }
+  P.intentsRegla++;
+  const prova = M.nivell === 1 ? [0, 1, 2, 3, 5, 8, 12] : [-3, -2, -1, 0, 1, 2, 3, 5];
+  const dif = prova.find(x => Math.abs(f(S, x) - f(P.R, x)) > 1e-9);
+  if (dif === undefined) return resolt(true);
+  P.errors++; SO.mal(); salvaAnim('salta'); diu(tria(['<i>Ma no!</i> Gairebé…', 'Mmm… no quadra!', '<i>Mamma mia</i>, aquesta no és!']), 1800);
+  const contra = P.proves.find(([x, y]) => Math.abs(f(S, x) - y) > 1e-9);
+  const xC = contra ? contra[0] : dif;
+  P.msgPend = `<p class="msg ko">Amb x = ${zs(xC)}, la teva regla dona ${zs(f(S, xC))}, però la màquina dona ${zs(f(P.R, xC))}.</p>`;
+  if (P.intentsRegla >= 3) { P.fallades.push(`${P.noms[P.i % P.noms.length]}: ${reglaTxt(P.R)} (vas dir ${reglaTxt(S)})`); return resolt(false); }
+  if (!contra) { await prova(xC, true); return; }
+  pintaPanel(P.msgPend + `<p class="mini">Torna-ho a provar (${3 - P.intentsRegla} ${3 - P.intentsRegla === 1 ? 'intent' : 'intents'} més).</p>`);
+}
+function explica(R) { // com es troba la regla, una línia sota l'altra
+  const L = [];
+  if (R.t === 'l') {
+    if (R.a !== 1 || M.nivell > 1) { L.push(`Quan x puja 1, la y ${R.a >= 0 ? 'puja' : 'baixa'} ${Math.abs(R.a)}`); L.push(`Per tant, multipliquem per ${zs(R.a)}`); }
+    L.push(`Amb x = 0 surt y = ${zs(R.b)}`); L.push(`<b>${reglaTxt(R)}</b>`);
+  } else { L.push(`La y no puja sempre igual: hi ha un x²`); L.push(`Amb x = 0 surt y = ${zs(R.b)}`); L.push(`Amb x = 1 surt y = ${zs(R.a + R.b)}`); L.push(`<b>${reglaTxt(R)}</b>`); }
+  return L;
+}
+function resolt(ok) {
+  P.resolt = true; let pts = 0;
+  if (ok) { const minim = P.R.t === 'q' ? 3 : 2; pts = Math.max(4, 10 - Math.max(0, (P.nProves || 0) - minim - 1)) - (P.intentsRegla - 1) * 3; pts = Math.max(1, pts); P.punts += pts; P.encerts++; SO.be(); salvaAnim('salta'); diu(tria(['<i>Bravissimo!</i>', '<i>Perfetto!</i> Has descobert el secret!', '<i>Fantastico!</i>']) + `<br><b>${reglaTxt(P.R)}</b>`, 3000); }
+  else { SO.mal(); diu(`No passa res!<br>La regla era <b>${reglaTxt(P.R)}</b>`, 3000); }
+  pintaCap();
+  pintaPanel(`${ok ? `<p class="msg ok">Correcte! +${pts} punts${(P.nProves || 0) <= (P.R.t === 'q' ? 3 : 2) + 1 ? ' · amb molt poques proves! 🌟' : ''}</p>` : `<p class="msg ko">S'han acabat els intents.</p>`}<div class="calc">${explica(P.R).join('<br>')}</div>
+    <div class="fila"><button class="big" id="seg">${P.i < MAQUINES - 1 ? 'Següent màquina ▸' : 'Acaba ▸'}</button></div>`);
+  $('#seg').focus(); $('#seg').onclick = () => { P.i++; P.nProves = 0; if (P.i >= MAQUINES) return acaba(); novaMaquina(); };
+}
+function acaba() {
+  M.pantalla = 'fi'; SO.fi(); const nouRec = P.punts > M.record; if (nouRec) M.record = P.punts; try { localStorage.setItem('fr4c_eng_rec_' + M.nivell, M.record); } catch (e) {}
+  const temps = Math.round((performance.now() - P.t0) / 1000);
+  envia({ tipus: 'fr4c-eng-fi', punts: P.punts, encerts: P.encerts, errors: P.errors, nivell: M.nivell, temps, fallades: P.fallades.slice(0, 12) });
+  salvaAnim('saluda'); diu('<i>Grazie mille!</i><br>Ets un geni de les màquines!', 4000);
+  pantalla(`<h1>⚙️ Totes les màquines descobertes!</h1><p>${M.nom ? `<b>${esc(M.nom)}</b>, h` : 'H'}as fet <b>${P.punts}</b> punts de ${MAQUINES * 10}. ${nouRec ? '<span class="rec">🏆 Nou rècord!</span>' : M.record ? `Rècord: <b>${M.record}</b>.` : ''}</p>
+    <div class="resum"><div><b>${P.encerts}</b>regles descobertes</div><div><b>${P.errors}</b>errors</div><div><b>${Math.floor(temps / 60)}:${String(temps % 60).padStart(2, '0')}</b>temps</div></div>
+    ${P.fallades.length ? `<p><b>Repassa:</b></p><ul>${P.fallades.map(x => `<li>${esc(x)}</li>`).join('')}</ul>` : ''}
+    <div class="fila"><button class="big big2" id="torna">Torna a jugar</button><button class="big sec big2" id="tanca2">Surt</button></div>`);
+  $('#torna').onclick = comenca; $('#tanca2').onclick = surt;
+}
+function inici() {
+  M.pantalla = 'inici'; pintaCap(); pintaEscena('Macchina dei Numeri'); $('#panel').innerHTML = '';
+  try { M.record = Math.max(M.record, +(localStorage.getItem('fr4c_eng_rec_' + M.nivell) || 0)); } catch (e) {}
+  const txt = { 1: 'regles d\'una operació (sumar, restar o multiplicar)', 2: 'regles de dues operacions, amb nombres negatius', 3: 'rectes amb pendent negatiu i paràboles (x²)' }[M.nivell];
+  pantalla(`<h1>⚙️ La màquina d'en Don Salvatore</h1><p>${M.nom ? `<i>Buongiorno</i>, <b>${esc(M.nom)}</b>! ` : ''}En <b>Don Salvatore</b>, el cuiner de la pizzeria, ha inventat unes màquines d'engranatges. Hi poses un número <b>x</b>, giren els engranatges i en surt un altre, <b>y</b>. Cada màquina té una <b>regla secreta</b>: descobreix-la amb les mínimes proves possibles!</p>
+    <p class="mini">Nivell ${M.nivell}: ${txt}. ${MAQUINES} màquines per partida.${M.record ? ` Rècord: <b>${M.record}</b>.` : ''}</p>
+    ${!M.dinsApp ? `<div class="fila"><b>Nivell:</b><span class="seg" id="nv">${[1, 2, 3].map(n => `<button data-n="${n}" class="${n === M.nivell ? 'on' : ''}">${n}</button>`).join('')}</span></div>` : ''}
+    <div class="fila"><button class="big big2" id="go">Engega les màquines! ⚙️</button></div>`);
+  $('#go').onclick = comenca;
+  $$('#nv button').forEach(b => b.onclick = () => { M.nivell = +b.dataset.n; M.record = 0; inici(); });
+}
+function pantalla(html) { const p = $('#pant'); p.innerHTML = `<div class="panell">${html}</div>`; p.style.display = 'flex'; }
+const envia = m => { try { if (window.parent !== window) window.parent.postMessage(m, '*'); } catch (e) {} };
+function surt() { M.pantalla = 'fora'; envia({ tipus: 'fr4c-eng-tanca' }); if (window.parent === window) inici(); }
+window.addEventListener('message', ev => {
+  const d = ev.data || {}; if (d.tipus !== 'fr4c-eng-ini') return;
+  M.dinsApp = true; M.nom = d.nom || ''; M.nivell = Math.max(1, Math.min(3, d.nivell || 1)); M.record = Math.max(d.record || 0, 0);
+  if (d.so === false) M.so = false; $('#so').textContent = M.so ? '🔊' : '🔇';
+  if (M.pantalla === 'inici') inici();
+});
+document.addEventListener('keydown', e => { if (e.key === 'Enter' && M.pantalla !== 'joc') { const b = $('#go') || $('#torna'); if (b) b.click(); } else if (e.key === 'Enter' && $('#seg')) $('#seg').click(); });
+$('#so').onclick = () => { M.so = !M.so; $('#so').textContent = M.so ? '🔊' : '🔇'; try { localStorage.setItem('fr4c_eng_so', M.so ? '1' : '0'); } catch (e) {} };
+$('#surt').onclick = surt; $('#so').textContent = M.so ? '🔊' : '🔇';
+const qs = new URLSearchParams(location.search); if (qs.get('nivell')) M.nivell = Math.max(1, Math.min(3, +qs.get('nivell')));
+inici(); envia({ tipus: 'fr4c-eng-llest' });
+window.__eng = { P, M, f, prova, comprovaRegla, reglaTxt };
+</script>
+</body>
+</html>
