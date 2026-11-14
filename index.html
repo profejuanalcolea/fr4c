@@ -1012,7 +1012,7 @@ const enllacaQualif = c => $$('.q-man', c).forEach(td => td.onclick = () => canv
 const unitatCompleta = u => u.obj.every(o => !o.properament);
 /* ---------- Fitxers a part: cada unitat i cada joc es carrega quan cal ----------
    Són scripts clàssics (funcionen a GitHub Pages i també obrint l'index des de l'ordinador). */
-const V_FITXERS = '5.7';
+const V_FITXERS = '5.8';
 const FITXERS_UNITAT = { f: 'fraccions.js', e: 'enters.js', p: 'potencies.js', q: 'equacions.js', m: 'mesura.js' };
 const FITXERS_JOC = { tcx: 'joc-caixa.js', tesc: 'joc-escape.js', tpz: 'joc-pizzeria.js', dimp: 'joc-impropies.js' };
 const CARREGUES = {};
@@ -2521,7 +2521,7 @@ function iniciaComp(uid) {
 }
 const cbRef = () => `${ARREL}/resultats/${S.alumne}/${PC.id}`;
 function cbTemps(R) { if (R.t0) { R.temps += Math.round((Date.now() - R.t0) / 1000); R.t0 = Date.now(); } return R.temps; }
-async function cbDesa(R, extra = {}) { try { await DB.update(cbRef(), { estat: R.estat, item: R.item, temps: cbTemps(R), nivellCB: R.nivell, darrer: Date.now(), ...extra }); } catch (e) { console.error(e); } }
+async function cbDesa(R, extra = {}) { if (R.previ) return; try { await DB.update(cbRef(), { estat: R.estat, item: R.item, temps: cbTemps(R), nivellCB: R.nivell, darrer: Date.now(), ...extra }); } catch (e) { console.error(e); } }
 function cbProg(i) { return `<div class="cb-prog">${CB_ITEMS.map((it, k) => `${k && it.act !== CB_ITEMS[k - 1].act ? '<i class="gap"></i>' : ''}<i class="${k < i ? 'done' : k === i ? 'now' : ''}"></i>`).join('')}</div>`; }
 function faseComp(R) {
   cbUsa(R.unitat);
@@ -2537,7 +2537,7 @@ function faseComp(R) {
           <p class="petit">· Llegeix bé el context de cada activitat.<br>· Pots fer servir la calculadora i l'esborrany.<br>· ${CB_ITEMS.some(it => it.type === 'open' && it.pts > CB_ITEMS.find(x => x.type === 'mc').pts) ? 'Les preguntes obertes valen més: fes els càlculs i tria la conclusió.' : 'A les preguntes obertes, fes els càlculs i tria la conclusió.'}<br>· Es guarda tot sol: si has de plegar, continuaràs on eres.<br>· Si surts de la pestanya, quedarà registrat.</p></div>
         <div class="expl-vis">${robot(140, 'normal', true)}<div class="bafarada" style="max-width:300px">Avui faig d'examinador. Llegeix amb calma i molta sort!</div></div></div>
       <div class="expl-peu"><span style="flex:1"></span><button class="boto taronja" id="seg">${comencat ? `Continua (pregunta ${R.item + 1} de ${CB_N}) →` : 'Comença la prova →'}</button></div></section>`;
-    $('#btn-mapa').onclick = () => { S.ronda = null; mostra('mapa'); };
+    $('#btn-mapa').onclick = () => { if (R.previ) return surtPrevisual(); S.ronda = null; mostra('mapa'); };
     $('#seg').onclick = () => { so('pas'); if (R.estat === 'nou') { R.estat = 'fent'; cbDesa(R, { inici: Date.now() }); } R.t0 = Date.now(); if (R.item >= CB_N) return cbLliura(R); R.fase = 'item'; render(); };
     return;
   }
@@ -2547,7 +2547,7 @@ function faseComp(R) {
     vista.innerHTML = `<section class="pantalla">${capObj(info)}<div class="resultat">${robot(150, 'content')}<div class="apareix">
       <h2>Activitat ${a + 1} acabada</h2><p><b>${CB_ACTS[a].t}</b></p>${mostraNota ? `<p style="font-size:1.4rem">${cbFmt(cbActPts(R.resp, a))} de ${cbFmt(CB_ACTS[a].max)} punts</p>` : `<p>Ja tens guardades les respostes d'aquesta activitat.</p>`}
       <div class="accions"><button class="boto taronja" id="seg">${last ? 'Lliura la prova i mira la nota' : `Continua amb l'activitat ${a + 2} →`}</button></div></div></div></section>`;
-    $('#btn-mapa').onclick = async () => { await cbDesa(R); S.ronda = null; mostra('mapa'); };
+    $('#btn-mapa').onclick = async () => { if (R.previ) return surtPrevisual(); await cbDesa(R); S.ronda = null; mostra('mapa'); };
     $('#seg').onclick = () => { so('pas'); if (last) cbLliura(R); else { R.fase = 'item'; render(); } };
     return;
   }
@@ -2632,6 +2632,7 @@ function cbResol(R, ok, pts, g, vals) {
 }
 async function cbPlego(R) {
   cbUsa(R.unitat);
+  if (R.previ) return surtPrevisual();
   if (R.fase === 'final') { S.ronda = null; return mostra('mapa'); }
   const ok = await confirma(`Les teves respostes queden guardades. Continuaràs a la <b>pregunta ${Math.min(R.item + 1, CB_N)}</b>.`, 'Plego per avui');
   if (!ok) return;
@@ -2654,7 +2655,7 @@ function cbFinal(R, info) {
       <div class="cb-barres">${CB_ACTS.map((a, i) => { const p = cbActPts(R.resp, i); return `<div class="barra-err"><span>${i + 1}. ${a.t}</span><i><b style="width:${p / a.max * 100}%;background:${NAVY}"></b></i><em>${cbFmt(p)}/${cbFmt(a.max)}</em></div>`; }).join('')}</div>
       <button class="boto taronja" id="btn-m" style="margin-left:auto">Tornar al mapa →</button></div>
       <div class="res-llista">${llista}</div></div></section>`;
-  const tornar = () => { S.ronda = null; mostra('mapa'); }; $('#btn-mapa').onclick = tornar; $('#btn-m').onclick = tornar;
+  const tornar = () => { if (R.previ) return surtPrevisual(); S.ronda = null; mostra('mapa'); }; $('#btn-mapa').onclick = tornar; $('#btn-m').onclick = tornar;
 }
 // ---------- panell del professor ----------
 function celaComp(id) {
@@ -2787,7 +2788,7 @@ function mostraCredits() {
     <p style="font-size:1.1rem"><b>Ins Júlia Minguell</b> · Matemàtiques 4t ESO · Grup Flexible</p>
     <p style="margin-top:14px">Ideat per <b>J. Alcolea</b></p>
     <p style="color:var(--gris)">Desenvolupat amb Claude</p>
-    <p style="color:var(--gris);margin-top:10px">Versió 5.7</p>
+    <p style="color:var(--gris);margin-top:10px">Versió 5.8</p>
     <div class="accions"><button class="boto" data-tanca-modal>D'acord</button></div>`);
 }
 function entraAlumne(id) {
@@ -2877,6 +2878,18 @@ function previsualitza(o, nivell, { directe = false } = {}) {
     fase: directe ? 'exercici' : 'explicacio', pas: 0, exemple: TEMES[o].exemple(nivell), respost: false };
   $('#banda-previ')?.remove();
   document.body.insertAdjacentHTML('beforeend', `<div id="banda-previ">👁 <b>Mode revisió del professor</b> · Objectiu ${objPerId(o).num} · Nivell ${nivell} · no es desa res<button id="bp-surt">Torna al panell</button></div>`);
+  $('#bp-surt').onclick = surtPrevisual;
+  mostra('objectiu');
+}
+function previsualitzaComp(uid, nivell) {
+  if (!CB_PROVES[uid]) return; cbUsa(uid);
+  if (!S.previsual) S.previsual = { alumne: S.alumne, vista: S.vista, ronda: S.ronda };
+  $('#panell').classList.add('ocult');
+  const R = S.ronda = { comp: true, previ: true, obj: PC.id, unitat: PC.unitat, nivell: CB_NIV[nivell] || 'intermedi', fase: 'avis', resp: {}, item: 0, temps: 0, estat: 'nou' };
+  $('#banda-previ')?.remove();
+  document.body.insertAdjacentHTML('beforeend', `<div id="banda-previ" style="top:8px;bottom:auto;white-space:nowrap">👁 <b>Revisió del professor</b> · no es desa res<button id="bp-ant" title="Pregunta anterior">◀</button><button id="bp-seg" title="Pregunta següent">▶</button><button id="bp-surt">Torna al panell</button></div>`);
+  const salta = d => { if (S.ronda !== R) return; cbUsa(R.unitat); R.item = Math.max(0, Math.min(CB_N - 1, (R.fase === 'avis' ? -1 : R.item) + d)); R.fase = 'item'; R.t0 = R.t0 || Date.now(); so('pas'); render(); };
+  $('#bp-ant').onclick = () => salta(-1); $('#bp-seg').onclick = () => salta(1);
   $('#bp-surt').onclick = surtPrevisual;
   mostra('objectiu');
 }
@@ -3996,7 +4009,7 @@ function pintaDemo() {
   const barra = `<div class="fila-form"><b>Objectiu</b> <select class="camp" id="d-o">${grups.map(([u, l]) => `<optgroup label="${u.nom}">${l.map(o => `<option value="${o.id}" ${o.id === st.o ? 'selected' : ''}>${o.num} · ${o.titol}</option>`).join('')}</optgroup>`).join('')}</select>
       <b style="margin-left:12px">Nivell</b> <span class="segment" id="d-n">${[1, 2, 3].map(n => `<button data-n="${n}" class="${n === st.nivell ? 'activa' : ''}">${n}</button>`).join('')}</span>
       <span class="segment" id="d-m" style="margin-left:12px"><button data-m="un" class="${st.mode === 'un' ? 'activa' : ''}">Un exercici</button><button data-m="ronda" class="${st.mode === 'ronda' ? 'activa' : ''}">Ronda sencera</button></span>
-      <span style="margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end">${(TALLERS_DEMO[LLISTA_UNITATS.find(k => UNITATS[k].obj.some(o => o.id === st.o))] || []).map(([id, t, tit]) => `<button class="boto-petit" id="${id}" title="${tit} (no es desa res)">${t}</button>`).join('')}<button class="boto-petit" id="d-nou">🎲 ${st.mode === 'ronda' ? 'Una altra ronda' : 'Un altre exercici'}</button><button class="boto taronja" id="d-previ" title="Fes l'objectiu com un alumne, sense desar res">👁 Prova-ho com a alumne</button></span></div>`;
+      <span style="margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end">${(TALLERS_DEMO[LLISTA_UNITATS.find(k => UNITATS[k].obj.some(o => o.id === st.o))] || []).map(([id, t, tit]) => `<button class="boto-petit" id="${id}" title="${tit} (no es desa res)">${t}</button>`).join('')}<button class="boto-petit" id="d-nou">🎲 ${st.mode === 'ronda' ? 'Una altra ronda' : 'Un altre exercici'}</button>${(u => CB_PROVES[u] ? `<button class="boto-petit" id="d-cb" data-u="${u}" title="Fes la prova de competències com un alumne, al nivell triat (no es desa res)">✎ Prova CB</button>` : '')(LLISTA_UNITATS.find(k => UNITATS[k].obj.some(o => o.id === st.o)))}<button class="boto taronja" id="d-previ" title="Fes l'objectiu com un alumne, sense desar res">👁 Prova-ho com a alumne</button></span></div>`;
   let cos;
   if (st.mode === 'ronda') {
     if (!st.ronda) st.ronda = generaRonda(st.o, st.nivell);
@@ -4021,6 +4034,7 @@ function pintaDemo() {
   $$('#d-m button').forEach(b => b.onclick = () => { st.mode = b.dataset.m; pintaDemo(); });
   $('#d-nou').onclick = () => { nou(); pintaDemo(); };
   $('#d-previ').onclick = () => previsualitza(st.o, st.nivell);
+  const dcb = $('#d-cb'); if (dcb) dcb.onclick = () => previsualitzaComp(dcb.dataset.u, st.nivell);
   const dr = $('#d-repas'); if (dr) dr.onclick = () => obreRepas(st.nivell);
   const dm = $('#d-met'); if (dm) dm.onclick = () => obreMeteorits(st.nivell);
   const dmf = $('#d-metf'); if (dmf) dmf.onclick = () => obreJocExt('tmetf', st.nivell);
