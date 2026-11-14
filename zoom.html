@@ -1,0 +1,517 @@
+<!doctype html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>El zoom de FR-4C · FR-4C</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,800&display=swap" rel="stylesheet">
+<style>
+/* Taller de l'app FR-4C · Mesura (i potències de 10): coses gegants i diminutes, notació científica. Protocol fr4c-zoom-ini/llest/fi/tanca. */
+:root{--taronja:#f26b1d;--tinta:#1b1b1b;--ok:#2c9a58;--ko:#d64242;--fons:#f3f1ea;--blau:#2a6fd6;--verd:#1d9a5a;--lila:#7c5cd6}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;font-family:"Atkinson Hyperlegible",system-ui,sans-serif;background:var(--fons);color:var(--tinta);overflow:hidden;user-select:none}
+#joc{position:relative;width:100%;height:100%;display:grid;grid-template-columns:minmax(0,1.6fr) minmax(320px,1fr);gap:14px;padding:62px 16px 14px}
+.cap{position:absolute;top:10px;left:16px;right:16px;display:flex;align-items:center;gap:14px;z-index:5;font-weight:700}
+.cap .tit{font-family:"Bricolage Grotesque",sans-serif;font-size:1.3rem}.cap .compta{font-size:1.05rem;color:#555}
+.cap .punts{margin-left:auto;font-size:1.7rem;font-family:"Bricolage Grotesque",sans-serif}
+.btn{border:3px solid var(--tinta);background:#fff;color:var(--tinta);border-radius:12px;padding:6px 12px;font:inherit;font-weight:700;cursor:pointer}
+#esc{width:100%;height:100%;min-height:0;border:4px solid var(--tinta);border-radius:20px;background:#9fd3ff;display:block;overflow:hidden}
+.panel{display:flex;flex-direction:column;gap:12px;min-height:0;overflow:auto;padding-bottom:4px}
+.targ{background:#fff;border:4px solid var(--tinta);border-radius:20px;padding:12px 16px;box-shadow:0 5px 0 #0002}
+.targ h2{font-family:"Bricolage Grotesque",sans-serif;font-size:1.35rem;margin:0 0 6px}
+.targ p{margin:6px 0;font-size:1.1rem;line-height:1.4}
+.formula{font-family:"Bricolage Grotesque",sans-serif;font-size:1.35rem;line-height:1.5;background:#fff8ec;border-radius:14px;padding:8px 12px;margin-top:6px}
+.formula .nova{animation:apareix .4s}
+@keyframes apareix{from{opacity:0;transform:translateY(6px)}}
+.zbtns{display:flex;gap:10px;flex-wrap:wrap}
+.big{font-family:"Bricolage Grotesque",sans-serif;font-size:1.15rem;border-radius:14px;padding:9px 18px;border:4px solid var(--tinta);cursor:pointer;background:var(--taronja);color:#fff;box-shadow:0 5px 0 #0004}
+.big.sec{background:#fff;color:var(--tinta)}.big:disabled{opacity:.4;cursor:default}
+.fila{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px}
+.entra{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:6px;font-family:"Bricolage Grotesque",sans-serif;font-size:1.5rem}
+.entra input{font-family:"Bricolage Grotesque",sans-serif;font-size:1.5rem;width:120px;padding:6px 8px;border:4px solid var(--tinta);border-radius:12px;text-align:center}
+.entra input.exp{width:70px;font-size:1.1rem;padding:4px;transform:translateY(-14px)}
+.entra input.llarg{width:220px}
+.opcions{display:grid;grid-template-columns:1fr;gap:8px;margin-top:8px}
+.opc{font-family:"Bricolage Grotesque",sans-serif;font-size:1.3rem;padding:8px 12px;border-radius:14px;border:4px solid var(--tinta);background:#fff;cursor:pointer;text-align:left}
+.opc:disabled{opacity:.4}.opc.be{background:var(--ok);color:#fff;border-color:var(--ok);opacity:1}
+.cartes{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.carta{border:4px solid var(--tinta);border-radius:14px;background:#fff;padding:6px;cursor:pointer;text-align:center;font-weight:700;position:relative}
+.carta svg{width:100%;height:70px}.carta .n{position:absolute;top:4px;left:8px;background:var(--taronja);color:#fff;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-family:"Bricolage Grotesque",sans-serif}
+.carta.triada{opacity:.65}
+.msg{font-weight:700;font-size:1.08rem;margin-top:8px}.msg.ok{color:var(--ok)}.msg.ko{color:var(--ko)}
+.calc{font-family:"Bricolage Grotesque",sans-serif;font-size:1.25rem;line-height:1.45;margin:6px 0 0}
+.fitxa{display:flex;gap:10px;align-items:center}.fitxa svg{flex:none;width:110px;height:80px;background:#f5f3ee;border-radius:12px}
+.fitxa h3{margin:0;font-family:"Bricolage Grotesque",sans-serif;font-size:1.3rem}.fitxa .mida{font-family:"Bricolage Grotesque",sans-serif;font-size:1.15rem;color:var(--blau)}
+.fitxa p{margin:2px 0;font-size:1rem}
+.llista{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}.llista span{font-size:.9rem;border-radius:10px;padding:2px 8px;background:#eee;color:#888}.llista span.fet{background:#e3f4e8;color:var(--ok);font-weight:700}
+.sacseja{animation:sacseja .35s}@keyframes sacseja{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+.pantalla{position:absolute;inset:0;z-index:10;display:flex;align-items:center;justify-content:center;background:#1b1b1b99}
+.panell{background:#fff;border-radius:24px;border:4px solid var(--tinta);padding:20px 26px;max-width:860px;width:92%;box-shadow:0 10px 0 #0006;max-height:94vh;overflow:auto}
+.panell h1{font-family:"Bricolage Grotesque",sans-serif;margin:0 0 6px;font-size:2rem}.panell p{font-size:1.12rem;line-height:1.45;margin:8px 0}
+.big2{font-size:1.3rem;padding:12px 24px}
+.seg{display:inline-flex;border:3px solid var(--tinta);border-radius:12px;overflow:hidden}.seg button{border:0;background:#fff;padding:8px 14px;font:inherit;font-weight:700;cursor:pointer}.seg button.on{background:var(--tinta);color:#fff}
+.resum{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:12px 0}.resum div{background:#f5f3ef;border-radius:14px;padding:10px;text-align:center}.resum b{display:block;font-family:"Bricolage Grotesque",sans-serif;font-size:2rem}
+.mini{font-size:.95rem;color:#666}.rec{color:var(--taronja);font-weight:800}
+.salta{position:absolute;right:30px;bottom:26px;z-index:9}
+/* animacions dels dibuixos */
+.pota{transform-box:fill-box;transform-origin:50% 0;animation:pota .5s ease-in-out infinite alternate}.pota.b{animation-delay:-.25s}
+@keyframes pota{from{transform:rotate(-14deg)}to{transform:rotate(14deg)}}
+.cua{transform-box:fill-box;transform-origin:100% 50%;animation:cua 1.6s ease-in-out infinite alternate}@keyframes cua{from{transform:rotate(-5deg)}to{transform:rotate(5deg)}}
+.cap-d{transform-box:fill-box;transform-origin:0% 100%;animation:capd 2.2s ease-in-out infinite alternate}@keyframes capd{from{transform:rotate(-6deg)}to{transform:rotate(4deg)}}
+.boca{transform-box:fill-box;transform-origin:0 0;animation:boca 1.4s ease-in-out infinite}@keyframes boca{0%,70%,100%{transform:rotate(0)}80%{transform:rotate(16deg)}}
+.raig{transform-box:fill-box;transform-origin:50% 100%;animation:raig 2s ease-out infinite}@keyframes raig{0%{transform:scaleY(.2);opacity:0}30%{opacity:.9}100%{transform:scaleY(1.2);opacity:0}}
+.salt{transform-box:fill-box;transform-origin:50% 100%;animation:salt 1.6s ease-in-out infinite}@keyframes salt{0%,60%,100%{transform:translateY(0)}75%{transform:translateY(-40%)}}
+.balanc{transform-box:fill-box;transform-origin:50% 50%;animation:balanc 2.4s ease-in-out infinite alternate}@keyframes balanc{from{transform:rotate(-4deg) translateY(-3%)}to{transform:rotate(4deg) translateY(3%)}}
+.flag{transform-box:fill-box;transform-origin:0 50%;animation:flag 1.2s ease-in-out infinite alternate}@keyframes flag{to{transform:scaleX(.8)}}
+.gira{transform-box:fill-box;transform-origin:50% 50%;animation:gira 30s linear infinite}@keyframes gira{to{transform:rotate(360deg)}}
+.llumeta{animation:llumeta 1s steps(2) infinite}@keyframes llumeta{50%{opacity:.2}}
+.brilla{animation:brilla 1.4s ease-out forwards}@keyframes brilla{from{opacity:1;transform:scale(.4)}to{opacity:0;transform:scale(1.8)}}
+.obj{cursor:pointer}
+</style>
+</head>
+<body>
+<div id="joc">
+  <div class="cap"><span class="tit">🔍 El zoom de FR-4C</span><span class="compta" id="compta"></span><span class="punts" id="punts"></span>
+    <button class="btn" id="so" title="So">🔊</button><button class="btn" id="surt" title="Surt">✕</button></div>
+  <svg id="esc" viewBox="0 0 900 600" preserveAspectRatio="xMidYMid meet" aria-label="Escena del zoom"></svg>
+  <div class="panel" id="panel"></div>
+</div>
+<div class="pantalla" id="pant" style="display:none"></div>
+<script>
+'use strict';
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const rnd = (a, b) => a + Math.floor(Math.random() * (b - a + 1)), tria = a => a[Math.floor(Math.random() * a.length)];
+const barreja = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const N = '#1b1b1b', T = '#f26b1d';
+const M = { nom: '', nivell: 1, dinsApp: false, so: true, pantalla: 'inici', record: 0 };
+try { M.so = localStorage.getItem('fr4c_zoom_so') !== '0'; } catch (e) {}
+let RAPID = false; // «Ja ho entenc»: les animacions passen de cop
+const espera = ms => new Promise(r => setTimeout(r, RAPID ? 0 : ms));
+const anim = (ms, f) => new Promise(res => { if (RAPID) { f(1); return res(); } const t0 = performance.now(); const pas = t => { const u = Math.min(1, (t - t0) / ms); f(u < .5 ? 2 * u * u : 1 - (-2 * u + 2) ** 2 / 2, u); if (u < 1) requestAnimationFrame(pas); else res(); }; requestAnimationFrame(pas); });
+// nombres en català: milers amb punt, decimals amb coma
+const fmt = v => { if (Math.abs(v) >= 1) { const [e, d] = String(Math.round(v * 1e6) / 1e6).split('.'); return e.replace(/\B(?=(\d{3})+$)/g, '.') + (d ? ',' + d : ''); } return String(+v.toPrecision(6)).replace(/^(\d)e-(\d+)$/, (m, a, b) => '0,' + '0'.repeat(+b - 1) + a).replace('.', ','); };
+const fmtPetit = v => { if (v >= 1e-3 || v === 0) return fmt(v); const s = v.toFixed(12).replace(/0+$/, ''); return s.replace('.', ','); };
+const NUM = v => v < 1 ? fmtPetit(v) : fmt(v);
+const SUP = { '-': '⁻', '0': '⁰', '1': '¹', '2': '²', '3': '³', '4': '⁴', '5': '⁵', '6': '⁶', '7': '⁷', '8': '⁸', '9': '⁹' };
+const pw = e => '10' + String(e).split('').map(c => SUP[c]).join('');
+const ncTxt = (m, e) => m === 1 ? pw(e) : `${String(m).replace('.', ',')} · ${pw(e)}`;
+const llegeix = s => { s = String(s).trim().replace(/\s/g, ''); if (!s) return null; if (s.includes(',')) s = s.replace(/\./g, '').replace(',', '.'); else if (/^\d{1,3}(\.\d{3})+$/.test(s)) s = s.replace(/\./g, ''); s = s.replace('−', '-'); return isNaN(+s) ? null : +s; };
+const igual = (a, b) => Math.abs(a - b) <= Math.abs(b) * 1e-9 + 1e-15;
+
+/* ================= SONS ================= */
+const SO = {
+  ctx: null,
+  ac() { if (!M.so) return null; try { this.ctx = this.ctx || new (window.AudioContext || window.webkitAudioContext)(); if (this.ctx.state === 'suspended') this.ctx.resume(); return this.ctx; } catch (e) { return null; } },
+  to(f, d, { ona = 'triangle', vol = .05, t0 = 0, f2 = null } = {}) { const ac = this.ac(); if (!ac || RAPID) return; const t = ac.currentTime + t0, o = ac.createOscillator(), g = ac.createGain(); o.type = ona; o.frequency.setValueAtTime(f, t); if (f2) o.frequency.exponentialRampToValueAtTime(f2, t + d); g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + .02); g.gain.exponentialRampToValueAtTime(.0001, t + d); o.connect(g); g.connect(ac.destination); o.start(t); o.stop(t + d + .05); },
+  vent(d, puja) { const ac = this.ac(); if (!ac || RAPID) return; const n = Math.floor(ac.sampleRate * d), b = ac.createBuffer(1, n, ac.sampleRate), x = b.getChannelData(0); for (let i = 0; i < n; i++) x[i] = Math.random() * 2 - 1;
+    const s = ac.createBufferSource(), f = ac.createBiquadFilter(), g = ac.createGain(), t = ac.currentTime; s.buffer = b; f.type = 'bandpass'; f.Q.value = 1.4; f.frequency.setValueAtTime(puja ? 300 : 2400, t); f.frequency.exponentialRampToValueAtTime(puja ? 2400 : 300, t + d); g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.06, t + d * .3); g.gain.exponentialRampToValueAtTime(.0001, t + d); s.connect(f); f.connect(g); g.connect(ac.destination); s.start(t); s.stop(t + d); },
+  clac(i = 0) { this.to(500 + i * 40, .05, { ona: 'square', vol: .025 }); },
+  ping() { this.to(1320, .1, { vol: .05 }); this.to(1760, .25, { vol: .05, t0: .08 }); },
+  be() { [523, 659, 784].forEach((f, i) => this.to(f, .2, { t0: i * .1, vol: .055 })); },
+  mal() { this.to(330, .32, { ona: 'sine', vol: .06, f2: 140 }); },
+  fi() { [392, 523, 659, 784, 659, 784, 1047].forEach((f, i) => this.to(f, .24, { t0: i * .14, vol: .055 })); },
+  veu(id) { const V = { trex: () => { this.to(220, .9, { ona: 'sawtooth', vol: .035, f2: 70 }); this.to(160, .9, { ona: 'sawtooth', vol: .025, f2: 60 }); }, raptor: () => this.to(900, .25, { ona: 'sawtooth', vol: .025, f2: 1300 }), diplo: () => this.to(150, .8, { vol: .05, f2: 110 }),
+    balena: () => { this.to(300, 1.2, { ona: 'sine', vol: .06, f2: 520 }); }, coma: () => { this.to(620, .18, { ona: 'sine', vol: .06, f2: 1050 }); this.to(1050, .3, { ona: 'sine', vol: .06, f2: 560, t0: .17 }); }, puca: () => this.to(1800, .08, { vol: .04, f2: 2600 }),
+    formiga: () => [0, 1, 2].forEach(i => this.to(2400, .02, { ona: 'square', vol: .015, t0: i * .07 })), bacteri: () => this.to(800, .3, { ona: 'sine', vol: .04, f2: 1200 }) }; (V[id] || (() => this.ping()))(); }
+};
+
+/* ================= DIBUIXOS (inventats) =================
+   Cada dibuix: peus a y=0 i 100 unitats de la mida principal (llarg o alt). s = px per unitat (per mantenir detalls visibles). */
+const st = (w = 2) => `stroke="${N}" stroke-width="${w}" stroke-linejoin="round" stroke-linecap="round"`;
+const ull = (x, y, r) => `<circle cx="${x}" cy="${y}" r="${r}" fill="${N}"/><circle cx="${x + r * .35}" cy="${y - r * .35}" r="${r * .38}" fill="#fff"/>`;
+const D = {
+  fr4c: () => `<g transform="translate(0 -100) scale(.667)"><line x1="70" y1="34" x2="70" y2="19" stroke="${N}" stroke-width="5"/><circle cx="70" cy="13" r="8" fill="${T}" stroke="${N}" stroke-width="4" class="llumeta"/><line x1="48" y1="132" x2="31" y2="147" stroke="${N}" stroke-width="5" stroke-linecap="round"/><circle cx="27" cy="150" r="7" fill="${T}" stroke="${N}" stroke-width="4"/><path d="M92 128 L110 117 L116 101" fill="none" stroke="${N}" stroke-width="5" stroke-linecap="round"/><circle cx="117" cy="95" r="7" fill="${T}" stroke="${N}" stroke-width="4"/><rect x="14" y="56" width="14" height="32" rx="6" fill="#fff" stroke="${N}" stroke-width="4"/><rect x="112" y="56" width="14" height="32" rx="6" fill="#fff" stroke="${N}" stroke-width="4"/><rect x="24" y="34" width="92" height="78" rx="22" fill="#fff" stroke="${N}" stroke-width="7"/><rect x="36" y="46" width="68" height="52" rx="12" fill="${N}"/><circle cx="55" cy="66" r="7.5" fill="${T}"/><circle cx="85" cy="66" r="7.5" fill="${T}"/><path d="M60 81 q10 8 20 0" stroke="${T}" stroke-width="5" fill="none" stroke-linecap="round"/><rect x="48" y="114" width="44" height="34" rx="10" fill="${T}" stroke="${N}" stroke-width="5"/><text x="70" y="136" text-anchor="middle" font-size="12.5" font-weight="900" fill="${N}" font-family="system-ui">FR-4C</text></g>`,
+  coma: () => `<g transform="translate(-4 -100) scale(1.33)"><path d="M60 60Q82 58 74 36" fill="none" stroke="${N}" stroke-width="9" stroke-linecap="round"/><path d="M60 60Q82 58 74 36" fill="none" stroke="${T}" stroke-width="5" stroke-linecap="round" class="cua"/><ellipse cx="40" cy="54" rx="21" ry="18" fill="${T}" ${st(3)}/><ellipse cx="40" cy="60" rx="10" ry="10" fill="#fff"/><path d="M25 20L20 3L35 12Z M55 20L60 3L45 12Z" fill="${T}" ${st(3)}/><circle cx="40" cy="27" r="17" fill="${T}" ${st(3)}/><path d="M40 11v7M33 12l2 6M47 12l-2 6" stroke="#b84a0c" stroke-width="2.4" stroke-linecap="round"/>${ull(33.5, 26, 3)}${ull(46.5, 26, 3)}<path d="M38 31h4l-2 2.6Z" fill="${N}"/><path d="M40 33.6q-3 4 -6 1M40 33.6q3 4 6 1" fill="none" stroke="${N}" stroke-width="1.8"/></g>`,
+  raptor: () => `<path class="cua" d="M38 -24 Q18 -26 0 -34 Q16 -20 36 -16Z" fill="#a0723c" ${st(1.4)}/>
+    <g class="pota b"><path d="M48 -16 L46 -6 L50 0 L58 0" fill="none" stroke="#7d5428" stroke-width="3.6"/></g>
+    <ellipse cx="50" cy="-21" rx="15" ry="8" fill="#b9854a" ${st(1.4)}/><path d="M40 -25 q4 -3 8 0 M47 -27 q4 -3 8 0 M54 -27 q4 -3 8 0" stroke="#7d5428" stroke-width="1.4" fill="none"/>
+    <g class="pota"><path d="M52 -16 L55 -6 L52 0 L61 0" fill="none" stroke="#7d5428" stroke-width="3.6"/><path d="M60 0 l2 -3" stroke="${N}" stroke-width="1.5"/></g>
+    <path d="M60 -26 Q68 -34 74 -38" stroke="#b9854a" stroke-width="7" fill="none" stroke-linecap="round"/><path d="M62 -20 l7 4 l2 3" stroke="#7d5428" stroke-width="2" fill="none"/><path d="M60 -21 l8 2" stroke="#d8c19a" stroke-width="2"/>
+    <g class="cap-d"><path d="M70 -42 Q80 -46 92 -40 Q90 -35 80 -35 Q72 -34 70 -38Z" fill="#b9854a" ${st(1.4)}/><path d="M80 -36 l12 0" stroke="${N}" stroke-width="1"/><path d="M82 -36 l1 1.5 l1 -1.5 l1 1.5 l1 -1.5" stroke="#fff" stroke-width=".7" fill="none"/>${ull(78, -41, 1.5)}</g>`,
+  trex: () => `<path class="cua" d="M30 -26 Q12 -24 0 -18 Q14 -14 32 -14Z" fill="#4f8a3a" ${st(1.2)}/>
+    <g class="pota b"><path d="M42 -12 Q40 -6 42 0 L50 0" stroke="#3f7030" stroke-width="5" fill="none"/></g>
+    <ellipse cx="46" cy="-21" rx="18" ry="11" fill="#5b9a42" ${st(1.2)}/><path d="M34 -14 Q46 -10 58 -16" fill="none" stroke="#a7c98a" stroke-width="3"/>
+    <path d="M36 -29 q3 -3 6 0 M44 -31 q3 -3 6 0 M52 -30 q3 -3 6 0" stroke="#3f7030" stroke-width="1.2" fill="none"/>
+    <g class="pota"><path d="M50 -14 Q54 -7 51 0 L60 0" stroke="#3f7030" stroke-width="5.5" fill="none"/><path d="M59 0 l2 -1.5 M60 0 l2 .5" stroke="${N}" stroke-width=".8"/></g>
+    <path d="M62 -20 l4 4 l-1 2" stroke="#3f7030" stroke-width="1.6" fill="none"/>
+    <path d="M58 -28 Q66 -33 70 -32" stroke="#5b9a42" stroke-width="8" fill="none"/>
+    <path d="M66 -36 Q80 -42 96 -36 Q98 -31 94 -30 L74 -30 Q68 -28 66 -32Z" fill="#5b9a42" ${st(1.2)}/>${ull(80, -36.5, 1.5)}<path d="M77 -40 l4 -1.2" stroke="${N}" stroke-width=".8"/>
+    <g class="boca"><path d="M74 -29.5 L94 -29.5 Q92 -25 80 -25 Q74 -25 74 -28Z" fill="#4f8a3a" ${st(1)}/></g>
+    <path d="M78 -30 l1 1.6 l1 -1.6 l1 1.6 l1 -1.6 l1 1.6 l1 -1.6 l1 1.6 l1 -1.6 l1 1.6 l1 -1.6" stroke="#fff" stroke-width=".7" fill="none"/>`,
+  diplo: () => `<path class="cua" d="M30 -16 Q14 -14 0 -8 Q14 -8 30 -10Z" fill="#7f9cc4" ${st(.8)}/>
+    <g class="pota b"><rect x="30" y="-10" width="5" height="10" rx="2" fill="#6a86ad" ${st(.7)}/><rect x="52" y="-10" width="5" height="10" rx="2" fill="#6a86ad" ${st(.7)}/></g>
+    <ellipse cx="45" cy="-15" rx="19" ry="9" fill="#8fadd6" ${st(.8)}/><g fill="#6a86ad"><circle cx="38" cy="-19" r="1.6"/><circle cx="46" cy="-21" r="2"/><circle cx="53" cy="-18" r="1.5"/><circle cx="42" cy="-14" r="1.3"/></g>
+    <g class="pota"><rect x="35" y="-10" width="5" height="10" rx="2" fill="#7f9cc4" ${st(.7)}/><rect x="57" y="-10" width="5" height="10" rx="2" fill="#7f9cc4" ${st(.7)}/></g>
+    <g class="cap-d"><path d="M60 -19 Q76 -24 84 -36 Q87 -40 92 -38" stroke="${N}" stroke-width="5.6" fill="none" stroke-linecap="round"/><path d="M60 -19 Q76 -24 84 -36 Q87 -40 92 -38" stroke="#8fadd6" stroke-width="4" fill="none" stroke-linecap="round"/><ellipse cx="94" cy="-38.5" rx="4" ry="2.2" fill="#8fadd6" ${st(.6)}/>${ull(95, -39.2, .7)}</g>`,
+  balena: () => `<path d="M-4 -6 Q10 -9 24 -6 T52 -6 T80 -6 T104 -6 V0 H-4Z" fill="#3b8fd4" opacity=".55"/>
+    <g class="balanc"><path class="cua" d="M14 -10 L2 -16 Q4 -11 0 -6 Q6 -8 14 -8Z" fill="#2f5f96" ${st(.6)}/>
+    <path d="M12 -9 Q30 -16 60 -15 Q90 -14 98 -9 Q96 -3 80 -2 Q40 -1 12 -8Z" fill="#3d6fa8" ${st(.7)}/>
+    <path d="M50 -4 Q70 -2 92 -5" stroke="#9fc0e0" stroke-width="2" fill="none"/><path d="M58 -6 h28 M60 -4.5 h26" stroke="#2f5f96" stroke-width=".4"/>
+    ${ull(86, -9, .8)}<path d="M64 -6 Q70 -1 66 1" stroke="#2f5f96" stroke-width="1.6" fill="none"/>
+    <g class="raig"><path d="M80 -15 Q78 -24 74 -26 M80 -15 Q81 -25 80 -28 M80 -15 Q83 -24 87 -26" stroke="#d6eeff" stroke-width="1.2" fill="none"/></g></g>`,
+  futbol: () => `<path d="M0 0 H100 L90 -26 H10Z" fill="#3fa34d" ${st(.6)}/>${[0, 1, 2, 3, 4].map(i => `<path d="M${i * 20} 0 L${10 + i * 16} -26 L${10 + (i + .5) * 16} -26 L${(i + .5) * 20} 0Z" fill="#4cb45a"/>`).join('')}
+    <path d="M3 -2 H97 L88 -24 H12Z M50 -2 L50 -24" fill="none" stroke="#fff" stroke-width=".6"/><ellipse cx="50" cy="-13" rx="8" ry="3.6" fill="none" stroke="#fff" stroke-width=".6"/>
+    <path d="M7.5 -9 h8 l-1.4 -6 h-7.4 M92.5 -9 h-8 l1.4 -6 h7.4" fill="none" stroke="#fff" stroke-width=".6"/><path d="M5 -10 v-3.6 M95 -10 v-3.6" stroke="#fff" stroke-width="1.2"/>`,
+  sf: () => { const t = (x, h, w, c = '#d4b88e') => `<path d="M${x - w / 2} -28 L${x - w / 2} ${-h * .6} Q${x} ${-h - 2} ${x + w / 2} ${-h * .6} L${x + w / 2} -28Z" fill="${c}" ${st(.5)}/>${[.4, .55, .7].map(k => `<ellipse cx="${x}" cy="${-h * k}" rx="${w * .18}" ry="${w * .3}" fill="#8a6e4b"/>`).join('')}<circle cx="${x}" cy="${-h - 1.5}" r="${w * .32}" fill="#e8b32a" ${st(.3)}/>`;
+    return `<rect x="0" y="-30" width="60" height="30" fill="#c9a87a" ${st(.5)}/>${[6, 14, 22, 38, 46, 54].map(x => `<path d="M${x - 3} 0 V-12 Q${x} -17 ${x + 3} -12 V0Z" fill="#7a5f3e"/>`).join('')}<path d="M0 -30 L30 -40 L60 -30Z" fill="#b8956a" ${st(.5)}/>
+    ${t(8, 58, 6)}${t(52, 58, 6)}${t(17, 78, 7)}${t(43, 78, 7)}${t(22, 80, 7, '#cdb08a')}${t(38, 80, 7, '#cdb08a')}${t(30, 99, 10, '#e2cba6')}<path d="M30 -100 v-4 M28 -102.4 h4" stroke="#e8e8e8" stroke-width="1.2"/>`; },
+  burj: () => { const sg = [[0, 15], [-24, 12], [-44, 9], [-60, 6.5], [-74, 4.4], [-84, 2.6]]; return sg.map(([y, w], i) => `<path d="M${8 - w / 2} ${y} L${8 - w / 2 + .8} ${y - 22} L${8 + w / 2 - .8} ${y - 22} L${8 + w / 2} ${y}Z" fill="${i % 2 ? '#a9bccf' : '#bfd0e0'}" ${st(.4)}/>`).join('') + `<path d="M8 -100 L6.8 -86 H9.2Z" fill="#cfdbe6" ${st(.4)}/>${[-10, -30, -50, -66].map(y => `<path d="M${4} ${y} h8" stroke="#7f95ab" stroke-width=".5"/>`).join('')}`; },
+  everest: () => `<path d="M0 0 L60 -40 L90 -58 L110 -70 L135 -86 L150 -100 L170 -84 L190 -74 L215 -52 L250 -30 L300 0Z" fill="#7d7a8c" ${st(1)}/>
+    <path d="M110 -70 L135 -86 L150 -100 L170 -84 L190 -74 L178 -66 L166 -76 L152 -64 L140 -76 L126 -66Z" fill="#fff" ${st(.8)}/>
+    <path d="M60 -40 L90 -58 L96 -50 L80 -46Z M215 -52 L232 -40 L222 -38Z" fill="#9b98ab"/><path d="M150 -100 V-110" stroke="${N}" stroke-width="1.4"/><path class="flag" d="M150 -110 h9 l-2 3 l2 3 h-9Z" fill="#e74c3c"/>`,
+  lluna: () => `<circle cx="50" cy="-50" r="50" fill="#cfcfd6" ${st(1)}/><circle cx="34" cy="-64" r="10" fill="#b4b4bd"/><circle cx="64" cy="-34" r="14" fill="#b4b4bd"/><circle cx="66" cy="-70" r="6" fill="#b4b4bd"/><circle cx="28" cy="-30" r="5" fill="#b4b4bd"/><circle cx="48" cy="-50" r="3" fill="#b4b4bd"/>`,
+  terra: () => `<circle cx="50" cy="-50" r="50" fill="#2f78c4" ${st(1)}/><g class="gira"><path d="M22 -74 Q34 -86 50 -78 Q56 -66 44 -60 Q40 -48 30 -52 Q18 -58 22 -74Z M58 -40 Q72 -46 80 -34 Q78 -18 64 -12 Q56 -24 58 -40Z M66 -82 Q78 -80 82 -70 Q74 -66 66 -72Z M20 -36 Q28 -30 26 -22 Q16 -26 20 -36Z" fill="#5fae4f"/><path d="M14 -60 Q30 -66 46 -62 M54 -88 Q66 -92 76 -86 M60 -54 Q76 -58 90 -52" stroke="#fff" stroke-width="3" fill="none" opacity=".8" stroke-linecap="round"/></g>`,
+  tl: (s) => { const rT = Math.max(1.66, 6 / s), rL = Math.max(.45, 3.5 / s), fz = 14 / s; return `<path d="M${rT} -50 H${100 - rL}" stroke="#fff" stroke-width="${1.6 / s}" stroke-dasharray="${6 / s} ${5 / s}"/><circle cx="0" cy="-50" r="${rT}" fill="#2f78c4" stroke="#fff" stroke-width="${1 / s}"/><circle cx="100" cy="-50" r="${rL}" fill="#cfcfd6"/><text x="50" y="${-50 - 8 / s}" text-anchor="middle" font-size="${fz}" fill="#fff" font-weight="800" font-family="Bricolage Grotesque,system-ui">384.400 km</text>`; },
+  marieta: () => `<g class="pota"><path d="M30 -14 l-8 14 M45 -12 l-2 12 M60 -12 l6 12" stroke="${N}" stroke-width="3"/></g><path d="M8 -12 Q12 -52 52 -54 Q86 -52 92 -14Z" fill="#e53935" ${st(3)}/><path d="M52 -54 V-12" stroke="${N}" stroke-width="3"/>
+    <g fill="${N}"><circle cx="30" cy="-36" r="7"/><circle cx="72" cy="-38" r="7"/><circle cx="40" cy="-20" r="5"/><circle cx="66" cy="-20" r="5"/><circle cx="52" cy="-46" r="5"/></g><path d="M86 -14 Q100 -16 100 -30 Q96 -40 86 -36Z" fill="${N}"/><circle cx="94" cy="-28" r="3" fill="#fff"/><path d="M96 -34 q6 -8 4 -14 M92 -36 q2 -8 -2 -12" stroke="${N}" stroke-width="2" fill="none"/>`,
+  formiga: () => `<g class="pota"><path d="M44 -14 l-12 14 M52 -14 l0 14 M58 -14 l12 14" stroke="#2b1e14" stroke-width="2.6" fill="none"/></g><g class="pota b"><path d="M46 -14 l-6 14 M54 -14 l6 14 M60 -14 l16 12" stroke="#2b1e14" stroke-width="2.6" fill="none"/></g>
+    <ellipse cx="22" cy="-18" rx="20" ry="12" fill="#3a2a1e" ${st(2)}/><ellipse cx="52" cy="-18" rx="11" ry="7" fill="#4a3526" ${st(2)}/><circle cx="76" cy="-22" r="11" fill="#3a2a1e" ${st(2)}/>${ull(80, -25, 2.6)}
+    <path d="M82 -32 Q90 -48 98 -46 M78 -32 Q80 -48 88 -52" stroke="#2b1e14" stroke-width="2" fill="none"/><path d="M84 -16 l8 4" stroke="#2b1e14" stroke-width="2.4"/><path d="M14 -24 q8 -4 16 0" stroke="#7b5a40" stroke-width="2" fill="none"/>`,
+  puca: () => `<g class="salt"><ellipse cx="46" cy="-40" rx="34" ry="24" fill="#8a5a2b" ${st(2.4)} transform="rotate(-12 46 -40)"/><path d="M26 -50 q10 -8 22 -6 M30 -38 q12 -6 26 -4" stroke="#6b4320" stroke-width="2" fill="none"/>
+    <circle cx="80" cy="-48" r="12" fill="#8a5a2b" ${st(2.4)}/>${ull(84, -51, 2.6)}<path d="M90 -42 l10 6" stroke="${N}" stroke-width="2"/>
+    <path d="M30 -24 L14 -40 L2 0" fill="none" stroke="#6b4320" stroke-width="4"/><path d="M50 -20 L46 -6 L56 0" fill="none" stroke="#6b4320" stroke-width="3"/><path d="M68 -30 L74 -12 L82 0" fill="none" stroke="#6b4320" stroke-width="3"/></g>`,
+  gra: () => `<path d="M8 -18 L20 -56 L52 -72 L84 -60 L96 -26 L78 -2 L30 0Z" fill="#e8c98a" ${st(2.4)}/><path d="M20 -56 L44 -40 L84 -60 M44 -40 L30 0 M44 -40 L96 -26" stroke="#c9a463" stroke-width="2" fill="none"/><path d="M30 -54 L46 -62" stroke="#fff" stroke-width="4" opacity=".7" stroke-linecap="round"/>`,
+  tard: () => `<g class="balanc"><path d="M8 -32 Q8 -66 46 -66 Q86 -66 92 -34 Q90 -16 50 -14 Q12 -14 8 -32Z" fill="#e2bf96" fill-opacity=".9" ${st(2.4)}/><path d="M28 -64 Q24 -40 28 -16 M48 -66 Q44 -40 48 -14 M68 -64 Q64 -40 68 -16" stroke="#c49a6c" stroke-width="2" fill="none"/>
+    ${[18, 38, 58, 78].map((x, i) => `<g class="pota ${i % 2 ? 'b' : ''}"><path d="M${x} -16 q-2 8 0 12" stroke="${N}" stroke-width="2.4" fill="#e2bf96"/><path d="M${x - 3} -3 l-2 3 M${x} -3 l0 3.4 M${x + 3} -3 l2 3" stroke="${N}" stroke-width="1.4"/></g>`).join('')}
+    <circle cx="92" cy="-34" r="7" fill="#e8c9a4" ${st(2)}/><circle cx="94" cy="-34" r="2.4" fill="#c47a6c"/><circle cx="84" cy="-48" r="2.6" fill="${N}"/></g>`,
+  acar: () => `${[0, 1, 2, 3].map(i => `<g class="pota ${i % 2 ? 'b' : ''}"><path d="M${30 + i * 12} -20 Q${22 + i * 14} -4 ${14 + i * 18} 0" stroke="#b07a52" stroke-width="2.6" fill="none"/></g>`).join('')}
+    <ellipse cx="46" cy="-34" rx="36" ry="24" fill="#f0e2c4" ${st(2.4)}/><path d="M16 -40 Q46 -60 76 -40 M18 -28 Q46 -44 74 -28" stroke="#d9c39a" stroke-width="2.2" fill="none"/><path d="M80 -36 Q92 -40 96 -32 Q92 -26 82 -28Z" fill="#c99a6a" ${st(1.6)}/><path d="M96 -32 l4 -2 M96 -32 l4 2" stroke="${N}" stroke-width="1.4"/>`,
+  cel: () => `<circle cx="50" cy="-50" r="48" fill="#ffd8e4" fill-opacity=".9" stroke="#e58fae" stroke-width="3.5"/><circle cx="56" cy="-54" r="16" fill="#9b7fd1" stroke="#6f55a8" stroke-width="2"/><circle cx="60" cy="-58" r="5" fill="#6f55a8"/>
+    <ellipse cx="28" cy="-34" rx="9" ry="4.5" fill="#f2a65a" stroke="#c97a30" stroke-width="1.4" transform="rotate(30 28 -34)"/><ellipse cx="74" cy="-26" rx="8" ry="4" fill="#f2a65a" stroke="#c97a30" stroke-width="1.4" transform="rotate(-20 74 -26)"/>
+    <g fill="#e58fae">${[[24, -66], [36, -82], [78, -70], [40, -22], [70, -42], [20, -50]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="2.4"/>`).join('')}</g>`,
+  globul: () => `<ellipse cx="50" cy="-34" rx="48" ry="30" fill="#d93a3a" ${st(2.4)}/><ellipse cx="50" cy="-34" rx="26" ry="14" fill="#b72a2a"/><ellipse cx="38" cy="-48" rx="12" ry="5" fill="#ef7a7a" opacity=".7"/>`,
+  bacteri: () => `<g class="balanc"><rect x="2" y="-46" width="64" height="30" rx="15" fill="#7cc77a" ${st(2.4)}/><rect x="8" y="-40" width="52" height="18" rx="9" fill="#a6e0a3"/><circle cx="24" cy="-31" r="3" fill="#4f9a4c"/><circle cx="44" cy="-34" r="4" fill="#4f9a4c"/>
+    <path class="cua" d="M66 -31 Q74 -40 82 -31 T98 -31" stroke="${N}" stroke-width="2" fill="none"/><path d="M64 -40 Q72 -52 80 -44 T96 -52" stroke="${N}" stroke-width="1.6" fill="none"/></g>`
+};
+// objectes del viatge: mida (m), dimensió principal (h = alt, w = llarg), caixa en unitats (bw, bh), posició (m) a la dreta de l'àncora
+const OBJ = [
+  { id: 'fr4c', nom: 'FR-4C', mida: 1, dim: 'h', bw: 94, bh: 100, x: .55, p: 0, nc: [1, 0], txt: '1 m', cur: 'Fa 1 m: és la mida de referència del viatge.' },
+  { id: 'coma', nom: 'En Coma', mida: .4, dim: 'h', bw: 110, bh: 100, x: .12, p3: true, nc: [4, -1], txt: '0,4 m', cur: 'Assegut fa uns 40 cm: més petit que FR-4C.' },
+  { id: 'raptor', nom: 'Velociraptor', mida: 2, dim: 'w', bw: 100, bh: 46, x: 2.1, nc: [2, 0], txt: '2 m', cur: 'Feia uns 2 m de llarg, però bona part era la cua: era de la mida d\'un gall dindi gran.' },
+  { id: 'trex', nom: 'Tiranosaure', mida: 12, dim: 'w', bw: 100, bh: 44, x: 5, p: 1, nc: [1.2, 1], txt: '12 m', cur: 'Uns 12 m de llarg. Les dents més grans, amb l\'arrel, feien uns 30 cm.' },
+  { id: 'diplo', nom: 'Diplodoc', mida: 25, dim: 'w', bw: 100, bh: 42, x: 18, nc: [2.5, 1], txt: '25 m', cur: 'Uns 25 m de llarg: gairebé tot era coll i cua.' },
+  { id: 'balena', nom: 'Balena blava', mida: 30, dim: 'w', bw: 104, bh: 28, x: 45, nc: [3, 1], txt: '30 m', cur: 'L\'animal més gran que ha existit mai: fins a uns 30 m.' },
+  { id: 'futbol', nom: 'Camp de futbol', mida: 105, dim: 'w', bw: 100, bh: 27, x: 85, p: 2, nc: [1.05, 2], txt: '105 m', cur: 'Un camp de futbol reglamentari fa uns 105 m de llarg.' },
+  { id: 'sf', nom: 'Sagrada Família', mida: 172, dim: 'h', bw: 60, bh: 105, x: 220, nc: [1.72, 2], txt: '172 m', cur: 'Amb la torre de Jesucrist acabada fa 172,5 m: l\'església més alta del món.' },
+  { id: 'burj', nom: 'Burj Khalifa', mida: 828, dim: 'h', bw: 16, bh: 100, x: 480, p: 3, nc: [8.28, 2], txt: '828 m', cur: 'El gratacel més alt del món, a Dubai: 828 m.' },
+  { id: 'everest', nom: 'Everest', mida: 8849, dim: 'h', bw: 300, bh: 112, x: 1800, p: 4, nc: [8.849, 3], txt: '8.849 m', cur: 'La muntanya més alta sobre el nivell del mar: 8.849 m.' },
+  { id: 'lluna', nom: 'La Lluna', mida: 3474000, dim: 'w', bw: 100, bh: 100, x: 4e6, p: 6, nc: [3.474, 6], txt: '3.474 km', cur: 'Fa 3.474 km de diàmetre. Dins la Terra hi cabrien unes 50 Llunes.' },
+  { id: 'terra', nom: 'La Terra', mida: 12742000, dim: 'w', bw: 100, bh: 100, x: 9e6, p: 7, nc: [1.2742, 7], aprox: 13000000, ncA: [1.3, 7], txt: '12.742 km', cur: 'El diàmetre de la Terra és de 12.742 km.' },
+  { id: 'tl', nom: 'De la Terra a la Lluna', mida: 384400000, dim: 'w', bw: 100, bh: 60, x: 1.5e7, p: 8, nc: [3.844, 8], aprox: 380000000, ncA: [3.8, 8], txt: '384.400 km', cur: 'Uns 384.400 km: la llum hi arriba en poc més d\'1 segon.' },
+  { id: 'marieta', nom: 'Marieta', mida: .007, dim: 'w', bw: 100, bh: 56, x: .018, p3: true, p: -2, nc: [7, -3], txt: '7 mm', cur: 'Una marieta fa uns 7 mm.' },
+  { id: 'formiga', nom: 'Formiga', mida: .005, dim: 'w', bw: 100, bh: 52, x: .03, p3: true, nc: [5, -3], txt: '5 mm', cur: 'Uns 5 mm. Pot carregar objectes molt més pesants que ella.' },
+  { id: 'puca', nom: 'Puça', mida: .002, dim: 'w', bw: 100, bh: 66, x: .0015, p3: true, p: -3, nc: [2, -3], txt: '2 mm', cur: 'Uns 2 mm, i salta més de 100 vegades la seva llargada.' },
+  { id: 'gra', nom: 'Gra de sorra', mida: .0005, dim: 'w', bw: 100, bh: 72, x: .0042, p3: true, nc: [5, -4], txt: '0,5 mm', cur: 'La sorra fa entre 0,06 i 2 mm; un gra mitjà, uns 0,5 mm.' },
+  { id: 'tard', nom: 'Tardígrad (ós d\'aigua)', mida: .0005, dim: 'w', bw: 100, bh: 66, x: .0056, p3: true, nc: [5, -4], txt: '0,5 mm', cur: 'L\'«ós d\'aigua» fa uns 0,5 mm i aguanta fred, calor i fins i tot l\'espai.' },
+  { id: 'acar', nom: 'Àcar de la pols', mida: .0003, dim: 'w', bw: 100, bh: 58, x: .00012, p3: true, p: -4, nc: [3, -4], txt: '0,3 mm', cur: 'Uns 0,3 mm. Viuen a la pols de casa i no es veuen a ull nu.' },
+  { id: 'cel', nom: 'Cèl·lula', mida: .00005, dim: 'w', bw: 100, bh: 100, x: .0005, p3: true, nc: [5, -5], txt: '0,05 mm', cur: 'Moltes cèl·lules del cos fan entre 0,01 i 0,1 mm.' },
+  { id: 'globul', nom: 'Glòbul vermell', mida: .000008, dim: 'w', bw: 100, bh: 64, x: .00002, p3: true, p: -5, nc: [8, -6], txt: '0,008 mm', cur: 'Uns 0,008 mm. En una gota de sang n\'hi ha milions.' },
+  { id: 'bacteri', nom: 'Bacteri', mida: .000002, dim: 'w', bw: 100, bh: 52, x: .000002, p3: true, p: -6, nc: [2, -6], txt: '0,002 mm', cur: 'Molts bacteris fan uns 0,002 mm.' }
+];
+const OBJS = () => OBJ.filter(o => M.nivell === 3 || !o.p3);
+const ZMIN = () => M.nivell === 3 ? -6 : 0, ZMAX = 8;
+const objSvg = (o, s) => D[o.id](s);
+// miniatura d'un objecte en una caixa
+const mini = (o, w = 110, h = 80) => { const pad = 8, sx = (w - 2 * pad) / o.bw, sy = (h - 2 * pad) / o.bh, s = Math.min(sx, sy); return `<svg viewBox="0 0 ${w} ${h}"><g transform="translate(${(w - o.bw * s) / 2} ${h - pad - (h - 2 * pad - o.bh * s) / 2}) scale(${s})">${objSvg(o, s)}</g></svg>`; };
+
+/* ================= ESCENA DEL ZOOM ================= */
+const ESTELS = (() => { let a = 7, s = ''; const r = () => (a = (a * 9301 + 49297) % 233280) / 233280; for (let i = 0; i < 70; i++) s += `<circle cx="${(r() * 900).toFixed(0)}" cy="${(r() * 600).toFixed(0)}" r="${(.8 + r() * 1.6).toFixed(1)}"/>`; return s; })();
+const AX = 110, G = 540; let ZF = 0; // àncora i nivell de zoom (10^ZF m per cada 100 px)
+const mix = (a, b, t) => { t = Math.max(0, Math.min(1, t)); const p = x => [1, 3, 5].map(i => parseInt(x.slice(i, i + 2), 16)); const A = p(a), B = p(b); return '#' + A.map((v, i) => Math.round(v + (B[i] - v) * t).toString(16).padStart(2, '0')).join(''); };
+function fonsZoom(zf) {
+  const cel = zf >= 4.5 ? mix('#4a74c9', '#070a24', (zf - 4.5) / 1.5) : zf <= -2 ? mix('#9fd3ff', '#e6f6ef', (-2 - zf) / 1) : '#9fd3ff';
+  const baix = zf >= 4.5 ? mix('#cfe9ff', '#0b1033', (zf - 4.5) / 1.5) : zf <= -2 ? mix('#e3f4ff', '#f4fbf6', (-2 - zf)) : '#e3f4ff';
+  let s = `<defs><linearGradient id="cel" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${cel}"/><stop offset="1" stop-color="${baix}"/></linearGradient><radialGradient id="micro" cx=".5" cy=".5" r=".75"><stop offset=".6" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#1b3a2a" stop-opacity=".55"/></radialGradient></defs><rect width="900" height="600" fill="url(#cel)"/>`;
+  if (zf > 5) { const o = Math.min(1, zf - 5); s += `<g fill="#fff" opacity="${o}">${ESTELS}</g>`; }
+  if (zf < 4.6) { const o = zf > 4 ? 1 - (zf - 4) / .6 : 1; const terra = zf <= -1.5 ? mix('#b9a27a', '#e9dcc0', (-1.5 - zf)) : '#7cc35a';
+    s += `<g opacity="${o}"><rect x="0" y="${G}" width="900" height="${600 - G}" fill="${terra}"/><rect x="0" y="${G}" width="900" height="5" fill="${zf <= -1.5 ? '#a08a62' : '#5a9c40'}"/>${zf <= -1.5 ? Array.from({ length: 30 }, (_, i) => `<circle cx="${(i * 61) % 900}" cy="${G + 14 + (i * 13) % 40}" r="${2 + i % 4}" fill="#cbb689"/>`).join('') : ''}</g>`; }
+  return s;
+}
+function pintaZoom(zf = ZF, { clicables = false, marca = null } = {}) {
+  ZF = zf; const ppm = 100 / 10 ** zf; let s = fonsZoom(zf);
+  const llista = OBJS().slice().sort((a, b) => b.mida - a.mida);
+  for (const o of llista) {
+    const px = o.mida * ppm, k = px / 100, w = o.bw * k, h = o.bh * k; if (w < 2.5 && h < 2.5) continue;
+    const gran = Math.max(w / 860, h / 520); if (gran > 1.3) continue;
+    let op = 1; if (gran > 1) op = Math.max(0, 1 - (gran - 1) / .3); if (Math.max(w, h) < 10) op = Math.min(op, (Math.max(w, h) - 2.5) / 7.5);
+    const x = AX + o.x * ppm; if (x > 1000) continue;
+    const ok = clicables && Math.max(w, h) > 14 && op > .5;
+    s += `<g class="${ok ? 'obj' : ''}" data-id="${o.id}" opacity="${op.toFixed(2)}" transform="translate(${x.toFixed(2)} ${G}) scale(${k.toPrecision(6)})">${objSvg(o, k)}${marca === o.id ? `<rect x="-6" y="${-o.bh - 6}" width="${o.bw + 12}" height="${o.bh + 12}" rx="${6}" fill="none" stroke="${T}" stroke-width="${3 / k}" stroke-dasharray="${8 / k} ${5 / k}"/>` : ''}</g>`;
+  }
+  // regle d'escala i comptador
+  const n = Math.round(zf), cl = zf >= 5 || zf <= -3 ? '#fff' : N, val = 10 ** n;
+  s += `<g transform="translate(24 30)"><rect x="-10" y="-20" width="300" height="66" rx="14" fill="${zf >= 5 ? '#ffffff22' : '#ffffffcc'}"/><rect x="0" y="0" width="100" height="10" fill="${T}" stroke="${N}" stroke-width="2"/><path d="M0 -4v18M100 -4v18" stroke="${N}" stroke-width="2"/><text x="112" y="12" font-size="22" font-weight="800" font-family="Bricolage Grotesque,system-ui" fill="${zf >= 5 ? '#fff' : N}">= ${pw(n)} m</text><text x="0" y="38" font-size="16" font-weight="700" font-family="Atkinson Hyperlegible,system-ui" fill="${zf >= 5 ? '#fff' : '#444'}">${n >= 0 ? NUM(val) : fmtPetit(val)} m${n === 3 ? ' = 1 km' : n === -3 ? ' = 1 mm' : n === -2 ? ' = 1 cm' : n === -1 ? ' = 1 dm' : ''}</text></g>`;
+  s += `<text x="870" y="70" text-anchor="end" font-size="64" font-weight="800" font-family="Bricolage Grotesque,system-ui" fill="${zf >= 5 ? '#fff' : N}" opacity=".85">${pw(n)}</text>`;
+  if (zf <= -3) s += `<rect width="900" height="600" fill="url(#micro)" pointer-events="none"/>`;
+  $('#esc').innerHTML = s + '<g id="capa"></g>';
+  if (clicables) $$('#esc .obj').forEach(g => g.onclick = () => captura(g.dataset.id));
+}
+async function zoomA(z, ms = 900, opc = {}) {
+  const z0 = ZF; if (z === z0) return pintaZoom(z, opc); SO.vent(ms / 1000 * .9, z < z0);
+  await anim(ms, e => pintaZoom(z0 + (z - z0) * e, opc));
+  pintaZoom(z, opc);
+}
+
+/* ================= EXPLICACIÓ ================= */
+const PCOL = ['#f26b1d', '#2a6fd6', '#1d9a5a', '#7c5cd6'];
+function panellExpl(titol, cos) {
+  $('#panel').innerHTML = `<div class="targ"><h2>${titol}</h2>${cos}<div class="formula" id="form"></div><div id="preg"></div></div><div class="fila"><button class="big sec" id="bsalta">⏩ Ja ho entenc</button></div>`;
+  $('#bsalta').onclick = () => { RAPID = true; };
+}
+const afegeix = h => { const f = $('#form'); if (f) f.insertAdjacentHTML('beforeend', `<div class="nova">${h}</div>`); };
+// pregunta enmig de l'animació: espera la resposta bona
+function preguntaAnim(txt, bona) {
+  if (RAPID) return Promise.resolve();
+  return new Promise(res => {
+    $('#preg').innerHTML = `<p style="font-weight:700">${txt}</p><div class="entra"><input id="pin" inputmode="numeric" autocomplete="off"><button class="big" id="pok">Comprova</button></div><div id="pmsg"></div>`;
+    const ok = () => { const v = llegeix($('#pin').value); if (v === bona) { SO.be(); $('#preg').innerHTML = `<p class="msg ok">Exacte! ${bona}.</p>`; setTimeout(res, 500); } else { SO.mal(); $('#pmsg').innerHTML = `<p class="msg ko">Mira-ho bé: compta les barres petites que hi caben en una de grossa.</p>`; } };
+    $('#pok').onclick = ok; $('#pin').onkeydown = e => { if (e.key === 'Enter') ok(); }; $('#pin').focus();
+    const vigila = setInterval(() => { if (RAPID) { clearInterval(vigila); res(); } }, 200);
+  });
+}
+const L0 = 56, X0 = 170, YB = 470; // barra petita (px), inici, altura
+function barra(x, w, col, txt = '') { return `<rect x="${x}" y="${YB}" width="${w}" height="34" rx="4" fill="${col}" stroke="${N}" stroke-width="2.5"/>${txt ? `<text x="${x + w / 2}" y="${YB + 64}" text-anchor="middle" font-size="22" font-weight="800" font-family="Bricolage Grotesque,system-ui">${txt}</text>` : ''}`; }
+const ESC_OBJ = { 1: ['raptor', 'fr4c'], 2: ['trex', 'balena'], 3: ['sf', 'burj'] };
+async function barresEnfora() {
+  panellExpl('Què vol dir 10 elevat a…?', '<p>Mirem què passa quan posem barres de 10 en 10.</p>');
+  const esc = $('#esc'); const fons = () => `<rect width="900" height="600" fill="#fdf8ee"/><rect x="0" y="${YB + 34}" width="900" height="2" fill="#ddd"/>`;
+  const fr = `<g transform="translate(${X0 - 4} ${YB}) scale(.56)" >${D.fr4c()}</g>`;
+  esc.innerHTML = fons() + fr.replace(`translate(${X0 - 4} ${YB})`, `translate(${X0 + 2} ${YB})`) + barra(X0, L0, PCOL[0], '1 m');
+  afegeix(`${pw(0)} = <b>1</b>`); await espera(1200);
+  for (let k = 1; k <= 3; k++) {
+    if (k >= 2) await preguntaAnim(`Quantes barres de ${pw(k - 1)} m calen per fer ${pw(k)} m?`, 10);
+    let g = ''; for (let i = 0; i < 10; i++) { g += barra(X0 + i * L0, L0, PCOL[k - 1]); esc.innerHTML = fons() + (k === 1 ? fr : '') + g + `<text x="${X0 + (i + .5) * L0}" y="${YB - 16}" text-anchor="middle" font-size="26" font-weight="800" font-family="Bricolage Grotesque,system-ui" fill="${PCOL[k - 1]}">${i + 1}</text>`; SO.clac(i); await espera(210); }
+    await espera(300);
+    // la barra llarga i, a sobre, objectes a escala (la barra fa 10^k m)
+    const ppmB = 10 * L0 / 10 ** k; let xo = X0 + 14, objs = '';
+    for (const id of ESC_OBJ[k]) { const o = OBJ.find(x => x.id === id), ko = o.mida * ppmB / 100; const lab = `${o.nom}: ${o.txt}`, lw = lab.length * 9.5, alt = o.bh * ko, dalt = YB - alt - 10 < 30;
+      objs += `<g transform="translate(${xo} ${YB}) scale(${ko})">${objSvg(o, ko)}</g><text x="${dalt ? xo + o.bw * ko + 10 : xo + o.bw * ko / 2}" y="${dalt ? YB - alt / 2 : YB - alt - 10}" text-anchor="${dalt ? 'start' : 'middle'}" font-size="18" font-weight="700" font-family="Atkinson Hyperlegible,system-ui">${lab}</text>`; xo += Math.max(o.bw * ko + 40, (dalt ? o.bw * ko + lw + 30 : lw + 20)); }
+    esc.innerHTML = fons() + barra(X0, 10 * L0, PCOL[k], `10 barres de ${pw(k - 1)} m = ${pw(k)} m = ${fmt(10 ** k)} m`) + objs; SO.ping(); SO.veu(ESC_OBJ[k][0]);
+    afegeix(`${pw(k)} = ${Array(k).fill('10').join(' · ')}${k > 1 ? `<br>= <b>${fmt(10 ** k)}</b>` : ` = <b>10</b>`}${k === 3 ? ' → 1 km' : ''}`);
+    await espera(1500);
+    // el zoom s'allunya: la barra llarga torna a fer 56 px
+    if (k === 3) break;
+    SO.vent(.9, false);
+    await anim(900, e => { const sc = 1 - .9 * e; esc.innerHTML = fons() + `<g transform="translate(${X0} ${YB}) scale(${sc}) translate(${-X0} ${-YB})">${barra(X0, 10 * L0, PCOL[k])}${objs}</g>`; });
+    esc.innerHTML = fons() + barra(X0, L0, PCOL[k], `${pw(k)} m`); await espera(700);
+  }
+  afegeix(`<span style="font-size:1.05rem">L'<b>exponent</b> diu quantes vegades multipliquem per 10 (quants zeros té).</span>`);
+}
+async function barresEndins() {
+  panellExpl('I cap endins? Exponents negatius', '<p>Ara fem el contrari: trenquem la barra en 10 trossos.</p>');
+  const esc = $('#esc'); const fons = () => `<rect width="900" height="600" fill="#f2faf4"/>`; const W = 560;
+  const noms = ['1 dm', '1 cm', '1 mm'];
+  esc.innerHTML = fons() + barra(X0, W, PCOL[0], '1 m'); afegeix(`${pw(0)} = <b>1</b>`); await espera(1000);
+  for (let k = 1; k <= 3; k++) {
+    if (k === 2) await preguntaAnim('En quantes parts trenquem la barra cada vegada?', 10);
+    let talls = ''; for (let i = 1; i < 10; i++) { talls += `<path d="M${X0 + i * W / 10} ${YB - 6}v46" stroke="${N}" stroke-width="3"/>`; esc.innerHTML = fons() + barra(X0, W, PCOL[k - 1]) + talls; SO.clac(i); await espera(150); }
+    esc.innerHTML = fons() + barra(X0, W, PCOL[k - 1]) + talls + `<rect x="${X0}" y="${YB - 4}" width="${W / 10}" height="42" fill="none" stroke="${T}" stroke-width="5"/><text x="${X0 + W / 20}" y="${YB - 14}" text-anchor="middle" font-size="20" font-weight="800" font-family="Bricolage Grotesque,system-ui">1 tros</text>`;
+    afegeix(`${pw(-k)} = 1 : ${fmt(10 ** k)}<br>= <b>${fmtPetit(10 ** -k)}</b> → ${noms[k - 1]}`); SO.ping(); await espera(1300);
+    SO.vent(.9, true);
+    await anim(900, e => { const sc = 1 + 9 * e; esc.innerHTML = fons() + `<g transform="translate(${X0} 0) scale(${sc} 1) translate(${-X0} 0)">${barra(X0, W, PCOL[k - 1])}${talls}</g>`; });
+    esc.innerHTML = fons() + barra(X0, W, PCOL[k], `${pw(-k)} m = ${fmtPetit(10 ** -k)} m = ${noms[k - 1]}`);
+    if (k >= 2) { const o = OBJ.find(x => x.id === (k === 2 ? 'formiga' : 'gra')); const ko = W * o.mida / 10 ** -k / 100; esc.insertAdjacentHTML('beforeend', `<g transform="translate(${X0} ${YB - 8}) scale(${ko})">${objSvg(o, ko)}</g><text x="${X0 + o.bw * ko + 14}" y="${YB - 30}" font-size="20" font-weight="700" font-family="Atkinson Hyperlegible,system-ui">${o.nom}: ${o.txt}</text>`); SO.veu(o.id); }
+    await espera(1500);
+  }
+  afegeix(`<span style="font-size:1.05rem">L'exponent <b>negatiu</b> diu quantes vegades hem dividit entre 10.</span>`);
+}
+// la coma salta: d (xifres sense coma), p0 → p1 (posició de la coma), text final
+async function salts(xifres, p0, p1, final) {
+  const esc = $('#esc'); const n = xifres.length, cw = 70, x0 = 450 - n * cw / 2, y = 300;
+  const dib = (p, extra = '') => { let s = `<rect width="900" height="600" fill="#fff8ec"/>`; xifres.split('').forEach((c, i) => s += `<rect x="${x0 + i * cw + 4}" y="${y - 64}" width="${cw - 8}" height="84" rx="10" fill="#fff" stroke="${N}" stroke-width="3"/><text x="${x0 + i * cw + cw / 2}" y="${y}" text-anchor="middle" font-size="58" font-weight="800" font-family="Bricolage Grotesque,system-ui">${c}</text>`); return s + extra; };
+  const coma = (x, yy) => `<circle cx="${x}" cy="${yy}" r="9" fill="${T}" stroke="${N}" stroke-width="2.5"/><path d="M${x + 3} ${yy + 6} q-2 10 -9 14" stroke="${N}" stroke-width="4" fill="none"/>`;
+  esc.innerHTML = dib(p0, coma(x0 + p0 * cw, y + 10)); await espera(900);
+  const dir = Math.sign(p1 - p0); let nS = 0;
+  for (let p = p0; p !== p1; p += dir) {
+    nS++; SO.clac(nS);
+    await anim(420, e => { esc.innerHTML = dib(p, coma(x0 + (p + dir * e) * cw, y + 10 - Math.sin(Math.PI * e) * 70) + `<text x="450" y="460" text-anchor="middle" font-size="34" font-weight="800" font-family="Bricolage Grotesque,system-ui" fill="${T}">${nS} ${nS === 1 ? 'salt' : 'salts'} ${dir < 0 ? 'a l\'esquerra' : 'a la dreta'}</text>`); });
+  }
+  esc.insertAdjacentHTML('beforeend', `<text x="450" y="530" text-anchor="middle" font-size="40" font-weight="800" font-family="Bricolage Grotesque,system-ui">${final}</text>`); SO.ping();
+  await espera(1600);
+}
+async function notacio() {
+  panellExpl('Notació científica', '<p>Un nombre <b>entre 1 i 10</b> multiplicat per una potència de 10.</p>');
+  afegeix('25 m'); await salts('25', 2, 1, `25 = 2,5 · ${pw(1)}`); afegeix(`= <b>2,5 · ${pw(1)} m</b>`);
+  afegeix('8.849 m'); await salts('8849', 4, 1, `8.849 = 8,849 · ${pw(3)}`); afegeix(`= <b>8,849 · ${pw(3)} m</b>`);
+  if (M.nivell === 3) { afegeix('0,005 m'); await salts('0005', 1, 4, `0,005 = 5 · ${pw(-3)}`); afegeix(`= <b>5 · ${pw(-3)} m</b>`); }
+  afegeix(`<span style="font-size:1.05rem">Cada salt de la coma a l'esquerra suma 1 a l'exponent${M.nivell === 3 ? '; cada salt a la dreta, hi resta 1' : ''}.</span>`);
+}
+async function explicacio() {
+  M.pantalla = 'expl'; RAPID = false; pintaCap();
+  await barresEnfora(); await espera(800);
+  if (M.nivell >= 2) { RAPID = false; await notacio(); await espera(600); }
+  if (M.nivell === 3) { RAPID = false; await barresEndins(); await espera(600); }
+  RAPID = false; try { localStorage.setItem('fr4c_zoom_vist_' + M.nivell, '1'); } catch (e) {}
+  $('#panel').innerHTML = `<div class="targ"><h2>Ja ho tens!</h2><p>Ara viatja amb el zoom i captura objectes gegants${M.nivell === 3 ? ' i diminuts' : ''}.</p><div class="fila"><button class="big" id="bexp">🔍 Comença el viatge</button></div></div>`;
+  $('#bexp').onclick = exploracio; $('#bexp').focus();
+}
+
+/* ================= EXPLORACIÓ ================= */
+const P = {};
+function pintaCap() { $('#punts').textContent = M.pantalla === 'reptes' ? P.punts : ''; $('#compta').textContent = M.pantalla === 'reptes' ? `Repte ${Math.min(P.i + 1, 8)} de 8` : M.pantalla === 'explora' ? `Capturats ${P.capt.size} de ${OBJS().length}` : M.pantalla === 'expl' ? 'Explicació' : ''; }
+const MIN_CAPT = () => M.nivell === 3 ? 8 : 6;
+function exploracio() {
+  M.pantalla = 'explora'; RAPID = false; P.capt = P.capt || new Set(); pintaCap(); ZF = 0; pintaZoom(0, { clicables: true }); panellExplora();
+}
+function panellExplora(fitxa = '') {
+  const tots = OBJS();
+  $('#panel').innerHTML = `<div class="targ"><h2>🔍 El viatge del zoom</h2><p>Allunya't o apropa't i <b>clica els objectes</b> per capturar-los. En calen almenys ${MIN_CAPT()} per passar als reptes.</p>
+    <div class="zbtns"><button class="big sec" id="zm">🔍− Allunya (× 10)</button><button class="big sec" id="zp">🔍+ Apropa (: 10)</button></div>
+    <div class="llista">${tots.map(o => `<span class="${P.capt.has(o.id) ? 'fet' : ''}">${P.capt.has(o.id) ? '✓ ' : ''}${o.nom}</span>`).join('')}</div></div>
+    ${fitxa}<div class="fila"><button class="big" id="breptes" ${P.capt.size >= MIN_CAPT() ? '' : 'disabled'}>Als reptes ▸</button></div>`;
+  $('#zm').onclick = () => mouZoom(1); $('#zp').onclick = () => mouZoom(-1); $('#zm').disabled = ZF >= ZMAX; $('#zp').disabled = ZF <= ZMIN();
+  $('#breptes').onclick = comencaReptes;
+}
+let movent = false;
+async function mouZoom(d) { if (movent) return; const z = Math.round(ZF) + d; if (z < ZMIN() || z > ZMAX) return; movent = true; await zoomA(z, 900, { clicables: true }); movent = false; panellExplora($('#fitxa')?.outerHTML || ''); }
+function fitxaHtml(o) { return `<div class="targ" id="fitxa"><div class="fitxa">${mini(o)}<div><h3>${o.nom}</h3><div class="mida">${o.txt}${o.txt.endsWith(' m') && o.mida >= 1 ? '' : ` = ${NUM(o.mida)} m`} = ${ncTxt(...o.nc)} m</div><p>${o.cur}</p></div></div></div>`; }
+function captura(id) {
+  const o = OBJ.find(x => x.id === id); const nou = !P.capt.has(id); P.capt.add(id); SO.veu(id); if (nou) SO.ping();
+  const g = $(`#esc [data-id="${id}"]`); if (g && nou) { const b = g.getBBox(); const t = (g.getAttribute('transform') || '').match(/translate\(([-\d.e]+) ([-\d.e]+)\) scale\(([-\d.e]+)\)/); if (t) { const [x, y, k] = t.slice(1).map(Number); $('#capa').insertAdjacentHTML('beforeend', `<text class="brilla" x="${x + (b.x + b.width / 2) * k}" y="${y + b.y * k - 8}" text-anchor="middle" font-size="34" style="transform-box:fill-box;transform-origin:center">✨</text>`); } }
+  pintaCap(); panellExplora(fitxaHtml(o));
+}
+document.addEventListener('keydown', e => {
+  if (M.pantalla === 'explora' && (e.key === '+' || e.key === '-')) mouZoom(e.key === '-' ? 1 : -1);
+  if (e.key === 'Enter') { const s = $('#seg') || $('#ok'); if (s && !s.disabled) { e.preventDefault(); s.click(); } }
+});
+
+/* ================= REPTES ================= */
+const big = () => OBJS().filter(o => !o.p3 || M.nivell === 3);
+const ambP = () => OBJS().filter(o => o.p != null);
+function nousReptes() {
+  const L = M.nivell, R = []; const usats = new Set();
+  const agafa = (f) => { const c = barreja(OBJS().filter(o => f(o) && !usats.has(o.id))); const o = c[0] || barreja(OBJS().filter(f))[0]; usats.add(o.id); return o; };
+  const petit = o => o.mida < .1, gran = o => o.mida >= 1;
+  const tipusT2 = L === 1 ? ['pot', 'pot', 'potInv'] : L === 2 ? ['nc', 'nc', 'ncInv'] : ['nc', 'ncPetit', 'ncInvPetit'];
+  R.push({ t: 'rang', o: agafa(o => L === 3 ? petit(o) : gran(o)) });
+  if (L > 1) R.push({ t: 'rang', o: agafa(o => gran(o) && o.mida > 2) }); else R.push({ t: 'rang', o: agafa(o => gran(o) && o.mida > 2) });
+  tipusT2.forEach(t => R.push({ t, o: agafa(o => t === 'pot' || t === 'potInv' ? o.p != null && o.p >= 1 : t.includes('Petit') ? petit(o) : gran(o) && o.mida >= 10) }));
+  // quantes vegades: parelles amb potència aproximada
+  const parells = () => { const c = ambP().filter(o => L === 3 || o.p >= 0); let a, b; do { [a, b] = barreja(c); } while (Math.abs(a.p - b.p) < 2 || Math.abs(a.p - b.p) > (L === 1 ? 4 : 8)); return a.p > b.p ? [a, b] : [b, a]; };
+  R.push({ t: 'vegades', ab: parells() }); R.push({ t: 'vegades', ab: parells() });
+  R.push({ t: 'ordena', os: (() => { const c = barreja(OBJS().filter(o => L === 3 || o.mida >= 1)); const tr = []; for (const o of c) if (tr.every(x => Math.abs(Math.log10(x.mida / o.mida)) > .25) && tr.length < 4) tr.push(o); return tr; })() });
+  return barreja(R.slice(0, 7)).concat(R.slice(7)).slice(0, 8);
+}
+function comencaReptes() {
+  M.pantalla = 'reptes'; Object.assign(P, { i: 0, punts: 0, encerts: 0, errors: 0, fallades: [], t0: performance.now(), reptes: nousReptes(), acabada: false });
+  pintaCap(); mostraRepte();
+}
+const stageObj = o => Math.floor(Math.log10(o.mida * 2));
+function mostraRepte() {
+  const r = P.reptes[P.i]; P.intents = 0; P.bloc = false; pintaCap();
+  let html = '';
+  if (r.t === 'rang') { const e = Math.floor(Math.log10(r.o.mida)); r.bona = e; const ops = barreja([e - 1, e, e + 1]); r.ops = ops;
+    zoomA(stageObj(r.o), 700, { marca: r.o.id });
+    html = `<p class="preg"><b>${r.o.nom}</b> fa <b>${r.o.txt}</b>${r.o.mida < 1 ? ` (${NUM(r.o.mida)} m)` : ''}. Entre quines potències de 10 (en metres) està la seva mida?</p><div class="opcions">${ops.map(x => `<button class="opc" data-v="${x}">entre ${pw(x)} m i ${pw(x + 1)} m</button>`).join('')}</div>`; }
+  if (r.t === 'pot') { const o = r.o; r.bona = o.p; r.val = 10 ** o.p; zoomA(stageObj(o), 700, { marca: o.id });
+    html = `<p class="preg"><b>${o.nom}</b> fa uns <b>${fmt(10 ** o.p)} m</b> (arrodonit). Escriu-ho com una potència de 10:</p><div class="entra"><span>${fmt(10 ** o.p)} m = 10</span><input class="exp" id="i2" inputmode="numeric" autocomplete="off"><span>m</span></div>`; }
+  if (r.t === 'potInv') { const o = r.o; r.bona = 10 ** o.p; zoomA(stageObj(o), 700, { marca: o.id });
+    html = `<p class="preg"><b>${o.nom}</b> fa uns <b>${pw(o.p)} m</b>. Quants metres són?</p><div class="entra"><span>${pw(o.p)} m =</span><input class="llarg" id="i1" inputmode="decimal" autocomplete="off"><span>m</span></div>`; }
+  if (r.t === 'nc' || r.t === 'ncPetit') { const o = r.o; const val = o.aprox || o.mida, nc = o.ncA || o.nc; r.bona = nc; r.val = val; zoomA(stageObj(o), 700, { marca: o.id });
+    html = `<p class="preg"><b>${o.nom}</b> fa ${o.aprox ? 'uns ' : ''}<b>${NUM(val)} m</b>. Escriu-ho en notació científica:</p><div class="entra"><span>${NUM(val)} m =</span><input id="i1" inputmode="decimal" autocomplete="off" style="width:110px"><span>· 10</span><input class="exp" id="i2" inputmode="numeric" autocomplete="off"><span>m</span></div><p class="mini">El primer nombre ha d'anar entre 1 i 10. Fes servir la coma per als decimals.</p>`; }
+  if (r.t === 'ncInv' || r.t === 'ncInvPetit') { const o = r.o; const nc = o.ncA || o.nc, val = o.aprox || o.mida; r.bona = val; zoomA(stageObj(o), 700, { marca: o.id });
+    html = `<p class="preg"><b>${o.nom}</b> fa ${o.aprox ? 'uns ' : ''}<b>${ncTxt(...nc)} m</b>. Quants metres són?</p><div class="entra"><span>${ncTxt(...nc)} m =</span><input class="llarg" id="i1" inputmode="decimal" autocomplete="off"><span>m</span></div>`; }
+  if (r.t === 'vegades') { const [a, b] = r.ab; r.bona = a.p - b.p; zoomA(a.p, 700, { marca: a.id });
+    html = `<p class="preg"><b>${a.nom}</b> fa uns <b>${pw(a.p)} m</b> i <b>${b.nom.toLowerCase()}</b> uns <b>${pw(b.p)} m</b>. Quantes vegades és més gran?</p><div class="entra"><span>${pw(a.p)} : ${pw(b.p)} = 10</span><input class="exp" id="i2" inputmode="numeric" autocomplete="off"><span>vegades</span></div>`; }
+  if (r.t === 'ordena') { r.tria = []; const os = barreja(r.os); r.mostra = os; ZF = 0; pintaRegle([]);
+    html = `<p class="preg">Clica'ls <b>del més petit al més gran</b>:</p><div class="cartes">${os.map(o => `<div class="carta" data-id="${o.id}">${mini(o, 160, 70)}${o.nom}<br><small>${o.txt}</small></div>`).join('')}</div>`; }
+  $('#panel').innerHTML = `<div class="targ" id="tq"><h2>Repte ${P.i + 1}</h2>${html}${['rang', 'ordena'].includes(r.t) ? '' : '<div class="fila"><button class="big" id="ok">Comprova</button></div>'}<div id="msg"></div></div>`;
+  $$('.opc').forEach(b => b.onclick = () => respon(+b.dataset.v, b));
+  $$('.carta').forEach(c => c.onclick = () => triaCarta(c));
+  const ok = $('#ok'); if (ok) { ok.onclick = () => respon(); ($('#i1') || $('#i2')).focus(); }
+}
+function pintaRegle(os, col = null) { // regle de potències de 10 amb objectes
+  const z0 = ZMIN(), z1 = ZMAX, w = 820, x0 = 40, dx = w / (z1 - z0 + 1); let s = `<rect width="900" height="600" fill="#fdf8ee"/><rect x="${x0}" y="420" width="${w}" height="16" fill="#eee" stroke="${N}" stroke-width="2"/>`;
+  for (let e = z0; e <= z1 + 1; e++) { const x = x0 + (e - z0) * dx; s += `<path d="M${x} 410v36" stroke="${N}" stroke-width="2"/><text x="${x}" y="472" text-anchor="middle" font-size="${dx > 60 ? 22 : 16}" font-weight="800" font-family="Bricolage Grotesque,system-ui">${pw(e)}</text>`; }
+  os.forEach((o, i) => { const x = x0 + (Math.log10(o.mida) - z0) * dx; const sz = (os.length > 6 ? 60 : 90) / Math.max(o.bw, o.bh); const yy = 395 - (i % (os.length > 6 ? 3 : 2)) * (os.length > 6 ? 105 : 120); s += `<path d="M${x} 418 V${yy + 6}" stroke="${col || T}" stroke-width="2.5" stroke-dasharray="5 4"/><g transform="translate(${x - o.bw * sz / 2} ${yy}) scale(${sz})">${objSvg(o, sz)}</g><text x="${Math.max(70, Math.min(830, x))}" y="${yy - o.bh * sz - 8}" text-anchor="middle" font-size="16" font-weight="700" font-family="Atkinson Hyperlegible,system-ui">${o.nom}</text>`; });
+  $('#esc').innerHTML = s;
+}
+function triaCarta(c) {
+  const r = P.reptes[P.i]; if (P.bloc || c.classList.contains('triada')) return; SO.clac(r.tria.length);
+  r.tria.push(c.dataset.id); c.classList.add('triada'); c.insertAdjacentHTML('beforeend', `<span class="n">${r.tria.length}</span>`);
+  if (r.tria.length === r.os.length) { const bona = r.os.slice().sort((a, b) => a.mida - b.mida).map(o => o.id); respon(r.tria.join() === bona.join() ? 'ok' : 'ko'); }
+}
+const SOL = {
+  rang: r => [`${r.o.txt}${r.o.mida < 1 ? ` = ${NUM(r.o.mida)} m` : ''}`, `${pw(r.bona)} m = ${NUM(10 ** r.bona)} m`, `${pw(r.bona + 1)} m = ${NUM(10 ** (r.bona + 1))} m`, `Està <b>entre ${pw(r.bona)} i ${pw(r.bona + 1)}</b>`],
+  pot: r => [`${fmt(r.val)} té ${r.bona} zeros`, `= <b>${pw(r.bona)}</b>`],
+  potInv: r => [`L'exponent ${r.o.p} vol dir ${r.o.p} zeros darrere de l'1`, `${pw(r.o.p)} = <b>${fmt(r.bona)} m</b>`],
+  nc: r => { const [m, e] = r.bona; return [`${NUM(r.val)}`, e >= 0 ? `La coma salta ${e} ${e === 1 ? 'lloc' : 'llocs'} a l'esquerra` : `La coma salta ${-e} llocs a la dreta`, `= <b>${ncTxt(m, e)} m</b>`]; },
+  ncInv: r => { const [m, e] = (r.o.ncA || r.o.nc); return [`${ncTxt(m, e)}`, e >= 0 ? `La coma salta ${e} ${e === 1 ? 'lloc' : 'llocs'} a la dreta` : `La coma salta ${-e} llocs a l'esquerra`, `= <b>${NUM(r.bona)} m</b>`]; },
+  vegades: r => { const [a, b] = r.ab; return [`${pw(a.p)} : ${pw(b.p)}`, `= 10<sup>${a.p} − ${b.p < 0 ? `(−${-b.p})` : b.p}</sup>`, `= <b>${pw(a.p - b.p)}</b> vegades`, a.p - b.p <= 6 ? `= ${fmt(10 ** (a.p - b.p))} vegades` : ''].filter(Boolean); },
+  ordena: r => [r.os.slice().sort((a, b) => a.mida - b.mida).map(o => `${o.nom} (${o.txt})`).join('<br>')]
+};
+SOL.ncPetit = SOL.nc; SOL.ncInvPetit = SOL.ncInv;
+async function respon(v = null, boto = null) {
+  const r = P.reptes[P.i]; if (P.bloc) return; let ok, resp;
+  if (r.t === 'rang') { ok = v === r.bona; resp = `entre ${pw(v)} i ${pw(v + 1)}`; }
+  else if (r.t === 'ordena') { ok = v === 'ok'; resp = 'ordre equivocat'; }
+  else if (r.t === 'nc' || r.t === 'ncPetit') { const m = llegeix($('#i1').value), e = llegeix($('#i2').value); if (m == null || e == null) return sacseja(); resp = `${String(m).replace('.', ',')} · ${pw(e)}`; ok = igual(m, r.bona[0]) && e === r.bona[1];
+    if (!ok && igual(m * 10 ** e, r.val) && (m < 1 || m >= 10)) r.consell = 'El valor és bo, però en notació científica el primer nombre ha d\'anar entre 1 i 10.'; }
+  else if (r.t === 'pot' || r.t === 'vegades') { const e = llegeix($('#i2').value); if (e == null) return sacseja(); ok = e === r.bona; resp = pw(e); }
+  else { const x = llegeix($('#i1').value); if (x == null) return sacseja(); ok = igual(x, r.bona); resp = NUM(x); if (!ok && (igual(x, r.bona * 10) || igual(x, r.bona / 10))) r.consell = 'Hi ha un zero de més o de menys: compta bé els salts de la coma.'; }
+  P.intents++;
+  if (!ok && P.intents === 1 && r.t !== 'ordena') { P.errors++; SO.mal(); if (boto) { boto.disabled = true; } $('#msg').innerHTML = `<p class="msg ko">No és correcte. ${r.consell || ''} Torna-ho a provar.</p>`; r.consell = ''; ['#i1', '#i2'].forEach(s => { const i = $(s); if (i) i.value = ''; }); ($('#i1') || $('#i2'))?.focus(); return; }
+  P.bloc = true; $$('.opc, #ok').forEach(b => b.disabled = true);
+  if (ok) { const pts = P.intents === 1 ? 10 : 5; P.punts += pts; P.encerts++; SO.be(); if (boto) boto.classList.add('be'); $('#msg').innerHTML = `<p class="msg ok">Correcte! +${pts}</p><div class="calc">${SOL[r.t](r).join('<br>')}</div>`; }
+  else { P.errors++; SO.mal(); P.fallades.push(`${titolRepte(r)} → vas dir ${resp}`); $('#msg').innerHTML = `<p class="msg ko">${r.consell || 'No és correcte.'} Mira-ho:</p><div class="calc">${SOL[r.t](r).join('<br>')}</div>`; }
+  pintaCap();
+  await visualitza(r);
+  $('#tq').insertAdjacentHTML('beforeend', `<div class="fila"><button class="big" id="seg">${P.i < 7 ? 'Següent repte ▸' : 'Al museu ▸'}</button></div>`); $('#seg').focus();
+  $('#seg').onclick = () => { P.i++; if (P.i >= 8) return museu(); mostraRepte(); };
+}
+const sacseja = () => { const t = $('#tq'); t.classList.add('sacseja'); setTimeout(() => t.classList.remove('sacseja'), 400); };
+function titolRepte(r) { return r.t === 'vegades' ? `${r.ab[0].nom} / ${r.ab[1].nom}: ${pw(r.bona)} vegades` : r.t === 'ordena' ? `Ordenar: ${r.os.slice().sort((a, b) => a.mida - b.mida).map(o => o.nom).join(' < ')}` : r.t === 'rang' ? `${r.o.nom}: entre ${pw(r.bona)} i ${pw(r.bona + 1)}` : `${r.o.nom}: ${r.t.startsWith('nc') && !r.t.includes('Inv') ? ncTxt(...r.bona) : r.t === 'pot' ? pw(r.bona) : NUM(r.bona) + ' m'}`; }
+async function visualitza(r) { // l'escena ensenya per què
+  if (r.t === 'rang') { await zoomA(r.bona + 1, 800, { marca: r.o.id }); const ppm = 100 / 10 ** ZF; const w1 = 10 ** r.bona * ppm, w2 = 10 ** (r.bona + 1) * ppm;
+    $('#capa').innerHTML = `<g transform="translate(${AX + r.o.x * ppm} ${G + 22})"><rect x="0" y="0" width="${w1}" height="10" fill="${PCOL[1]}" stroke="${N}" stroke-width="1.5"/><text x="${w1 + 4}" y="10" font-size="16" font-weight="800" font-family="Bricolage Grotesque,system-ui">${pw(r.bona)} m</text><rect x="0" y="18" width="${w2}" height="10" fill="${PCOL[2]}" stroke="${N}" stroke-width="1.5"/><text x="${Math.min(w2 + 4, 800 - AX)}" y="28" font-size="16" font-weight="800" font-family="Bricolage Grotesque,system-ui">${pw(r.bona + 1)} m</text></g>`; }
+  if (r.t === 'vegades') { const [a, b] = r.ab; await zoomA(b.p, 600, { marca: b.id }); await espera(400); const pas = Math.max(120, 1800 / (a.p - b.p)); for (let z = b.p + 1; z <= a.p; z++) { await zoomA(z, pas, { marca: z === a.p ? a.id : b.id }); } }
+  if (r.t === 'ordena') { pintaRegle(r.os.slice().sort((a, b) => a.mida - b.mida)); }
+  if (['nc', 'ncPetit'].includes(r.t)) { const [m, e] = r.bona; const xs = String(r.val < 1 ? fmtPetit(r.val) : Math.round(r.val)).replace(/\./g, '').replace(',', ''); if (e >= 0) await salts(xs, xs.length, 1, `${NUM(r.val)} = ${ncTxt(m, e)}`); else { const d = xs.replace(/^0+/, ''); const zeros = xs.length - d.length; await salts(xs, 1, zeros + 1, `${NUM(r.val)} = ${ncTxt(m, e)}`); } }
+}
+/* ================= MUSEU (final) ================= */
+function museu() {
+  M.pantalla = 'fi'; P.acabada = true; pintaCap(); SO.fi();
+  const nouRec = P.punts > M.record; if (nouRec) M.record = P.punts; try { localStorage.setItem('fr4c_zoom_rec_' + M.nivell, M.record); } catch (e) {}
+  const temps = Math.round((performance.now() - P.t0) / 1000);
+  envia({ tipus: 'fr4c-zoom-fi', punts: P.punts, encerts: P.encerts, errors: P.errors, nivell: M.nivell, temps, fallades: P.fallades.slice(0, 12) });
+  const os = OBJS().filter(o => P.capt.has(o.id)).sort((a, b) => a.mida - b.mida); pintaRegle(os);
+  $('#panel').innerHTML = `<div class="targ"><h2>🏛️ El museu de les mides</h2><p>${M.nom ? `<b>${esc(M.nom)}</b>, h` : 'H'}as fet <b>${P.punts}</b> punts de 80. ${nouRec ? '<span class="rec">🏆 Nou rècord!</span>' : M.record ? `Rècord: <b>${M.record}</b>.` : ''}</p>
+    <div class="resum"><div><b>${P.encerts}</b>encerts</div><div><b>${P.errors}</b>errors</div><div><b>${P.capt.size}</b>objectes</div></div>
+    ${P.fallades.length ? `<p><b>Repassa:</b></p><ul style="margin:0;padding-left:20px">${P.fallades.map(f => `<li>${esc(f).replace(/10([⁻⁰¹²³⁴⁵⁶⁷⁸⁹]+)/g, '10$1')}</li>`).join('')}</ul>` : '<p>Cap error! 🌟</p>'}
+    <div class="fila"><button class="big" id="torna">Torna a jugar</button><button class="big sec" id="tanca2">Surt</button></div></div>`;
+  $('#torna').onclick = () => { P.capt = new Set(); inici(); }; $('#tanca2').onclick = surt;
+}
+
+/* ================= INICI ================= */
+function inici() {
+  M.pantalla = 'inici'; RAPID = false; pintaCap(); ZF = 0; pintaZoom(0); $('#panel').innerHTML = '';
+  let vist = false; try { vist = localStorage.getItem('fr4c_zoom_vist_' + M.nivell) === '1'; } catch (e) {}
+  try { M.record = Math.max(M.record, +(localStorage.getItem('fr4c_zoom_rec_' + M.nivell) || 0)); } catch (e) {}
+  const txt = { 1: 'coses gegants i potències de 10', 2: 'coses gegants i notació científica', 3: 'coses gegants i diminutes, amb exponents negatius' }[M.nivell];
+  pantalla(`<h1>🔍 El zoom de FR-4C</h1><p>${M.nom ? `Hola, <b>${esc(M.nom)}</b>! ` : ''}Amb el zoom d'en <b>FR-4C</b> veurem coses enormes (dinosaures, balenes, muntanyes, la Terra…)${M.nivell === 3 ? ' i coses diminutes (formigues, puces, cèl·lules…)' : ''} i les mesurarem amb <b>potències de 10</b>.</p>
+    <p class="mini">Nivell ${M.nivell}: ${txt}.${M.record ? ` Rècord: <b>${M.record}</b>.` : ''}</p>
+    ${!M.dinsApp ? `<div class="fila"><b>Nivell:</b><span class="seg" id="nv">${[1, 2, 3].map(n => `<button data-n="${n}" class="${n === M.nivell ? 'on' : ''}">${n}</button>`).join('')}</span></div>` : ''}
+    <div class="fila">${vist ? `<button class="big big2" id="bviatge">🔍 Comença el viatge</button><button class="big sec big2" id="bexpl">▶ Torna a veure l'explicació</button>` : `<button class="big big2" id="bexpl">▶ Comença</button>`}</div>`);
+  $('#bexpl').onclick = () => { $('#pant').style.display = 'none'; SO.ac(); explicacio(); };
+  const bv = $('#bviatge'); if (bv) bv.onclick = () => { $('#pant').style.display = 'none'; exploracio(); };
+  $$('#nv button').forEach(b => b.onclick = () => { M.nivell = +b.dataset.n; M.record = 0; inici(); });
+}
+function pantalla(html) { const p = $('#pant'); p.innerHTML = `<div class="panell">${html}</div>`; p.style.display = 'flex'; }
+const envia = m => { try { if (window.parent !== window) window.parent.postMessage(m, '*'); } catch (e) {} };
+function surt() { M.pantalla = 'fora'; envia({ tipus: 'fr4c-zoom-tanca' }); if (window.parent === window) inici(); }
+window.addEventListener('message', ev => {
+  const d = ev.data || {}; if (d.tipus !== 'fr4c-zoom-ini') return;
+  M.dinsApp = true; M.nom = d.nom || ''; M.nivell = Math.max(1, Math.min(3, d.nivell || 1)); M.record = Math.max(d.record || 0, 0);
+  if (d.so === false) M.so = false; $('#so').textContent = M.so ? '🔊' : '🔇';
+  if (M.pantalla === 'inici') inici();
+});
+$('#so').onclick = () => { M.so = !M.so; $('#so').textContent = M.so ? '🔊' : '🔇'; try { localStorage.setItem('fr4c_zoom_so', M.so ? '1' : '0'); } catch (e) {} };
+$('#surt').onclick = surt; $('#so').textContent = M.so ? '🔊' : '🔇';
+const qs = new URLSearchParams(location.search); if (qs.get('nivell')) M.nivell = Math.max(1, Math.min(3, +qs.get('nivell')));
+P.capt = new Set(); inici(); envia({ tipus: 'fr4c-zoom-llest' });
+window.__zoom = { P, M, OBJ, pintaZoom, zoomA, respon, nousReptes, comencaReptes, exploracio, explicacio, museu, set rapid(v) { RAPID = v; } };
+</script>
+</body>
+</html>
