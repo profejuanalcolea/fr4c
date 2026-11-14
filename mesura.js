@@ -54,11 +54,22 @@ document.head.insertAdjacentHTML('beforeend', `<style>
 .ms-pista.anima .ms-s-bot{animation:msVa 3.2s ease-in-out infinite}.ms-pista.anima .ms-s-hop{animation:msHop 3.2s ease-in-out infinite}
 @keyframes msVa{0%,12%{transform:translateX(var(--xa))}38%,62%{transform:translateX(var(--xb))}88%,100%{transform:translateX(var(--xa))}}
 @keyframes msHop{0%,12%,38%,62%,88%,100%{transform:translateY(0)}25%,75%{transform:translateY(-5px)}}
-.ms-taula{border-collapse:separate;border-spacing:4px;margin:10px auto 0}.ms-taula caption{caption-side:top;font-size:.84rem;color:var(--gris);font-weight:700;padding-bottom:2px}
-.ms-taula th{font-size:1.05rem;font-weight:900;padding:1px 0}.ms-taula th.gris{color:#999}.ms-taula th.lletra{color:var(--gris);padding-right:4px}
-.ms-taula input{width:54px;height:46px;border:2px solid var(--tinta);border-radius:8px;text-align:center;font-size:1.3rem;font-weight:800;font-family:inherit;background:#fff}
-.ms-taula.k2 input{width:58px}.ms-taula.k3 input{width:64px;font-size:1.15rem}.ms-taula th input{height:32px;font-size:.92rem;border-style:dashed}.ms-taula input.pre{color:var(--taronja)}
-.ms-taula input:focus{outline:3px solid var(--taronja);outline-offset:1px}
+.ms-sm{background:#fff;border:2px solid var(--tinta);border-radius:14px;padding:8px 12px 10px;margin:10px auto 0;max-width:560px}
+.sm-cap{display:flex;align-items:center;gap:8px;font-size:.95rem;line-height:1.25;text-align:left}.sm-cap b{color:var(--taronja)}
+.ms-gat.salta{animation:msGatSalt .5s}@keyframes msGatSalt{0%,100%{transform:translateY(0) rotate(0)}35%{transform:translateY(-9px) rotate(-7deg)}70%{transform:translateY(0) rotate(4deg)}}
+.sm-fila{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:6px}
+.sm-b{display:flex;flex-direction:column;align-items:center;gap:0;min-width:76px;padding:4px 8px 6px;border-radius:12px;border:2px solid var(--tinta);background:#fff;cursor:pointer;font-family:inherit;color:var(--tinta)}
+.sm-b b{font-size:1.2rem;font-weight:900}.sm-b[data-sm="1"]{color:var(--taronja)}.sm-b[data-sm="-1"]{color:#2a6fd6}.sm-b:hover{background:#fff3e6}.sm-b:active{transform:translateY(2px)}
+.sm-num{display:flex;justify-content:center;align-items:center;height:56px;border:2px dashed #bbb;border-radius:12px;background:#fbfaf7}
+.sm-in{width:190px;height:44px;border:2px solid var(--tinta);border-radius:10px;text-align:center;font-size:1.6rem;font-weight:800;font-family:inherit;background:#fff}.sm-in::placeholder{font-size:.95rem;font-weight:700;color:#bbb}
+.sm-in.avis{animation:msTremola .3s 2}@keyframes msTremola{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.sm-t{position:relative;display:flex;height:44px;align-items:center;cursor:text}
+.sm-d{width:23px;flex:none;text-align:center;font-size:1.9rem;font-weight:800;line-height:1;transition:opacity .3s}.sm-d.zero{color:var(--taronja)}.sm-d.amag{opacity:0}
+.sm-coma{position:absolute;bottom:-5px;width:14px;margin-left:-7px;text-align:center;font-style:normal;font-size:2.7rem;font-weight:900;line-height:1;color:var(--taronja);transition:left .45s cubic-bezier(.3,1.5,.5,1),opacity .3s;pointer-events:none}.sm-coma.amag{opacity:0}
+.sm-peu{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:30px;margin-top:5px}.sm-ops{font-size:1.05rem;font-weight:800}.sm-ops b{color:var(--taronja)}
+.sm-torna{border:0;background:none;font:inherit;font-size:.85rem;font-weight:700;color:var(--gris);cursor:pointer;text-decoration:underline}
+.ms-flota{font-size:19px;font-weight:900;animation:msFlota 1.1s ease-out forwards;pointer-events:none}@keyframes msFlota{0%{opacity:0;transform:translateY(8px)}20%{opacity:1}70%{opacity:1}100%{opacity:0;transform:translateY(-14px)}}
+.ms-s-ops{text-align:center;font-size:1.1rem;font-weight:800;min-height:1.5rem}.ms-s-ops b{color:var(--taronja)}
 .ms-refs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;width:100%;max-width:520px}
 .ms-refs div{background:#fff;border:2px solid var(--tinta);border-radius:12px;padding:8px 6px;text-align:center;font-size:.95rem;line-height:1.25}
 .ms-refs div svg{display:block;margin:0 auto 2px}.ms-refs div i{font-style:normal;font-size:2rem;display:block;line-height:1.1}.ms-refs div b{display:block;color:var(--taronja);font-size:1.2rem}
@@ -535,7 +546,7 @@ const MS_ESC = { // k: zeros de cada salt (1: ×10 · 2: ×100 · 3: ×1000) · 
   S: { nom: 'superfície', u: ['km²', 'hm²', 'dam²', 'm²', 'dm²', 'cm²', 'mm²'], us: [3, 4, 5], k: 2, sota: { 1: 'ha' } },
   V: { nom: 'volum', u: ['km³', 'hm³', 'dam³', 'm³', 'dm³', 'cm³', 'mm³'], us: [3, 4, 5], k: 3, sota: { 3: 'kL', 4: 'L', 5: 'mL' } }
 };
-const MS_P = { W: 556, H: 198, X: 44, D: 78 };
+const MS_P = { W: 556, H: 210, X: 44, D: 78 };
 const msPx = i => MS_P.X + i * MS_P.D;
 /* la xuleta del dossier: pedres amb les unitats, fletxes × a dalt i ÷ a baix, i FR-4C que hi salta */
 function msPistaSvg({ mag, or = null, de = null, pos = null, etiq = true, anima = null, tab = false }) {
@@ -571,44 +582,73 @@ function msConv(nv, mag) {
 const msOpTxt = (d, k = 1) => `${d > 0 ? '×' : '÷'} ${fmtDec(10 ** (Math.abs(d) * k))}`;
 const msSolConv = c => [`De ${c.uo} a ${c.ud} hi ha <b>${Math.abs(c.d)} ${Math.abs(c.d) === 1 ? 'salt' : 'salts'}</b> cap a ${c.d > 0 ? 'la dreta' : 'l\'esquerra'}${c.k > 1 ? ` (cada salt, ${c.d > 0 ? '×' : '÷'}${10 ** c.k})` : ''}: ${msOpTxt(c.d, c.k)}.`, `${msU(c.v0, c.uo)} ${msOpTxt(c.d, c.k)} = <b>${msU(c.v1, c.ud)}</b>.`];
 const msPistaDe = k => k === 1 ? PISTA_M3 : { completa: `Busca les dues unitats a la xuleta i <b>compta els salts</b>. Aquí cada salt és <b>×${10 ** k}</b> cap a la dreta i <b>÷${10 ** k}</b> cap a l'esquerra${k === 2 ? ': un quadrat de 10 × 10' : ': un cub de 10 × 10 × 10'}.`, mitja: `Compta els salts: cada un és ×${10 ** k} o ÷${10 ** k}.` };
-/* ---------- taula d'unitats: una casella buida sota de cada unitat per fer el canvi pas a pas ----------
-   Nivells 1 i 2: amb els noms de les unitats (al nivell 1, a més, amb el número ja col·locat). Nivell 3: tota buida, i l'alumne hi escriu també les unitats. */
-const MS_TAULA = {}; // el que l'alumne hi escriu es conserva mentre fa l'exercici
-document.addEventListener('input', e => { const i = e.target.closest ? e.target.closest('.ms-taula input') : null; if (!i) return;
-  if (!i.dataset.cap) i.value = i.value.replace(/[^0-9]/g, ''); MS_TAULA[i.dataset.t] = i.value; i.classList.remove('pre');
-  if (!i.dataset.cap && i.maxLength <= 3 && i.value.length >= i.maxLength) { const seg = i.closest('td').nextElementSibling; seg && $('input', seg) && $('input', seg).focus(); } });
-const msNetejaTaula = clau => { for (const k of Object.keys(MS_TAULA)) if (k.startsWith(clau + ':')) delete MS_TAULA[k]; };
-function msPreTaula(c) { // col·loca el número de sortida: les unitats, sota de la seva unitat
-  const cel = Array(7).fill(''), k = c.k; const [ent, dec = ''] = String(c.v0).split('.');
-  let i = c.or; for (let f = ent.length; f > 0; f -= k, i--) { if (i <= 0) { cel[0] = ent.slice(0, f); break; } cel[i] = ent.slice(Math.max(0, f - k), f); } // el que no hi cap queda a la primera casella
-  const d = dec.padEnd(Math.ceil(dec.length / k) * k, '0'); i = c.or + 1; for (let f = 0; f < d.length; f += k, i++) { if (i > 6) return null; cel[i] = d.slice(f, f + k); }
-  return cel;
+/* ---------- en Coma, el gat taronja (la mascota de FR-4C) ---------- */
+const msGat = (m = 54, cls = '') => `<svg class="ms-gat ${cls}" width="${m}" height="${m * .9}" viewBox="0 0 84 76" role="img" aria-label="En Coma, el gat">
+  <path d="M60 60Q82 58 74 36" fill="none" stroke="${MS_N}" stroke-width="10" stroke-linecap="round"/><path d="M60 60Q82 58 74 36" fill="none" stroke="${T}" stroke-width="5.5" stroke-linecap="round"/>
+  <ellipse cx="40" cy="54" rx="21" ry="18" fill="${T}" stroke="${MS_N}" stroke-width="3"/><ellipse cx="40" cy="60" rx="10" ry="10" fill="#fff"/>
+  <path d="M25 20L20 3L35 12Z" fill="${T}" stroke="${MS_N}" stroke-width="3" stroke-linejoin="round"/><path d="M55 20L60 3L45 12Z" fill="${T}" stroke="${MS_N}" stroke-width="3" stroke-linejoin="round"/>
+  <circle cx="40" cy="27" r="17" fill="${T}" stroke="${MS_N}" stroke-width="3"/><path d="M40 11v7M33 12l2 6M47 12l-2 6" stroke="#b84a0c" stroke-width="2.4" stroke-linecap="round"/>
+  <ellipse cx="33.5" cy="26" rx="2.6" ry="3.6" fill="${MS_N}"/><ellipse cx="46.5" cy="26" rx="2.6" ry="3.6" fill="${MS_N}"/><path d="M38 31h4l-2 2.6Z" fill="${MS_N}"/><path d="M40 33.6q-3 4 -6 1M40 33.6q3 4 6 1" fill="none" stroke="${MS_N}" stroke-width="1.8" stroke-linecap="round"/>
+  <path d="M26 31l-9 -2M26 34l-9 2M54 31l9 -2M54 34l9 2" stroke="${MS_N}" stroke-width="1.4" stroke-linecap="round"/></svg>`;
+/* ---------- el saltòmetre: l'alumne hi escriu un número i, a cada salt, la coma corre sobre les seves xifres ----------
+   Salta ×10 i ÷10 (longitud, massa, capacitat), ×100 (superfície) o ×1000 (volum). El resultat no es copia a la resposta: l'ha d'escriure l'alumne. */
+const MS_SM = {}; // estat de cada exercici: { txt, s (salts fets), edit }
+const msSmNeteja = clau => { delete MS_SM[clau]; };
+function msSmAnalitza(txt) { // xifres significatives i lloc de la coma
+  const t = netejaDec(txt || ''); if (!/^\d{1,7}(,\d{1,4})?$/.test(t)) return null; let [e, d = ''] = t.split(','); d = d.replace(/0+$/, '');
+  let sg = e + d, p = e.length; if (/^0*$/.test(sg)) return null; const z = sg.match(/^0*/)[0].length; return { sg: sg.slice(z), p: p - z };
 }
-function msTaulaHtml({ clau, mag = null, files = 1, caps = true, pre = [] }) {
-  const S = mag ? MS_ESC[mag] : null, k = S ? S.k : 1, us = S ? S.u : ['k', 'h', 'da', 'unitat', 'd', 'c', 'm'];
-  const val = (t, p) => MS_TAULA[t] != null ? [MS_TAULA[t], ''] : [p || '', p ? 'pre' : ''];
-  const cap = us.map((u, i) => caps ? `<th class="${S && !S.us.includes(i) ? 'gris' : ''}">${u}</th>` : `<th><input data-cap="1" data-t="${clau}:h:${i}" maxlength="5" autocomplete="off" value="${esc(MS_TAULA[`${clau}:h:${i}`] || '')}" aria-label="Unitat ${i + 1}"></th>`).join('');
-  const fila = r => `<tr>${files > 1 ? `<th class="lletra">${'abcdefgh'[r]})</th>` : ''}${us.map((_, i) => { const [v, cl] = val(`${clau}:${r}:${i}`, pre[r] && pre[r][i]); return `<td><input class="${cl}" data-t="${clau}:${r}:${i}" inputmode="numeric" maxlength="${i ? k : k + 3}" autocomplete="off" value="${esc(v)}" aria-label="Casella ${us[i]}"></td>`; }).join('')}</tr>`;
-  return `<table class="ms-taula k${k}"><caption>${caps ? 'Taula per fer el canvi pas a pas' : 'Taula buida: escriu-hi tu les unitats, de la més gran a la més petita'}: ${k === 1 ? 'una xifra' : k === 2 ? 'dues xifres' : 'tres xifres'} a cada casella.</caption><thead><tr>${files > 1 ? '<th></th>' : ''}${cap}</tr></thead><tbody>${Array.from({ length: files }, (_, r) => fila(r)).join('')}</tbody></table>`;
+const msSmPad = k => k === 3 ? 6 : 5, MS_SMW = 23;
+function msSmCaselles(a, c, k) { // estat de cada casella amb la coma al lloc c
+  const PAD = msSmPad(k), n = a.sg.length; let ult = n - 1; while (ult > 0 && a.sg[ult] === '0') ult--; const out = [];
+  for (let j = -PAD; j < n + PAD; j++) out.push(j >= 0 && j < n ? { ch: a.sg[j], on: !(j >= c && j > ult), zero: false } : { ch: '0', on: j < 0 ? j >= c - 1 : j < c, zero: true });
+  return { out, coma: c <= ult, x: (c + PAD) * MS_SMW };
 }
+const msSmOps = (s, k) => { if (!s) return ''; const f = 10 ** k, op = s > 0 ? '×' : '÷', n = Math.abs(s); return `${Array(n).fill(op + f).join(' ')}${n > 1 ? ` = <b>${op}${fmtDec(f ** n)}</b>` : ''}`; };
+function msSmTiles(a, s, k) { const q = msSmCaselles(a, a.p + s * k, k);
+  return `<div class="sm-t" title="Clica per canviar el número" style="width:${q.out.length * MS_SMW}px">${q.out.map(o => `<span class="sm-d${o.zero ? ' zero' : ''}${o.on ? '' : ' amag'}">${o.ch}</span>`).join('')}<i class="sm-coma${q.coma ? '' : ' amag'}" style="left:${q.x}px">,</i></div>`; }
+function msSmHtml(clau, k = 1) {
+  const st = MS_SM[clau] || { txt: '', s: 0, edit: true }, f = 10 ** k, a = msSmAnalitza(st.txt), PAD = msSmPad(k);
+  const mig = !st.edit && a ? msSmTiles(a, st.s, k) : `<input class="sm-in" inputmode="decimal" maxlength="9" autocomplete="off" placeholder="el teu número" value="${esc(st.txt || '')}" aria-label="Número del saltòmetre">`;
+  const arc = d => `<svg width="46" height="22" viewBox="0 0 46 22"><path d="${d > 0 ? 'M5 19Q23 -6 40 17' : 'M41 19Q23 -6 6 17'}" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><path d="${d > 0 ? 'M41 19l-9 -1l6 -7Z' : 'M5 19l9 -1l-6 -7Z'}" fill="currentColor"/></svg>`;
+  return `<div class="ms-sm" data-clau="${esc(clau)}" data-k="${k}"><div class="sm-cap">${msGat(52)}<span>Ajuda't del <b>saltòmetre</b>: escriu-hi el número i fes saltar la coma.</span></div>
+    <div class="sm-fila"><button type="button" class="sm-b" data-sm="-1">${arc(-1)}<b>÷${f}</b></button><div class="sm-num" style="min-width:${(PAD * 2 + 4) * MS_SMW}px">${mig}</div><button type="button" class="sm-b" data-sm="1">${arc(1)}<b>×${f}</b></button></div>
+    <div class="sm-peu"><span class="sm-ops">${msSmOps(st.s, k)}</span><button type="button" class="sm-torna" data-sm="0" title="Torna al número que has escrit">↺ Torna a començar</button></div></div>`;
+}
+document.addEventListener('input', e => { const i = e.target.closest ? e.target.closest('.sm-in') : null; if (!i) return; i.value = netejaDec(i.value); const el = i.closest('.ms-sm'); MS_SM[el.dataset.clau] = { txt: i.value, s: 0, edit: true }; $('.sm-ops', el).innerHTML = ''; });
+document.addEventListener('click', e => {
+  const el = e.target.closest ? e.target.closest('.ms-sm') : null; if (!el) return; const clau = el.dataset.clau, k = Number(el.dataset.k), st = MS_SM[clau] || (MS_SM[clau] = { txt: '', s: 0, edit: true });
+  const num = $('.sm-num', el), edita = () => { st.edit = true; st.s = 0; num.innerHTML = `<input class="sm-in" inputmode="decimal" maxlength="9" autocomplete="off" placeholder="el teu número" value="${esc(st.txt || '')}" aria-label="Número del saltòmetre">`; $('.sm-ops', el).innerHTML = ''; const i = $('.sm-in', el); i.focus(); i.select(); };
+  if (e.target.closest('.sm-t')) return edita();
+  const b = e.target.closest('[data-sm]'); if (!b) return; const d = Number(b.dataset.sm), a = msSmAnalitza(st.txt);
+  if (!a) { const i = $('.sm-in', el); if (i) { i.focus(); i.classList.remove('avis'); void i.offsetWidth; i.classList.add('avis'); } return so('ko'); }
+  const s2 = d ? st.s + d : 0, c = a.p + s2 * k; if (d && (c < 1 - msSmPad(k) || c > a.sg.length + msSmPad(k))) return so('ko'); if (!d && st.edit) return;
+  if (st.edit) { st.edit = false; num.innerHTML = msSmTiles(a, st.s, k); void num.offsetWidth; } // primer es fixa el número, i després la coma llisca
+  st.s = s2; const q = msSmCaselles(a, c, k), ds = [...num.querySelectorAll('.sm-d')]; q.out.forEach((o, i) => ds[i].classList.toggle('amag', !o.on));
+  const cm = $('.sm-coma', num); cm.style.left = q.x + 'px'; cm.classList.toggle('amag', !q.coma); $('.sm-ops', el).innerHTML = msSmOps(st.s, k);
+  const g = $('.ms-gat', el); if (g) { g.classList.remove('salta'); void g.getBoundingClientRect(); g.classList.add('salta'); } so(d ? 'meu' : 'treu');
+});
+const msSmVis = (clau, k, nv, ctx) => (ctx && ctx.prova) || (nv === 3 && ctx && ctx.i > 2) ? '' : msSmHtml(clau, k); // nivells 1 i 2, i els primers exercicis del 3; mai a la prova final
 const M3 = {};
 /* A · FR-4C salta per la xuleta. auto: el número es calcula sol a cada salt (nivell 1). Sense auto: l'alumne escriu el resultat. */
-function msSaltsEx(nv, { mag, auto = nv === 1 } = {}) {
+function msSaltsEx(nv, { mag, auto = nv === 1, ops = nv < 3 } = {}) { // ops: a cada salt surt un «×10» o «÷10» petit i s'acumula l'operació
   const c = msConv(nv, mag), S = MS_ESC[c.mag], f = 10 ** c.k; const etiq = nv === 1;
   const a = p => msV(c.n, c.e + (p - c.or) * c.k);
   const eq = G => auto ? (G.pos === c.or ? `${msU(c.v0, c.uo)} = <b>?</b> ${c.ud}` : `${msU(c.v0, c.uo)} = <b class="pop">${fmtDec(a(G.pos))}</b> ${S.u[G.pos]}`)
     : (G.pos === c.or ? `${msU(c.v0, c.uo)} = <b>?</b> ${c.ud}` : `<span class="pop" style="font-size:1.15rem">${Math.abs(G.pos - c.or)} ${Math.abs(G.pos - c.or) === 1 ? 'salt' : 'salts'} cap a ${G.pos > c.or ? 'la dreta →' : 'l\'esquerra ←'}</span>`);
-  const sig = `s-${auto ? 'a' : 'e'}-${c.mag}-${c.or}-${c.de}-${c.n}-${c.e}`; msNetejaTaula(sig);
-  return { sig, enunciat: auto ? `Fes saltar FR-4C des de <b>${c.uo}</b> fins a <b>${c.ud}</b> (la casella taronja) i mira com canvia el número.` : `Passa <b>${msU(c.v0, c.uo)}</b> a <b>${c.ud}</b>. Fes saltar FR-4C per comptar els salts i escriu el resultat.`, visual: () => msTaulaHtml({ clau: sig, mag: c.mag, caps: nv < 3, pre: nv === 1 ? [msPreTaula(c)] : [] }), pista: msPistaDe(c.k),
+  const opsTxt = G => ops && G.pos !== c.or ? msSmOps(G.pos - c.or, c.k) : '';
+  const sig = `s-${auto ? 'a' : 'e'}-${c.mag}-${c.or}-${c.de}-${c.n}-${c.e}`; msSmNeteja(sig);
+  return { sig, enunciat: auto ? `Passa <b>${msU(c.v0, c.uo)}</b> a <b>${c.ud}</b>. Clica els botons de salt fins que el robot arribi a la casella taronja, i mira com canvia el número.` : `Passa <b>${msU(c.v0, c.uo)}</b> a <b>${c.ud}</b>. Primer compta quants salts hi ha amb els botons de salt. Després escriu el resultat a la casella.`, visual: (cp, ctx) => msSmVis(sig, c.k, nv, ctx), pista: msPistaDe(c.k),
     ...msGiny({
       inici: () => ({ pos: c.or, mogut: false, n: '' }),
       munta(z, G, ctx) {
-        z.innerHTML = `<div class="ms-g"><div class="ms-s-eq">${eq(G)}</div>${msPistaSvg({ mag: c.mag, or: c.or, de: c.de, pos: c.or, etiq, tab: true })}
+        z.innerHTML = `<div class="ms-g"><div class="ms-s-eq">${eq(G)}</div><div class="ms-s-ops"></div>${msPistaSvg({ mag: c.mag, or: c.or, de: c.de, pos: c.or, etiq, tab: true })}
           <div class="ms-ctl"><button data-s="-1">◀ ${etiq ? '÷' + f : 'salta'}</button><button data-s="1">${etiq ? '×' + f : 'salta'} ▶</button><button data-s="0" title="Torna a la sortida">↺ Torna</button></div>
-          ${auto ? '' : msEntrada(`${msU(c.v0, c.uo)} =`, c.ud)}<p class="ms-nota">Clica els botons o una casella. També van les fletxes ← → del teclat.</p></div>`;
+          ${auto ? '' : msEntrada(`${msU(c.v0, c.uo)} =`, c.ud)}<p class="ms-nota">Clica els botons de salt o una casella d'unitat. També van les fletxes ← → del teclat.</p></div>`;
         const bot = $('.ms-s-bot', z), hop = $('.ms-s-hop', z), svg = $('.ms-pista', z); let cua = null;
-        const pinta = () => { bot.style.transform = `translateX(${msPx(G.pos)}px)`; $('.ms-s-eq', z).innerHTML = eq(G); ctx.canvi(); };
-        const salta = d => { const p = G.pos + d; if (p < 0 || p > 6) return false; G.pos = p; G.mogut = true; so(d > 0 ? 'salt' : 'saltE');
+        const pinta = () => { bot.style.transform = `translateX(${msPx(G.pos)}px)`; $('.ms-s-eq', z).innerHTML = eq(G); $('.ms-s-ops', z).innerHTML = opsTxt(G); ctx.canvi(); };
+        const flota = (de, d) => { if (!ops) return; const x = (msPx(de) + msPx(de + d)) / 2; svg.insertAdjacentHTML('beforeend', `<text class="ms-flota" x="${x}" y="${d > 0 ? 92 : 203}" text-anchor="middle" fill="${d > 0 ? T : '#2a6fd6'}">${d > 0 ? '×' : '÷'}${f}</text>`); const t = svg.lastElementChild; setTimeout(() => t.remove(), 1150); };
+        const salta = d => { const p = G.pos + d; if (p < 0 || p > 6) return false; flota(G.pos, d); G.pos = p; G.mogut = true; so(d > 0 ? 'salt' : 'saltE');
           try { hop.animate([{ transform: 'translateY(0)' }, { transform: 'translateY(-6px) rotate(-8deg)' }, { transform: 'translateY(0)' }], { duration: 330, easing: 'ease-out' }); } catch (e) { } pinta(); return true; };
         const vesA = p => { clearInterval(cua); if (p === G.pos) return; salta(Math.sign(p - G.pos)); cua = setInterval(() => { if (!z.isConnected || !ctx.actiu() || G.pos === p || !salta(Math.sign(p - G.pos))) clearInterval(cua); }, 360); };
         G.va = p => { clearInterval(cua); G.pos = p; G.mogut = true; pinta(); };
@@ -627,14 +667,14 @@ function msSaltsEx(nv, { mag, auto = nv === 1 } = {}) {
     }, `<b>${msU(c.v1, c.ud)}</b>`),
     explicacio: `${Math.abs(c.d)} ${Math.abs(c.d) === 1 ? 'salt' : 'salts'} cap a ${c.d > 0 ? 'la dreta' : 'l\'esquerra'}: ${msOpTxt(c.d, c.k)}.`, solucio: msSolConv(c) };
 }
-M3.salts = (nv, { mag = null, auto = nv === 1 } = {}) => msSaltsEx(nv, { mag: mag || tria(['L', 'M', 'C']), auto });
+M3.salts = (nv, { mag = null, auto = nv === 1, ops = nv < 3 } = {}) => msSaltsEx(nv, { mag: mag || tria(['L', 'M', 'C']), auto, ops });
 /* B · Escriure el resultat, amb la xuleta a la vista (nivell 1) o només com a pista */
 function msEscriuEx(nv, { n = 3, mag }) {
   const mg = mag; const cs = []; const vist = new Set();
   for (let g = 0; cs.length < n && g < 80; g++) { const c = msConv(nv, mg); const k = `${c.or}-${c.de}-${c.n}-${c.e}`; if (vist.has(k) || cs.some(x => x.or === c.or && x.de === c.de && n <= 3 && MS_ESC[mg].us.length > 2 && nv < 3)) continue; vist.add(k); cs.push(c); }
   const its = cs.map(c => ({ tipus: 'dec', html: msU(c.v0, c.uo), valor: c.v1, unitat: c.ud, errs: c.errs, c }));
-  const sig = `w-${mg}-${cs.map(c => `${c.or}${c.de}${c.n}e${c.e}`).join('|')}`; msNetejaTaula(sig); const taula = () => msTaulaHtml({ clau: sig, mag: mg, files: cs.length, caps: nv < 3, pre: nv === 1 ? cs.map(msPreTaula) : [] });
-  return { sig, enunciat: `Canvia d'unitat amb l'ajuda de la ${nv === 1 ? 'xuleta i de la taula' : 'taula'}.`, visual: nv === 1 ? () => msPistaSvg({ mag: mg }) + taula() : (completa => (completa ? msPistaSvg({ mag: mg }) : '') + taula()), pista: msPistaDe(MS_ESC[mg].k), ...apartats(its),
+  const sig = `w-${mg}-${cs.map(c => `${c.or}${c.de}${c.n}e${c.e}`).join('|')}`; msSmNeteja(sig); const k = MS_ESC[mg].k;
+  return { sig, enunciat: `Canvia d'unitat${nv === 1 ? ' amb l\'ajuda de la xuleta' : ''}.`, visual: (completa, ctx) => (nv === 1 || completa ? msPistaSvg({ mag: mg }) : '') + msSmVis(sig, k, nv, ctx), pista: msPistaDe(MS_ESC[mg].k), ...apartats(its),
     explicacio: MS_ESC[mg].k === 1 ? `Compta els salts: dreta ×10, esquerra ÷10.` : `Compta els salts: aquí cada un és ×${10 ** MS_ESC[mg].k} o ÷${10 ** MS_ESC[mg].k}.`, solucio: its.map(it => msSolConv(it.c)[1]) };
 }
 M3.escriu = (nv, { n = 3, mag = null } = {}) => msEscriuEx(nv, { n, mag: mag || tria(['L', 'M', 'C']) });
@@ -653,8 +693,8 @@ M3.compara = (nv, { n = 3 } = {}) => {
     const k = `${E.t}|${D.t}`; if (vist.has(k)) continue; vist.add(k);
     its.push({ tipus: 'signe', ha: `<b>${E.t}</b>`, hb: `<b>${D.t}</b>`, ta: textPla(E.t), tb: textPla(D.t), correcta: corr, etiq: cru !== corr ? { [cru]: 'mNumeros' } : {}, sol: `${a * 1} ${S.u[i]} = ${fmtDec(a * F)} ${S.u[j]}, i per tant ${textPla(E.t)} <b>${corr}</b> ${textPla(D.t)}` });
   }
-  const sig = `k-${its.map(i => i.ta + i.tb).join('|')}`; msNetejaTaula(sig);
-  return { sig, enunciat: `Quina mesura és més gran? Posa <b>&lt;</b>, <b>&gt;</b> o <b>=</b>.`, visual: completa => (completa ? msPistaSvg({ mag: 'L' }) : '') + msTaulaHtml({ clau: sig, files: its.length, caps: nv < 3 }), pista: { completa: `No comparis només els números! Passa les dues mesures a la <b>mateixa unitat</b> (la més petita va bé) i després compara.`, mitja: `Passa-les a la mateixa unitat.` }, ...apartats(its),
+  const sig = `k-${its.map(i => i.ta + i.tb).join('|')}`; msSmNeteja(sig);
+  return { sig, enunciat: `Quina mesura és més gran? Posa <b>&lt;</b>, <b>&gt;</b> o <b>=</b>.`, visual: (completa, ctx) => (completa ? msPistaSvg({ mag: 'L' }) : '') + msSmVis(sig, 1, nv, ctx), pista: { completa: `No comparis només els números! Passa les dues mesures a la <b>mateixa unitat</b> (la més petita va bé) i després compara.`, mitja: `Passa-les a la mateixa unitat.` }, ...apartats(its),
     explicacio: `Primer a la mateixa unitat, i després es compara.`, solucio: its.map(it => it.sol.replace(/(\d)\.(\d)/g, '$1,$2')) };
 };
 /* D · Etiquetes i situacions de cada dia */
@@ -693,8 +733,8 @@ const MS_CTX = {
 M3.context = (nv, { n = 2 } = {}) => {
   const fs = barreja(MS_CTX[nv]).slice(0, n).map(f => f());
   const its = fs.map(f => ({ tipus: 'dec', llarg: true, html: f.t, valor: f.v, unitat: f.u, errs: f.alt != null ? [[f.alt, 'mSentit']] : [], s: f.s }));
-  const sig = `x-${fs.map(f => textPla(f.t).slice(0, 26) + f.v).join('|')}`; msNetejaTaula(sig);
-  return { sig, enunciat: `Mesures de cada dia.`, visual: () => (nv === 1 ? msPistaSvg({ mag: 'L' }) : '') + msTaulaHtml({ clau: sig, files: its.length, caps: nv < 3 }), pista: PISTA_M3, ...apartats(its),
+  const sig = `x-${fs.map(f => textPla(f.t).slice(0, 26) + f.v).join('|')}`; msSmNeteja(sig);
+  return { sig, enunciat: `Mesures de cada dia.`, visual: (cp, ctx) => (nv === 1 ? msPistaSvg({ mag: 'L' }) : '') + msSmVis(sig, 1, nv, ctx), pista: PISTA_M3, ...apartats(its),
     explicacio: `Cap a una unitat més petita, multiplica. Cap a una de més gran, divideix.`, solucio: its.map(it => it.s) };
 };
 TEMES.m3 = {
@@ -702,7 +742,7 @@ TEMES.m3 = {
   sequencia: {
     1: [['salts', { mag: 'L' }], ['salts', { mag: 'M' }], ['escriu', { n: 2, mag: 'L' }], ['salts', { mag: 'C' }], ['escriu', { n: 3, mag: 'C' }], ['context', { n: 2 }], ['escriu', { n: 3, mag: 'L' }], ['context', { n: 2 }]],
     2: [['salts', { mag: 'L' }], ['salts', { mag: 'C' }], ['escriu', { n: 3, mag: 'L' }], ['salts', { mag: 'M' }], ['compara', { n: 3 }], ['context', { n: 2 }], ['escriu', { n: 3 }], ['context', { n: 3 }]],
-    3: [['salts', { auto: false }], ['escriu', { n: 3 }], ['compara', { n: 3 }], ['context', { n: 2 }], ['escriu', { n: 4 }], ['compara', { n: 4 }], ['context', { n: 2 }], ['escriu', { n: 4 }]]
+    3: [['salts', { auto: false, ops: true }], ['escriu', { n: 3 }], ['compara', { n: 3 }], ['context', { n: 2 }], ['escriu', { n: 4 }], ['compara', { n: 4 }], ['context', { n: 2 }], ['escriu', { n: 4 }]]
   },
   explicacio: [
     { text: `<p>Per canviar d'unitat, FR-4C <b class="parpelleja">salta</b> per la xuleta.</p><p class="petit">Cada casella és una unitat. Les grises es fan servir poc, però compten com un salt.</p>`, vis: () => msPistaSvg({ mag: 'L', anima: [3, 5] }) },

@@ -1012,7 +1012,7 @@ const enllacaQualif = c => $$('.q-man', c).forEach(td => td.onclick = () => canv
 const unitatCompleta = u => u.obj.every(o => !o.properament);
 /* ---------- Fitxers a part: cada unitat i cada joc es carrega quan cal ----------
    Són scripts clàssics (funcionen a GitHub Pages i també obrint l'index des de l'ordinador). */
-const V_FITXERS = '5.5';
+const V_FITXERS = '5.6';
 const FITXERS_UNITAT = { f: 'fraccions.js', e: 'enters.js', p: 'potencies.js', q: 'equacions.js', m: 'mesura.js' };
 const FITXERS_JOC = { tcx: 'joc-caixa.js', tesc: 'joc-escape.js', tpz: 'joc-pizzeria.js', dimp: 'joc-impropies.js' };
 const CARREGUES = {};
@@ -2787,7 +2787,7 @@ function mostraCredits() {
     <p style="font-size:1.1rem"><b>Ins Júlia Minguell</b> · Matemàtiques 4t ESO · Grup Flexible</p>
     <p style="margin-top:14px">Ideat per <b>J. Alcolea</b></p>
     <p style="color:var(--gris)">Desenvolupat amb Claude</p>
-    <p style="color:var(--gris);margin-top:10px">Versió 5.5</p>
+    <p style="color:var(--gris);margin-top:10px">Versió 5.6</p>
     <div class="accions"><button class="boto" data-tanca-modal>D'acord</button></div>`);
 }
 function entraAlumne(id) {
@@ -4067,6 +4067,7 @@ function so(tipus, x) {
     else if (tipus === 'treu') nota(260, 0, .1, 'triangle', .1, 420);
     else if (tipus === 'absurd') { nota(260, 0, .45, 'sawtooth', .045, 1500); nota(1500, .45, .3, 'sawtooth', .045, 180); }
     else if (tipus === 'clic') nota(1000, 0, .03, 'square', .03);
+    else if (tipus === 'meu') { nota(640, 0, .13, 'triangle', .08, 900); nota(900, .12, .2, 'triangle', .08, 540); }
     else if (tipus === 'assolit') [523, 659, 784, 1047].forEach((f, i) => nota(f, i * .13, i === 3 ? .5 : .2, 'triangle', .11));
   } catch (e) { }
 }
