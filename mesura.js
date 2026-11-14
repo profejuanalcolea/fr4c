@@ -1321,5 +1321,93 @@ TEMES.m7 = {
       { text: `12 × 4 = <b>48 rajoles</b> (no 24: es comparen superfícies!). <span class="marca-ok">✓</span>`, vis: `<div class="ms-s-eq">12 m² × 4 = <b>48</b> rajoles</div>` }] };
   }
 };
+/* =====================================================================
+   PROVA DE COMPETÈNCIES · MESURA (3 activitats, 18 preguntes, 10 punts)
+   Es pot deixar a mitges («Plego per avui») i continuar un altre dia.
+   ===================================================================== */
+const PC_M = { id: 'pcm', unitat: 'm', provaKey: 'provaCM', titol: 'Prova de competències · Mesura' };
+const cbmN = v => fmtDec(v);
+function cbmPlanol() {
+  return `<svg class="cbm-planol" viewBox="0 0 360 200" role="img" aria-label="Plànol de l'aula: 8 metres de llarg i 6,5 metres d'ample">
+    <rect x="40" y="26" width="240" height="140" fill="#fff7ee" stroke="${MS_N}" stroke-width="4"/>
+    <rect x="52" y="20" width="46" height="12" fill="#fff" stroke="${MS_N}" stroke-width="2"/><rect x="150" y="160" width="60" height="12" fill="#cfe6ff" stroke="${MS_N}" stroke-width="2"/>
+    <text x="160" y="92" text-anchor="middle" font-size="17" font-weight="800" fill="${MS_N}">AULA</text><text x="160" y="112" text-anchor="middle" font-size="12" fill="#555">(vista des de dalt)</text>
+    <path d="M40 184H280M40 178v12M280 178v12" stroke="#f47b20" stroke-width="2.5" fill="none"/><text x="160" y="198" text-anchor="middle" font-size="15" font-weight="800" fill="#b44f00">8 m</text>
+    <path d="M296 26V166M290 26h12M290 166h12" stroke="#f47b20" stroke-width="2.5" fill="none"/><text x="306" y="101" font-size="15" font-weight="800" fill="#b44f00">6,5 m</text></svg>`;
+}
+const CB_ACTS_M = [
+  { t: 'L\'excursió a la Serralada de Marina', max: 3.5, ctx: L => `<p>La classe de 4t va d'excursió a la <b>Serralada de Marina</b>. Agafen l'autobús i després caminen fins al mirador.</p>
+    <table class="cb-tbl"><thead><tr><th>Autobús B27</th><th>Hora</th></tr></thead><tbody><tr><td>Surt de l'institut</td><td><b>8:47</b></td></tr><tr><td>Arriba a l'inici del camí</td><td><b>9:22</b></td></tr></tbody></table>
+    <div class="cbm-retol">🥾 Mirador · <b>4,5 km</b> · <b>1 h 40 min</b></div>
+    <table class="cb-tbl"><thead><tr><th>A la motxilla</th><th>Pes</th></tr></thead><tbody><tr><td>Aigua</td><td>1,2 kg</td></tr><tr><td>Entrepà i fruita</td><td>750 g</td></tr><tr><td>Jaqueta</td><td>500 g</td></tr></tbody></table>
+    ${L === 'basic' ? '<div class="cb-chips"><span>1 km = 1000 m</span><span>1 kg = 1000 g</span><span>1 L = 100 cL</span><span>1 h = 60 min</span></div>' : ''}` },
+  { t: 'El berenar de final de trimestre', max: 3.5, ctx: L => `<p>Per al berenar de final de trimestre, la classe farà <b>coca</b>. Aquesta és la recepta:</p>
+    <table class="cb-tbl"><thead><tr><th>COCA (6 persones)</th><th>Quantitat</th></tr></thead><tbody><tr><td>Farina</td><td>250 g</td></tr><tr><td>Sucre</td><td>150 g</td></tr><tr><td>Llet</td><td>200 mL</td></tr><tr><td>Ous</td><td>3</td></tr></tbody></table>
+    <p>Al súper hi ha dos paquets de farina:</p><div class="ms-tiqs cbm-tiqs">${msTiq('A', '🌾', 'Farina', '500 g', 0.7)}${msTiq('B', '🌾', 'Farina', '2 kg', 2.4)}</div>
+    ${L === 'basic' ? '<div class="cb-chips"><span>1 kg = 1000 g</span><span>1 L = 1000 mL</span><span>Preu per quilo = preu ÷ quilos</span></div>' : ''}` },
+  { t: 'Arreglem l\'aula', max: 3, ctx: L => `<p>A l'estiu arreglaran l'aula: pintaran les parets i canviaran el terra.</p>${cbmPlanol()}
+    <div class="cb-chips"><span>Altura de les parets: <b>250 cm</b></span><span>Un pot de pintura cobreix <b>12 m²</b></span><span>Rajoles de <b>50 cm × 50 cm</b></span></div>
+    ${L === 'basic' ? '<div class="cb-chips" style="margin-top:6px"><span>Superfície = llarg × ample</span><span>Volum = llarg × ample × alt</span><span>1 m = 100 cm</span><span>1 m² = 100 dm²</span><span>1 m³ = 1000 L</span></div>' : ''}` }];
+const CB_ITEMS_M = [
+  { n: 1, act: 0, type: 'mc', pts: .5, q: 'Quant dura el trajecte amb autobús?', opts: { a: '35 minuts', b: '75 minuts', c: '25 minuts', d: '45 minuts' }, ans: 'a',
+    hb: ['Compta en dos trossos: de les 8:47 fins a les 9:00, i de les 9:00 fins a les 9:22.', 'De 8:47 a 9:00 hi ha 13 minuts. De 9:00 a 9:22 n\'hi ha 22. Suma-ho.'], hi: 'Passa per les 9:00: compta fins a l\'hora en punt i després la resta.' },
+  { n: 2, act: 0, type: 'mc', pts: .5, q: 'El camí fa 4,5 km. Quants metres són?', opts: { a: `${cbmN(4500)} m`, b: '450 m', c: '45 m', d: '0,0045 m' }, ans: 'a',
+    hb: ['De km a m es baixen 3 esglaons: cal multiplicar.', '1 km són 1000 m. Fes 4,5 × 1000: la coma corre 3 llocs cap a la dreta.'], hi: '1 km són 1000 m.' },
+  { n: 3, act: 0, type: 'mc', pts: .5, q: 'Comencen a caminar a les <b>9:30</b>. Segons el rètol, a quina hora arribaran al mirador?', opts: { a: '11:10', b: '10:70', c: '10:10', d: '11:40' }, ans: 'a',
+    hb: ['Suma primer l\'hora: 9:30 + 1 h = 10:30. Ara falten 40 minuts.', '10:30 + 30 min = 11:00. Encara queden 10 minuts per sumar.'], hi: 'Una hora té 60 minuts: quan passis de 60, canvia d\'hora.' },
+  { n: 4, act: 0, type: 'mc', pts: .5, q: 'Quant pesa tot el que porten a la motxilla?', opts: { a: '2,45 kg', b: `${cbmN(1251.2)} kg`, c: '1,325 kg', d: '24,5 kg' }, ans: 'a',
+    hb: ['No pots sumar quilos amb grams. Passa-ho tot a la mateixa unitat.', '750 g = 0,75 kg i 500 g = 0,5 kg. Ara suma 1,2 + 0,75 + 0,5.'], hi: 'Abans de sumar, posa-ho tot en la mateixa unitat.' },
+  { n: 5, act: 0, type: 'mc', pts: .5, q: 'Entre tots porten 3 ampolles de suc de <b>50 cL</b>. Quants litres de suc porten?', opts: { a: '1,5 L', b: '150 L', c: '15 L', d: '0,15 L' }, ans: 'a',
+    hb: ['Primer calcula els centilitres: 3 × 50.', 'Són 150 cL. De cL a L es pugen 2 esglaons: 150 ÷ 100.'], hi: '1 L són 100 cL.' },
+  { n: 6, act: 0, type: 'open', pts: 1, q: 'Caminen més de pressa que el rètol: a les <b>10:15</b> ja han fet <b>2700 m</b> en 45 minuts. Si continuen igual, arribaran al mirador (4,5 km) abans de les 11:00?',
+    fields: [{ pre: 'Metres que caminen cada minut:', ans: 60, suf: 'm' }, { pre: 'Metres que els falten:', ans: 1800, suf: 'm' }, { pre: 'Minuts que trigaran a fer-los:', ans: 30, suf: 'min' }],
+    choice: { lab: 'Arribaran abans de les 11:00?', opts: ['Sí, arribaran abans de les 11:00.', 'No, arribaran més tard de les 11:00.', 'Arribaran a les 11:00 en punt.'], ans: 0 },
+    grade: (v, c) => { const r = v[2] === 30; if (c === 0) return r ? 2 : 1; return r ? 1 : 0; },
+    hb: ['Cada minut fan 2700 ÷ 45 metres. El camí fa 4500 m: quants en falten?', 'Fan 60 m cada minut i en falten 1800. Fes 1800 ÷ 60 i suma aquests minuts a les 10:15.'], hi: 'Calcula els metres per minut i els metres que falten.' },
+  { n: 7, act: 1, type: 'mc', pts: .5, q: 'Faran coca per a <b>18 persones</b>. Quanta farina necessiten?', opts: { a: '0,75 kg', b: '7,5 kg', c: '4,5 kg', d: '750 kg' }, ans: 'a',
+    hb: ['La recepta és per a 6 persones. 18 persones són 3 vegades 6.', '250 g × 3 = 750 g. Ara passa-ho a quilos: 750 ÷ 1000.'], hi: '18 és el triple de 6. Després passa els grams a quilos.' },
+  { n: 8, act: 1, type: 'mc', pts: .5, q: `Pesen la fruita del berenar. Quant marca la bàscula?<div class="cbm-fig">${msBasculaSvg({ max: 5000, maj: 1000, min: 100, v: 1300, fruita: '🍊🍎🍐' })}</div>`, opts: { a: '1,3 kg', b: '1,03 kg', c: '1,6 kg', d: '13 kg' }, ans: 'a',
+    hb: ['Entre l\'1 i el 2 hi ha 10 ratlletes. Quant val cada una?', 'Cada ratlleta val 0,1 kg (100 g). L\'agulla és 3 ratlletes després de l\'1.'], hi: 'Primer mira quant val cada ratlleta.' },
+  { n: 9, act: 1, type: 'mc', pts: .5, q: `Han fet suc de taronja en una gerra. Quant n'hi ha?<div class="cbm-fig">${msGerraSvg({ max: 1000, maj: 250, min: 50, uni: 'mL', v: 650 })}</div>`, opts: { a: '650 mL', b: '800 mL', c: '530 mL', d: '750 mL' }, ans: 'a',
+    hb: ['De 500 a 750 hi ha 5 ratlletes. Quant val cada una?', 'Cada ratlleta val 50 mL. El suc arriba 3 ratlletes per sobre del 500.'], hi: 'Primer mira quant val cada ratlleta.' },
+  { n: 10, act: 1, type: 'mc', pts: .5, q: 'Quin paquet de farina surt més a compte?', opts: { a: 'El B: surt a 1,20 € el quilo.', b: 'L\'A: surt a 0,70 € el quilo.', c: 'L\'A, perquè costa menys diners.', d: 'Surten igual de bé.' }, ans: 'a',
+    hb: ['Compara el preu d\'un quilo de cada paquet. El paquet A només porta mig quilo.', 'A: dos paquets fan 1 kg, 0,70 × 2 = 1,40 €. B: 2,40 ÷ 2 = 1,20 € el quilo.'], hi: 'Calcula quant costa 1 kg de cada paquet.' },
+  { n: 11, act: 1, type: 'mc', pts: .5, q: 'Seran <b>24 persones</b> i cadascuna beurà <b>200 mL</b> de suc. Quantes ampolles d\'<b>1,5 L</b> han de comprar?', opts: { a: '4 ampolles', b: '3 ampolles', c: '3,2 ampolles', d: '32 ampolles' }, ans: 'a',
+    hb: ['Primer el suc total: 24 × 200 mL. Passa-ho a litres.', 'Són 4800 mL = 4,8 L. 4,8 ÷ 1,5 = 3,2. Es poden comprar 3,2 ampolles?'], hi: 'Calcula els litres totals i divideix. Les ampolles es compren senceres.' },
+  { n: 12, act: 1, type: 'open', pts: 1, q: 'A la llista de la compra algú ha escrit: <b>«24 llaunes de refresc de 330 L»</b>. Hi ha una unitat que no pot ser.',
+    fields: [{ pre: 'Si fos veritat, 24 llaunes de 330 L serien:', ans: 7920, suf: 'L' }, { pre: 'Amb la unitat ben posada, 24 llaunes fan:', ans: 7.92, suf: 'L' }],
+    choice: { lab: 'Quant fa de debò una llauna?', opts: ['330 mL', '330 cL', '330 L ja està bé'], ans: 0 },
+    grade: (v, c) => { const r = v[1] === 7.92; if (c === 0) return r ? 2 : 1; return r ? 1 : 0; },
+    hb: ['Pensa en una llauna: hi cap més o menys un got gran. Un litre és un cartró de llet sencer.', 'Una llauna fa 330 mL. 24 × 330 = 7920 mL. De mL a L: 7920 ÷ 1000.'], hi: 'Compara una llauna amb un cartró de llet d\'1 L.' },
+  { n: 13, act: 2, type: 'mc', pts: .4, q: 'Quina superfície té el terra de l\'aula?', opts: { a: '52 m²', b: '29 m²', c: '14,5 m²', d: '520 m²' }, ans: 'a',
+    hb: ['La superfície d\'un rectangle és llarg × ample.', 'Fes 8 × 6,5. Compte: sumar tots els costats seria el perímetre, no la superfície.'], hi: 'Superfície = llarg × ample.' },
+  { n: 14, act: 2, type: 'mc', pts: .4, q: 'Una de les parets llargues fa <b>8 m</b> de llarg i <b>250 cm</b> d\'alt. Quina superfície té?', opts: { a: '20 m²', b: `${cbmN(2000)} m²`, c: '200 m²', d: '10,5 m²' }, ans: 'a',
+    hb: ['No pots multiplicar metres per centímetres. Passa els 250 cm a metres.', '250 cm = 2,5 m. Ara fes 8 × 2,5.'], hi: 'Posa les dues mides en metres abans de multiplicar.' },
+  { n: 15, act: 2, type: 'mc', pts: .4, q: 'Pintaran les <b>dues parets llargues</b> (20 m² cadascuna). Quants pots de pintura han de comprar?', opts: { a: '4 pots', b: '3 pots', c: '3,3 pots', d: '480 pots' }, ans: 'a',
+    hb: ['Entre les dues parets fan 40 m². Cada pot en cobreix 12.', '40 ÷ 12 = 3,33… Amb 3 pots no arriben: quants n\'han de comprar?'], hi: 'Divideix la superfície entre el que cobreix un pot. Els pots es compren sencers.' },
+  { n: 16, act: 2, type: 'mc', pts: .4, q: 'El terra fa 52 m². Quants <b>dm²</b> són?', opts: { a: `${cbmN(5200)} dm²`, b: '520 dm²', c: `${cbmN(52000)} dm²`, d: '0,52 dm²' }, ans: 'a',
+    hb: ['En superfície, cada esglaó val per 100 (no per 10).', 'De m² a dm² es baixa 1 esglaó: 52 × 100.'], hi: 'En superfície, cada salt és × 100.' },
+  { n: 17, act: 2, type: 'mc', pts: .4, q: 'Quin volum d\'aire hi cap a l\'aula?', opts: { a: `130 m³, que són ${cbmN(130000)} L`, b: '130 m³, que són 130 L', c: `17 m³, que són ${cbmN(17000)} L`, d: `52 m³, que són ${cbmN(52000)} L` }, ans: 'a',
+    hb: ['Volum = llarg × ample × alt, tot en metres: 8 × 6,5 × 2,5.', 'Són 130 m³. Cada m³ són 1000 litres: 130 × 1000.'], hi: 'Multiplica les tres mides en metres. 1 m³ = 1000 L.' },
+  { n: 18, act: 2, type: 'open', pts: 1, q: 'Posaran rajoles quadrades de <b>50 cm</b> de costat a tot el terra (52 m²). Les rajoles es venen en <b>caixes de 20</b>. El conserge diu: «Amb 10 caixes en tenim prou.» Té raó?',
+    fields: [{ pre: 'Rajoles que caben en 1 m²:', ans: 4, suf: '' }, { pre: 'Rajoles per a tot el terra:', ans: 208, suf: '' }],
+    choice: { lab: 'Té raó el conserge?', opts: ['Sí, amb 10 caixes n\'hi ha prou.', 'No, en calen 11.', 'No, en calen 21.'], ans: 1 },
+    grade: (v, c) => { const r = v[1] === 208; if (c === 1) return r ? 2 : 1; return r ? 1 : 0; },
+    hb: ['Una rajola fa 50 cm, és a dir, mig metre. En un quadrat d\'1 m de costat n\'hi caben 2 per 2.', 'Caben 4 rajoles a cada m²: 52 × 4 = 208 rajoles. 10 caixes són 200 rajoles.'], hi: 'Compara superfícies: quantes rajoles caben en 1 m²?' }];
+const CB_INFO_M = `<h3>ⓘ Prova de competències · Mesura</h3>
+  <p><b>Què és.</b> Una prova en format de competències bàsiques: 3 activitats amb context (l'excursió, el berenar, arreglem l'aula) i 18 preguntes (15 de resposta tancada i 3 d'obertes). Compta com a <b>examen a part</b>: no toca els objectius ni l'AS de la unitat.</p>
+  <p><b>Què avalua.</b> Temps i horaris (1, 3, 6), canvis d'unitat (2, 4, 5, 7, 16), lectura d'instruments (8, 9), preu per unitat (10), sentit de la mesura (12), superfície i volum (13, 14, 17) i arrodonir cap amunt quan es compren coses senceres (11, 15, 18).</p>
+  <p><b>En més d'un dia.</b> És llarga de llegir. L'alumne pot prémer <b>«Plego per avui»</b>: les respostes queden guardades i un altre dia continua a la pregunta on era. Si tanques la prova al final de la classe, ningú no hi pot entrar fins que la tornis a obrir. Compte: les preguntes ja respostes no es poden tornar a obrir.</p>
+  <p><b>Obertura.</b> Està tancada fins que l'obres (llibreta de Mesura o Configuració). Cada alumne la fa <b>una vegada</b>; des de la seva casella li pots deixar fer un altre intent.</p>
+  <p><b>Nivell.</b> Surt del nivell general de l'alumne: N1 → bàsic (3 intents, 2 pistes per pregunta i un recordatori de les equivalències), N2 → intermedi (1 intent, 1 pista que fa valer la pregunta el 75 %), N3 → repte (sense pistes). Les preguntes són les mateixes per a tots.</p>
+  <p><b>Puntuació (sobre 10).</b> Activitat 1: 3,5 punts · Activitat 2: 3,5 punts · Activitat 3: 3 punts. Les tancades valen 0,5 punts (0,4 a l'activitat 3). Les obertes valen 1 punt amb puntuació parcial: conclusió i càlcul clau bons, 1 punt; només una de les dues coses, mig punt.</p>
+  <p><b>Calculadora.</b> Disponible. El saltòmetre no hi surt.</p>`;
+CB_PROVES.m = { PC: PC_M, acts: CB_ACTS_M, items: CB_ITEMS_M, info: CB_INFO_M };
+document.head.insertAdjacentHTML('beforeend', `<style>.cbm-retol{display:inline-block;margin:6px 0;padding:6px 14px;background:#fff7ee;border:2px solid var(--taronja);border-radius:10px;font-size:1rem}
+.cbm-planol{display:block;width:100%;max-width:360px;height:auto;margin:4px auto}
+.cbm-fig{margin:6px 0 0}.cbm-fig svg{display:block;margin:0 auto;height:225px;width:auto}
+.cb-joc .respostes:has(.cbm-fig) .opcions{display:grid;grid-template-columns:1fr 1fr;gap:8px}.cb-joc .respostes:has(.cbm-fig) .opcions .opcio{margin:0}
+.cbm-tiqs{margin:6px 0}.cbm-tiqs .ms-tiq{padding:6px 10px;font-size:.95rem;min-width:120px}</style>`);
+
 UNITATS.m.carregada = true;
 
