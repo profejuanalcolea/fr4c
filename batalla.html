@@ -107,23 +107,32 @@ function nota(f, ini, dur, ona = 'sine', vol = .1, f2 = null) { const c = ac(), 
 function soroll(ini, dur, freq, vol = .25, tipus = 'bandpass') { const c = ac(), t = c.currentTime + ini; const n = c.createBuffer(1, c.sampleRate * dur, c.sampleRate); const d = n.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / d.length); const s = c.createBufferSource(); s.buffer = n; const fl = c.createBiquadFilter(); fl.type = tipus; fl.frequency.value = freq; const g = c.createGain(); g.gain.value = vol; s.connect(fl); fl.connect(g); g.connect(c.destination); s.start(t); }
 function so(t) {
   if (!M.so) return; try {
-    if (t === 'clic') nota(900, 0, .04, 'square', .03);
-    else if (t === 'aigua') { soroll(0, .5, 900, .35); nota(500, .02, .25, 'sine', .05, 200); }
-    else if (t === 'tocat') { soroll(0, .45, 300, .5, 'lowpass'); nota(110, 0, .4, 'sine', .25, 50); }
-    else if (t === 'enfonsat') { soroll(0, .8, 250, .5, 'lowpass'); nota(420, .05, .9, 'sawtooth', .06, 70); nota(90, .1, .7, 'sine', .25, 40); }
-    else if (t === 'ok') { nota(660, 0, .12, 'sine', .12); nota(990, .1, .22, 'sine', .12); }
-    else if (t === 'ko') nota(240, 0, .3, 'triangle', .14, 150);
+    if (t === 'clic') nota(900, 0, .04, 'sine', .025);
+    else if (t === 'aigua') { nota(560, 0, .22, 'sine', .06, 280); nota(840, .07, .16, 'sine', .03, 420); soroll(0, .22, 1400, .025); } // un «ploc» suau
+    else if (t === 'tocat') { nota(330, 0, .16, 'triangle', .07, 230); nota(494, .09, .22, 'triangle', .05); } // un «tump» amable
+    else if (t === 'enfonsat') { [523, 392, 330, 262].forEach((f, i) => nota(f, i * .13, .2, 'triangle', .06)); nota(196, .5, .45, 'sine', .05, 150); }
+    else if (t === 'ok') { nota(660, 0, .12, 'sine', .09); nota(990, .1, .2, 'sine', .08); }
+    else if (t === 'ko') nota(260, 0, .25, 'triangle', .07, 190);
     else if (t === 'guanya') [523, 659, 784, 1047, 784, 1047].forEach((f, i) => nota(f, i * .14, i === 5 ? .6 : .2, 'triangle', .12));
     else if (t === 'perd') [440, 392, 349, 262].forEach((f, i) => nota(f, i * .2, .3, 'triangle', .1));
     else if (t === 'meu') { nota(640, 0, .13, 'triangle', .08, 900); nota(900, .12, .2, 'triangle', .08, 540); }
-    else if (t === 'bip') nota(1200, 0, .08, 'sine', .06);
+    else if (t === 'bip') nota(1100, 0, .07, 'sine', .035);
   } catch (e) { }
 }
 // Una cançó mariner pròpia (6/8), suau, només a les pantalles d'entrada
 const CANCO = [[392, 1], [494, .5], [587, 1], [494, .5], [440, 1], [392, .5], [440, 1.5], [392, 1], [330, .5], [294, 1.5], [392, 1], [494, .5], [587, 1], [659, .5], [587, 1], [494, .5], [440, 1.5], [494, 1], [440, .5], [392, 1.5]];
 const MUS = { on: false, tm: null, i: 0 };
+const PANT_MUS = ['inici', 'company', 'espera', 'colloca'];
+function musicaInici() {
+  if (M.dinsApp) { if (M.mus && M.so && !MUS.on && PANT_MUS.includes(M.pantalla)) musica(true); return; } // el navegador només deixa sonar quan la pàgina ha rebut un clic: ho prova ara i, si no pot, al primer clic o tecla
+  if (!M.mus || !M.so || MUS.on || !PANT_MUS.includes(M.pantalla)) return;
+  try { const c = ac(); const va = () => { if (c.state === 'running' && !MUS.on && PANT_MUS.includes(M.pantalla)) musica(true); }; va(); c.resume().then(va).catch(() => { }); } catch (e) { }
+}
+['pointerdown', 'keydown'].forEach(ev => document.addEventListener(ev, musicaInici, true));
 function musica(on) {
-  clearTimeout(MUS.tm); MUS.on = on; if (!on || !M.mus || !M.so) return;
+  clearTimeout(MUS.tm); MUS.on = on; if (!on || !M.mus || !M.so) MUS.on = false;
+  if (M.dinsApp) { envia({ tipus: 'fr4c-bat-mus', on: MUS.on }); return; } // dins de l'app, la música la fa sonar l'app
+  if (!MUS.on) return;
   const toca = () => { if (!MUS.on) return; const [f, d] = CANCO[MUS.i % CANCO.length]; try { nota(f, 0, d * .32, 'triangle', .045); nota(f / 2, 0, d * .3, 'sine', .03); } catch (e) { } MUS.i++; MUS.tm = setTimeout(toca, d * 330); };
   toca();
 }
@@ -175,7 +184,7 @@ function vaixellSvg(v, { amagat = false, enfonsat = false, prev = null } = {}) {
   const col = prev === 'mal' ? '#f3b4b4' : prev === 'be' ? '#bfe8cd' : enfonsat ? '#4a4f57' : '#8a96a8';
   return `<rect x="${x0}" y="${y0}" width="${w}" height="${h}" rx="15" fill="${col}" stroke="${N}" stroke-width="2.5" opacity="${prev ? .85 : .9}"/>` + (prev ? '' : `<text x="${x0 + w / 2}" y="${y0 + h / 2 + 4}" text-anchor="middle" font-size="11" font-weight="900" fill="#fff">${w > h ? v.nom : v.nom[0]}</text>`);
 }
-const marcaTret = (x, y, r, nou = false) => r === 'a'
+const marcaTret = (x, y, r, nou = false) => r === '?' ? `<g class="mira"><circle cx="${px(x)}" cy="${py(y)}" r="11" fill="#fff" stroke="${T}" stroke-width="3"/><text x="${px(x)}" y="${py(y) + 5}" text-anchor="middle" font-size="14" font-weight="900" fill="${T}">?</text></g>` : r === 'a'
   ? `<circle cx="${px(x)}" cy="${py(y)}" r="9" fill="#9cc9f2" stroke="${B}" stroke-width="2.5"/>${nou ? `<circle class="esquitx" cx="${px(x)}" cy="${py(y)}" r="22" fill="none" stroke="${B}" stroke-width="3"/>` : ''}`
   : `<g class="${nou ? 'boom' : ''}"><circle cx="${px(x)}" cy="${py(y)}" r="12" fill="#ffb347" stroke="${N}" stroke-width="2"/><path d="M${px(x) - 7} ${py(y) - 7}l14 14M${px(x) + 7} ${py(y) - 7}l-14 14" stroke="#c0281e" stroke-width="4" stroke-linecap="round"/></g>`;
 function tauler(id, { flota = [], amaga = false, trets = {}, nou = null, cur = null, prev = null, enfonsats = [] }) {
@@ -194,13 +203,13 @@ const celles = (x, y, mida, hor) => [...Array(mida).keys()].map(i => hor ? [x + 
 const ocupa = flota => new Set(flota.flatMap(v => v.cells.map(c => K(...c))));
 function caben(cells, flota, sense = null) { const o = ocupa(flota.filter(v => v.id !== sense)); return cells.every(c => existeix(...c) && !o.has(K(...c))); }
 function flotaAtzar() { for (;;) { const f = []; let ok = true; for (const v of FLOTA) { let posat = false; for (let k = 0; k < 200 && !posat; k++) { const hor = Math.random() < .5; const vs = valors(); const cells = celles(tria(vs), tria(vs), v.mida, hor); if (caben(cells, f)) { f.push({ ...v, cells }); posat = true; } } if (!posat) { ok = false; break; } } if (ok) return f; } }
-const tocades = (flota, trets) => flota.flatMap(v => v.cells).filter(c => trets[K(...c)] && trets[K(...c)] !== 'a').length;
-const enfonsatsDe = (flota, trets) => flota.filter(v => v.cells.every(c => trets[K(...c)] && trets[K(...c)] !== 'a')).map(v => v.id);
-function resolTret(flota, trets, x, y) { const v = flota.find(v => v.cells.some(c => c[0] === x && c[1] === y)); if (!v) return { r: 'a' }; const t2 = { ...trets, [K(x, y)]: 't' }; return v.cells.every(c => t2[K(...c)] && t2[K(...c)] !== 'a') ? { r: 'e', v } : { r: 't', v }; }
+const tocades = (flota, trets) => flota.flatMap(v => v.cells).filter(c => trets[K(...c)] === 't').length;
+const enfonsatsDe = (flota, trets) => flota.filter(v => v.cells.every(c => trets[K(...c)] === 't')).map(v => v.id);
+function resolTret(flota, trets, x, y) { const v = flota.find(v => v.cells.some(c => c[0] === x && c[1] === y)); if (!v) return { r: 'a' }; const t2 = { ...trets, [K(x, y)]: 't' }; return v.cells.every(c => t2[K(...c)] === 't') ? { r: 'e', v } : { r: 't', v }; }
 
 /* ---------- estat de la partida ---------- */
 const P = {}; window.__P = P;
-function nouP() { Object.assign(P, { meva: [], seva: [], tretsMeus: {}, tretsSeus: {}, torn: 'jo', fase: 'colloca', t0: 0, encerts: 0, errors: 0, respostes: 0, ben: 0, fallades: [], dispars: 0, pendent: null, sel: 'pa', hor: true, cur: [0, 0], nou: null, nouMeu: null, fi: false, tTorn: 0, guanya: null }); }
+function nouP() { Object.assign(P, { meva: [], seva: [], tretsMeus: {}, tretsSeus: {}, torn: 'jo', fase: 'colloca', t0: 0, encerts: 0, errors: 0, respostes: 0, ben: 0, fallades: [], dispars: 0, pendent: null, sel: 'pa', hor: true, cur: [0, 0], nou: null, nouMeu: null, fi: false, tTorn: 0, guanya: null, espera: null }); }
 const rival = () => M.pers === 'coma' ? 'robot' : 'coma';
 let NET = null; // mode company: { codi, jo:'a'|'b', p (partida), vistos }
 
@@ -325,6 +334,7 @@ function tic() {
   $('#rellotge').textContent = `⏱ ${Math.floor(rest / 60)}:${String(rest % 60).padStart(2, '0')}`;
   if (rest === 0) return fiTemps();
   if (M.mode === 'company') {
+    if (P.espera && Date.now() - P.espera.t0 > 30000) revela();
     const r = Math.max(0, TEMPS_TORN - Math.round((Date.now() - P.tTorn) / 1000)); const b = $('#barra i'); if (b) b.style.width = (P.torn === 'jo' && !P.pendent ? r / TEMPS_TORN * 100 : 100) + '%';
     if (P.torn === 'jo' && !P.pendent && r === 0) { diu('S\'ha acabat el temps del torn. Passa al company.', 'pensa'); so('ko'); passaTorn(null); }
     if (r <= 5 && r > 0 && P.torn === 'jo' && !P.pendent) so('bip');
@@ -342,14 +352,27 @@ function dispara() {
   if (P.tretsMeus[K(x, y)]) { so('ko'); return msg(`Ja havies disparat al ${pt(x, y)}. Tria un altre punt.`, 'ko'); }
   msg(''); P.dispars++;
   const res = resolTret(P.seva, P.tretsMeus, x, y);
+  if (M.mode === 'company') { // no ho sabrà fins que el company miri la seva flota i ho digui
+    P.tretsMeus[K(x, y)] = '?'; P.espera = { x, y, res, t0: Date.now() }; P.cur = [x, y]; $('#ix').value = ''; $('#iy').value = ''; so('clic');
+    envia({ tipus: 'fr4c-bat-net', op: 'tret', tret: { q: NET.jo, x, y, r: res.r === 'a' ? 'a' : res.r === 'e' ? 'e' : 't' }, torn: NET.jo === 'a' ? 'b' : 'a' });
+    diu(`Has disparat al <b>${pt(x, y)}</b>. Esperant que ${P.nomR} miri la seva flota i digui si l'has tocat…`, 'normal');
+    P.torn = 'riv'; torn(); return;
+  }
   P.tretsMeus[K(x, y)] = res.r === 'a' ? 'a' : 't'; P.nou = K(x, y); P.cur = [x, y];
   if (res.r === 'a') { so('aigua'); diu(`${pt(x, y)}: <b>aigua</b>. 💧`, 'pensa'); }
   else { P.encerts++; so(res.r === 'e' ? 'enfonsat' : 'tocat'); diu(res.r === 'e' ? `${pt(x, y)}: <b>tocat i enfonsat</b>! Has enfonsat el ${res.v.nom.toLowerCase()}!` : `${pt(x, y)}: <b>tocat</b>! 💥`, 'content'); }
   $('#ix').value = ''; $('#iy').value = '';
-  if (M.mode === 'company') envia({ tipus: 'fr4c-bat-net', op: 'tret', tret: { q: NET.jo, x, y, r: res.r === 'a' ? 'a' : res.r === 'e' ? 'e' : 't' }, torn: NET.jo === 'a' ? 'b' : 'a', guanya: tocades(P.seva, P.tretsMeus) === TOTAL ? NET.jo : null });
   if (tocades(P.seva, P.tretsMeus) === TOTAL) return fi(true);
   P.torn = 'riv'; torn();
   if (M.mode === 'maquina') setTimeout(tretMaquina, 1300);
+}
+function revela() { // el company ja ha dit si l'havien tocat (o ha passat massa estona): ara surt el resultat
+  const e = P.espera; if (!e || P.fase !== 'joc') return; P.espera = null; const { x, y, res } = e;
+  P.tretsMeus[K(x, y)] = res.r === 'a' ? 'a' : 't'; P.nou = K(x, y);
+  if (res.r === 'a') { so('aigua'); diu(`${pt(x, y)}: <b>aigua</b>. 💧`, 'pensa'); }
+  else { P.encerts++; so(res.r === 'e' ? 'enfonsat' : 'tocat'); diu(res.r === 'e' ? `${pt(x, y)}: <b>tocat i enfonsat</b>! Has enfonsat el ${res.v.nom.toLowerCase()}!` : `${pt(x, y)}: <b>tocat</b>! 💥`, 'content'); }
+  if (tocades(P.seva, P.tretsMeus) === TOTAL) return fi(true);
+  repinta();
 }
 function passaTorn() { P.torn = 'riv'; if (M.mode === 'company') envia({ tipus: 'fr4c-bat-net', op: 'escriu', upd: { torn: NET.jo === 'a' ? 'b' : 'a' } }); torn(); }
 const msg = (t, c = '') => { const m = $('#msg'); if (m) { m.className = 'msg ' + c; m.innerHTML = t; } };
@@ -368,14 +391,15 @@ function tretMaquina() {
   rebTret(x, y);
 }
 // un tret de l'altre: primer l'alumne ha de dir si l'ha tocat o no (practica llegir coordenades al seu tauler)
-function rebTret(x, y) {
-  P.pendent = { x, y }; P.torn = 'jo'; torn(); so('bip');
+function rebTret(x, y, k = null) {
+  P.pendent = { x, y, k }; P.torn = 'jo'; torn(); so('bip');
   $('#preg').innerHTML = `<div class="pregunta"><div class="q">${P.nomR} dispara al <b style="color:${T}">${pt(x, y)}</b>.<br>Mira la teva flota: t'ha tocat?</div><div class="fila"><button class="big sec" data-r="a">💧 Aigua</button><button class="big" data-r="t">💥 Tocat!</button></div></div>`;
   diu(`Busca el punt <b>${pt(x, y)}</b> a la teva graella.`, 'pensa');
   $$('#preg [data-r]').forEach(b => b.onclick = () => respon(b.dataset.r));
 }
 function respon(r) {
-  const { x, y } = P.pendent; const res = resolTret(P.meva, P.tretsSeus, x, y); const bo = res.r === 'a' ? 'a' : 't';
+  const { x, y, k } = P.pendent; const res = resolTret(P.meva, P.tretsSeus, x, y); const bo = res.r === 'a' ? 'a' : 't';
+  if (M.mode === 'company' && k) envia({ tipus: 'fr4c-bat-net', op: 'escriu', upd: { [`trets/${k}/v`]: true } });
   P.respostes++;
   if (r === bo) { P.ben++; P.encerts++; so('ok'); } else { P.errors++; P.fallades.push(`${pt(x, y)}: deia ${r === 'a' ? 'aigua' : 'tocat'}`); so('ko'); }
   P.tretsSeus[K(x, y)] = bo; P.nouMeu = K(x, y); P.pendent = null; $('#preg').innerHTML = '';
@@ -388,6 +412,7 @@ function respon(r) {
 function fiTemps() { const a = tocades(P.seva, P.tretsMeus), b = tocades(P.meva, P.tretsSeus); fi(a > b ? true : a < b ? false : null, true); }
 function fi(guanyo, perTemps = false) {
   if (P.fi) return; P.fi = true; P.fase = 'fi'; clearInterval(P.iv); P.guanya = guanyo;
+  if (P.espera) { const e = P.espera; P.espera = null; P.tretsMeus[K(e.x, e.y)] = e.res.r === 'a' ? 'a' : 't'; }
   if (P.pendent) { const { x, y } = P.pendent; P.tretsSeus[K(x, y)] = resolTret(P.meva, P.tretsSeus, x, y).r === 'a' ? 'a' : 't'; P.pendent = null; }
   if (M.mode === 'company' && NET) envia({ tipus: 'fr4c-bat-net', op: 'escriu', upd: { estat: 'fi', guanya: guanyo === true ? NET.jo : guanyo === false ? (NET.jo === 'a' ? 'b' : 'a') : 'empat' } });
   const temps = Math.round((Date.now() - P.t0) / 1000); const toc = tocades(P.seva, P.tretsMeus);
@@ -426,13 +451,13 @@ function rebEstat(p) {
   // trets nous de l'altre
   const trets = Object.entries(p.trets || {}).sort((u, v) => u[0] < v[0] ? -1 : 1);
   NET.vistos = NET.vistos || new Set();
-  for (const [k, t] of trets) { if (NET.vistos.has(k)) continue; NET.vistos.add(k); if (t.q === ell) { rebTret(t.x, t.y); } }
+  for (const [k, t] of trets) { if (t.q === jo && t.v && P.espera && P.espera.x === t.x && P.espera.y === t.y) revela(); if (NET.vistos.has(k)) continue; NET.vistos.add(k); if (t.q === ell) { rebTret(t.x, t.y, k); } }
   if (p.torn === jo && P.torn !== 'jo' && !P.pendent) { P.torn = 'jo'; torn(); }
   if (p.estat === 'fi' && !P.fi) { fi(p.guanya === jo ? true : p.guanya === 'empat' ? null : false); }
 }
 window.addEventListener('message', ev => {
   const d = ev.data || {};
-  if (d.tipus === 'fr4c-bat-ini') { M.dinsApp = true; M.nom = d.nom || ''; M.nivell = Math.max(1, Math.min(3, d.nivell || 2)); M.record = d.record || 0; if (d.so === false) M.so = false; pintaBotons(); if (M.pantalla === 'inici') inici(); return; }
+  if (d.tipus === 'fr4c-bat-ini') { const ja = M.dinsApp; M.dinsApp = true; if (!ja) MUS.on = false; M.nom = d.nom || ''; M.nivell = Math.max(1, Math.min(3, d.nivell || 2)); M.record = d.record || 0; if (d.so === false) M.so = false; pintaBotons(); if (M.pantalla === 'inici') inici(); musicaInici(); return; }
   if (d.tipus !== 'fr4c-bat-xarxa') return;
   if (d.ev === 'creada') { NET = { codi: d.codi, jo: 'a', p: null }; espera(d.codi); }
   else if (d.ev === 'unit') { NET = { codi: d.codi, jo: 'b', p: null }; M.nivell = d.nivell || M.nivell; so('meu'); colloca(); }
@@ -444,8 +469,8 @@ function pintaBotons() { $('#so').textContent = M.so ? '🔊' : '🔇'; $('#mus'
 $('#so').onclick = () => { M.so = !M.so; try { localStorage.setItem('fr4c_bat_so', M.so ? '1' : '0'); } catch (e) { } if (!M.so) musica(false); pintaBotons(); };
 $('#mus').onclick = () => { M.mus = !M.mus; try { localStorage.setItem('fr4c_bat_mus', M.mus ? '1' : '0'); } catch (e) { } musica(M.mus && ['inici', 'company', 'espera', 'colloca'].includes(M.pantalla)); pintaBotons(); };
 $('#surt').onclick = surt;
-window.__bat = { P, M, existeix, resolTret, dispara, respon, flotaAtzar, valors };
-pintaBotons(); inici(); envia({ tipus: 'fr4c-bat-llest' });
+window.__bat = { P, M, MUS, existeix, resolTret, dispara, respon, flotaAtzar, valors };
+pintaBotons(); inici(); musicaInici(); envia({ tipus: 'fr4c-bat-llest' });
 </script>
 </body>
 </html>

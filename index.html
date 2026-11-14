@@ -1024,7 +1024,7 @@ const enllacaQualif = c => $$('.q-man', c).forEach(td => td.onclick = () => canv
 const unitatCompleta = u => u.obj.every(o => !o.properament);
 /* ---------- Fitxers a part: cada unitat i cada joc es carrega quan cal ----------
    Són scripts clàssics (funcionen a GitHub Pages i també obrint l'index des de l'ordinador). */
-const V_FITXERS = '5.10';
+const V_FITXERS = '5.11';
 const FITXERS_UNITAT = { f: 'fraccions.js', e: 'enters.js', p: 'potencies.js', q: 'equacions.js', m: 'mesura.js', r: 'grafica.js' };
 const FITXERS_JOC = { tcx: 'joc-caixa.js', tesc: 'joc-escape.js', tpz: 'joc-pizzeria.js', dimp: 'joc-impropies.js' };
 const CARREGUES = {};
@@ -1710,7 +1710,7 @@ const JOCS_EXT = {
   tzom: { fitxer: 'zombis.html?v=2', pref: 'fr4c-zom', titol: 'Zombis a l\'institut' },
   tmetm: { fitxer: 'meteorits.html?v=3', pref: 'fr4c-met', titol: 'Defensa la base de Mart · mesura', mode: 'mesura' },
   trel: { fitxer: 'rellotge.html?v=1', pref: 'fr4c-rel', titol: 'Quina hora és?' },
-  tbat: { fitxer: 'batalla.html?v=1', pref: 'fr4c-bat', titol: 'Batalla naval de coordenades' } };
+  tbat: { fitxer: 'batalla.html?v=2', pref: 'fr4c-bat', titol: 'Batalla naval de coordenades' } };
 let MET = null;
 function obreJocExt(tid, nivellProva = null) {
   tancaJoc(true);
@@ -1726,7 +1726,7 @@ function obreJocExt(tid, nivellProva = null) {
 }
 const obreMeteorits = (n = null) => obreJocExt('tmet', n);
 function enviaMet() { const f = $('#joc-capa iframe'); if (!f || !MET) return; try { f.contentWindow.postMessage({ tipus: MET.J.pref + '-ini', mode: MET.J.mode, nom: MET.nom, nivell: MET.nivell, record: MET.record, so: soActiu() }, '*'); } catch (e) { } }
-function tancaMeteorits() { if (MET?.timeout) clearTimeout(MET.timeout); if (BAT) batNet({ op: 'surt' }); MET = null; tancaJoc(); }
+function tancaMeteorits() { if (MET?.timeout) clearTimeout(MET.timeout); batMusica(false); if (BAT) batNet({ op: 'surt' }); MET = null; tancaJoc(); }
 async function desaMeteorits(d) {
   if (!MET || MET.prova || !MET.id) return;
   const tid = MET.tid; const r = S.resMeu?.[tid] || {}; const nv = String(d.nivell || MET.nivell); const n = r.nivells?.[nv] || {};
@@ -1747,7 +1747,18 @@ window.addEventListener('message', ev => {
   else if (t === 'fi') desaMeteorits(d);
   else if (t === 'tanca') tancaMeteorits();
   else if (t === 'net') batNet(d);
+  else if (t === 'mus') batMusica(!!d.on);
 });
+/* La música de la batalla sona des de l'app: el clic per obrir el taller ja li dona permís per sonar (dins del joc encara no en tindria). */
+const BATMUS = { on: false, tm: null, i: 0 };
+const BAT_CANCO = [[392, 1], [494, .5], [587, 1], [494, .5], [440, 1], [392, .5], [440, 1.5], [392, 1], [330, .5], [294, 1.5], [392, 1], [494, .5], [587, 1], [659, .5], [587, 1], [494, .5], [440, 1.5], [494, 1], [440, .5], [392, 1.5]];
+function batMusica(on) {
+  clearTimeout(BATMUS.tm); BATMUS.on = on && soActiu(); if (!BATMUS.on) return;
+  let ac; try { ac = SO.ctx || (SO.ctx = new (window.AudioContext || window.webkitAudioContext)()); if (ac.state === 'suspended') ac.resume(); } catch (e) { return; }
+  const nt = (f, d, ona, vol) => { const t = ac.currentTime, o = ac.createOscillator(), g = ac.createGain(); o.type = ona; o.frequency.value = f; g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + .02); g.gain.exponentialRampToValueAtTime(.0001, t + d); o.connect(g); g.connect(ac.destination); o.start(t); o.stop(t + d + .05); };
+  const toca = () => { if (!BATMUS.on || !MET) { BATMUS.on = false; return; } const [f, d] = BAT_CANCO[BATMUS.i % BAT_CANCO.length]; try { nt(f, d * .32, 'triangle', .045); nt(f / 2, d * .3, 'sine', .03); } catch (e) { } BATMUS.i++; BATMUS.tm = setTimeout(toca, d * 330); };
+  toca();
+}
 /* ---------- Batalla naval en parella: l'app fa de pont entre el joc (iframe) i Firebase ----------
    objectius/partides/{codi}: { creat, nivell, estat, a: {nom, pers, flota, llest, viu}, b: {…}, torn, trets: {k…: {q, x, y, r}}, guanya } */
 let BAT = null;
@@ -1772,7 +1783,7 @@ async function batNet(d) {
       await DB.update(batRef(codi), { b: batJug(d.jo), estat: 'colloca' });
       if (MET) MET.batJo = 'b'; batEscolta(codi); batEnvia({ ev: 'unit', codi, nivell: p.nivell });
     } else if (d.op === 'escriu' && BAT) {
-      const upd = {}; for (const [k, v] of Object.entries(d.upd || {})) if (/^(a|b)\/(flota|llest|viu|surt)$|^(torn|estat|guanya|inici)$/.test(k)) upd[k] = v;
+      const upd = {}; for (const [k, v] of Object.entries(d.upd || {})) if (/^(a|b)\/(flota|llest|viu|surt)$|^(torn|estat|guanya|inici)$|^trets\/k\d{10,16}\/v$/.test(k)) upd[k] = v;
       if (Object.keys(upd).length) await DB.update(batRef(BAT.codi), upd);
     } else if (d.op === 'tret' && BAT) {
       const t = d.tret || {}; const upd = { [`trets/k${Date.now()}`]: { q: t.q === 'b' ? 'b' : 'a', x: +t.x, y: +t.y, r: ['a', 't', 'e'].includes(t.r) ? t.r : 'a' }, torn: d.torn === 'b' ? 'b' : 'a' };
@@ -2642,7 +2653,7 @@ function faseComp(R) {
 function cbPista(R, auto) {
   const it = CB_ITEMS[R.item], C = R.cur; const H = R.nivell === 'basic' ? it.hb : [it.hi];
   if (C.done || C.hints >= H.length) return;
-  $('#cb-pistes').insertAdjacentHTML('beforeend', `<div class="pista"><span class="ico">💡</span><div><b>Pista${H.length > 1 ? ' ' + (C.hints + 1) : ''}:</b> ${H[C.hints]}</div></div>`);
+  $('#cb-pistes').insertAdjacentHTML('beforeend', `<div class="pista"><span class="ico">💡</span><div><b>Pista${H.length > 1 ? ' ' + (C.hints + 1) : ''}:</b> ${apila(H[C.hints])}</div></div>`);
   C.hints++; if (!auto) so('pas');
   if (C.hints >= H.length) { const b = $('#cb-pista'); if (b) b.disabled = true; }
 }
@@ -2767,6 +2778,33 @@ function generaRonda(o, nivell, evitar = []) {
   }
   return out;
 }
+/* Les operacions, sempre una a sota de l'altra:
+   · «etiqueta: operació» → l'operació passa a la línia de sota (els dos punts semblaven una divisió). No toca «x : 2» (divisió) ni «8:47» (hores).
+   · igualtats encadenades (a = b = c) → cada «= …» en una línia nova, a sota. */
+const APILA_MATES = /^(?:\s|<(?!br)[^>]+>)*(?:[(−\-+√]|\d|x\b|x[²³⁴]|y\b|<span class="fr")/;
+const APILA_PUR = /^[0-9xy²³⁴⁵⁶⁷⁸⁹⁰¹ ()\[\]−\-+·×÷:\/,±√]+$/; // un tros que només té números i operacions
+function apila(html) {
+  if (typeof html !== 'string' || !html) return html;
+  const t = html.split(/(<[^>]+>)/);
+  for (let i = 0; i < t.length; i += 2) {
+    t[i] = t[i].replace(/(^|\S):(\s*)/g, (m, c, sp, off, txt) => {
+      if (!c && !(i > 0 && /<\/(?:b|i|span|sup|sub|em|strong)>$/.test(t[i - 1]))) return m; // a l'inici d'un tros, només si ve just després d'una etiqueta
+      const resta = txt.slice(off + m.length) + t.slice(i + 1).join('');
+      if (!sp && /\d$/.test(c) && /^\d/.test(resta)) return m; // hores com 8:47
+      if (!APILA_MATES.test(resta)) return m;
+      const tros = resta.replace(/<[^>]+>/g, '').split(/[.;]\s|<br>/)[0].slice(0, 90);
+      return /[=+−·×÷→]|\s-\s/.test(tros) ? c + '<br>' : m;
+    });
+  }
+  // dues operacions seguides («2 × 3 = 6 i 4 × 5 = 20», «…; …», «…, …») → cada una a la seva línia
+  // i «… = 49. Baix<br>6 × 1» → l'etiqueta nova també comença a sota
+  const h2 = t.join('').replace(/([.!?])\s+([^.!?<]{1,40})<br>/g, '$1<br>$2<br>').replace(/(=[^=<.;]*?)(?:\s(?:i)\s|;\s|,\s)(?=(?:<(?!br)[^>]+>)*[(−\-+]?\s*(?:\d|x\b|\()[^.<;]*?\s=\s)/g, '$1<br>');
+  const ps = h2.split(' = '); if (ps.length < 3) return ps.join(' = ');
+  let o = ps[0];
+  for (let k = 1; k < ps.length; k++) { const ant = ps[k - 1]; const pla = ant.replace(/<[^>]+>/g, '');
+    o += (k >= 2 && !ant.includes('<br>') && APILA_PUR.test(pla) ? '<br>= ' : ' = ') + ps[k]; }
+  return o;
+}
 function quinaPista(nv, i, ex) {
   if (ex.pistaSempre) return 'completa';
   if (nv === 1) return i === 0 ? 'completa' : i === 1 ? 'mitja' : null;
@@ -2847,7 +2885,7 @@ function mostraCredits() {
     <p style="font-size:1.1rem"><b>Ins Júlia Minguell</b> · Matemàtiques 4t ESO · Grup Flexible</p>
     <p style="margin-top:14px">Ideat per <b>J. Alcolea</b></p>
     <p style="color:var(--gris)">Desenvolupat amb Claude</p>
-    <p style="color:var(--gris);margin-top:10px">Versió 5.10</p>
+    <p style="color:var(--gris);margin-top:10px">Versió 5.11</p>
     <div class="accions"><button class="boto" data-tanca-modal>D'acord</button></div>`);
 }
 function entraAlumne(id) {
@@ -2973,7 +3011,7 @@ function enllacaPreviNav(R, ex) {
     const rp = ex.resposta;
     if (rp.mode === 'opcions') $$('.opcio').forEach(b => { if (b.dataset.val === rp.correcta) b.classList.add('correcta'); });
     if (rp.mode === 'sino') $$('.opcio').forEach(b => { if (b.dataset.val === rp.correcta) b.classList.add('correcta'); });
-    $('#zona-retorn').innerHTML = `<div class="retorn previ"><div><h4>Resposta correcta</h4><p>${ex.correctaHtml}</p><ol class="previ-sol">${ex.solucio.map(t => `<li>${t}</li>`).join('')}</ol>${ex.dibuixSolucio ? `<div class="mini-sol">${ex.dibuixSolucio}</div>` : ''}<p class="petit" style="color:var(--gris)">Tipus: ${esc(ex.tipus || '')} · ${esc(ex.sig)}</p></div></div>`;
+    $('#zona-retorn').innerHTML = `<div class="retorn previ"><div><h4>Resposta correcta</h4><p>${ex.correctaHtml}</p><ol class="previ-sol">${ex.solucio.map(t => `<li>${apila(t)}</li>`).join('')}</ol>${ex.dibuixSolucio ? `<div class="mini-sol">${ex.dibuixSolucio}</div>` : ''}<p class="petit" style="color:var(--gris)">Tipus: ${esc(ex.tipus || '')} · ${esc(ex.sig)}</p></div></div>`;
   };
 }
 const rondaEnCurs = () => S.ronda && (S.ronda.fase === 'exercici') && S.ronda.respostes.length > 0;
@@ -3045,7 +3083,7 @@ async function tornaMapa() {
 function faseExplicacio(R, o) {
   const passos = TEMES[R.obj].explicacio; const p = passos[R.pas];
   vista.innerHTML = `<section class="pantalla">${capObj(o)}
-    <div class="expl diapo"><span class="diapo-tag">Explicació · ${R.pas + 1}/${passos.length}</span><div class="expl-text apareix">${p.text}</div><div class="expl-vis">${p.vis()}</div></div>
+    <div class="expl diapo"><span class="diapo-tag">Explicació · ${R.pas + 1}/${passos.length}</span><div class="expl-text apareix">${apila(p.text)}</div><div class="expl-vis">${p.vis()}</div></div>
     <div class="expl-peu"><div class="passos">${passos.map((_, i) => `<i class="${i <= R.pas ? 'fet' : ''}"></i>`).join('')}</div>
       ${R.taller && R.potSaltar ? `<button class="boto sec" id="saltar">Salta a la pràctica</button>` : ''}
       ${R.pas > 0 ? `<button class="boto sec" id="ant">← Enrere</button>` : ''}
@@ -3061,7 +3099,7 @@ function faseExemple(R, o) {
   vista.innerHTML = `<section class="pantalla">${capObj(o, `<button class="boto-petit" id="btn-expl">Veure l'explicació</button>`)}
     <div class="expl diapo exemple"><span class="diapo-tag">Exemple resolt</span>
       <div><div class="enunciat" style="margin:8px 0 18px">${ex.enunciat}</div>
-        ${ex.passos.slice(0, R.pas + 1).map((q, i) => `<div class="sol-pas ${i === R.pas ? 'apareix' : ''}">${i + 1}. ${q.text}</div>`).join('')}</div>
+        ${ex.passos.slice(0, R.pas + 1).map((q, i) => `<div class="sol-pas ${i === R.pas ? 'apareix' : ''}">${i + 1}. ${apila(q.text)}</div>`).join('')}</div>
       <div class="expl-vis">${p.vis}</div></div>
     <div class="expl-peu"><div class="passos">${ex.passos.map((_, i) => `<i class="${i <= R.pas ? 'fet' : ''}"></i>`).join('')}</div>
       ${R.pas > 0 ? `<button class="boto sec" id="ant">← Enrere</button>` : ''}
@@ -3114,7 +3152,7 @@ function faseExercici(R, o) {
       <div class="costat pregunta"><div class="etiqueta">Exercici ${R.i + 1} de ${R.exercicis.length}${R.prova ? ` · objectiu ${ex.objNum}` : ''}</div>
         <div class="enunciat">${ex.enunciat}</div>
         ${vis ? `<div class="visual">${vis}</div>` : '<div style="flex:1"></div>'}
-        ${pistaTxt ? `<div class="pista"><span class="ico">💡</span><div><b>Pista:</b> ${pistaTxt}</div></div>` : ''}
+        ${pistaTxt ? `<div class="pista"><span class="ico">💡</span><div><b>Pista:</b> ${apila(pistaTxt)}</div></div>` : ''}
       </div>
       <div class="costat respostes"><div class="etiqueta">La teva resposta</div>
         <div id="zona-resp">${respostaHtml(ex)}</div>
@@ -3345,7 +3383,7 @@ function comprova(R, ex, ambPista) {
   so(ok ? 'ok' : 'ko');
   $('#zona-retorn').innerHTML = `<div class="retorn ${ok ? 'ok' : 'ko'}">${robot(52, ok ? 'content' : 'pensa')}<div>
     <h4>${ok ? tria(frasesOk) : 'No és correcte.'}</h4>
-    ${ok ? `<p>${ex.explicacio}</p>` : `${motiu ? `<p><b>${motiu}</b></p>` : ''}<p>${ex.resposta.mode === 'apartats' ? 'Mira la correcció de cada apartat.' : ex.resposta.mode === 'pintar' || ex.resposta.mode === 'recta' || ex.resposta.mode === 'rectaZ' ? `Havies de representar ${ex.correctaHtml}.` : `La resposta correcta és ${ex.correctaHtml}.`}</p><p>${ex.explicacio}</p>${ex.dibuixSolucio && ex.resposta.mode !== 'rectaZ' ? `<div class="mini-sol">${ex.dibuixSolucio}</div>` : ''}`}</div></div>`;
+    ${ok ? `<p>${apila(ex.explicacio)}</p>` : `${motiu ? `<p><b>${motiu}</b></p>` : ''}<p>${ex.resposta.mode === 'apartats' ? 'Mira la correcció de cada apartat.' : ex.resposta.mode === 'pintar' || ex.resposta.mode === 'recta' || ex.resposta.mode === 'rectaZ' ? `Havies de representar ${ex.correctaHtml}.` : `La resposta correcta és ${ex.correctaHtml}.`}</p><p>${apila(ex.explicacio)}</p>${ex.dibuixSolucio && ex.resposta.mode !== 'rectaZ' ? `<div class="mini-sol">${ex.dibuixSolucio}</div>` : ''}`}</div></div>`;
   $$('.punts i')[R.i].className = ok ? 'ok' : 'ko';
   const btn = $('#btn-comprova');
   btn.textContent = perdut || ultim ? 'Veure el resultat →' : 'Següent →';
@@ -4081,15 +4119,15 @@ function pintaDemo() {
     cos = `<p class="ajuda" style="margin:4px 0 10px">Els ${st.ronda.length} exercicis d'una ronda de l'objectiu al nivell ${st.nivell}, en l'ordre en què els veurà l'alumne, amb la resposta i la solució.${quinaPista(st.nivell, 0, {}) ? ` Pistes al nivell ${st.nivell}: ${st.nivell === 1 ? 'completa al 1r exercici i curta al 2n' : 'completa al 1r exercici'}.` : ' Al nivell 3 no hi ha pistes.'} Errors permesos: ${errorsPermesos(st.nivell, st.ronda.length)}.</p>
       <div class="ronda-demo">${st.ronda.map((ex, i) => { const tp = quinaPista(st.nivell, i, ex); const vis = ex.visual ? ex.visual(tp === 'completa', { nivell: st.nivell, i }) : '';
         return `<div class="rd-ex"><div class="rd-cap"><b>${i + 1}</b><span>${esc(ex.tipus || '')}</span>${tp ? `<span class="rd-pista">💡 pista ${tp === 'completa' ? 'completa' : 'curta'}</span>` : ''}</div>
-          <div class="rd-cos"><div class="rd-preg"><div class="enunciat">${ex.enunciat}</div>${vis ? `<div class="visual">${vis}</div>` : ''}${tp ? `<div class="pista"><span class="ico">💡</span><div>${ex.pista?.[tp] || ex.pista?.completa || ''}</div></div>` : ''}${respDemoHtml(ex, true)}</div>
-          <div class="rd-sol"><div class="etiqueta">Resposta</div><div>${ex.correctaHtml}</div><div class="etiqueta" style="margin-top:8px">Solució</div><ol>${ex.solucio.map(t => `<li>${t}</li>`).join('')}</ol></div></div></div>`; }).join('')}</div>`;
+          <div class="rd-cos"><div class="rd-preg"><div class="enunciat">${ex.enunciat}</div>${vis ? `<div class="visual">${vis}</div>` : ''}${tp ? `<div class="pista"><span class="ico">💡</span><div>${apila(ex.pista?.[tp] || ex.pista?.completa || '')}</div></div>` : ''}${respDemoHtml(ex, true)}</div>
+          <div class="rd-sol"><div class="etiqueta">Resposta</div><div>${ex.correctaHtml}</div><div class="etiqueta" style="margin-top:8px">Solució</div><ol>${ex.solucio.map(t => `<li>${apila(t)}</li>`).join('')}</ol></div></div></div>`; }).join('')}</div>`;
   } else {
     if (!st.ex) { { const rr = generaRonda(st.o, st.nivell); st.ex = rr[rnd(0, rr.length - 1)]; } st.pas = 0; }
     const ex = st.ex; const visDemo = ex.visual ? ex.visual(st.pas > 0, { nivell: st.nivell, i: 0 }) : '';
     cos = `<div class="demo">
       <div class="costat pregunta"><div class="enunciat">${ex.enunciat}</div>${visDemo ? `<div class="visual">${visDemo}</div>` : ''}${respDemoHtml(ex, st.pas >= ex.solucio.length)}</div>
       <div class="costat respostes"><div class="etiqueta">Solució pas a pas</div>
-        ${ex.solucio.slice(0, st.pas).map((t, i) => `<div class="sol-pas apareix">${i + 1}. ${t}</div>`).join('')}
+        ${ex.solucio.slice(0, st.pas).map((t, i) => `<div class="sol-pas apareix">${i + 1}. ${apila(t)}</div>`).join('')}
         <div class="accions">${st.pas < ex.solucio.length ? `<button class="boto taronja" id="d-pas">${st.pas === 0 ? 'Mostra la solució' : 'Següent pas →'}</button>` : `<span class="marca-ok" style="font-size:1.2rem">Resposta: ${ex.correctaHtml}</span>`}</div></div></div>`;
   }
   c.innerHTML = barra + cos;
