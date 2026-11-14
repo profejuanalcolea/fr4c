@@ -1,0 +1,451 @@
+<!doctype html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Batalla naval de coordenades · FR-4C</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,800&display=swap" rel="stylesheet">
+<style>
+/* Taller de l'app FR-4C · Gràfiques: la batalla naval sobre una graella cartesiana (postMessage fr4c-bat-*).
+   Contra la màquina o contra un company (cadascú al seu ordinador: l'app fa de pont amb Firebase). */
+:root{--taronja:#f26b1d;--blau:#2a6fd6;--mar:#1d5fa8;--tinta:#1b1b1b;--ok:#2c9a58;--ko:#d64242;--fons:#eaf4fb}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;font-family:"Atkinson Hyperlegible",system-ui,sans-serif;color:var(--tinta);overflow:hidden;user-select:none}
+body{background:linear-gradient(#cfe8fb 0%,#e9f5fd 55%,#bfe0f7 100%)}
+.ones{position:fixed;left:0;right:0;bottom:0;height:70px;pointer-events:none;z-index:0;overflow:hidden}
+.ones svg{position:absolute;bottom:0;width:200%;height:70px;animation:ona 9s linear infinite}.ones svg.o2{animation-duration:14s;opacity:.55;bottom:6px}
+@keyframes ona{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.gavina{position:fixed;top:56px;left:-60px;font-size:26px;animation:vola 26s linear infinite;z-index:0;pointer-events:none;opacity:.8}
+@keyframes vola{0%{transform:translate(0,0)}25%{transform:translate(30vw,14px)}50%{transform:translate(60vw,-6px)}75%{transform:translate(90vw,12px)}100%{transform:translate(115vw,0)}}
+#app{position:relative;z-index:1;height:100%;display:flex;flex-direction:column}
+.cap{display:flex;align-items:center;gap:12px;padding:8px 16px;font-weight:700}
+.cap .tit{font-family:"Bricolage Grotesque",sans-serif;font-size:1.3rem}
+.cap .dreta{margin-left:auto;display:flex;gap:8px;align-items:center}
+.btn{border:3px solid var(--tinta);background:#fff;color:var(--tinta);border-radius:12px;padding:6px 12px;font:inherit;font-weight:700;cursor:pointer}
+.btn:hover:not(:disabled){background:#fff3e6}.btn:disabled{opacity:.45;cursor:default}
+.big{font:inherit;font-family:"Bricolage Grotesque",sans-serif;font-size:1.35rem;padding:12px 22px;border-radius:16px;border:4px solid var(--tinta);background:var(--taronja);color:#fff;cursor:pointer;box-shadow:0 5px 0 #0003}
+.big.sec{background:#fff;color:var(--tinta)}.big:disabled{opacity:.5;cursor:default}
+.big:active:not(:disabled){transform:translateY(3px);box-shadow:0 2px 0 #0003}
+.cos{flex:1;min-height:0;padding:0 16px 16px;display:flex;gap:16px}
+.caixa{background:#fffffff2;border:4px solid var(--tinta);border-radius:20px;padding:14px 16px;box-shadow:0 6px 0 #0002}
+h1,h2,h3{font-family:"Bricolage Grotesque",sans-serif;margin:0}
+.centre{margin:auto;display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center;max-width:900px}
+.pers{display:flex;gap:22px;justify-content:center}
+.pers button{width:230px;border:4px solid var(--tinta);border-radius:20px;background:#fff;padding:10px;cursor:pointer;font:inherit;font-weight:800;font-size:1.15rem;box-shadow:0 5px 0 #0003}
+.pers button.on{background:#ffe7d3;border-color:var(--taronja);transform:translateY(-4px)}
+.pers button svg{width:150px;height:150px;display:block;margin:0 auto}
+.modes{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
+.fila{display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap}
+.codi{font-family:"Bricolage Grotesque",sans-serif;font-size:3.4rem;letter-spacing:.2em;background:#fff;border:4px dashed var(--taronja);border-radius:16px;padding:4px 20px}
+input.cin{width:160px;height:58px;border:3px solid var(--tinta);border-radius:12px;font:inherit;font-size:2rem;font-weight:800;text-align:center;letter-spacing:.15em}
+.esq{width:41%;display:flex;flex-direction:column;gap:10px;min-height:0}
+.dre{flex:1;display:flex;flex-direction:column;gap:10px;min-height:0}
+.tauler{width:100%;height:auto;max-height:100%;display:block;background:#fff;border:3px solid var(--tinta);border-radius:14px}
+.zona-t{flex:1;min-height:0;display:flex;align-items:center;justify-content:center}
+.zona-t svg{max-height:100%;width:auto;max-width:100%}
+.etq{font-family:"Bricolage Grotesque",sans-serif;font-size:1.05rem;display:flex;align-items:center;gap:8px}
+.etq .pt{margin-left:auto;font-size:.95rem;font-family:"Atkinson Hyperlegible",sans-serif;font-weight:700}
+.coord{display:flex;align-items:center;justify-content:center;gap:6px;font-size:2.2rem;font-weight:900;font-family:"Bricolage Grotesque",sans-serif}
+.coord label{display:flex;flex-direction:column;align-items:center;font-size:.8rem;color:#666}
+.coord input{width:84px;height:56px;border:3px solid var(--tinta);border-radius:12px;font:inherit;font-size:1.8rem;text-align:center;font-family:"Bricolage Grotesque",sans-serif}
+.coord input:disabled{background:#eee}
+.perso{display:flex;align-items:center;gap:10px}
+.perso .av{width:76px;flex:none}.perso .av svg{width:100%;height:auto;display:block}
+.baf{background:#fff;border:3px solid var(--tinta);border-radius:16px;padding:8px 12px;font-weight:700;font-size:1.02rem;line-height:1.3;position:relative;flex:1}
+.baf b{color:var(--taronja)}
+.av.salta{animation:salta .55s}@keyframes salta{0%,100%{transform:translateY(0)}40%{transform:translateY(-14px) rotate(-6deg)}}
+.av.tremola{animation:trem .45s}@keyframes trem{0%,100%{transform:translateX(0)}25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+.pregunta{background:#fff7ee;border:4px solid var(--taronja);border-radius:16px;padding:10px 14px;display:flex;flex-direction:column;gap:8px;align-items:center;animation:apar .3s}
+@keyframes apar{from{transform:scale(.8);opacity:0}to{transform:scale(1);opacity:1}}
+.pregunta .q{font-size:1.2rem;font-weight:800;text-align:center}
+.flota{display:flex;flex-wrap:wrap;gap:8px}
+.flota button{border:3px solid var(--tinta);border-radius:12px;background:#fff;padding:5px 10px;font:inherit;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:6px}
+.flota button.on{background:var(--taronja);color:#fff}.flota button.posat{background:#e8f6ee;border-color:var(--ok)}
+.flota i{display:inline-flex;gap:2px}.flota i b{width:10px;height:10px;border-radius:50%;background:#6b7a8f;display:block}
+.torn{font-family:"Bricolage Grotesque",sans-serif;font-size:1.15rem;padding:4px 12px;border-radius:999px;background:#fff;border:3px solid var(--tinta)}
+.torn.meu{background:var(--taronja);color:#fff}
+.barra{height:8px;border-radius:99px;background:#0001;overflow:hidden}.barra i{display:block;height:100%;background:var(--taronja);transition:width 1s linear}
+.msg{min-height:1.5em;font-weight:800;text-align:center;font-size:1.05rem}.msg.ok{color:var(--ok)}.msg.ko{color:var(--ko)}
+.mini{font-size:.9rem;color:#555}
+.fi .estrella{font-size:4rem}
+.mar-punt{transition:r .2s}
+.esquitx{animation:esq .6s ease-out}@keyframes esq{from{r:2;opacity:1}to{r:22;opacity:0}}
+.boom{animation:boom .5s ease-out}@keyframes boom{0%{transform:scale(.2)}60%{transform:scale(1.35)}100%{transform:scale(1)}}
+.boom,.mira{transform-box:fill-box;transform-origin:center}
+.mira{animation:mira 1s ease-in-out infinite}@keyframes mira{50%{transform:scale(1.25)}}
+.amagat{display:none!important}
+</style>
+</head>
+<body>
+<div class="gavina">🕊️</div>
+<div class="ones"><svg viewBox="0 0 1200 70" preserveAspectRatio="none" class="o2"><path d="M0 30 Q75 10 150 30 T300 30 T450 30 T600 30 T750 30 T900 30 T1050 30 T1200 30 V70 H0Z" fill="#5aa7e6"/></svg><svg viewBox="0 0 1200 70" preserveAspectRatio="none"><path d="M0 40 Q75 22 150 40 T300 40 T450 40 T600 40 T750 40 T900 40 T1050 40 T1200 40 V70 H0Z" fill="#2f86d6"/></svg></div>
+<div id="app">
+  <div class="cap"><span class="tit">⚓ Batalla naval de coordenades</span><span id="info" class="mini"></span>
+    <span class="dreta"><span id="rellotge" class="torn amagat"></span><button class="btn" id="mus" title="Música">🎵</button><button class="btn" id="so" title="So">🔊</button><button class="btn" id="surt">Surt</button></span></div>
+  <div class="cos" id="cos"></div>
+</div>
+<script>
+'use strict';
+const $ = (s, el = document) => el.querySelector(s), $$ = (s, el = document) => [...el.querySelectorAll(s)];
+const N = '#1b1b1b', T = '#f26b1d', B = '#2a6fd6';
+const rnd = (a, b) => a + Math.floor(Math.random() * (b - a + 1)), tria = a => a[Math.floor(Math.random() * a.length)];
+const NIVELLS = { 1: { min: -3, max: 3, pas: 1 }, 2: { min: -4, max: 4, pas: 1 }, 3: { min: -8, max: 8, pas: 2 } };
+const FLOTA = [{ id: 'pa', nom: 'Portaavions', mida: 4 }, { id: 'fr', nom: 'Fragata', mida: 3 }, { id: 'sb', nom: 'Submarí', mida: 2 }, { id: 'pt', nom: 'Patrullera', mida: 2 }];
+const TOTAL = FLOTA.reduce((s, f) => s + f.mida, 0);
+const MINUTS = 12, TEMPS_TORN = 40;
+const M = { dinsApp: false, nom: '', nivell: 2, record: 0, so: true, mus: true, pers: null, mode: null };
+try { M.so = localStorage.getItem('fr4c_bat_so') !== '0'; M.mus = localStorage.getItem('fr4c_bat_mus') !== '0'; } catch (e) { }
+const envia = m => { try { if (window.parent !== window) window.parent.postMessage(m, '*'); } catch (e) { } };
+const fz = v => (v < 0 ? '−' : '') + Math.abs(v);
+const pt = (x, y) => `(${fz(x)}, ${fz(y)})`;
+const K = (x, y) => `${x},${y}`;
+
+/* ---------- so i música (tot generat aquí, sense fitxers) ---------- */
+let AC = null; const ac = () => { if (!AC) AC = new (window.AudioContext || window.webkitAudioContext)(); if (AC.state === 'suspended') AC.resume(); return AC; };
+function nota(f, ini, dur, ona = 'sine', vol = .1, f2 = null) { const c = ac(), t = c.currentTime + ini; const o = c.createOscillator(), g = c.createGain(); o.type = ona; o.frequency.setValueAtTime(f, t); if (f2) o.frequency.exponentialRampToValueAtTime(f2, t + dur); g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + .015); g.gain.exponentialRampToValueAtTime(.0001, t + dur); o.connect(g); g.connect(c.destination); o.start(t); o.stop(t + dur + .05); }
+function soroll(ini, dur, freq, vol = .25, tipus = 'bandpass') { const c = ac(), t = c.currentTime + ini; const n = c.createBuffer(1, c.sampleRate * dur, c.sampleRate); const d = n.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / d.length); const s = c.createBufferSource(); s.buffer = n; const fl = c.createBiquadFilter(); fl.type = tipus; fl.frequency.value = freq; const g = c.createGain(); g.gain.value = vol; s.connect(fl); fl.connect(g); g.connect(c.destination); s.start(t); }
+function so(t) {
+  if (!M.so) return; try {
+    if (t === 'clic') nota(900, 0, .04, 'square', .03);
+    else if (t === 'aigua') { soroll(0, .5, 900, .35); nota(500, .02, .25, 'sine', .05, 200); }
+    else if (t === 'tocat') { soroll(0, .45, 300, .5, 'lowpass'); nota(110, 0, .4, 'sine', .25, 50); }
+    else if (t === 'enfonsat') { soroll(0, .8, 250, .5, 'lowpass'); nota(420, .05, .9, 'sawtooth', .06, 70); nota(90, .1, .7, 'sine', .25, 40); }
+    else if (t === 'ok') { nota(660, 0, .12, 'sine', .12); nota(990, .1, .22, 'sine', .12); }
+    else if (t === 'ko') nota(240, 0, .3, 'triangle', .14, 150);
+    else if (t === 'guanya') [523, 659, 784, 1047, 784, 1047].forEach((f, i) => nota(f, i * .14, i === 5 ? .6 : .2, 'triangle', .12));
+    else if (t === 'perd') [440, 392, 349, 262].forEach((f, i) => nota(f, i * .2, .3, 'triangle', .1));
+    else if (t === 'meu') { nota(640, 0, .13, 'triangle', .08, 900); nota(900, .12, .2, 'triangle', .08, 540); }
+    else if (t === 'bip') nota(1200, 0, .08, 'sine', .06);
+  } catch (e) { }
+}
+// Una cançó mariner pròpia (6/8), suau, només a les pantalles d'entrada
+const CANCO = [[392, 1], [494, .5], [587, 1], [494, .5], [440, 1], [392, .5], [440, 1.5], [392, 1], [330, .5], [294, 1.5], [392, 1], [494, .5], [587, 1], [659, .5], [587, 1], [494, .5], [440, 1.5], [494, 1], [440, .5], [392, 1.5]];
+const MUS = { on: false, tm: null, i: 0 };
+function musica(on) {
+  clearTimeout(MUS.tm); MUS.on = on; if (!on || !M.mus || !M.so) return;
+  const toca = () => { if (!MUS.on) return; const [f, d] = CANCO[MUS.i % CANCO.length]; try { nota(f, 0, d * .32, 'triangle', .045); nota(f / 2, 0, d * .3, 'sine', .03); } catch (e) { } MUS.i++; MUS.tm = setTimeout(toca, d * 330); };
+  toca();
+}
+
+/* ---------- personatges mariners ---------- */
+function robotMariner(estat = 'normal') {
+  const ulls = estat === 'content' ? `<path d="M48 68 q7 -10 14 0 M78 68 q7 -10 14 0" stroke="${T}" stroke-width="5" fill="none" stroke-linecap="round"/>` : estat === 'pensa' ? `<rect x="48" y="62" width="14" height="7" rx="3.5" fill="${T}"/><rect x="78" y="62" width="14" height="7" rx="3.5" fill="${T}"/>` : `<circle cx="55" cy="66" r="7.5" fill="${T}"/><circle cx="85" cy="66" r="7.5" fill="${T}"/>`;
+  const boca = estat === 'pensa' ? `<path d="M62 84 h16" stroke="${T}" stroke-width="5" stroke-linecap="round"/>` : `<path d="M60 ${estat === 'content' ? 80 : 81} q10 ${estat === 'content' ? 11 : 8} 20 0" stroke="${T}" stroke-width="5" fill="none" stroke-linecap="round"/>`;
+  return `<svg viewBox="0 0 150 166" role="img" aria-label="FR-4C, el robot mariner"><line x1="70" y1="16" x2="70" y2="2" stroke="${N}" stroke-width="5"/><circle cx="70" cy="6" r="6" fill="${T}" stroke="${N}" stroke-width="3.5"/>
+    <line x1="48" y1="138" x2="31" y2="153" stroke="${N}" stroke-width="5" stroke-linecap="round"/><circle cx="27" cy="156" r="7" fill="${T}" stroke="${N}" stroke-width="4"/><path d="M92 134 L110 123 L116 107" fill="none" stroke="${N}" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="117" cy="101" r="7" fill="${T}" stroke="${N}" stroke-width="4"/>
+    <rect x="14" y="62" width="14" height="32" rx="6" fill="#fff" stroke="${N}" stroke-width="4"/><rect x="112" y="62" width="14" height="32" rx="6" fill="#fff" stroke="${N}" stroke-width="4"/><rect x="24" y="40" width="92" height="78" rx="22" fill="#fff" stroke="${N}" stroke-width="7"/><rect x="36" y="52" width="68" height="52" rx="12" fill="${N}"/><g transform="translate(0 6)">${ulls}${boca}</g>
+    <path d="M30 40 Q70 4 110 40 Z" fill="#fff" stroke="${N}" stroke-width="5" stroke-linejoin="round"/><rect x="24" y="33" width="92" height="12" rx="6" fill="#fff" stroke="${N}" stroke-width="5"/><path d="M40 27 Q70 16 100 27" fill="none" stroke="${B}" stroke-width="5"/>
+    <rect x="46" y="120" width="48" height="36" rx="10" fill="#2b4f9e" stroke="${N}" stroke-width="5"/><path d="M48 121 L70 140 L92 121" fill="#fff" stroke="${N}" stroke-width="3" stroke-linejoin="round"/><path d="M52 122 L70 137 L88 122" fill="none" stroke="${B}" stroke-width="2.5"/><path d="M63 140 L70 152 L77 140 Z" fill="#d33" stroke="${N}" stroke-width="2.5" stroke-linejoin="round"/></svg>`;
+}
+function comaMariner(estat = 'normal') {
+  const ulls = estat === 'content' ? `<path d="M30 27q3.5 -5 7 0M43 27q3.5 -5 7 0" stroke="${N}" stroke-width="2.6" fill="none" stroke-linecap="round"/>` : estat === 'pensa' ? `<path d="M30 26h7M43 26h7" stroke="${N}" stroke-width="3" stroke-linecap="round"/>` : `<ellipse cx="33.5" cy="26" rx="2.6" ry="3.6" fill="${N}"/><ellipse cx="46.5" cy="26" rx="2.6" ry="3.6" fill="${N}"/>`;
+  return `<svg viewBox="0 -14 84 92" role="img" aria-label="En Coma, el gat mariner"><path d="M60 60Q82 58 74 36" fill="none" stroke="${N}" stroke-width="10" stroke-linecap="round"/><path d="M60 60Q82 58 74 36" fill="none" stroke="${T}" stroke-width="5.5" stroke-linecap="round"/>
+    <ellipse cx="40" cy="54" rx="21" ry="18" fill="${T}" stroke="${N}" stroke-width="3"/><path d="M26 44 L40 50 L54 44 L54 52 L26 52Z" fill="#fff" stroke="${N}" stroke-width="2" stroke-linejoin="round"/><path d="M28 47 L40 52 L52 47" fill="none" stroke="${B}" stroke-width="2"/><path d="M37 51 L40 58 L43 51Z" fill="#d33" stroke="${N}" stroke-width="1.5"/><ellipse cx="40" cy="64" rx="9" ry="7" fill="#fff"/>
+    <path d="M25 20L20 3L35 12Z" fill="${T}" stroke="${N}" stroke-width="3" stroke-linejoin="round"/><path d="M55 20L60 3L45 12Z" fill="${T}" stroke="${N}" stroke-width="3" stroke-linejoin="round"/>
+    <circle cx="40" cy="27" r="17" fill="${T}" stroke="${N}" stroke-width="3"/>${ulls}<path d="M38 31h4l-2 2.6Z" fill="${N}"/><path d="M40 33.6q-3 4 -6 1M40 33.6q3 4 6 1" fill="none" stroke="${N}" stroke-width="1.8" stroke-linecap="round"/>
+    <path d="M26 31l-9 -2M26 34l-9 2M54 31l9 -2M54 34l9 2" stroke="${N}" stroke-width="1.4" stroke-linecap="round"/>
+    <ellipse cx="40" cy="6" rx="21" ry="7" fill="#24418a" stroke="${N}" stroke-width="2.5"/><rect x="25" y="7" width="30" height="6" rx="3" fill="#fff" stroke="${N}" stroke-width="2"/><path d="M53 11 q6 4 4 10" fill="none" stroke="#24418a" stroke-width="3" stroke-linecap="round"/><circle cx="40" cy="-3" r="5" fill="#d33" stroke="${N}" stroke-width="2"/></svg>`;
+}
+const persSvg = (p, e) => p === 'coma' ? comaMariner(e) : robotMariner(e);
+const persNom = p => p === 'coma' ? 'en Coma' : 'FR-4C';
+const persNomM = p => p === 'coma' ? 'En Coma' : 'FR-4C';
+
+/* ---------- el tauler cartesià ---------- */
+const C = 44, MG = 34;
+const L = () => NIVELLS[M.nivell];
+const valors = () => { const l = L(), o = []; for (let v = l.min; v <= l.max; v += l.pas) o.push(v); return o; };
+const mida = () => 2 * MG + (valors().length - 1) * C;
+const px = x => MG + (x - L().min) / L().pas * C, py = y => MG + (L().max - y) / L().pas * C;
+const existeix = (x, y) => { const l = L(); return x >= l.min && x <= l.max && y >= l.min && y <= l.max && (x - l.min) % l.pas === 0 && (y - l.min) % l.pas === 0; };
+function fons() {
+  const S = mida(), vs = valors(); let s = `<rect width="${S}" height="${S}" fill="#f2f8fd"/>`; let l = '';
+  for (const v of vs) { l += `M${px(v)} ${py(L().min) + 10}V${py(L().max) - 10}M${px(L().min) - 10} ${py(v)}H${px(L().max) + 10}`; }
+  s += `<path d="${l}" stroke="#c9dcef" stroke-width="1.5"/>`;
+  s += `<path d="M${px(L().min) - 14} ${py(0)}H${px(L().max) + 16}M${px(0)} ${py(L().min) + 14}V${py(L().max) - 16}" stroke="${N}" stroke-width="2.6"/><path d="M${px(L().max) + 22} ${py(0)}l-9 -5v10Z M${px(0)} ${py(L().max) - 22}l-5 9h10Z" fill="${N}"/>`;
+  for (const v of vs) { if (v !== 0) { s += `<text x="${px(v)}" y="${py(0) + 17}" text-anchor="middle" font-size="13" font-weight="800" fill="${N}">${fz(v)}</text><text x="${px(0) - 7}" y="${py(v) + 4.5}" text-anchor="end" font-size="13" font-weight="800" fill="${N}">${fz(v)}</text>`; } }
+  s += `<text x="${px(0) - 6}" y="${py(0) + 16}" text-anchor="end" font-size="12" font-weight="800">0</text><text x="${px(L().max) + 24}" y="${py(0) - 8}" text-anchor="end" font-size="15" font-weight="900" fill="${B}">x</text><text x="${px(0) + 9}" y="${py(L().max) - 14}" font-size="15" font-weight="900" fill="${B}">y</text>`;
+  for (const x of vs) for (const y of vs) s += `<circle cx="${px(x)}" cy="${py(y)}" r="2.6" fill="#8fb0d0"/>`;
+  return s;
+}
+function vaixellSvg(v, { amagat = false, enfonsat = false, prev = null } = {}) {
+  if (amagat) return '';
+  const xs = v.cells.map(c => px(c[0])), ys = v.cells.map(c => py(c[1]));
+  const x0 = Math.min(...xs) - 15, y0 = Math.min(...ys) - 15, w = Math.max(...xs) - Math.min(...xs) + 30, h = Math.max(...ys) - Math.min(...ys) + 30;
+  const col = prev === 'mal' ? '#f3b4b4' : prev === 'be' ? '#bfe8cd' : enfonsat ? '#4a4f57' : '#8a96a8';
+  return `<rect x="${x0}" y="${y0}" width="${w}" height="${h}" rx="15" fill="${col}" stroke="${N}" stroke-width="2.5" opacity="${prev ? .85 : .9}"/>` + (prev ? '' : `<text x="${x0 + w / 2}" y="${y0 + h / 2 + 4}" text-anchor="middle" font-size="11" font-weight="900" fill="#fff">${w > h ? v.nom : v.nom[0]}</text>`);
+}
+const marcaTret = (x, y, r, nou = false) => r === 'a'
+  ? `<circle cx="${px(x)}" cy="${py(y)}" r="9" fill="#9cc9f2" stroke="${B}" stroke-width="2.5"/>${nou ? `<circle class="esquitx" cx="${px(x)}" cy="${py(y)}" r="22" fill="none" stroke="${B}" stroke-width="3"/>` : ''}`
+  : `<g class="${nou ? 'boom' : ''}"><circle cx="${px(x)}" cy="${py(y)}" r="12" fill="#ffb347" stroke="${N}" stroke-width="2"/><path d="M${px(x) - 7} ${py(y) - 7}l14 14M${px(x) + 7} ${py(y) - 7}l-14 14" stroke="#c0281e" stroke-width="4" stroke-linecap="round"/></g>`;
+function tauler(id, { flota = [], amaga = false, trets = {}, nou = null, cur = null, prev = null, enfonsats = [] }) {
+  const S = mida();
+  let s = `<svg id="${id}" class="tauler" viewBox="0 0 ${S} ${S}" tabindex="0">${fons()}`;
+  for (const v of flota) s += vaixellSvg(v, { amagat: amaga && !enfonsats.includes(v.id), enfonsat: enfonsats.includes(v.id) });
+  if (prev) s += vaixellSvg(prev, { prev: prev.ok ? 'be' : 'mal' });
+  for (const [k, r] of Object.entries(trets)) { const [x, y] = k.split(',').map(Number); s += marcaTret(x, y, r, k === nou); }
+  if (cur) s += `<circle class="mira" cx="${px(cur[0])}" cy="${py(cur[1])}" r="14" fill="none" stroke="${T}" stroke-width="3" stroke-dasharray="5 4"/>`;
+  return s + '</svg>';
+}
+function punt(svg, e) { const p = svg.createSVGPoint(); p.x = e.clientX; p.y = e.clientY; const q = p.matrixTransform(svg.getScreenCTM().inverse()); const l = L(); const x = Math.round((q.x - MG) / C) * l.pas + l.min, y = l.max - Math.round((q.y - MG) / C) * l.pas; return existeix(x, y) ? [x, y] : null; }
+
+/* ---------- flotes ---------- */
+const celles = (x, y, mida, hor) => [...Array(mida).keys()].map(i => hor ? [x + i * L().pas, y] : [x, y + i * L().pas]);
+const ocupa = flota => new Set(flota.flatMap(v => v.cells.map(c => K(...c))));
+function caben(cells, flota, sense = null) { const o = ocupa(flota.filter(v => v.id !== sense)); return cells.every(c => existeix(...c) && !o.has(K(...c))); }
+function flotaAtzar() { for (;;) { const f = []; let ok = true; for (const v of FLOTA) { let posat = false; for (let k = 0; k < 200 && !posat; k++) { const hor = Math.random() < .5; const vs = valors(); const cells = celles(tria(vs), tria(vs), v.mida, hor); if (caben(cells, f)) { f.push({ ...v, cells }); posat = true; } } if (!posat) { ok = false; break; } } if (ok) return f; } }
+const tocades = (flota, trets) => flota.flatMap(v => v.cells).filter(c => trets[K(...c)] && trets[K(...c)] !== 'a').length;
+const enfonsatsDe = (flota, trets) => flota.filter(v => v.cells.every(c => trets[K(...c)] && trets[K(...c)] !== 'a')).map(v => v.id);
+function resolTret(flota, trets, x, y) { const v = flota.find(v => v.cells.some(c => c[0] === x && c[1] === y)); if (!v) return { r: 'a' }; const t2 = { ...trets, [K(x, y)]: 't' }; return v.cells.every(c => t2[K(...c)] && t2[K(...c)] !== 'a') ? { r: 'e', v } : { r: 't', v }; }
+
+/* ---------- estat de la partida ---------- */
+const P = {}; window.__P = P;
+function nouP() { Object.assign(P, { meva: [], seva: [], tretsMeus: {}, tretsSeus: {}, torn: 'jo', fase: 'colloca', t0: 0, encerts: 0, errors: 0, respostes: 0, ben: 0, fallades: [], dispars: 0, pendent: null, sel: 'pa', hor: true, cur: [0, 0], nou: null, nouMeu: null, fi: false, tTorn: 0, guanya: null }); }
+const rival = () => M.pers === 'coma' ? 'robot' : 'coma';
+let NET = null; // mode company: { codi, jo:'a'|'b', p (partida), vistos }
+
+/* ---------- pantalles ---------- */
+function pinta(html) { $('#cos').innerHTML = html; }
+function inici() {
+  $('#fiCapa')?.remove(); nouP(); M.pantalla = 'inici'; NET = null; $('#rellotge').classList.add('amagat'); $('#info').textContent = M.nom ? `Capità/ana: ${M.nom} · nivell ${M.nivell}` : `Nivell ${M.nivell}`;
+  pinta(`<div class="centre caixa" style="margin:auto">
+    <h1>Tria el teu mariner</h1>
+    <div class="pers"><button data-p="robot" class="${M.pers === 'robot' ? 'on' : ''}">${robotMariner('content')}FR-4C</button><button data-p="coma" class="${M.pers === 'coma' ? 'on' : ''}">${comaMariner('content')}En Coma</button></div>
+    <p class="mini">Enfonsa la flota de l'altre dient punts de la graella amb les seves <b>coordenades (x, y)</b>. Cada flota té 4 vaixells: portaavions (4 punts), fragata (3), submarí (2) i patrullera (2).</p>
+    ${!M.dinsApp ? `<div class="fila"><b>Nivell:</b>${[1, 2, 3].map(n => `<button class="btn ${n === M.nivell ? 'on' : ''}" data-n="${n}" style="${n === M.nivell ? 'background:#ffe7d3' : ''}">${n}</button>`).join('')}</div>` : ''}
+    <div class="modes"><button class="big" id="vsM" ${M.pers ? '' : 'disabled'}>🤖 Contra la màquina</button><button class="big sec" id="vsC" ${M.pers ? '' : 'disabled'}>👫 Contra un company</button></div></div>`);
+  $$('.pers button').forEach(b => b.onclick = () => { M.pers = b.dataset.p; so('meu'); if (!MUS.on) musica(true); inici(); });
+  $$('[data-n]').forEach(b => b.onclick = () => { M.nivell = +b.dataset.n; inici(); });
+  $('#vsM').onclick = () => { M.mode = 'maquina'; so('clic'); colloca(); };
+  $('#vsC').onclick = () => { M.mode = 'company'; so('clic'); company(); };
+}
+function company(err = '') {
+  M.pantalla = 'company';
+  pinta(`<div class="centre caixa" style="margin:auto"><h2>Partida amb un company</h2><p>Un de vosaltres <b>crea</b> la partida i l'altre s'hi <b>uneix</b> amb el codi.</p>
+    <div class="modes"><button class="big" id="crea">Crea una partida</button></div>
+    <div class="fila"><input class="cin" id="cin" maxlength="4" inputmode="numeric" placeholder="codi"><button class="big sec" id="uneix">Uneix-me</button></div>
+    <p class="msg ko" id="err">${err}</p><button class="btn" id="enrere">← Enrere</button></div>`);
+  $('#enrere').onclick = inici;
+  $('#crea').onclick = () => { if (!M.dinsApp) return company('El joc en parella només funciona dins de l\'app FR-4C.'); $('#crea').disabled = true; envia({ tipus: 'fr4c-bat-net', op: 'crea', nivell: M.nivell, jo: { nom: M.nom || 'Mariner', pers: M.pers } }); };
+  const uneix = () => { const c = $('#cin').value.trim(); if (!/^\d{4}$/.test(c)) return company('El codi té 4 xifres.'); if (!M.dinsApp) return company('El joc en parella només funciona dins de l\'app FR-4C.'); envia({ tipus: 'fr4c-bat-net', op: 'uneix', codi: c, jo: { nom: M.nom || 'Mariner', pers: M.pers } }); };
+  $('#uneix').onclick = uneix; $('#cin').onkeydown = e => { if (e.key === 'Enter') uneix(); };
+}
+function espera(codi) {
+  M.pantalla = 'espera';
+  pinta(`<div class="centre caixa" style="margin:auto"><h2>Partida creada</h2><p>Digues aquest codi al teu company perquè s'hi uneixi:</p><div class="codi">${codi}</div>
+    <div class="perso" style="width:420px"><div class="av">${persSvg(M.pers, 'normal')}</div><div class="baf">Esperant el company… Quan entri, començareu a col·locar els vaixells.</div></div><button class="btn" id="cancel">Cancel·la</button></div>`);
+  $('#cancel').onclick = () => { envia({ tipus: 'fr4c-bat-net', op: 'surt' }); inici(); };
+}
+
+/* ---------- col·locar la flota ---------- */
+function colloca() {
+  musica(true); P.fase = 'colloca'; M.pantalla = 'colloca'; P.cur = [L().min, L().min];
+  const pinta2 = () => {
+    const v = FLOTA.find(f => f.id === P.sel); let prev = null;
+    if (v && P.hov) { const cells = celles(P.hov[0], P.hov[1], v.mida, P.hor); prev = { ...v, cells, ok: caben(cells, P.meva, v.id) }; }
+    $('#zt').innerHTML = tauler('tmeu', { flota: P.meva, prev, cur: P.cur });
+    $('#llista').innerHTML = FLOTA.map(f => `<button data-v="${f.id}" class="${f.id === P.sel ? 'on' : ''} ${P.meva.some(x => x.id === f.id) ? 'posat' : ''}">${f.nom} <i>${'<b></b>'.repeat(f.mida)}</i></button>`).join('');
+    $('#llest').disabled = P.meva.length !== FLOTA.length;
+    $('#gira').textContent = P.hor ? '↔ Horitzontal (R)' : '↕ Vertical (R)';
+    enllaca();
+  };
+  const posa = (x, y) => {
+    const ja = P.meva.find(v => v.cells.some(c => c[0] === x && c[1] === y));
+    if (ja && (!P.sel || P.meva.some(v => v.id === P.sel))) { P.meva = P.meva.filter(v => v !== ja); P.sel = ja.id; so('clic'); return pinta2(); }
+    const v = FLOTA.find(f => f.id === P.sel); if (!v) return;
+    const cells = celles(x, y, v.mida, P.hor);
+    if (!caben(cells, P.meva, v.id)) { so('ko'); diu(`Aquí no hi cap el ${v.nom.toLowerCase()}: surt de la graella o en toca un altre.`, 'pensa'); return; }
+    P.meva = P.meva.filter(f => f.id !== v.id).concat([{ ...v, cells }]); so('aigua');
+    P.sel = (FLOTA.find(f => !P.meva.some(m => m.id === f.id)) || {}).id || null;
+    diu(P.sel ? `Molt bé! Ara el <b>${FLOTA.find(f => f.id === P.sel).nom.toLowerCase()}</b>.` : 'Flota a punt! Prem <b>Llest</b>.', 'content'); pinta2();
+  };
+  const enllaca = () => {
+    const svg = $('#tmeu');
+    svg.onmousemove = e => { const q = punt(svg, e); if (q && (!P.hov || q[0] !== P.hov[0] || q[1] !== P.hov[1])) { P.hov = q; P.cur = q; pinta2(); $('#tmeu').focus({ preventScroll: true }); } };
+    svg.onclick = e => { const q = punt(svg, e); if (q) posa(...q); };
+    svg.onkeydown = e => { const d = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, 1], ArrowDown: [0, -1] }[e.key];
+      if (d) { e.preventDefault(); const l = L(); const nx = P.cur[0] + d[0] * l.pas, ny = P.cur[1] + d[1] * l.pas; if (existeix(nx, ny)) { P.cur = [nx, ny]; P.hov = P.cur; pinta2(); $('#tmeu').focus(); } }
+      else if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); posa(...P.cur); $('#tmeu')?.focus(); }
+      else if (e.key === 'r' || e.key === 'R') { P.hor = !P.hor; pinta2(); $('#tmeu').focus(); } };
+    $$('#llista button').forEach(b => b.onclick = () => { P.sel = b.dataset.v; so('clic'); pinta2(); });
+  };
+  pinta(`<div class="esq caixa"><h2>Col·loca la teva flota</h2>
+      <p class="mini" style="margin:0">Tria un vaixell i clica el punt on comença. Horitzontal: creix cap a la dreta. Vertical: creix cap amunt. Per moure'l, clica'l i torna'l a posar. També pots fer servir les fletxes i Enter.</p>
+      <div class="flota" id="llista"></div>
+      <div class="fila" style="justify-content:flex-start"><button class="btn" id="gira"></button><button class="btn" id="atzar">🎲 A l'atzar</button></div>
+      <div class="perso" style="margin-top:auto"><div class="av" id="av">${persSvg(M.pers, 'normal')}</div><div class="baf" id="baf">Comença pel <b>portaavions</b>: ocupa 4 punts.</div></div>
+      <button class="big" id="llest" disabled>Llest! ⚓</button></div>
+    <div class="dre"><div class="zona-t" id="zt"></div></div>`);
+  $('#gira').onclick = () => { P.hor = !P.hor; so('clic'); pinta2(); };
+  $('#atzar').onclick = () => { P.meva = flotaAtzar(); P.sel = null; so('aigua'); diu('Flota col·locada a l\'atzar. Si t\'agrada, prem <b>Llest</b>.', 'content'); pinta2(); };
+  $('#llest').onclick = () => { so('ok'); musica(false); if (M.mode === 'maquina') { P.seva = flotaAtzar(); comencaJoc(); } else { envia({ tipus: 'fr4c-bat-net', op: 'escriu', upd: { [`${NET.jo}/flota`]: JSON.stringify(P.meva.map(v => ({ id: v.id, cells: v.cells }))), [`${NET.jo}/llest`]: true } }); esperaRival(); } };
+  pinta2(); $('#tmeu').focus({ preventScroll: true });
+}
+function esperaRival() { M.pantalla = 'esperaRival'; pinta(`<div class="centre caixa" style="margin:auto"><h2>Flota llesta!</h2><div class="perso" style="width:440px"><div class="av">${persSvg(M.pers, 'content')}</div><div class="baf">Esperant que el teu company acabi de col·locar els vaixells…</div></div></div>`); }
+function diu(t, e) { const b = $('#baf'), a = $('#av'); if (b) b.innerHTML = t; if (a && e) { a.innerHTML = persSvg(M.pers, e); a.classList.remove('salta', 'tremola'); void a.offsetWidth; if (e === 'content' || e === 'pensa') a.classList.add(e === 'content' ? 'salta' : 'tremola'); } }
+
+/* ---------- el joc ---------- */
+function comencaJoc() {
+  P.fase = 'joc'; P.t0 = Date.now(); M.pantalla = 'joc'; P.torn = M.mode === 'maquina' ? 'jo' : (NET.p.torn === NET.jo ? 'jo' : 'riv'); P.tTorn = Date.now(); P.cur = [0, 0];
+  $('#rellotge').classList.remove('amagat');
+  const nomR = M.mode === 'maquina' ? persNomM(rival()) : (NET.p[NET.jo === 'a' ? 'b' : 'a']?.nom || 'El company');
+  P.nomR = nomR; P.persR = M.mode === 'maquina' ? rival() : (NET.p[NET.jo === 'a' ? 'b' : 'a']?.pers || rival());
+  pinta(`<div class="esq caixa"><div class="etq">⚓ La meva flota <span class="pt" id="ptMeu"></span></div><div class="zona-t" id="zm"></div>
+      <div id="preg"></div>
+      <div class="perso"><div class="av" id="av">${persSvg(M.pers, 'normal')}</div><div class="baf" id="baf"></div></div></div>
+    <div class="dre caixa"><div class="etq">🎯 Flota de ${nomR} <span class="pt" id="ptSeu"></span></div><div class="zona-t" id="ze"></div>
+      <div class="fila"><span class="torn" id="torn"></span><div class="coord">(<label><input id="ix" maxlength="4" autocomplete="off" inputmode="text">x</label>,<label><input id="iy" maxlength="4" autocomplete="off" inputmode="text">y</label>)</div><button class="big" id="foc">Dispara! 💥</button></div>
+      <div class="barra ${M.mode === 'company' ? '' : 'amagat'}" id="barra"><i style="width:100%"></i></div><div class="msg" id="msg"></div></div>`);
+  const ix = $('#ix'), iy = $('#iy');
+  [ix, iy].forEach(inp => { inp.oninput = () => { inp.value = inp.value.replace(/[^0-9\-−–]/g, ''); }; inp.onkeydown = e => { if (e.key === 'Enter') { e.preventDefault(); if (inp === ix) iy.focus(); else dispara(); } }; });
+  $('#foc').onclick = dispara;
+  repinta(); torn();
+  clearInterval(P.iv); P.iv = setInterval(tic, 1000);
+}
+function repinta() {
+  if (P.fase !== 'joc' && P.fase !== 'fi') return;
+  $('#zm').innerHTML = tauler('tm', { flota: P.meva, trets: P.tretsSeus, nou: P.nouMeu, enfonsats: enfonsatsDe(P.meva, P.tretsSeus) });
+  $('#ze').innerHTML = tauler('te', { flota: P.seva, amaga: P.fase !== 'fi', trets: P.tretsMeus, nou: P.nou, cur: P.torn === 'jo' && !P.pendent && P.fase === 'joc' ? P.cur : null, enfonsats: enfonsatsDe(P.seva, P.tretsMeus) });
+  $('#ptMeu').textContent = `${TOTAL - tocades(P.meva, P.tretsSeus)} punts sans`;
+  $('#ptSeu').textContent = `Has tocat ${tocades(P.seva, P.tretsMeus)} de ${TOTAL}`;
+  const te = $('#te');
+  te.onclick = e => { if (P.torn !== 'jo' || P.pendent || P.fase !== 'joc') return; const q = punt(te, e); if (!q) return; P.cur = q; $('#ix').value = fz(q[0]).replace('−', '-'); $('#iy').value = fz(q[1]).replace('−', '-'); so('clic'); repinta(); };
+}
+function torn(silenci = false) {
+  const meu = P.torn === 'jo';
+  $('#torn').textContent = meu ? 'Et toca!' : `Torn de ${P.nomR}`; $('#torn').classList.toggle('meu', meu);
+  const pot = meu && !P.pendent && P.fase === 'joc';
+  ['#ix', '#iy', '#foc'].forEach(s => { $(s).disabled = !pot; });
+  if (pot) { P.tTorn = Date.now(); $('#ix').focus(); if (!silenci) diu(`Et toca! Escriu les <b>coordenades</b> on vols disparar, o clica un punt de la flota de ${P.nomR}.`, 'normal'); }
+  repinta();
+}
+function tic() {
+  if (P.fase !== 'joc') return;
+  const rest = Math.max(0, MINUTS * 60 - Math.round((Date.now() - P.t0) / 1000));
+  $('#rellotge').textContent = `⏱ ${Math.floor(rest / 60)}:${String(rest % 60).padStart(2, '0')}`;
+  if (rest === 0) return fiTemps();
+  if (M.mode === 'company') {
+    const r = Math.max(0, TEMPS_TORN - Math.round((Date.now() - P.tTorn) / 1000)); const b = $('#barra i'); if (b) b.style.width = (P.torn === 'jo' && !P.pendent ? r / TEMPS_TORN * 100 : 100) + '%';
+    if (P.torn === 'jo' && !P.pendent && r === 0) { diu('S\'ha acabat el temps del torn. Passa al company.', 'pensa'); so('ko'); passaTorn(null); }
+    if (r <= 5 && r > 0 && P.torn === 'jo' && !P.pendent) so('bip');
+    const R = NET?.p?.[NET.jo === 'a' ? 'b' : 'a'];
+    if (R && (R.surt || (R.viu && Date.now() - R.viu > 45000)) && !P.avisMarxa) { P.avisMarxa = true; marxat(); }
+    if (Date.now() - (P.viuT || 0) > 8000) { P.viuT = Date.now(); envia({ tipus: 'fr4c-bat-net', op: 'escriu', upd: { [`${NET.jo}/viu`]: Date.now() } }); }
+  }
+}
+function llegeixCoord() { const f = s => { const t = s.trim().replace(/[−–]/g, '-'); return /^-?\d+$/.test(t) ? Number(t) : null; }; return [f($('#ix').value), f($('#iy').value)]; }
+function dispara() {
+  if (P.torn !== 'jo' || P.pendent || P.fase !== 'joc') return;
+  const [x, y] = llegeixCoord();
+  if (x == null || y == null) { so('ko'); return msg('Escriu les dues coordenades: primer la x i després la y.', 'ko'); }
+  if (!existeix(x, y)) { so('ko'); P.errors++; P.fallades.push(`${pt(x, y)} no és a la graella`); return msg(L().pas === 2 && Math.abs(x) <= L().max && Math.abs(y) <= L().max ? `El punt ${pt(x, y)} no existeix: en aquesta graella els punts van de <b>2 en 2</b>.` : `El punt ${pt(x, y)} és fora de la graella: les coordenades van de ${fz(L().min)} a ${L().max}.`, 'ko'); }
+  if (P.tretsMeus[K(x, y)]) { so('ko'); return msg(`Ja havies disparat al ${pt(x, y)}. Tria un altre punt.`, 'ko'); }
+  msg(''); P.dispars++;
+  const res = resolTret(P.seva, P.tretsMeus, x, y);
+  P.tretsMeus[K(x, y)] = res.r === 'a' ? 'a' : 't'; P.nou = K(x, y); P.cur = [x, y];
+  if (res.r === 'a') { so('aigua'); diu(`${pt(x, y)}: <b>aigua</b>. 💧`, 'pensa'); }
+  else { P.encerts++; so(res.r === 'e' ? 'enfonsat' : 'tocat'); diu(res.r === 'e' ? `${pt(x, y)}: <b>tocat i enfonsat</b>! Has enfonsat el ${res.v.nom.toLowerCase()}!` : `${pt(x, y)}: <b>tocat</b>! 💥`, 'content'); }
+  $('#ix').value = ''; $('#iy').value = '';
+  if (M.mode === 'company') envia({ tipus: 'fr4c-bat-net', op: 'tret', tret: { q: NET.jo, x, y, r: res.r === 'a' ? 'a' : res.r === 'e' ? 'e' : 't' }, torn: NET.jo === 'a' ? 'b' : 'a', guanya: tocades(P.seva, P.tretsMeus) === TOTAL ? NET.jo : null });
+  if (tocades(P.seva, P.tretsMeus) === TOTAL) return fi(true);
+  P.torn = 'riv'; torn();
+  if (M.mode === 'maquina') setTimeout(tretMaquina, 1300);
+}
+function passaTorn() { P.torn = 'riv'; if (M.mode === 'company') envia({ tipus: 'fr4c-bat-net', op: 'escriu', upd: { torn: NET.jo === 'a' ? 'b' : 'a' } }); torn(); }
+const msg = (t, c = '') => { const m = $('#msg'); if (m) { m.className = 'msg ' + c; m.innerHTML = t; } };
+// la màquina: al nivell 1 dispara a l'atzar; als nivells 2 i 3, si toca, busca al voltant
+function tretMaquina() {
+  if (P.fase !== 'joc') return;
+  const lliures = []; for (const x of valors()) for (const y of valors()) if (!P.tretsSeus[K(x, y)]) lliures.push([x, y]);
+  let tria2 = null;
+  if (M.nivell > 1 || Math.random() < .4) {
+    const enf = new Set(enfonsatsDe(P.meva, P.tretsSeus).flatMap(id => P.meva.find(v => v.id === id).cells.map(c => K(...c))));
+    const toc = Object.entries(P.tretsSeus).filter(([k, r]) => r !== 'a' && !enf.has(k)).map(([k]) => k.split(',').map(Number));
+    const veins = toc.flatMap(([x, y]) => [[x + L().pas, y], [x - L().pas, y], [x, y + L().pas], [x, y - L().pas]]).filter(([x, y]) => existeix(x, y) && !P.tretsSeus[K(x, y)]);
+    if (veins.length) tria2 = tria(veins);
+  }
+  const [x, y] = tria2 || tria(lliures);
+  rebTret(x, y);
+}
+// un tret de l'altre: primer l'alumne ha de dir si l'ha tocat o no (practica llegir coordenades al seu tauler)
+function rebTret(x, y) {
+  P.pendent = { x, y }; P.torn = 'jo'; torn(); so('bip');
+  $('#preg').innerHTML = `<div class="pregunta"><div class="q">${P.nomR} dispara al <b style="color:${T}">${pt(x, y)}</b>.<br>Mira la teva flota: t'ha tocat?</div><div class="fila"><button class="big sec" data-r="a">💧 Aigua</button><button class="big" data-r="t">💥 Tocat!</button></div></div>`;
+  diu(`Busca el punt <b>${pt(x, y)}</b> a la teva graella.`, 'pensa');
+  $$('#preg [data-r]').forEach(b => b.onclick = () => respon(b.dataset.r));
+}
+function respon(r) {
+  const { x, y } = P.pendent; const res = resolTret(P.meva, P.tretsSeus, x, y); const bo = res.r === 'a' ? 'a' : 't';
+  P.respostes++;
+  if (r === bo) { P.ben++; P.encerts++; so('ok'); } else { P.errors++; P.fallades.push(`${pt(x, y)}: deia ${r === 'a' ? 'aigua' : 'tocat'}`); so('ko'); }
+  P.tretsSeus[K(x, y)] = bo; P.nouMeu = K(x, y); P.pendent = null; $('#preg').innerHTML = '';
+  setTimeout(() => so(bo === 'a' ? 'aigua' : res.r === 'e' ? 'enfonsat' : 'tocat'), 250);
+  const txt = bo === 'a' ? 'era <b>aigua</b>' : res.r === 'e' ? `t'ha <b>enfonsat</b> el ${res.v.nom.toLowerCase()}` : 't\'ha <b>tocat</b> el ' + res.v.nom.toLowerCase();
+  diu(r === bo ? `Ben vist! El ${pt(x, y)} ${txt}. Ara et toca a tu.` : `Compte: el ${pt(x, y)} ${txt}. Mira'l a la graella (primer la x, després la y).`, r === bo ? 'content' : 'pensa');
+  if (tocades(P.meva, P.tretsSeus) === TOTAL) return fi(false);
+  torn(true);
+}
+function fiTemps() { const a = tocades(P.seva, P.tretsMeus), b = tocades(P.meva, P.tretsSeus); fi(a > b ? true : a < b ? false : null, true); }
+function fi(guanyo, perTemps = false) {
+  if (P.fi) return; P.fi = true; P.fase = 'fi'; clearInterval(P.iv); P.guanya = guanyo;
+  if (P.pendent) { const { x, y } = P.pendent; P.tretsSeus[K(x, y)] = resolTret(P.meva, P.tretsSeus, x, y).r === 'a' ? 'a' : 't'; P.pendent = null; }
+  if (M.mode === 'company' && NET) envia({ tipus: 'fr4c-bat-net', op: 'escriu', upd: { estat: 'fi', guanya: guanyo === true ? NET.jo : guanyo === false ? (NET.jo === 'a' ? 'b' : 'a') : 'empat' } });
+  const temps = Math.round((Date.now() - P.t0) / 1000); const toc = tocades(P.seva, P.tretsMeus);
+  const punts = toc * 10 + P.ben * 5 + (guanyo ? 50 : 0) - P.errors * 3;
+  envia({ tipus: 'fr4c-bat-fi', punts: Math.max(0, punts), encerts: P.encerts, errors: P.errors, nivell: M.nivell, temps, fallades: P.fallades.slice(0, 12) });
+  so(guanyo ? 'guanya' : guanyo === false ? 'perd' : 'ok');
+  repinta();
+  $('#preg').innerHTML = ''; document.body.insertAdjacentHTML('beforeend', `<div id="fiCapa" style="position:fixed;inset:0;background:#0006;z-index:5;display:flex;align-items:center;justify-content:center"><div class="pregunta fi" style="max-width:520px;padding:22px 26px"><div class="estrella">${guanyo ? '🏆' : guanyo === false ? '🌊' : '🤝'}</div><div class="q">${perTemps ? 'S\'ha acabat el temps! ' : ''}${guanyo ? 'Has guanyat la batalla!' : guanyo === false ? `${P.nomR} ha enfonsat la teva flota.` : 'Empat!'}</div>
+    <div class="mini">Punts tocats: <b>${toc}</b> de ${TOTAL} · Respostes bones «tocat o aigua»: <b>${P.ben}</b> de ${P.respostes} · Punts: <b>${Math.max(0, punts)}</b></div>
+    <div class="fila"><button class="big" id="altra">Una altra partida</button><button class="big sec" id="veure">Mira els taulers</button><button class="big sec" id="surt2">Surt</button></div></div></div>`);
+  diu(guanyo ? 'Visca! Meu, quina batalla!' : 'La propera la guanyem!', guanyo ? 'content' : 'pensa');
+  ['#ix', '#iy', '#foc'].forEach(s => { const e = $(s); if (e) e.disabled = true; });
+  $('#veure').onclick = () => { $('#fiCapa').style.display = 'none'; $('#preg').innerHTML = `<div class="fila"><button class="big" id="altra2">Una altra partida</button></div>`; $('#altra2').onclick = () => $('#altra').click(); };
+  $('#altra').onclick = () => { $('#fiCapa')?.remove(); if (M.mode === 'company') envia({ tipus: 'fr4c-bat-net', op: 'surt' }); inici(); };
+  $('#surt2').onclick = surt;
+}
+function marxat() {
+  if (P.fase !== 'joc') return;
+  $('#preg').innerHTML = `<div class="pregunta"><div class="q">${P.nomR} s'ha desconnectat.</div><div class="fila"><button class="big sec" id="espera2">Espera</button><button class="big" id="vsm">Acaba contra la màquina</button></div></div>`;
+  $('#espera2').onclick = () => { P.avisMarxa = false; $('#preg').innerHTML = ''; };
+  $('#vsm').onclick = () => { envia({ tipus: 'fr4c-bat-net', op: 'surt' }); NET = null; M.mode = 'maquina'; P.nomR = persNomM(rival()); $('#preg').innerHTML = ''; $('#barra').classList.add('amagat'); if (P.torn !== 'jo') setTimeout(tretMaquina, 800); torn(); };
+}
+
+/* ---------- missatges de l'app (mode company: l'app fa de pont amb Firebase) ---------- */
+function rebEstat(p) {
+  if (!NET || !p) return; NET.p = p; const jo = NET.jo, ell = jo === 'a' ? 'b' : 'a';
+  if (M.pantalla === 'espera' && p.b) { so('meu'); colloca(); return; }
+  if ((M.pantalla === 'esperaRival' || M.pantalla === 'colloca') && p.a?.llest && p.b?.llest && P.fase === 'colloca') {
+    if (M.pantalla === 'colloca') return; // encara col·loco
+    try { P.seva = JSON.parse(p[ell].flota).map(v => ({ ...FLOTA.find(f => f.id === v.id), cells: v.cells })); } catch (e) { return; }
+    if (jo === 'a' && !p.torn) envia({ tipus: 'fr4c-bat-net', op: 'escriu', upd: { torn: 'a', estat: 'joc', inici: Date.now() } });
+    if (!p.torn) return;
+    comencaJoc(); return;
+  }
+  if (P.fase !== 'joc') return;
+  // trets nous de l'altre
+  const trets = Object.entries(p.trets || {}).sort((u, v) => u[0] < v[0] ? -1 : 1);
+  NET.vistos = NET.vistos || new Set();
+  for (const [k, t] of trets) { if (NET.vistos.has(k)) continue; NET.vistos.add(k); if (t.q === ell) { rebTret(t.x, t.y); } }
+  if (p.torn === jo && P.torn !== 'jo' && !P.pendent) { P.torn = 'jo'; torn(); }
+  if (p.estat === 'fi' && !P.fi) { fi(p.guanya === jo ? true : p.guanya === 'empat' ? null : false); }
+}
+window.addEventListener('message', ev => {
+  const d = ev.data || {};
+  if (d.tipus === 'fr4c-bat-ini') { M.dinsApp = true; M.nom = d.nom || ''; M.nivell = Math.max(1, Math.min(3, d.nivell || 2)); M.record = d.record || 0; if (d.so === false) M.so = false; pintaBotons(); if (M.pantalla === 'inici') inici(); return; }
+  if (d.tipus !== 'fr4c-bat-xarxa') return;
+  if (d.ev === 'creada') { NET = { codi: d.codi, jo: 'a', p: null }; espera(d.codi); }
+  else if (d.ev === 'unit') { NET = { codi: d.codi, jo: 'b', p: null }; M.nivell = d.nivell || M.nivell; so('meu'); colloca(); }
+  else if (d.ev === 'error') company(d.msg || 'No s\'ha pogut connectar.');
+  else if (d.ev === 'estat') rebEstat(d.p);
+});
+function surt() { musica(false); clearInterval(P.iv); if (NET) envia({ tipus: 'fr4c-bat-net', op: 'surt', marxa: true }); M.pantalla = 'fora'; envia({ tipus: 'fr4c-bat-tanca' }); if (window.parent === window) inici(); }
+function pintaBotons() { $('#so').textContent = M.so ? '🔊' : '🔇'; $('#mus').style.opacity = M.mus ? 1 : .4; }
+$('#so').onclick = () => { M.so = !M.so; try { localStorage.setItem('fr4c_bat_so', M.so ? '1' : '0'); } catch (e) { } if (!M.so) musica(false); pintaBotons(); };
+$('#mus').onclick = () => { M.mus = !M.mus; try { localStorage.setItem('fr4c_bat_mus', M.mus ? '1' : '0'); } catch (e) { } musica(M.mus && ['inici', 'company', 'espera', 'colloca'].includes(M.pantalla)); pintaBotons(); };
+$('#surt').onclick = surt;
+window.__bat = { P, M, existeix, resolTret, dispara, respon, flotaAtzar, valors };
+pintaBotons(); inici(); envia({ tipus: 'fr4c-bat-llest' });
+</script>
+</body>
+</html>
