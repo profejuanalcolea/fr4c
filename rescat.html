@@ -1,0 +1,423 @@
+<!doctype html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>El rescat dels bombers · FR-4C</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,800&display=swap" rel="stylesheet">
+<style>
+/* Taller de l'app FR-4C · Geometria (teorema de Pitàgores). Es pot obrir sol o dins de l'app (protocol fr4c-res-ini/llest/fi/tanca). */
+:root{--taronja:#f26b1d;--blau:#2a6fd6;--tinta:#1b1b1b;--ok:#2c9a58;--ko:#d64242;--fons:#f6f4ef;--lila:#7c5cd6}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;font-family:"Atkinson Hyperlegible",system-ui,sans-serif;background:var(--fons);color:var(--tinta);overflow:hidden;user-select:none}
+#joc{position:relative;width:100%;height:100%;display:grid;grid-template-columns:minmax(0,1.65fr) minmax(300px,1fr);gap:14px;padding:62px 16px 14px}
+.cap{position:absolute;top:10px;left:16px;right:16px;display:flex;align-items:center;gap:14px;z-index:5;font-weight:700}
+.cap .tit{font-family:"Bricolage Grotesque",sans-serif;font-size:1.3rem}
+.cap .compta{font-size:1.05rem;color:#555}
+.cap .punts{margin-left:auto;font-size:1.7rem;font-family:"Bricolage Grotesque",sans-serif}
+.btn{border:3px solid var(--tinta);background:#fff;color:var(--tinta);border-radius:12px;padding:6px 12px;font:inherit;font-weight:700;cursor:pointer}
+#escena{width:100%;height:100%;min-height:0;border:4px solid var(--tinta);border-radius:20px;background:#bfe3ff;overflow:hidden;display:block}
+.panel{display:flex;flex-direction:column;gap:12px;min-height:0;overflow:auto;padding-bottom:4px}
+.targ{background:#fff;border:4px solid var(--tinta);border-radius:20px;padding:14px 16px;box-shadow:0 5px 0 #0002}
+.targ h2{font-family:"Bricolage Grotesque",sans-serif;font-size:1.35rem;margin:0 0 6px}
+.targ p{margin:6px 0;font-size:1.12rem;line-height:1.4}
+.dades{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 2px}
+.dada{border-radius:12px;padding:6px 10px;font-weight:700;font-size:1.1rem;background:#f5f3ef}
+.dada.d{color:#2a6fd6}.dada.h{color:#1d9a5a}.dada.l{color:#c0392b}.dada.q{background:#fff1b8}
+.opcions{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:8px}
+.opc{font-family:"Bricolage Grotesque",sans-serif;font-size:1.6rem;padding:12px 6px;border-radius:16px;border:4px solid var(--tinta);background:#fff;cursor:pointer;box-shadow:0 5px 0 #0003}
+.opc:hover{transform:translateY(-2px)}.opc:disabled{opacity:.35;cursor:default;transform:none}
+.opc.be{background:var(--ok);color:#fff;border-color:var(--ok);opacity:1}
+.entra{display:flex;gap:10px;align-items:center;margin-top:8px;flex-wrap:wrap}
+.entra input{font-family:"Bricolage Grotesque",sans-serif;font-size:1.7rem;width:140px;padding:8px 12px;border:4px solid var(--tinta);border-radius:14px;text-align:center}
+.entra .u{font-size:1.4rem;font-weight:700}
+.big{font-family:"Bricolage Grotesque",sans-serif;font-size:1.2rem;border-radius:14px;padding:10px 20px;border:4px solid var(--tinta);cursor:pointer;background:var(--taronja);color:#fff;box-shadow:0 5px 0 #0004}
+.big.sec{background:#fff;color:var(--tinta)}.big:disabled{opacity:.4;cursor:default}
+.fila{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px}
+.pista{background:#f1ecff;border-radius:14px;padding:8px 12px;margin-top:8px;font-size:1.1rem;color:#4a3596}
+.calc{font-family:"Bricolage Grotesque",sans-serif;font-size:1.3rem;line-height:1.5;margin:6px 0 0}
+.msg{font-weight:700;font-size:1.15rem;margin-top:8px}.msg.ok{color:var(--ok)}.msg.ko{color:var(--ko)}
+.sacseja{animation:sacseja .35s}@keyframes sacseja{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+.pantalla{position:absolute;inset:0;z-index:10;display:flex;align-items:center;justify-content:center;background:#1b1b1b99}
+.panell{background:#fff;color:var(--tinta);border-radius:24px;border:4px solid var(--tinta);padding:22px 28px;max-width:800px;width:92%;box-shadow:0 10px 0 #0006;max-height:92vh;overflow:auto}
+.panell h1{font-family:"Bricolage Grotesque",sans-serif;margin:0 0 6px;font-size:2rem}
+.panell p{font-size:1.15rem;line-height:1.45;margin:8px 0}
+.panell .fila{margin-top:14px}
+.big2{font-size:1.3rem;padding:12px 26px}
+.seg{display:inline-flex;border:3px solid var(--tinta);border-radius:12px;overflow:hidden}.seg button{border:0;background:#fff;padding:8px 14px;font:inherit;font-weight:700;cursor:pointer}.seg button.on{background:var(--tinta);color:#fff}
+.resum{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:12px 0}.resum div{background:#f5f3ef;border-radius:14px;padding:10px;text-align:center}.resum b{display:block;font-family:"Bricolage Grotesque",sans-serif;font-size:2rem}
+.fallades{font-size:1.05rem;margin:6px 0 0;padding-left:20px}.fallades li{margin:3px 0}
+.rec{color:var(--taronja);font-weight:800}.mini{font-size:.95rem;color:#666}
+.salta{position:absolute;right:28px;bottom:24px;z-index:9}
+/* animacions de l'escena */
+.llum{animation:llum .5s steps(1) infinite}.llum2{animation:llum .5s steps(1) infinite reverse}
+@keyframes llum{0%{fill:#2a7bff}50%{fill:#9cc4ff}}
+.flama{transform-box:fill-box;transform-origin:50% 100%;animation:flama .45s ease-in-out infinite alternate}
+.flama.b{animation-duration:.6s}
+@keyframes flama{from{transform:scaleY(.82) skewX(-4deg)}to{transform:scaleY(1.1) skewX(5deg)}}
+.fum{animation:fum 3s linear infinite;transform-box:fill-box;transform-origin:center}
+@keyframes fum{from{transform:translateY(0) scale(.6);opacity:.75}to{transform:translateY(-90px) scale(1.5);opacity:0}}
+.roda{transform-box:fill-box;transform-origin:center}
+.balla{transform-box:fill-box;transform-origin:50% 100%;animation:balla .5s ease-in-out 3}
+@keyframes balla{50%{transform:translateY(-14px) rotate(-6deg)}}
+.cor{animation:cor 1.4s ease-out forwards}@keyframes cor{to{transform:translateY(-70px);opacity:0}}
+</style>
+</head>
+<body>
+<div id="joc">
+  <div class="cap">
+    <span class="tit">🚒 El rescat dels bombers</span>
+    <span class="compta" id="compta"></span>
+    <span class="punts" id="punts">0</span>
+    <button class="btn" id="so" title="So">🔊</button>
+    <button class="btn" id="surt" title="Surt">✕</button>
+  </div>
+  <svg id="escena" viewBox="0 0 900 600" preserveAspectRatio="xMidYMid meet" aria-label="Escena del rescat"></svg>
+  <div class="panel" id="panel"></div>
+</div>
+<div class="pantalla" id="pant" style="display:none"></div>
+<script>
+'use strict';
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const F = v => String(Math.round(v * 100) / 100).replace('.', ',');
+const rnd = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+const bar = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const espera = ms => new Promise(r => setTimeout(r, ms));
+const RESCATS = 8;
+const M = { nom: '', nivell: 1, record: 0, dinsApp: false, so: true, pantalla: 'inici' };
+try { M.so = localStorage.getItem('fr4c_res_so') !== '0'; M.record = +(localStorage.getItem('fr4c_res_rec_1') || 0); } catch (e) {}
+const P = {};
+
+/* ================= SONS (Web Audio, suaus) ================= */
+const SO = {
+  ctx: null,
+  ac() { if (!M.so) return null; try { this.ctx = this.ctx || new (window.AudioContext || window.webkitAudioContext)(); if (this.ctx.state === 'suspended') this.ctx.resume(); return this.ctx; } catch (e) { return null; } },
+  to(f, d, { ona = 'sine', vol = .06, t0 = 0, f2 = null } = {}) { const ac = this.ac(); if (!ac) return; const t = ac.currentTime + t0, o = ac.createOscillator(), g = ac.createGain(); o.type = ona; o.frequency.setValueAtTime(f, t); if (f2) o.frequency.exponentialRampToValueAtTime(f2, t + d); g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + .02); g.gain.exponentialRampToValueAtTime(.0001, t + d); o.connect(g); g.connect(ac.destination); o.start(t); o.stop(t + d + .05); },
+  sirena(s = 2.4) { for (let i = 0; i < s / .45; i++) this.to(i % 2 ? 660 : 880, .43, { ona: 'triangle', vol: .05, t0: i * .45 }); },
+  motor(s = 2) { for (let i = 0; i < s / .25; i++) this.to(70 + (i % 2) * 6, .26, { ona: 'sawtooth', vol: .018, t0: i * .25 }); },
+  miau() { this.to(620, .18, { vol: .07, f2: 1050 }); this.to(1050, .38, { vol: .07, f2: 560, t0: .17 }); },
+  allarga() { this.to(220, .7, { ona: 'triangle', vol: .035, f2: 520 }); },
+  clonc() { this.to(150, .12, { ona: 'square', vol: .035, f2: 90 }); this.to(110, .12, { ona: 'square', vol: .03, f2: 70, t0: .12 }); },
+  be() { [523, 659, 784, 1047].forEach((f, i) => this.to(f, .22, { ona: 'triangle', vol: .06, t0: i * .11 })); },
+  mal() { this.to(330, .35, { vol: .06, f2: 130 }); },
+  fi() { [392, 523, 659, 784, 659, 784, 1047].forEach((f, i) => this.to(f, .25, { ona: 'triangle', vol: .06, t0: i * .14 })); }
+};
+
+/* ================= DIBUIXOS ================= */
+const T = '#f26b1d', N = '#1b1b1b';
+// gat (en Coma o els seus cosins), dibuixat amb els peus a (0,0)
+const gat = (col = T, ratlles = '#b84a0c') => `<g transform="translate(-36 -65) scale(.86)">
+  <path d="M60 60Q82 58 74 36" fill="none" stroke="${N}" stroke-width="10" stroke-linecap="round"/><path d="M60 60Q82 58 74 36" fill="none" stroke="${col}" stroke-width="5.5" stroke-linecap="round"/>
+  <ellipse cx="40" cy="54" rx="21" ry="18" fill="${col}" stroke="${N}" stroke-width="3"/><ellipse cx="40" cy="60" rx="10" ry="10" fill="#fff"/>
+  <path d="M25 20L20 3L35 12Z" fill="${col}" stroke="${N}" stroke-width="3" stroke-linejoin="round"/><path d="M55 20L60 3L45 12Z" fill="${col}" stroke="${N}" stroke-width="3" stroke-linejoin="round"/>
+  <circle cx="40" cy="27" r="17" fill="${col}" stroke="${N}" stroke-width="3"/><path d="M40 11v7M33 12l2 6M47 12l-2 6" stroke="${ratlles}" stroke-width="2.4" stroke-linecap="round"/>
+  <ellipse cx="33.5" cy="26" rx="2.6" ry="3.6" fill="${N}"/><ellipse cx="46.5" cy="26" rx="2.6" ry="3.6" fill="${N}"/><path d="M38 31h4l-2 2.6Z" fill="${N}"/><path d="M40 33.6q-3 4 -6 1M40 33.6q3 4 6 1" fill="none" stroke="${N}" stroke-width="1.8" stroke-linecap="round"/>
+  <path d="M26 31l-9 -2M26 34l-9 2M54 31l9 -2M54 34l9 2" stroke="${N}" stroke-width="1.4" stroke-linecap="round"/></g>`;
+// Pitàgores bomber (caricatura inventada): barba blanca, casc vermell amb corona de llorer, jaqueta amb bandes reflectants. Peus a (0,0).
+const pitagores = () => `<g transform="translate(-40 -132)">
+  <path d="M26 104h12v26h-14ZM44 104h12v26h-14Z" fill="#2b2b2b"/><path d="M20 128h20v6h-22ZM42 128h20v6h-20Z" fill="${N}"/>
+  <path d="M16 106 Q16 66 40 62 Q64 66 64 106Z" fill="#e0a530" stroke="${N}" stroke-width="3"/>
+  <path d="M17 88H63M16 100H64" stroke="#f4f4a0" stroke-width="5"/><path d="M17 88H63M16 100H64" stroke="#c9c9c9" stroke-width="1.5"/>
+  <path d="M60 74 L80 58" stroke="#e0a530" stroke-width="10" stroke-linecap="round"/><circle cx="82" cy="56" r="6" fill="#f6d2b0" stroke="${N}" stroke-width="2.5"/>
+  <path d="M20 74 L12 98" stroke="#e0a530" stroke-width="10" stroke-linecap="round"/><circle cx="12" cy="100" r="6" fill="#f6d2b0" stroke="${N}" stroke-width="2.5"/>
+  <circle cx="40" cy="40" r="19" fill="#f6d2b0" stroke="${N}" stroke-width="3"/>
+  <path d="M22 42 Q22 76 40 80 Q58 76 58 42 Q52 54 40 52 Q28 54 22 42Z" fill="#f2f0ea" stroke="${N}" stroke-width="2.6" stroke-linejoin="round"/>
+  <path d="M32 54 Q40 49 48 54" fill="none" stroke="${N}" stroke-width="2.4" stroke-linecap="round"/><path d="M35 58 Q40 62 45 58" fill="#c0392b" stroke="${N}" stroke-width="1.8"/>
+  <circle cx="34" cy="40" r="2.8" fill="${N}"/><circle cx="46" cy="40" r="2.8" fill="${N}"/><path d="M29 34 Q34 31 38 34M42 34 Q46 31 51 34" fill="none" stroke="#9a948a" stroke-width="2.6" stroke-linecap="round"/>
+  <path d="M40 42 Q37 47 41 48" fill="none" stroke="${N}" stroke-width="1.8" stroke-linecap="round"/>
+  <path d="M17 30 Q18 6 40 5 Q62 6 63 30Z" fill="#d32f2f" stroke="${N}" stroke-width="3"/><path d="M10 31 Q40 22 70 31 L70 35 Q40 28 10 35Z" fill="#b71c1c" stroke="${N}" stroke-width="2.5"/>
+  <rect x="33" y="10" width="14" height="14" rx="3" fill="#ffd54a" stroke="${N}" stroke-width="2"/><text x="40" y="21" text-anchor="middle" font-size="10" font-weight="900" fill="${N}" font-family="system-ui">Π</text>
+  ${[[18, 26], [24, 19], [56, 19], [62, 26]].map(([x, y]) => `<ellipse cx="${x}" cy="${y}" rx="4.2" ry="2.2" fill="#2fb36b" transform="rotate(${(x - 40) * 2} ${x} ${y})"/>`).join('')}
+</g>`;
+// FR-4C al volant (només el cap, per la finestra de la cabina)
+const robotCap = () => `<g><line x1="0" y1="-26" x2="0" y2="-36" stroke="${N}" stroke-width="3"/><circle cx="0" cy="-39" r="4.5" fill="${T}" stroke="${N}" stroke-width="2.5"/>
+  <rect x="-22" y="-27" width="44" height="36" rx="10" fill="#fff" stroke="${N}" stroke-width="3.5"/><rect x="-16" y="-21" width="32" height="23" rx="6" fill="${N}"/>
+  <circle cx="-7" cy="-11" r="3.4" fill="${T}"/><circle cx="7" cy="-11" r="3.4" fill="${T}"/><path d="M-5 -4 q5 4 10 0" stroke="${T}" stroke-width="2.6" fill="none" stroke-linecap="round"/></g>`;
+// camió de bombers (de 0 a 250 de llarg, roda a terra a y=0), la cabina mira a la dreta
+const camio = () => `<g id="camio">
+  <rect x="6" y="-104" width="170" height="78" rx="8" fill="#d32f2f" stroke="${N}" stroke-width="4"/>
+  ${[0, 1, 2, 3].map(i => `<rect x="${18 + i * 38}" y="-92" width="30" height="34" rx="4" fill="#b71c1c" stroke="${N}" stroke-width="2"/>`).join('')}
+  <path d="M6 -48H176" stroke="#f4f4a0" stroke-width="6"/><text x="91" y="-31" text-anchor="middle" font-size="15" font-weight="900" fill="#fff" font-family="Bricolage Grotesque,system-ui">BOMBERS</text>
+  <rect x="2" y="-118" width="182" height="10" rx="3" fill="#9aa3ad" stroke="${N}" stroke-width="2.5"/>${[0, 1, 2, 3, 4, 5, 6, 7].map(i => `<path d="M${14 + i * 21} -118v10" stroke="${N}" stroke-width="2"/>`).join('')}
+  <path d="M176 -26 V-96 Q176 -104 186 -104 H214 Q226 -104 234 -88 L246 -62 V-26Z" fill="#d32f2f" stroke="${N}" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M190 -94 H214 Q221 -94 226 -84 L234 -66 H190Z" fill="#cfe9ff" stroke="${N}" stroke-width="3" stroke-linejoin="round"/>
+  <g transform="translate(208 -64)">${robotCap()}</g>
+  <rect x="192" y="-112" width="12" height="8" rx="2" class="llum" fill="#2a7bff" stroke="${N}" stroke-width="2"/><rect x="208" y="-112" width="12" height="8" rx="2" class="llum2" fill="#9cc4ff" stroke="${N}" stroke-width="2"/>
+  <rect x="236" y="-46" width="12" height="9" rx="2" fill="#ffe66d" stroke="${N}" stroke-width="2"/><rect x="0" y="-30" width="250" height="10" rx="4" fill="#555" stroke="${N}" stroke-width="2.5"/>
+  ${[50, 200].map(x => `<g class="roda" transform="translate(${x} -16)"><circle r="17" fill="#2b2b2b" stroke="${N}" stroke-width="3"/><circle r="7" fill="#ccc"/><path d="M0 -14V14M-14 0H14" stroke="#555" stroke-width="2"/></g>`).join('')}
+</g>`;
+const flames = (x, y) => `<g transform="translate(${x} ${y})"><path class="flama" d="M-20 0 Q-26 -26 -10 -40 Q-12 -22 0 -30 Q-4 -50 12 -60 Q8 -36 22 -30 Q26 -12 20 0Z" fill="#ff8a1e"/><path class="flama b" d="M-10 0 Q-14 -16 -4 -24 Q-2 -12 6 -18 Q6 -30 14 -34 Q14 -16 14 0Z" fill="#ffd54a"/></g>`;
+// bafarada en SVG: text en línies, amb punta cap a (px, py)
+function bafarada(x, y, linies, { px = null, py = null, col = N } = {}) {
+  const mida = 17, w = Math.max(...linies.map(l => l.length)) * mida * .53 + 26, h = linies.length * (mida + 4) + 16;
+  const x0 = Math.max(6, Math.min(894 - w, x - w / 2)), y0 = Math.max(6, y - h);
+  const punta = px != null ? `<path d="M${Math.max(x0 + 14, Math.min(x0 + w - 30, px - 8))} ${y0 + h - 2} L${px} ${py} L${Math.max(x0 + 28, Math.min(x0 + w - 16, px + 8))} ${y0 + h - 2}Z" fill="#fff" stroke="${col}" stroke-width="3" stroke-linejoin="round"/>` : '';
+  return `<g class="baf">${punta}<rect x="${x0}" y="${y0}" width="${w}" height="${h}" rx="14" fill="#fff" stroke="${col}" stroke-width="3"/>${punta ? `<rect x="${x0 + 3}" y="${y0 + h - 8}" width="${w - 6}" height="6" fill="#fff"/>` : ''}
+    ${linies.map((l, i) => `<text x="${x0 + w / 2}" y="${y0 + 26 + i * (mida + 4)}" text-anchor="middle" font-size="${mida}" font-weight="700" fill="${N}" font-family="Atkinson Hyperlegible,system-ui">${esc(l)}</text>`).join('')}</g>`;
+}
+
+/* ================= ESCENA ================= */
+const G = 548, WX = 640; // terra i paret de l'edifici
+const E = {}; // geometria del rescat actual: k (px per metre), peu, finestra…
+function muntaEscena(r) {
+  const k = Math.min(400 / (r.h * 1.18 + .6), (WX - 350) / (r.peu + .3), 60);
+  Object.assign(E, { k, xPeu: WX - r.peu * k, yFin: G - r.h * k });
+  const alt = Math.max(r.h * k + 90, 260), topB = G - alt;
+  let fin = '';
+  for (let y = G - 70; y > topB + 20; y -= 78) for (let x = WX + 120; x < 880; x += 90) fin += `<rect x="${x}" y="${y - 44}" width="46" height="52" rx="4" fill="#ffe9b0" stroke="${N}" stroke-width="2.5"/><path d="M${x + 23} ${y - 44}v52M${x} ${y - 18}h46" stroke="${N}" stroke-width="1.5"/>`;
+  const yF = E.yFin, xF = WX + 14;
+  const s = `
+  <defs><linearGradient id="cel" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8fd0ff"/><stop offset="1" stop-color="#e3f4ff"/></linearGradient>
+  <pattern id="maons" width="36" height="18" patternUnits="userSpaceOnUse"><rect width="36" height="18" fill="#c8694a"/><path d="M0 17.5H36M0 9H36M18 0V9M0 9V18M36 9V18" stroke="#a9533a" stroke-width="1.6"/></pattern></defs>
+  <rect width="900" height="600" fill="url(#cel)"/>
+  <g fill="#fff" opacity=".9"><ellipse cx="140" cy="90" rx="52" ry="18"/><ellipse cx="180" cy="78" rx="34" ry="18"/><ellipse cx="460" cy="60" rx="44" ry="14"/></g>
+  <circle cx="560" cy="70" r="28" fill="#ffd54a" opacity=".85"/>
+  <rect x="${WX}" y="${topB}" width="${900 - WX}" height="${alt}" fill="url(#maons)" stroke="${N}" stroke-width="4"/>
+  <rect x="${WX - 6}" y="${topB - 12}" width="${900 - WX + 12}" height="14" fill="#8d4a33" stroke="${N}" stroke-width="3"/>
+  ${fin}
+  <g id="fum">${[0, 1, 2].map(i => `<circle class="fum" style="animation-delay:${i}s" cx="${xF + 40 + i * 6}" cy="${yF - 70}" r="${16 + i * 3}" fill="#7d7d7d"/>`).join('')}</g>
+  <rect x="${xF}" y="${yF - 66}" width="78" height="66" rx="5" fill="#ff9d3b" stroke="${N}" stroke-width="3.5"/>
+  ${flames(xF + 58, yF - 4)}
+  <rect x="${xF - 8}" y="${yF - 2}" width="94" height="10" rx="3" fill="#e8e1d4" stroke="${N}" stroke-width="3"/>
+  <rect x="0" y="${G}" width="900" height="${600 - G}" fill="#9a9a9a"/><rect x="0" y="${G}" width="900" height="8" fill="#6f6f6f"/>
+  ${[60, 200, 340, 480].map(x => `<rect x="${x}" y="${G + 26}" width="70" height="6" rx="3" fill="#fff" opacity=".8"/>`).join('')}
+  <g id="cotes"></g>
+  <g id="g-camio" transform="translate(${Math.max(12, E.xPeu - 330)} ${G})">${camio()}</g>
+  <g id="g-esc"></g>
+  <g id="g-gat" transform="translate(${xF + 30} ${yF})">${gat(r.gat.col, r.gat.ratlles)}</g>
+  <g id="g-pit" transform="translate(${E.xPeu - 46} ${G})">${pitagores()}</g>
+  <g id="g-baf"></g>`;
+  $('#escena').innerHTML = s;
+  E.xGat = xF + 30; E.gatTop = yF;
+  pintaCotes(r);
+}
+function pintaCotes(r, sol = false) {
+  const yD = G + 30, xH = WX + 53;
+  let s = `<g stroke="#2a6fd6" stroke-width="2.4"><path d="M${E.xPeu} ${yD}H${WX}M${E.xPeu} ${yD - 8}v16M${WX} ${yD - 8}v16"/></g>`
+    + `<text x="${(E.xPeu + WX) / 2}" y="${yD - 9}" text-anchor="middle" font-size="22" font-weight="800" fill="#2a6fd6" stroke="#9a9a9a" stroke-width="5" paint-order="stroke" font-family="Bricolage Grotesque,system-ui">${r.tipus === 'dist' && !sol ? '? m' : F(r.peu) + ' m'}</text>`;
+  s += `<g stroke="#1d9a5a" stroke-width="2.4"><path d="M${xH} ${G}V${E.yFin}M${xH - 8} ${G}h16M${xH - 8} ${E.yFin}h16"/></g>`
+    + `<text x="${xH + 12}" y="${(G + E.yFin) / 2 + 8}" font-size="22" font-weight="800" fill="#fff" stroke="#1d6a3a" stroke-width="5" paint-order="stroke" font-family="Bricolage Grotesque,system-ui">${F(r.h)} m</text>`;
+  $('#cotes').innerHTML = s;
+}
+// escala de llargada lpx des del peu (xp, G), amb angle a (radians, des de terra)
+function pintaEscala(xp, lpx, a, etiq = '') {
+  const c = Math.cos(a), s = Math.sin(a), ux = -s * 9, uy = -c * 9;
+  const P = t => [xp + c * t, G - s * t];
+  const [x2, y2] = P(lpx);
+  let g = `<path d="M${xp - ux} ${G - uy}L${x2 - ux} ${y2 - uy}M${xp + ux} ${G + uy}L${x2 + ux} ${y2 + uy}" stroke="#7a7f87" stroke-width="7" stroke-linecap="round"/>`;
+  for (let t = 14; t < lpx - 4; t += 18) { const [x, y] = P(t); g += `<path d="M${x - ux} ${y - uy}L${x + ux} ${y + uy}" stroke="#7a7f87" stroke-width="4"/>`; }
+  g += `<path d="M${xp - ux} ${G - uy}L${x2 - ux} ${y2 - uy}M${xp + ux} ${G + uy}L${x2 + ux} ${y2 + uy}" stroke="#c7ccd3" stroke-width="2.5" stroke-linecap="round"/>`;
+  if (etiq && lpx > 60) { const [x, y] = P(lpx * .55); g += `<text x="${x - 16}" y="${y}" text-anchor="end" font-size="22" font-weight="800" fill="#c0392b" stroke="#fff" stroke-width="5" paint-order="stroke" font-family="Bricolage Grotesque,system-ui">${etiq}</text>`; }
+  $('#g-esc').innerHTML = g;
+  return [x2, y2];
+}
+const anim = (ms, f, para = null) => new Promise(res => { const t0 = performance.now(); const pas = t => { const u = para?.() ? 1 : Math.min(1, (t - t0) / ms); f(u < .5 ? 2 * u * u : 1 - (-2 * u + 2) ** 2 / 2, u); if (u < 1) requestAnimationFrame(pas); else res(); }; requestAnimationFrame(pas); });
+const diu = (qui, linies, ms = 0) => { const pos = { pit: [E.xPeu - 46, G - 140, E.xPeu - 40, G - 132], gat: [E.xGat + 10, E.gatTop - 80, E.xGat, E.gatTop - 54], robot: [Math.max(12, E.xPeu - 330) + 208, G - 156, Math.max(12, E.xPeu - 330) + 214, G - 120] }[qui];
+  $('#g-baf').innerHTML = bafarada(pos[0], pos[1], linies, { px: pos[2], py: pos[3] }); if (ms) setTimeout(() => { if ($('#g-baf')) $('#g-baf').innerHTML = ''; }, ms); };
+const calla = () => { const b = $('#g-baf'); if (b) b.innerHTML = ''; };
+// Animació de l'escala: llargada L (m), peu a distància dPeu (m) de la paret. Torna 'be', 'curta', 'llarga' o 'noArriba'.
+async function aixeca(L, dPeu, etiq = '') {
+  const k = E.k, xp = Math.max(20, WX - dPeu * k), lpx = Math.min(L, 60) * k;
+  $('#g-pit').setAttribute('transform', `translate(${xp - 46} ${G})`);
+  const r = P.ronda;
+  let res, a;
+  if (L <= dPeu + .01) { a = .7; res = 'noArriba'; }
+  else { a = Math.acos(dPeu / L); const hTop = Math.sqrt(L * L - dPeu * dPeu); res = Math.abs(hTop - r.h) <= Math.max(r.tol, .05) ? 'be' : hTop < r.h ? 'curta' : 'llarga'; }
+  SO.allarga();
+  await anim(900, u => pintaEscala(xp, Math.max(4, lpx * u), a, u > .95 ? etiq : ''));
+  if (res === 'noArriba') { await espera(250); SO.clonc(); await anim(500, u => pintaEscala(xp, lpx, a * (1 - u), etiq)); }
+  else SO.clonc();
+  return res;
+}
+async function baixaGat() {
+  const a = Math.atan2(G - E.yFin, WX - E.xPeu), L = Math.hypot(WX - E.xPeu, G - E.yFin);
+  const g = $('#g-gat'); const x0 = E.xGat, y0 = E.gatTop;
+  await anim(350, u => g.setAttribute('transform', `translate(${x0 + (WX - 12 - x0) * u} ${y0 - 20 * Math.sin(Math.PI * u)})`));
+  await anim(1300, u => { const t = L * (1 - u); g.setAttribute('transform', `translate(${E.xPeu + Math.cos(a) * t - 12} ${G - Math.sin(a) * t}) rotate(${-a * 57.3 * (1 - u) * .4})`); });
+  await anim(300, u => g.setAttribute('transform', `translate(${E.xPeu - 12 + 30 * u} ${G - 30 * Math.sin(Math.PI * u)})`));
+  const cors = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+  cors.innerHTML = [0, 1, 2].map(i => `<text class="cor" style="animation-delay:${i * .25}s" x="${E.xPeu + 6 + i * 16}" y="${G - 60}" font-size="26">❤️</text>`).join('');
+  $('#escena').appendChild(cors);
+}
+
+/* ================= REPTES ================= */
+const GATS = [{ nom: 'en Coma', col: T, ratlles: '#b84a0c' }, { nom: 'la Lluna', col: '#b9bcc2', ratlles: '#7d828a' }, { nom: 'en Pebre', col: '#3b3b3b', ratlles: '#111' }, { nom: 'la Neu', col: '#fbfbf7', ratlles: '#d8d4c8' }, { nom: 'en Canyella', col: '#c98a4b', ratlles: '#8a5a2b' }, { nom: 'la Mel', col: '#f2c14e', ratlles: '#c4902a' }, { nom: 'en Rovell', col: '#e8a33d', ratlles: '#a8661c' }];
+const HIP1 = [[3, 4], [6, 8], [9, 12], [5, 12], [12, 16], [8, 15], [15, 20], [10, 24], [7, 24]];
+const HIP2 = [[3, 4], [6, 8], [5, 12], [9, 12], [8, 15], [12, 16], [4.5, 6], [2.5, 6], [7.5, 10], [4, 7.5], [3.5, 12], [7, 24]];
+const DIS2 = [[10, 8], [13, 12], [5, 4], [15, 12], [17, 15], [6.5, 6], [20, 16], [12.5, 12]];
+function nouRepte(nv, i) {
+  const r = { tol: .01 };
+  if (nv === 1) {
+    const [d, h] = P.pool.shift(); r.tipus = 'hip'; r.peu = d; r.h = h; r.L = Math.hypot(d, h);
+    const op = new Set([r.L, d + h, r.L + (Math.random() < .5 ? 2 : -1)]); if (d * d + h * h <= 40) op.add(d * d + h * h);
+    r.opcions = bar([...op].filter(v => v > 0).slice(0, 3));
+  } else if (nv === 2) {
+    const [a, b, t] = P.pool.shift();
+    if (t === 'hip') { r.tipus = 'hip'; r.peu = a; r.h = b; r.L = Math.hypot(a, b); }
+    else { r.tipus = 'dist'; r.L = a; r.h = b; r.peu = Math.sqrt(a * a - b * b); }
+  } else {
+    r.tol = .11;
+    if (P.pool.shift() === 'hip') { r.tipus = 'hip'; r.peu = rnd(2, 7); r.h = rnd(5, 17); r.L = Math.hypot(r.peu, r.h); }
+    else { let L, h, d; do { L = rnd(8, 20); h = rnd(5, L - 1); d = Math.sqrt(L * L - h * h); } while (d < 2 || d > 8 || Math.abs(d - Math.round(d)) < .05); r.tipus = 'dist'; r.L = L; r.h = h; r.peu = d; }
+  }
+  r.resposta = r.tipus === 'hip' ? r.L : r.peu;
+  r.gat = i === 0 || i === RESCATS - 1 ? GATS[0] : GATS[1 + (i - 1) % (GATS.length - 1)];
+  r.intents = 0; r.pista = false;
+  return r;
+}
+function preparaPool(nv) {
+  if (nv === 1) P.pool = bar(HIP1).slice(0, RESCATS).sort((a, b) => a[1] - b[1]);
+  else if (nv === 2) { const hs = bar(HIP2).slice(0, 5).map(x => [...x, 'hip']), ds = bar(DIS2).slice(0, 3).map(x => [...x, 'dist']); P.pool = [hs[0], hs[1], ds[0], hs[2], ds[1], hs[3], ds[2], hs[4]]; }
+  else P.pool = ['hip', 'hip', 'dist', 'hip', 'dist', 'hip', 'dist', 'dist'];
+}
+const arrelTxt = v => Number.isInteger(Math.round(v * 1e6) / 1e6) ? F(v) : `${F(Math.round(v * 10) / 10)}…`;
+function passos(r) { // cada operació a sota de l'anterior
+  const q = v => F(Math.round(v * 100) / 100);
+  if (r.tipus === 'hip') { const s = r.peu ** 2 + r.h ** 2; return [`L² = ${q(r.peu)}² + ${q(r.h)}²`, `L² = ${q(r.peu ** 2)} + ${q(r.h ** 2)}`, `L² = ${q(s)}`, `L = √${q(s)} ${Number.isInteger(Math.round(Math.sqrt(s) * 1e6) / 1e6) ? '=' : '≈'} <b>${F(Math.round(Math.sqrt(s) * 10) / 10)} m</b>`]; }
+  const s = r.L ** 2 - r.h ** 2; return [`d² = ${q(r.L)}² − ${q(r.h)}²`, `d² = ${q(r.L ** 2)} − ${q(r.h ** 2)}`, `d² = ${q(s)}`, `d = √${q(s)} ${Number.isInteger(Math.round(Math.sqrt(s) * 1e6) / 1e6) ? '=' : '≈'} <b>${F(Math.round(Math.sqrt(s) * 10) / 10)} m</b>`];
+}
+
+/* ================= PARTIDA ================= */
+function pintaCap() { $('#punts').textContent = P.punts || 0; $('#compta').textContent = P.i != null && M.pantalla === 'joc' ? `Rescat ${Math.min(P.i + 1, RESCATS)} de ${RESCATS}` : ''; }
+async function comenca() {
+  Object.assign(P, { i: 0, punts: 0, encerts: 0, errors: 0, fallades: [], t0: performance.now(), acabada: false, intro: true });
+  preparaPool(M.nivell);
+  $('#pant').style.display = 'none'; M.pantalla = 'joc';
+  P.ronda = nouRepte(M.nivell, 0); muntaEscena(P.ronda); pintaCap();
+  $('#panel').innerHTML = `<div class="targ"><h2>🚨 Alarma a la ciutat!</h2><p>Hi ha foc en un edifici i en Coma s'ha quedat atrapat a la finestra.</p></div>`;
+  await intro();
+  P.intro = false; mostraRepte();
+}
+async function intro() {
+  const salta = document.createElement('button'); salta.className = 'big sec salta'; salta.textContent = 'Salta ▸'; document.body.appendChild(salta);
+  let saltat = false; salta.onclick = () => { saltat = true; };
+  const pas = async ms => { const t = performance.now(); while (performance.now() - t < ms) { if (saltat) throw 0; await espera(40); } };
+  const cam = $('#g-camio'), xFinal = Math.max(12, E.xPeu - 330), pit = $('#g-pit'), rodes = [...document.querySelectorAll('.roda')];
+  try {
+    pit.style.opacity = 0; SO.sirena(2.6); SO.motor(2.2);
+    await anim(2200, (u, ul) => { cam.setAttribute('transform', `translate(${-300 + (xFinal + 300) * u} ${G})`); rodes.forEach((r, i) => r.setAttribute('transform', `translate(${[50, 200][i]} -16) rotate(${ul * 900})`)); }, () => saltat);
+    if (saltat) throw 0;
+    diu('gat', ['Meeeu! Ajuda!']); SO.miau(); await pas(1200);
+    diu('robot', ['Hem arribat!', 'Pitàgores, som-hi!']); await pas(1300);
+    pit.style.opacity = 1; await anim(450, u => pit.setAttribute('transform', `translate(${E.xPeu - 46 - 80 * (1 - u)} ${G - 40 * Math.sin(Math.PI * u)})`));
+    diu('pit', ['Tranquil, Coma!', 'Amb el meu teorema calcularem', "l'escala justa."]); await pas(2400);
+  } catch (e) { cam.setAttribute('transform', `translate(${xFinal} ${G})`); pit.style.opacity = 1; pit.setAttribute('transform', `translate(${E.xPeu - 46} ${G})`); }
+  salta.remove(); calla();
+}
+function mostraRepte() {
+  const r = P.ronda; pintaCap(); P.bloc = false;
+  const nomG = r.gat.nom.replace(/^./, c => c.toUpperCase());
+  const quiEs = r.gat === GATS[0] ? 'En Coma' : `${nomG}, ${r.gat.nom.startsWith('la') ? 'la cosina' : 'el cosí'} d'en Coma,`;
+  let txt, dades;
+  if (r.tipus === 'hip') {
+    txt = `${quiEs} és a una finestra a <b>${F(r.h)} m</b> d'altura. Pitàgores posa el peu de l'escala a <b>${F(r.peu)} m</b> de la paret. <b>Quina llargada d'escala cal?</b>`;
+    dades = `<span class="dada h">altura ${F(r.h)} m</span><span class="dada d">distància ${F(r.peu)} m</span><span class="dada l q">escala ? m</span>`;
+  } else {
+    txt = `${quiEs} és a <b>${F(r.h)} m</b> d'altura. L'escala del camió fa <b>${F(r.L)} m</b>. <b>A quina distància de la paret</b> ha de posar Pitàgores el peu de l'escala perquè arribi just a la finestra?`;
+    dades = `<span class="dada h">altura ${F(r.h)} m</span><span class="dada l">escala ${F(r.L)} m</span><span class="dada d q">distància ? m</span>`;
+  }
+  const resp = M.nivell === 1
+    ? `<div class="opcions">${r.opcions.map(v => `<button class="opc" data-v="${v}">${F(v)} m</button>`).join('')}</div>`
+    : `<div class="entra"><input id="inp" inputmode="decimal" autocomplete="off" placeholder="?"><span class="u">m</span><button class="big" id="ok">Prova-ho!</button></div>${M.nivell === 3 ? '<p class="mini">Arrodoneix a les dècimes (una xifra decimal). Pots fer servir la calculadora.</p>' : ''}`;
+  $('#panel').innerHTML = `<div class="targ" id="tq"><h2>Rescat ${P.i + 1}: ${esc(r.gat.nom)} 🐾</h2><p>${txt}</p><div class="dades">${dades}</div>${resp}
+    <div id="pis"></div><div class="fila"><button class="big sec" id="bpista">💡 Pista de Pitàgores</button></div><div id="msg"></div></div>`;
+  document.querySelectorAll('.opc').forEach(b => b.onclick = () => respon(+b.dataset.v, b));
+  const ok = $('#ok'); if (ok) { ok.onclick = () => respon(llegeix($('#inp').value)); $('#inp').focus(); }
+  $('#bpista').onclick = () => { r.pista = true; $('#bpista').disabled = true; $('#pis').innerHTML = `<div class="pista">${r.tipus === 'hip' ? '<b>L² = d² + h²</b><br>Eleva al quadrat la distància i l\'altura, suma-les i fes l\'arrel quadrada.' : '<b>d² = L² − h²</b><br>L\'escala és la hipotenusa: al seu quadrat li restes el quadrat de l\'altura i fas l\'arrel quadrada.'}</div>`; };
+  diu('gat', [r.gat === GATS[0] ? 'Meeeu! Ajuda!' : 'Miau! Baixeu-me!'], 1600); SO.miau();
+}
+const llegeix = s => { s = String(s).trim().replace(',', '.'); return s === '' || isNaN(+s) ? null : +s; };
+async function respon(v, boto = null) {
+  const r = P.ronda; if (P.bloc || v == null) { if (v == null) { $('#inp')?.classList.add('sacseja'); setTimeout(() => $('#inp')?.classList.remove('sacseja'), 400); } return; }
+  P.bloc = true; r.intents++; calla();
+  document.querySelectorAll('.opc, #ok, #bpista').forEach(b => b.disabled = true);
+  const correcte = Math.abs(v - r.resposta) <= r.tol;
+  // animació: l'escala amb la llargada (o la distància) que ha dit l'alumne
+  const res = r.tipus === 'hip' ? await aixeca(v, r.peu, `${F(v)} m`) : await aixeca(r.L, v, `${F(r.L)} m`);
+  if (correcte) return encert(boto);
+  P.errors++; SO.mal(); if (boto) { boto.disabled = true; boto.classList.add('sacseja'); }
+  const hTop = v && (r.tipus === 'hip' ? (v > r.peu ? Math.sqrt(v * v - r.peu * r.peu) : 0) : (v < r.L ? Math.sqrt(r.L * r.L - v * v) : 0));
+  const expl = res === 'noArriba' ? (r.tipus === 'hip' ? 'Ni tan sols arriba a la paret!' : 'Tan lluny, l\'escala no arriba a la paret!')
+    : res === 'curta' ? `Massa avall! Arriba a ${F(Math.round(hTop * 10) / 10)} m i la finestra és a ${F(r.h)} m.` : res === 'llarga' ? `Massa amunt! Arriba a ${F(Math.round(hTop * 10) / 10)} m i passa la finestra.` : 'Gairebé! Revisa el càlcul.';
+  const consell = r.tipus === 'hip' && Math.abs(v - (r.peu + r.h)) < .01 ? 'Compte! No n\'hi ha prou de sumar els costats.' : r.tipus === 'hip' && Math.abs(v - (r.peu ** 2 + r.h ** 2)) < .01 ? 'T\'has oblidat de fer l\'arrel quadrada!' : '';
+  diu('pit', [res === 'curta' ? 'Massa curta!' : res === 'llarga' ? (r.tipus === 'hip' ? 'Massa llarga!' : 'Massa a prop!') : 'Ui!', ...(consell ? [consell] : [])]);
+  if (r.intents === 1) {
+    $('#msg').innerHTML = `<p class="msg ko">${expl}${consell ? ` ${consell}` : ''} Torna-ho a provar.</p>`;
+    await espera(900); pintaEscala(WX - r.peu * E.k, 0, 0); $('#g-pit').setAttribute('transform', `translate(${E.xPeu - 46} ${G})`);
+    P.bloc = false; document.querySelectorAll('.opc:not(.sacseja), #ok').forEach(b => b.disabled = false); if (!r.pista) $('#bpista').disabled = false;
+    const inp = $('#inp'); if (inp) { inp.value = ''; inp.focus(); }
+    return;
+  }
+  P.fallades.push(`${r.tipus === 'hip' ? `Escala per a ${F(r.peu)} m i ${F(r.h)} m` : `Distància amb escala de ${F(r.L)} m i ${F(r.h)} m`} → ${F(Math.round(r.resposta * 10) / 10)} m (vas dir ${F(v)})`);
+  $('#msg').innerHTML = `<p class="msg ko">${expl} Mira com ho fa Pitàgores:</p><div class="calc">${passos(r).join('<br>')}</div>`;
+  await espera(1100); pintaEscala(WX - r.peu * E.k, 0, 0);
+  await aixeca(r.L, r.peu, `${F(Math.round(r.L * 10) / 10)} m`); pintaCotes(r, true);
+  diu('pit', ['Així arriba just!']); await baixaGat();
+  seguent();
+}
+async function encert(boto) {
+  const r = P.ronda; P.encerts++;
+  const pts = r.intents === 1 && !r.pista ? 10 : 5; P.punts += pts; pintaCap();
+  if (boto) boto.classList.add('be');
+  SO.be(); pintaCotes(r, true);
+  diu('pit', [bar(['Exacte! L² = d² + h²', 'Perfecte, ni un pam de més!', 'Com deia jo: a² + b² = c²!', 'Ben calculat, bomber!'])[0]]);
+  $('#msg').innerHTML = `<p class="msg ok">Rescatat! +${pts} punts</p><div class="calc">${passos(r).join('<br>')}</div>`;
+  await baixaGat(); diu('gat', ['Gràcies!']); SO.miau();
+  seguent();
+}
+function seguent() {
+  const ult = P.i >= RESCATS - 1;
+  $('#tq').insertAdjacentHTML('beforeend', `<div class="fila"><button class="big" id="seg">${ult ? 'Acaba ▸' : 'Següent rescat ▸'}</button></div>`);
+  $('#seg').focus();
+  $('#seg').onclick = () => { if (ult) return acaba(); P.i++; P.ronda = nouRepte(M.nivell, P.i); muntaEscena(P.ronda); $('#g-camio').setAttribute('transform', `translate(${Math.max(12, E.xPeu - 330)} ${G})`); mostraRepte(); };
+}
+function acaba() {
+  if (P.acabada) return; P.acabada = true; M.pantalla = 'fi'; SO.fi();
+  const nouRec = P.punts > M.record; if (nouRec) M.record = P.punts;
+  try { localStorage.setItem('fr4c_res_rec_' + M.nivell, M.record); } catch (e) {}
+  const temps = Math.round((performance.now() - P.t0) / 1000);
+  envia({ tipus: 'fr4c-res-fi', punts: P.punts, encerts: P.encerts, errors: P.errors, nivell: M.nivell, temps, fallades: P.fallades.slice(0, 12) });
+  pantalla(`<h1>🚒 Tots rescatats!</h1><p>${M.nom ? `<b>${esc(M.nom)}</b>, h` : 'H'}as fet <b>${P.punts}</b> punts de ${RESCATS * 10}. ${nouRec ? '<span class="rec">🏆 Nou rècord!</span>' : M.record ? `El teu rècord és de <b>${M.record}</b>.` : ''}</p>
+    <div class="resum"><div><b>${P.encerts}</b>rescats ben calculats</div><div><b>${P.errors}</b>errors</div><div><b>${Math.floor(temps / 60)}:${String(temps % 60).padStart(2, '0')}</b>temps</div></div>
+    ${P.fallades.length ? `<p><b>Repassa:</b></p><ul class="fallades">${P.fallades.map(f => `<li>${esc(f)}</li>`).join('')}</ul>` : '<p>Cap rescat fallat! Pitàgores està orgullós. 🌟</p>'}
+    <div class="fila"><button class="big big2" id="torna">Torna a jugar</button><button class="big sec big2" id="tanca2">Surt</button></div>`);
+  $('#torna').onclick = comenca; $('#tanca2').onclick = surt;
+}
+function pantalla(html) { const p = $('#pant'); p.innerHTML = `<div class="panell">${html}</div>`; p.style.display = 'flex'; }
+function inici() {
+  M.pantalla = 'inici'; P.i = null; pintaCap();
+  muntaEscena({ h: 8, peu: 6, tipus: 'hip', gat: GATS[0], tol: .01 }); pintaEscala(E.xPeu, 0, 0);
+  $('#panel').innerHTML = '';
+  const txtN = { 1: 'tries l\'escala correcta entre tres', 2: 'calcules la llargada de l\'escala o la distància (resultats exactes)', 3: 'calcules la llargada o la distància amb decimals (arrodonint a les dècimes)' };
+  pantalla(`<h1>🚒 El rescat dels bombers</h1>
+    <p>${M.nom ? `Hola, <b>${esc(M.nom)}</b>! ` : ''}Hi ha foc a la ciutat i en Coma i els seus cosins s'han quedat atrapats a les finestres. En <b>FR-4C</b> condueix el camió i el bomber és… <b>Pitàgores</b>!</p>
+    <p>Calcula l'escala justa amb el teorema: <b>L² = d² + h²</b>. Si l'escala és curta no hi arriba, i si és massa llarga passa de llarg. ${RESCATS} rescats; 10 punts si l'encertes a la primera sense pista.</p>
+    <p class="mini">Nivell ${M.nivell}: ${txtN[M.nivell]}.${M.record ? ` El teu rècord: <b>${M.record}</b> punts.` : ''}</p>
+    ${!M.dinsApp ? `<div class="fila"><b>Nivell:</b><span class="seg" id="nv">${[1, 2, 3].map(n => `<button data-n="${n}" class="${n === M.nivell ? 'on' : ''}">${n}</button>`).join('')}</span></div>` : ''}
+    <div class="fila"><button class="big big2" id="go">Sirena i som-hi! 🚨</button>${M.dinsApp ? '<button class="big sec big2" id="tanca2">Surt</button>' : ''}</div>`);
+  $('#go').onclick = comenca; const t = $('#tanca2'); if (t) t.onclick = surt;
+  document.querySelectorAll('#nv button').forEach(b => b.onclick = () => { M.nivell = +b.dataset.n; try { M.record = +(localStorage.getItem('fr4c_res_rec_' + M.nivell) || 0); } catch (e) {} inici(); });
+}
+const envia = m => { try { if (window.parent !== window) window.parent.postMessage(m, '*'); } catch (e) {} };
+function surt() { M.pantalla = 'fora'; P.acabada = true; envia({ tipus: 'fr4c-res-tanca' }); if (window.parent === window) inici(); }
+window.addEventListener('message', ev => {
+  const d = ev.data || {}; if (d.tipus !== 'fr4c-res-ini') return;
+  M.dinsApp = true; M.nom = d.nom || ''; M.nivell = Math.max(1, Math.min(3, d.nivell || 1)); M.record = Math.max(d.record || 0, 0);
+  if (d.so === false) M.so = false; $('#so').textContent = M.so ? '🔊' : '🔇';
+  if (M.pantalla === 'inici') inici();
+});
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Enter') return;
+  if (M.pantalla === 'joc') { const s = $('#seg'); if (s) s.click(); else if (document.activeElement?.id === 'inp') $('#ok')?.click(); }
+  else if (M.pantalla !== 'joc') $('#go, #torna')?.click();
+});
+$('#so').onclick = () => { M.so = !M.so; $('#so').textContent = M.so ? '🔊' : '🔇'; try { localStorage.setItem('fr4c_res_so', M.so ? '1' : '0'); } catch (e) {} };
+$('#surt').onclick = surt;
+$('#so').textContent = M.so ? '🔊' : '🔇';
+inici(); envia({ tipus: 'fr4c-res-llest' });
+window.__res = { P, M, respon, nouRepte, comenca };
+</script>
+</body>
+</html>

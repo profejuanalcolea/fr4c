@@ -1035,7 +1035,7 @@ const enllacaQualif = c => $$('.q-man', c).forEach(td => td.onclick = () => canv
 const unitatCompleta = u => u.obj.every(o => !o.properament);
 /* ---------- Fitxers a part: cada unitat i cada joc es carrega quan cal ----------
    Són scripts clàssics (funcionen a GitHub Pages i també obrint l'index des de l'ordinador). */
-const V_FITXERS = '5.12';
+const V_FITXERS = '5.13';
 const FITXERS_UNITAT = { f: 'fraccions.js', e: 'enters.js', p: 'potencies.js', q: 'equacions.js', m: 'mesura.js', r: 'grafica.js', g: 'geometria.js' };
 const FITXERS_JOC = { tcx: 'joc-caixa.js', tesc: 'joc-escape.js', tpz: 'joc-pizzeria.js', dimp: 'joc-impropies.js' };
 const CARREGUES = {};
@@ -1590,6 +1590,7 @@ const TALLERS = {
   tmetm: { id: 'tmetm', unitat: 'm', ic: '☄️', curt: 'Meteorits', titol: 'Defensa la base de Mart', sub: 'Joc individual · canvis d\'unitat de cap', defecte: false, esJoc: true, obre: () => obreJocExt('tmetm'), resum: r => resumJocExt(r, 'Meteorits destruïts') },
   trel: { id: 'trel', unitat: 'm', ic: '🕓', curt: 'Rellotge', titol: 'Quina hora és?', sub: 'Taller individual · el rellotge d\'agulles i les hores en català (els quarts)', defecte: false, esJoc: true, obre: () => obreJocExt('trel'), resum: r => resumJocExt(r, 'Hores encertades') },
   tbat: { id: 'tbat', unitat: 'r', ic: '⚓', curt: 'Batalla naval', titol: 'Batalla naval de coordenades', sub: 'Taller individual o en parella (cadascú al seu ordinador) · enfonsa la flota dient punts (x, y)', defecte: false, esJoc: true, obre: () => obreJocExt('tbat'), resum: r => resumJocExt(r, 'Encerts') },
+  tbom: { id: 'tbom', unitat: 'g', ic: '🚒', curt: 'Bombers', titol: 'El rescat dels bombers', sub: 'Taller individual · teorema de Pitàgores: calcula l\'escala justa per rescatar en Coma', defecte: false, esJoc: true, obre: () => obreJocExt('tbom'), resum: r => resumJocExt(r, 'Rescats') },
   timp: { id: 'timp', unitat: 'f', senseDades: true, natiu: true, ic: '🍉', curt: 'Impròpies', titol: 'Fraccions impròpies per equips', sub: 'Joc per a tota la classe, per equips de fruites · fraccions més grans que 1', txt: 'Per equips · no compta per a res →', defecte: false, obre: () => obreAppDemo('dimp') },
   tasc: { id: 'tasc', unitat: 'e', natiu: true, senseDades: true, ic: '🛗', curt: 'Ascensor', titol: "L'ascensor boig", sub: 'Joc per parelles · sumes i restes amb l\'ascensor', defecte: false }
 };
@@ -1605,7 +1606,7 @@ function resumJocExt(r, nomEncerts) {
           <table class="taula-mini"><tr><th>Nivell</th><th>Partides</th><th>Rècord</th></tr>${[1, 2, 3].map(n => `<tr><td>Nivell ${n}</td><td>${nv[n]?.partides || 0}</td><td>${nv[n]?.record || 0}</td></tr>`).join('')}</table>
           ${darreres.length ? `<p style="margin:8px 0 2px;font-weight:700">Darreres partides</p><table class="taula-mini"><tr><th>Data</th><th>Nivell</th><th>Punts</th><th>Encerts</th><th>Errors</th><th>Ha fallat</th></tr>${darreres.map(([t, h]) => `<tr><td>${dataCurta(+t)}</td><td>${h.nivell}</td><td>${h.punts}</td><td>${h.encerts}</td><td>${h.errors}</td><td style="text-align:left;font-size:.85rem">${(h.fallades || []).slice(0, 4).map(esc).join(' · ')}</td></tr>`).join('')}</table>` : ''}` };
     }
-const ORDRE_TALLERS = ['t5b', 'tesc', 'tpz', 'tcx', 'tmetf', 'timp', 'tre', 'tmet', 'tasc', 'tbac', 'ttor', 'tbal', 'tzom', 'tmetm', 'trel', 'tbat'];
+const ORDRE_TALLERS = ['t5b', 'tesc', 'tpz', 'tcx', 'tmetf', 'timp', 'tre', 'tmet', 'tasc', 'tbac', 'ttor', 'tbal', 'tzom', 'tmetm', 'trel', 'tbat', 'tbom'];
 /* «Fet» dels tallers al seguiment: resultats/{alumne}/diesTallers/{AAAA-MM-DD}/{taller} = 2 (fet: acabat o partida sencera) · 1 (hi ha treballat) */
 function marcaDiaTaller(id, tid, fet) {
   if (!id || !tid) return; const d = avuiISO(); const v = fet ? 2 : 1;
@@ -1721,7 +1722,8 @@ const JOCS_EXT = {
   tzom: { fitxer: 'zombis.html?v=2', pref: 'fr4c-zom', titol: 'Zombis a l\'institut' },
   tmetm: { fitxer: 'meteorits.html?v=3', pref: 'fr4c-met', titol: 'Defensa la base de Mart · mesura', mode: 'mesura' },
   trel: { fitxer: 'rellotge.html?v=1', pref: 'fr4c-rel', titol: 'Quina hora és?' },
-  tbat: { fitxer: 'batalla.html?v=2', pref: 'fr4c-bat', titol: 'Batalla naval de coordenades' } };
+  tbat: { fitxer: 'batalla.html?v=2', pref: 'fr4c-bat', titol: 'Batalla naval de coordenades' },
+  tbom: { fitxer: 'rescat.html?v=1', pref: 'fr4c-res', titol: 'El rescat dels bombers' } };
 let MET = null;
 function obreJocExt(tid, nivellProva = null) {
   tancaJoc(true);
@@ -2896,7 +2898,7 @@ function mostraCredits() {
     <p style="font-size:1.1rem"><b>Ins Júlia Minguell</b> · Matemàtiques 4t ESO · Grup Flexible</p>
     <p style="margin-top:14px">Ideat per <b>J. Alcolea</b></p>
     <p style="color:var(--gris)">Desenvolupat amb Claude</p>
-    <p style="color:var(--gris);margin-top:10px">Versió 5.12</p>
+    <p style="color:var(--gris);margin-top:10px">Versió 5.13</p>
     <div class="accions"><button class="boto" data-tanca-modal>D'acord</button></div>`);
 }
 function entraAlumne(id) {
@@ -4114,7 +4116,8 @@ const TALLERS_DEMO = {
   p: [['d-bac', '🦠 Bacteris', 'Brot de bacteris, al nivell triat'], ['d-tor', '🏗️ Torre', 'Torre de potències, al nivell triat']],
   q: [['d-bal', '⚖️ Balança', 'La balança, al nivell triat'], ['d-zom', '🧟 Zombis', 'Zombis a l\'institut, al nivell triat']],
   m: [['d-metm', '☄️ Meteorits', 'Meteorits amb canvis d\'unitat, al nivell triat'], ['d-rel', '🕓 Rellotge', 'Quina hora és?, al nivell triat']],
-  r: [['d-bat', '⚓ Batalla naval', 'Batalla naval de coordenades, al nivell triat']]
+  r: [['d-bat', '⚓ Batalla naval', 'Batalla naval de coordenades, al nivell triat']],
+  g: [['d-bom', '🚒 Rescat dels bombers', 'El rescat dels bombers (Pitàgores), al nivell triat']]
 };
 function pintaDemo() {
   const c = $('#panell-cos');
@@ -4161,6 +4164,7 @@ function pintaDemo() {
   const dmm = $('#d-metm'); if (dmm) dmm.onclick = () => obreJocExt('tmetm', st.nivell);
   const drl = $('#d-rel'); if (drl) drl.onclick = () => obreJocExt('trel', st.nivell);
   const dbt = $('#d-bat'); if (dbt) dbt.onclick = () => obreJocExt('tbat', st.nivell);
+  const dbm = $('#d-bom'); if (dbm) dbm.onclick = () => obreJocExt('tbom', st.nivell);
 }
 
 /* =====================================================================

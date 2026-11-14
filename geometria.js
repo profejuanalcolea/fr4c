@@ -46,7 +46,9 @@ const geR = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
 const geRo = v => Math.round(v * 1e6) / 1e6;
 const geF = v => fmtDec(Math.round(v * 100) / 100);
 const geCol = () => tria(GE_COL);
-const geTx = (x, y, t, { mida = 15, anc = 'middle', col = GE_N, pes = 800, fons = false } = {}) => (fons ? `<rect x="${(anc === 'start' ? x : anc === 'end' ? x - t.length * mida * .58 : x - t.length * mida * .29) - 4}" y="${y - mida * .82}" width="${t.length * mida * .58 + 8}" height="${mida * 1.12}" rx="5" fill="#fffdf8" opacity=".92"/>` : '') + `<text x="${geRo(x)}" y="${geRo(y)}" text-anchor="${anc}" font-size="${mida}" font-weight="${pes}" fill="${col}">${t}</text>`;
+const GE_AMP = { ' ': .28, ',': .28, '.': .28, ':': .3, '·': .3, '²': .38, '³': .38, '(': .34, ')': .34, '=': .6, '+': .6, '−': .6, '×': .6, '?': .55, 'm': .86, 'i': .27, 'l': .27, 'r': .4, 't': .36, 'f': .34, 'π': .6, '√': .6 };
+const geAmple = (t, mida) => { const n = String(t).replace(/<[^>]*>/g, '').replace(/&nbsp;|&[a-z]+;|&#\d+;/g, ' '); let w = 0; for (const c of n) w += GE_AMP[c] ?? (/[0-9]/.test(c) ? .57 : /[A-ZÀ-Ý]/.test(c) ? .68 : .55); return w * mida; };
+const geTx = (x, y, t, { mida = 15, anc = 'middle', col = GE_N, pes = 800, fons = false } = {}) => { const w = geAmple(t, mida); return (fons ? `<rect x="${geRo((anc === 'start' ? x : anc === 'end' ? x - w : x - w / 2) - 3)}" y="${geRo(y - mida * .8)}" width="${geRo(w + 6)}" height="${geRo(mida * 1.02)}" rx="4" fill="#fffdf8" opacity=".9"/>` : '') + `<text x="${geRo(x)}" y="${geRo(y)}" text-anchor="${anc}" font-size="${mida}" font-weight="${pes}" fill="${col}">${t}</text>`; };
 function geFons(W, H, graella = 0, ox = 0, oy = 0) {
   let s = `<rect width="${W}" height="${H}" fill="#fffdf8"/>`;
   if (graella) { let d = ''; for (let x = ox % graella; x <= W; x += graella) d += `M${x} 0V${H}`; for (let y = oy % graella; y <= H; y += graella) d += `M0 ${y}H${W}`; s += `<path d="${d}" stroke="#eadfcd" stroke-width="1"/>`; }
@@ -60,7 +62,14 @@ function geCota(x1, y1, x2, y2, t, { d = 18, col = GE_N, mida = 15 } = {}) {
   const L = Math.hypot(x2 - x1, y2 - y1) || 1, nx = -(y2 - y1) / L * d, ny = (x2 - x1) / L * d;
   const a = [x1 + nx, y1 + ny], b = [x2 + nx, y2 + ny], ux = (x2 - x1) / L * 7, uy = (y2 - y1) / L * 7, vx = -uy * .55, vy = ux * .55;
   return `<g stroke="${col}" stroke-width="1.6" fill="none"><path d="M${x1} ${y1}L${a[0]} ${a[1]}M${x2} ${y2}L${b[0]} ${b[1]}" stroke-dasharray="2 3"/><path d="M${a[0]} ${a[1]}L${b[0]} ${b[1]}"/><path d="M${a[0] + ux + vx} ${a[1] + uy + vy}L${a[0]} ${a[1]}L${a[0] + ux - vx} ${a[1] + uy - vy}M${b[0] - ux + vx} ${b[1] - uy + vy}L${b[0]} ${b[1]}L${b[0] - ux - vx} ${b[1] - uy - vy}"/></g>`
-    + geTx((a[0] + b[0]) / 2 + nx * .9, (a[1] + b[1]) / 2 + ny * .9 + 5, t, { mida, col, fons: true });
+    + geCotaTx(a, b, nx, ny, t, mida, col);
+}
+// etiqueta de la cota: sempre a fora de la línia, mai a sobre
+function geCotaTx(a, b, nx, ny, t, mida, col) {
+  const mx = (a[0] + b[0]) / 2, my = (a[1] + b[1]) / 2, sx = Math.sign(nx), sy = Math.sign(ny);
+  if (Math.abs(nx) > Math.abs(ny) * 1.2) return geTx(mx + sx * 6, my + mida * .35, t, { mida, col, anc: sx > 0 ? 'start' : 'end' });
+  if (Math.abs(ny) > Math.abs(nx) * 1.2) return geTx(mx, sy > 0 ? my + mida + 2 : my - 6, t, { mida, col });
+  return geTx(mx + sx * 6, my + (sy > 0 ? mida : -4), t, { mida, col, anc: sx > 0 ? 'start' : 'end' });
 }
 const geRecte = (x, y, dx, dy, m = 11) => `<path d="M${x + dx * m} ${y}L${x + dx * m} ${y + dy * m}L${x} ${y + dy * m}" fill="none" stroke="${GE_N}" stroke-width="1.6"/>`;
 const geAlt = (x, yT, yB, t, { col = '#7c5cd6', costat = 1 } = {}) => `<path d="M${x} ${yT}V${yB}" stroke="${col}" stroke-width="2.6" stroke-dasharray="7 5"/>${geRecte(x, yB, costat, -1)}` + (t ? geTx(x + costat * 8, (yT + yB) / 2 + 5, t, { anc: costat > 0 ? 'start' : 'end', col, fons: true }) : '');
@@ -95,7 +104,9 @@ function geTriFig(b, h, a, { u = 'cm', col = geCol(), costats = null, cotaH = tr
   if (quadric) { let d = ''; for (let i = Math.floor(xmin); i <= Math.ceil(xmax); i++) d += `M${ox + i * k} ${oy - h * k}V${oy}`; for (let j = 0; j <= h; j++) d += `M${ox + xmin * k} ${oy - j * k}H${ox + xmax * k}`; s += `<path d="${d}" stroke="#d8ccb8" stroke-width="1"/>`; }
   s += gePoli(P, col);
   if (a < 0 || a > b) s += `<path d="M${ox + (a < 0 ? a * k : b * k)} ${oy}H${ox + (a < 0 ? 0 : a * k)}" stroke="${GE_N}" stroke-width="1.6" stroke-dasharray="4 4"/>`;
-  if (cotaH) s += geAlt(ox + a * k, oy - h * k, oy, geU(h, u), { costat: a > b / 2 ? -1 : 1 });
+  if (cotaH) { const cs = a > b / 2 ? -1 : 1, ax = ox + a * k, lab = geU(h, u), lloc = Math.abs((cs > 0 ? P[1][0] : P[0][0]) - ax) / 2; // espai a mitja altura
+    if (lloc > geAmple(lab, 15) + 14) s += geAlt(ax, oy - h * k, oy, lab, { costat: cs });
+    else s += geAlt(ax, oy - h * k, oy, '', { costat: cs }) + geTx(ax + 12, oy - h * k + 4, `h = ${lab}`, { anc: 'start', col: '#7c5cd6' }); } // triangle estret: etiqueta al costat del vèrtex
   if (cotaB) s += geCota(ox, oy, ox + b * k, oy, geU(b, u), { d: 20 });
   if (costats) { const [l1, l2] = costats; if (l1) s += geTx((P[0][0] + P[2][0]) / 2 - 10, (P[0][1] + P[2][1]) / 2, geU(l1, u), { anc: 'end', col: col[0], fons: true }); if (l2) s += geTx((P[1][0] + P[2][0]) / 2 + 10, (P[1][1] + P[2][1]) / 2, geU(l2, u), { anc: 'start', col: col[0], fons: true }); }
   return geSvg(GE_W, GE_H, s + extra);
@@ -137,6 +148,19 @@ function geCercleFig(r, { mostra = 'r', tema = tria(['pizza', 'roda', 'plat', 's
   return geSvg(GE_W, GE_H, s);
 }
 const geRepte = (t, a) => `<div class="ge-coma" style="margin-top:8px">${a === 'robot' ? robot(52) : gatComa(48, 'ge-gat')}<span class="baf">${t}</span></div>`;
+// Pitàgores (caricatura inventada): savi barbut amb toga de vora taronja, corona de llorer i un triangle a la mà
+const gePitagores = (m = 70) => `<svg width="${m}" height="${m * 1.2}" viewBox="0 0 100 120" aria-label="Pitàgores" style="flex:none">
+<path d="M22 118 Q24 72 50 66 Q76 72 78 118Z" fill="#fff" stroke="#2b2b2b" stroke-width="3"/>
+<path d="M30 76 Q52 96 72 74" fill="none" stroke="#f47b20" stroke-width="5"/><path d="M24 116 H76" stroke="#f47b20" stroke-width="5"/>
+<path d="M66 80 L92 58" stroke="#e8c39e" stroke-width="9" stroke-linecap="round"/><path d="M84 40 L84 62 L100 62Z" fill="#ffd6e4" stroke="#e0457b" stroke-width="3" stroke-linejoin="round"/><path d="M84 57h5v5" fill="none" stroke="#e0457b" stroke-width="1.5"/>
+<circle cx="50" cy="38" r="22" fill="#f6d2b0" stroke="#2b2b2b" stroke-width="3"/>
+<path d="M29 40 Q30 76 50 80 Q70 76 71 40 Q64 52 50 50 Q36 52 29 40Z" fill="#e9e6e0" stroke="#2b2b2b" stroke-width="3" stroke-linejoin="round"/>
+<path d="M40 52 Q50 46 60 52" fill="none" stroke="#2b2b2b" stroke-width="2.5" stroke-linecap="round"/><path d="M44 57 Q50 61 56 57" fill="#c0392b" stroke="#2b2b2b" stroke-width="2"/>
+<circle cx="42" cy="36" r="3.2" fill="#2b2b2b"/><circle cx="58" cy="36" r="3.2" fill="#2b2b2b"/><path d="M36 29 Q42 25 47 29M53 29 Q58 25 64 29" fill="none" stroke="#9a948a" stroke-width="3" stroke-linecap="round"/>
+<path d="M50 40 Q47 46 51 47" fill="none" stroke="#2b2b2b" stroke-width="2" stroke-linecap="round"/>
+<path d="M28 26 Q50 6 72 26" fill="none" stroke="#1d9a5a" stroke-width="3"/>${[[30,22],[36,15],[43,11],[50,10],[57,11],[64,15],[70,22]].map(([x, y]) => `<ellipse cx="${x}" cy="${y}" rx="4.5" ry="2.4" fill="#2fb36b" transform="rotate(${(x - 50) * 2.2} ${x} ${y})"/>`).join('')}
+</svg>`;
+const geDiu = (fig, t) => `<div class="ge-coma" style="margin-top:8px">${fig}<span class="baf">${t}</span></div>`;
 const geFormula = t => `<div style="text-align:center;margin-top:10px"><span class="ge-form">${t}</span></div>`;
 
 /* ---------- el geoplà: rectangles (2 clics) o triangles (3 clics) ---------- */
@@ -628,8 +652,8 @@ TEMES.g7 = {
   sequencia: { 1: [['quadrats'], ['hipotenusa'], ['escala'], ['quadrats'], ['hipotenusa'], ['pantalla'], ['escala'], ['hipotenusa']], 2: [['quadrats'], ['hipotenusa'], ['catet'], ['escala'], ['pantalla'], ['catet'], ['hipotenusa'], ['escala']], 3: [['hipotenusa'], ['catet'], ['escala'], ['esRecte'], ['pantalla'], ['catet'], ['hipotenusa'], ['esRecte']] },
   explicacio: [
     { text: `<p>Un triangle <b>rectangle</b> té un angle recte. Els costats que el formen són els <b>catets</b>; el llarg, la <b class="parpelleja">hipotenusa</b>.</p>`, vis: () => geTriRect(4, 3, { labs: ['catet', 'catet', 'hipotenusa'], u: '' }) },
-    { text: `<p>Si fem un quadrat sobre cada costat, el gran té la mateixa àrea que els dos petits junts: <b class="parpelleja">9 + 16 = 25</b>.</p><p class="petit">Això és el teorema de Pitàgores: c² = a² + b².</p>`, vis: () => geTriRect(4, 3, { quadrats: true, area: ['16', '9', '25'] }) },
-    { text: `<p>Per trobar la hipotenusa: eleva al quadrat, suma i fes l'<b>arrel</b>.</p><p class="petit">3² + 4² = 25 → √25 = 5. En Coma ja pot pujar per l'escala!</p>`, vis: () => geEscalaSvg(3, 4, { labs: ['3 m', '4 m', '5 m'] }) }
+    { text: `<p>Si fem un quadrat sobre cada costat, el gran té la mateixa àrea que els dos petits junts: <b class="parpelleja">9 + 16 = 25</b>.</p><p class="petit">Això és el teorema de Pitàgores: c² = a² + b².</p>`, vis: () => geTriRect(4, 3, { quadrats: true, area: ['16', '9', '25'] }) + geDiu(gePitagores(64), 'c² = a² + b²!<br>Fa uns 2.500 anys que porta el meu nom.') },
+    { text: `<p>Per trobar la hipotenusa: eleva al quadrat, suma i fes l'<b>arrel</b>.</p><p class="petit">3² + 4² = 25 → √25 = 5. En Coma ja pot pujar per l'escala!</p>`, vis: () => geEscalaSvg(3, 4, { labs: ['3 m', '4 m', '5 m'] }) + geRepte('Gràcies, Pitàgores! Escala de 5 m i cap amunt.') }
   ],
   exemple: nv => ({ enunciat: `Catets de 6 cm i 8 cm. Quant fa la hipotenusa?`, passos: [
     { text: `6² + 8² = 36 + 64<br>= 100`, vis: geTriRect(8, 6, { labs: ['8', '6', '?'] }) },
