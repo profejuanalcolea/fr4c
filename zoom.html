@@ -88,8 +88,9 @@ const N = '#1b1b1b', T = '#f26b1d';
 const M = { nom: '', nivell: 1, dinsApp: false, so: true, pantalla: 'inici', record: 0 };
 try { M.so = localStorage.getItem('fr4c_zoom_so') !== '0'; } catch (e) {}
 let RAPID = false; // «Ja ho entenc»: les animacions passen de cop
-const espera = ms => new Promise(r => setTimeout(r, RAPID ? 0 : ms));
-const anim = (ms, f) => new Promise(res => { if (RAPID) { f(1); return res(); } const t0 = performance.now(); const pas = t => { const u = Math.min(1, (t - t0) / ms); f(u < .5 ? 2 * u * u : 1 - (-2 * u + 2) ** 2 / 2, u); if (u < 1) requestAnimationFrame(pas); else res(); }; requestAnimationFrame(pas); });
+const LENT = () => M.pantalla === 'expl' ? 1.8 : 1; // l'explicació va més a poc a poc
+const espera = ms => new Promise(r => setTimeout(r, RAPID ? 0 : ms * LENT()));
+const anim = (ms, f) => new Promise(res => { if (RAPID) { f(1); return res(); } ms *= LENT(); const t0 = performance.now(); const pas = t => { const u = Math.min(1, (t - t0) / ms); f(u < .5 ? 2 * u * u : 1 - (-2 * u + 2) ** 2 / 2, u); if (u < 1) requestAnimationFrame(pas); else res(); }; requestAnimationFrame(pas); });
 // nombres en català: milers amb punt, decimals amb coma
 const fmt = v => { if (Math.abs(v) >= 1) { const [e, d] = String(Math.round(v * 1e6) / 1e6).split('.'); return e.replace(/\B(?=(\d{3})+$)/g, '.') + (d ? ',' + d : ''); } return String(+v.toPrecision(6)).replace(/^(\d)e-(\d+)$/, (m, a, b) => '0,' + '0'.repeat(+b - 1) + a).replace('.', ','); };
 const fmtPetit = v => { if (v >= 1e-3 || v === 0) return fmt(v); const s = v.toFixed(12).replace(/0+$/, ''); return s.replace('.', ','); };
@@ -338,11 +339,20 @@ async function notacio() {
   if (M.nivell === 3) { afegeix('0,005 m'); await salts('0005', 1, 4, `0,005 = 5 · ${pw(-3)}`); afegeix(`= <b>5 · ${pw(-3)} m</b>`); }
   afegeix(`<span style="font-size:1.05rem">Cada salt de la coma a l'esquerra suma 1 a l'exponent${M.nivell === 3 ? '; cada salt a la dreta, hi resta 1' : ''}.</span>`);
 }
+// després de cada part: tornar-la a veure o continuar
+function triaRepeteix(ultima) {
+  return new Promise(res => {
+    const f = $('#bsalta')?.parentElement; if (!f) return res(false);
+    f.innerHTML = `<button class="big sec" id="brep">🔁 Torna-ho a veure</button><button class="big" id="bcont">${ultima ? 'Ja ho tinc ▸' : 'Continua ▸'}</button>`;
+    $('#brep').onclick = () => res(true); $('#bcont').onclick = () => res(false); $('#bcont').focus();
+  });
+}
 async function explicacio() {
   M.pantalla = 'expl'; RAPID = false; pintaCap();
-  await barresEnfora(); await espera(800);
-  if (M.nivell >= 2) { RAPID = false; await notacio(); await espera(600); }
-  if (M.nivell === 3) { RAPID = false; await barresEndins(); await espera(600); }
+  const parts = [barresEnfora].concat(M.nivell >= 2 ? [notacio] : [], M.nivell === 3 ? [barresEndins] : []);
+  for (let k = 0; k < parts.length; k++) {
+    do { RAPID = false; await parts[k](); RAPID = false; } while (await triaRepeteix(k === parts.length - 1));
+  }
   RAPID = false; try { localStorage.setItem('fr4c_zoom_vist_' + M.nivell, '1'); } catch (e) {}
   $('#panel').innerHTML = `<div class="targ"><h2>Ja ho tens!</h2><p>Ara viatja amb el zoom i captura objectes gegants${M.nivell === 3 ? ' i diminuts' : ''}.</p><div class="fila"><button class="big" id="bexp">🔍 Comença el viatge</button></div></div>`;
   $('#bexp').onclick = exploracio; $('#bexp').focus();

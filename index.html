@@ -97,6 +97,14 @@ b,strong{font-weight:700}
 
 /* ---------- portada ---------- */
 .portada{display:grid;grid-template-columns:1fr 1.2fr;align-items:center;gap:40px;max-width:1050px;margin:auto;width:100%}
+.portada.marc{border:6px solid var(--tinta);border-radius:32px;padding:34px 40px;background:#fff;box-shadow:0 10px 0 #1b1b1b22;position:relative;z-index:1}
+.amb-simbols{position:relative;overflow:hidden}
+.simbols{position:absolute;inset:0;pointer-events:none;z-index:0}
+.simbols span{position:absolute;bottom:-60px;color:#1b1b1b;opacity:.09;font-weight:800;font-family:inherit;animation:simbol linear infinite;white-space:nowrap}
+@keyframes simbol{from{transform:translateY(0) rotate(-8deg)}to{transform:translateY(-120vh) rotate(8deg)}}
+@media (prefers-reduced-motion:reduce){.simbols span{animation:none;display:none}}
+.credit-coma{display:inline-block;animation:volteta 1.6s ease-in-out .2s both}
+@keyframes volteta{0%{transform:translateY(30px) rotate(0) scale(.6);opacity:0}25%{transform:translateY(0) rotate(0) scale(1);opacity:1}45%{transform:translateY(-34px) rotate(-180deg)}65%{transform:translateY(0) rotate(-360deg)}75%{transform:translateY(-8px) rotate(-360deg)}85%,100%{transform:translateY(0) rotate(-360deg)}}
 .portada h1{font-size:3.2rem;line-height:1.05;letter-spacing:-.02em}
 .portada h1 span{color:var(--taronja)}
 .portada p.sub{font-size:1.2rem;color:var(--gris);margin:12px 0 28px}
@@ -442,6 +450,10 @@ button.tsg-fila{background:transparent;color:inherit}
 .ex-sol{background:#f1ecff;border-radius:12px;padding:8px 12px;margin-top:6px;font-family:"Bricolage Grotesque",system-ui,sans-serif;font-size:1.1rem;line-height:1.5;color:#3b2a85}
 .ex-unitats{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin:12px 0}.ex-unitats>div{background:#f7f5f0;border-radius:12px;padding:8px 10px}.ex-unitats .barra-prog{margin:4px 0;width:100%;max-width:none}
 .ex-fig{width:100%;max-width:380px;height:auto;display:block;margin:8px auto}
+.boleta{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;font-size:.78rem;font-weight:900;margin-right:6px;border:2px solid #1b1b1b;vertical-align:middle;flex:none;line-height:1}
+.boleta.buida{background:#fff;color:#999;border-style:dashed}.boto-grup{padding:3px 6px}.boto-grup .boleta{margin:0;width:26px;height:26px;font-size:.9rem}
+#g-fil .boleta{margin:0}
+table.llibreta tr.nou-grup>td{border-top:4px solid #1b1b1b!important}
 .c-plegat{background:#f5f1fd;width:30px;min-width:30px;padding:0!important}
 #e-fs.activa{background:var(--tinta);color:#fff}
 .llibreta.seguiment{width:auto;min-width:480px}
@@ -1048,7 +1060,7 @@ const enllacaQualif = c => $$('.q-man', c).forEach(td => td.onclick = () => canv
 const unitatCompleta = u => u.obj.every(o => !o.properament);
 /* ---------- Fitxers a part: cada unitat i cada joc es carrega quan cal ----------
    Són scripts clàssics (funcionen a GitHub Pages i també obrint l'index des de l'ordinador). */
-const V_FITXERS = '5.15';
+const V_FITXERS = '5.16';
 const FITXERS_UNITAT = { f: 'fraccions.js', e: 'enters.js', p: 'potencies.js', q: 'equacions.js', m: 'mesura.js', r: 'grafica.js', g: 'geometria.js' };
 const FITXERS_JOC = { tcx: 'joc-caixa.js', tesc: 'joc-escape.js', tpz: 'joc-pizzeria.js', dimp: 'joc-impropies.js' };
 const CARREGUES = {};
@@ -2888,15 +2900,18 @@ function render() {
   if (S.vista === 'objectiu') return pantallaObjectiu();
 }
 
+// símbols de mates que pugen molt a poc a poc al fons de l'entrada
+const SIMBOLS = ['½', '−3', '10²', 'x', 'π', '¾', '√9', '2³', '+5', '%', '△', 'y = 2x', '0,5', 'km', '−1'];
+const simbolsPortada = () => `<div class="simbols" aria-hidden="true">${SIMBOLS.map((t, i) => `<span style="left:${(i * 37 + 7) % 96}%;font-size:${1.4 + (i % 4) * .5}rem;animation-duration:${26 + (i * 7) % 18}s;animation-delay:-${(i * 5.3) % 30}s">${t}</span>`).join('')}</div>`;
 function pantallaPortada() {
   posaContext('');
   const llista = Object.entries(S.alumnes).sort(ordenaNoms);
   const sel = $('#sel-alumne')?.value || '';
-  vista.innerHTML = `<section class="pantalla centrat"><div class="portada">
+  vista.innerHTML = `<section class="pantalla centrat amb-simbols">${simbolsPortada()}<div class="portada marc">
     <div style="display:flex;align-items:center;justify-content:center;gap:14px"><div class="rob-portada" id="rob-portada" title="Toca'm!">${robot(190, 'normal', true)}</div><div class="bafarada">${appTancada() ? 'Llegeix les <b>instruccions</b> d\'avui 👉' : 'Hola! Sóc <b>FR-4C</b>. Avui superarem objectius de matemàtiques.'}</div></div>
     <div style="text-align:left">
       <h1 class="titol-portada">MATEMÀTIQUES <span style="white-space:nowrap">4t ESO</span></h1>
-      <p class="sub portada-sub"><b>Grup flexible</b><br>Ins Júlia Minguell</p>
+      <p class="sub portada-sub">Ins Júlia Minguell</p>
       ${appTancada() ? `<div class="instr-tancada"><div class="cap">🔒 Avui l'app està tancada</div><div class="txt">${htmlMsgTancada()}</div></div>` : llista.length ? `<form class="formulari" id="f-entra" autocomplete="off">
         <label for="sel-alumne">Qui ets?</label>
         <select class="camp" id="sel-alumne"><option value="">Tria el teu nom…</option>${llista.map(([id, a]) => `<option value="${id}" ${id === sel ? 'selected' : ''}>${esc(a.nom)}</option>`).join('')}</select>
@@ -2905,7 +2920,7 @@ function pantallaPortada() {
         <p class="missatge-error" id="err-entra"></p>
         <button class="boto taronja" type="submit">Entra →</button>
       </form>` : `<p class="bafarada" style="max-width:420px">Encara no hi ha cap alumne a la llista. El professor ha d'afegir-los des del seu panell.</p>`}
-      ${!appTancada() && S.config?.modeLliure === true ? `<p style="margin-top:16px"><button class="boto" id="btn-lliure" style="width:100%;max-width:420px">🎒 Practica lliurement <small style="font-weight:500">(sense entrar · no es desa res)</small></button></p>` : ''}
+      ${!appTancada() && S.config?.modeLliure === true ? `<p style="margin-top:14px"><button class="boto-petit" id="btn-lliure" title="Sense entrar · no es desa res">🎒 Practica lliurement</button></p>` : ''}
       <p style="margin-top:22px;display:flex;align-items:center;gap:18px;flex-wrap:wrap"><button class="boto-petit" id="btn-fs-portada">⛶ ${esPantallaCompleta() ? 'Surt de la pantalla completa' : 'Pantalla completa'}</button><button class="enllac" id="btn-credits">Crèdits</button></p>
     </div></div></section>`;
   $('#btn-credits').onclick = mostraCredits;
@@ -2932,11 +2947,13 @@ function pantallaError() {
   $('#btn-local').onclick = () => { DB = connectaLocal(); arrenca(); };
 }
 function mostraCredits() {
+  try { so('pas'); setTimeout(() => so('ok'), 900); } catch (e) { }
   obreModal(`<h3>Crèdits</h3>
-    <p style="font-size:1.1rem"><b>Ins Júlia Minguell</b> · Matemàtiques 4t ESO · Grup Flexible</p>
+    <div style="text-align:center;margin:4px 0 6px"><span class="credit-coma">${gatComa(90)}</span></div>
+    <p style="font-size:1.1rem"><b>Ins Júlia Minguell</b> · Matemàtiques 4t ESO</p>
     <p style="margin-top:14px">Ideat per <b>J. Alcolea</b></p>
     <p style="color:var(--gris)">Desenvolupat amb Claude</p>
-    <p style="color:var(--gris);margin-top:10px">Versió 5.15</p>
+    <p style="color:var(--gris);margin-top:10px">Versió 5.16</p>
     <div class="accions"><button class="boto" data-tanca-modal>D'acord</button></div>`);
 }
 function entraAlumne(id) {
@@ -3947,21 +3964,49 @@ function pintaLlibreta() {
   const tc2 = $('.taula-caixa', c); if (pos && tc2) { tc2.scrollTop = pos[0]; tc2.scrollLeft = pos[1]; }
   pares.forEach(([n, t, l]) => { n.scrollTop = t; n.scrollLeft = l; }); window.scrollTo(wx, wy);
 }
+/* ---------- GRUPS A-D (només per al professor): ordenar i filtrar la llibreta i el seguiment ---------- */
+const GRUPS = { A: ['#0b4f9c', '#fff'], B: ['#f08c00', '#1b1b1b'], C: ['#ffe14d', '#1b1b1b'], D: ['#1b1b1b', '#fff'] }; // colors que es distingeixen amb daltonisme, i sempre amb la lletra
+const grupsOn = () => S.config?.grups === true;
+const boleta = g => g && GRUPS[g] ? `<span class="boleta" style="background:${GRUPS[g][0]};color:${GRUPS[g][1]}" title="Grup ${g}">${g}</span>` : '';
+const boletaNom = id => grupsOn() ? boleta(S.alumnes[id]?.grup) : '';
+const lsG = (k, d) => { try { return localStorage.getItem('fr4c_grup_' + k) ?? d; } catch (e) { return S['g_' + k] ?? d; } };
+const lsGset = (k, v) => { try { localStorage.setItem('fr4c_grup_' + k, v); } catch (e) { S['g_' + k] = v; } };
+function llistaProfe() {
+  let l = Object.entries(S.alumnes).sort(ordenaNoms); S._primersGrup = null;
+  if (!grupsOn()) return l;
+  const f = lsG('filtre', ''); if (f) l = l.filter(([, a]) => a.grup === f);
+  if (lsG('ordre', 'nom') === 'grup') {
+    const o = a => 'ABCD'.indexOf(a[1].grup) < 0 ? 9 : 'ABCD'.indexOf(a[1].grup); l.sort((x, y) => (o(x) - o(y)) || ordenaNoms(x, y));
+    S._primersGrup = new Set(); let ant = null; l.forEach(([id, a]) => { const g = a.grup || '-'; if (g !== ant && ant !== null) S._primersGrup.add(id); ant = g; });
+  }
+  return l;
+}
+const nouGrup = id => S._primersGrup?.has(id) ? 'nou-grup' : '';
+function barraGrups() {
+  if (!grupsOn()) return '';
+  const o = lsG('ordre', 'nom'), f = lsG('filtre', '');
+  return `<span class="grup-barra"><b>Grups:</b><span class="segment petit" id="g-ord"><button data-v="nom" class="${o === 'nom' ? 'activa' : ''}">Per nom</button><button data-v="grup" class="${o === 'grup' ? 'activa' : ''}">Per grup</button></span>
+    <span class="segment petit" id="g-fil"><button data-v="" class="${f ? '' : 'activa'}">Tots</button>${'ABCD'.split('').map(g => `<button data-v="${g}" class="${f === g ? 'activa' : ''}" title="Només el grup ${g}">${boleta(g)}</button>`).join('')}</span></span>`;
+}
+function enllacaGrups(c) {
+  $$('#g-ord button', c).forEach(b => b.onclick = () => { lsGset('ordre', b.dataset.v); pintaLlibreta(); });
+  $$('#g-fil button', c).forEach(b => b.onclick = () => { lsGset('filtre', b.dataset.v); pintaLlibreta(); });
+}
 function pintaLlibretaDins(c) {
   if (S.unitatProfe === 'seg') return pintaSeguiment(c);
   const u = UNITATS[S.unitatProfe] || UNITATS.f; const OBJS = u.obj;
   const CBP = CB_PROVES[u.id] ? cbUsa(u.id) : null;
-  const llista = Object.entries(S.alumnes).sort(ordenaNoms);
+  const llista = llistaProfe();
   const minimAS = minimDe(u);
   const sostre = sostreDe(u); const OBERTS = OBJS.filter(o => !o.properament);
-  const barra = `<div class="fila-form llib-barra">${segmentLlibreta(u.id)}
+  const barra = `<div class="fila-form llib-barra">${segmentLlibreta(u.id)}${barraGrups()}
     <span class="grup-barra"><b>App:</b><span class="segment petit" id="l-app"><button data-v="1" class="${appTancada() ? '' : 'activa'}">Oberta</button><button data-v="0" class="${appTancada() ? 'activa' : ''}" title="Ningú hi pot entrar. El missatge es canvia a Configuració.">🔒 Tancada</button></span></span>
     <span class="grup-barra"><b>Obert fins a:</b><select class="camp" id="l-sostre" style="padding:4px 8px;width:auto" title="Els objectius de després queden tancats, encara que l'alumne hagi superat l'anterior">${OBERTS.map((o, i) => `<option value="${i + 1}" ${sostre === i + 1 ? 'selected' : ''}>objectiu ${o.num}</option>`).join('')}<option value="" ${sostre === null || sostre >= OBERTS.length ? 'selected' : ''}>tot obert</option><option value="0" ${sostre === 0 ? 'selected' : ''}>res (tot tancat)</option></select></span>
     ${CBP ? `<span class="grup-barra"><b>Competències:</b><span class="segment petit" id="l-comp"><button data-v="0" class="${S.config?.[CBP.PC.provaKey] === true ? '' : 'activa'}">Tancada</button><button data-v="1" class="${S.config?.[CBP.PC.provaKey] === true ? 'activa' : ''}">Oberta</button></span></span>` : ''}
     ${tallersU(u).length ? `<span class="grup-barra"><b>Tallers:</b><span id="l-tallers">${tallersU(u).map(t => `<button class="xip ${tallerObert(t) ? 'on' : ''}" data-t="${t.id}" title="${esc(t.titol)} · ${tallerObert(t) ? 'obert: clica per tancar-lo' : 'tancat: clica per obrir-lo'}">${t.ic} ${t.curt}${tallerObert(t) ? '' : ' 🔒'}</button>`).join('')}</span></span>` : ''}
     <span class="grup-barra"><b>AS:</b><span class="segment petit" id="l-asauto"><button data-v="1" class="${asAuto(u) ? 'activa' : ''}" title="L'app posa AS quan l'alumne arriba al mínim d'objectius">Automàtica</button><button data-v="0" class="${asAuto(u) ? '' : 'activa'}" title="La poses tu clicant la casella">Manual</button></span></span>
     ${unitatCompleta(u) ? `<span class="grup-barra"><b>Prova final:</b><span class="segment petit" id="l-prova"><button data-v="0" class="${provaOberta(u) ? '' : 'activa'}">Tancada</button><button data-v="1" class="${provaOberta(u) ? 'activa' : ''}">Oberta</button></span></span>` : ''}</div>`;
-  if (!llista.length) { c.innerHTML = barra + `<div class="seccio"><h3>Encara no hi ha alumnes</h3><p class="ajuda">Afegeix-los a la pestanya <b>Alumnes</b>.</p></div>`; enllacaBarra(c, u); return; }
+  if (!llista.length) { c.innerHTML = barra + (Object.keys(S.alumnes).length ? `<div class="seccio"><h3>Cap alumne en aquest grup</h3><p class="ajuda">Tria «Tots» o un altre grup.</p></div>` : `<div class="seccio"><h3>Encara no hi ha alumnes</h3><p class="ajuda">Afegeix-los a la pestanya <b>Alumnes</b>.</p></div>`); enllacaBarra(c, u); return; }
   const alertes = llista.filter(([id]) => OBJS.some(o => estatCasella(id, o.id) === 'alerta' && !S.resTots[id]?.[o.id]?.salt)).length;
   c.innerHTML = barra + `<div class="llegenda">
       <span><i style="background:var(--ok-suau)"></i> Assolit</span><span><i style="background:#fff3e6;box-shadow:inset 0 0 0 2px var(--taronja)"></i> ⏭ Saltat (no assolit)</span><span><i style="background:var(--groc-suau)"></i> En procés</span><span><i style="background:var(--ko)"></i> Alerta (3 intents fallits al nivell 1)</span><span><i style="background:#fafafa"></i> No començat</span><span class="fora-txt"><i style="background:var(--taronja);border-radius:50%;width:8px;height:8px;border:0"></i> Avís per sortir de la pestanya</span><span class="fora-txt"><i style="background:var(--ko);border-radius:50%;width:9px;height:9px;border:0"></i> Intent anul·lat</span>
@@ -3973,7 +4018,7 @@ function pintaLlibretaDins(c) {
       ${llista.map(([id, a]) => {
         const assolits = OBJS.filter(o => estatCasella(id, o.id) === 'ok').length;
         const pr = S.resTots[id]?.[u.prova];
-        return `<tr><td class="nom" title="${esc(a.nom)}">${esc(a.nom)}</td>
+        return `<tr class="${nouGrup(id)}"><td class="nom" title="${esc(a.nom)}">${boletaNom(id)}${esc(a.nom)}</td>
           <td><span class="nivell-ctl"><button data-niv="${id}" data-d="-1">−</button><b>N${nivellBase(id)}</b><button data-niv="${id}" data-d="1">+</button></span></td>
           ${OBJS.map(o => {
             const e = estatCasella(id, o.id); const r = S.resTots[id]?.[o.id] || {};
@@ -4017,11 +4062,11 @@ const segPlegat = k => { try { return localStorage.getItem('fr4c_seg_' + k) === 
 const segPlega = k => { try { localStorage.setItem('fr4c_seg_' + k, segPlegat(k) ? '0' : '1'); } catch (e) { S['segP_' + k] = !S['segP_' + k]; } pintaLlibreta(); };
 function pintaSeguiment(c) {
   if (!DB.local && !DB.esProfe()) { c.innerHTML = `<div class="fila-form llib-barra">${segmentLlibreta('seg')}</div><div class="seccio"><h3>Cal entrar com a professor</h3><p class="ajuda">El seguiment només es pot veure amb l'usuari del professor.</p></div>`; enllacaSeg(c); return; }
-  const llista = Object.entries(S.alumnes).sort(ordenaNoms); const totsDies = diesSeg();
+  const llista = llistaProfe(); const totsDies = diesSeg();
   const pR = segPlegat('resum'), pD = segPlegat('dies') && totsDies.length > 1, dies = pD ? totsDies.slice(0, 1) : totsDies, amagats = totsDies.length - dies.length;
-  const barra = `<div class="fila-form llib-barra">${segmentLlibreta('seg')}<span class="grup-barra"><button class="boto taronja" id="seg-nou">＋ Nou dia</button></span><span class="grup-barra" title="Examen final de tot el curs (informatiu)"><b>Examen final</b> <span class="segment petit" id="seg-ex"><button data-v="0" class="${exOberta() ? '' : 'activa'}">Tancat</button><button data-v="1" class="${exOberta() ? 'activa' : ''}">Obert</button></span></span>
+  const barra = `<div class="fila-form llib-barra">${segmentLlibreta('seg')}${barraGrups()}<span class="grup-barra"><button class="boto taronja" id="seg-nou">＋ Nou dia</button></span><span class="grup-barra" title="Examen final de tot el curs (informatiu)"><b>Examen final</b> <span class="segment petit" id="seg-ex"><button data-v="0" class="${exOberta() ? '' : 'activa'}">Tancat</button><button data-v="1" class="${exOberta() ? 'activa' : ''}">Obert</button></span></span>
     <span style="margin-left:auto;color:var(--gris);font-size:.9rem">Toca una casella per canviar-la · Treball: 1 → 2 → 3 → F → FJ → buit · Participació: 😊 → 😐 → 😠 → buit · 🔴 incident</span></div>`;
-  if (!llista.length) { c.innerHTML = barra + `<div class="seccio"><h3>Encara no hi ha alumnes</h3></div>`; enllacaSeg(c); return; }
+  if (!llista.length) { c.innerHTML = barra + `<div class="seccio"><h3>${Object.keys(S.alumnes).length ? 'Cap alumne en aquest grup' : 'Encara no hi ha alumnes'}</h3></div>`; enllacaSeg(c); return; }
   const plegaDies = totsDies.length > 1 ? (pD ? `<th rowspan="2" class="th-taller plegat seg-dies-pl"><button class="plega" id="seg-pd" title="Mostra tots els dies (${amagats} amagats)">+${amagats}<br>▸</button></th>` : '') : '';
   const cap1 = dies.map((d, k) => { const f = dataSeg(d); return `<th colspan="2" class="seg-dia" data-dia="${d}" title="${f.llarg} · clica per esborrar el dia">${f.dia} ${f.num}${k === 0 && totsDies.length > 1 && !pD ? ` <button class="plega" id="seg-pd" title="Mostra només l'últim dia">◂</button>` : ''}</th>`; }).join('') + plegaDies;
   const cap2 = dies.map(() => `<th class="seg-sub">Treb.</th><th class="seg-sub">Part.</th>`).join('');
@@ -4029,7 +4074,7 @@ function pintaSeguiment(c) {
       <tr><th class="nom" rowspan="2">Alumne</th>${pR ? `<th rowspan="2" class="seg-resum th-taller plegat"><button class="plega" id="seg-pr" title="Mostra el resum">Σ<br>▸</button></th>` : `<th colspan="${8 + LLISTA_UNITATS.length}" class="seg-resum">Resum <button class="plega" id="seg-pr" title="Amaga el resum">◂</button></th>`}${cap1 || '<th rowspan="2" class="seg-buit">Clica «＋ Nou dia» per començar</th>'}</tr>
       <tr>${pR ? '' : `<th class="seg-sub" title="Mitjana de treball (sense comptar les faltes)">Treb.</th><th class="seg-sub" title="Faltes">F</th><th class="seg-sub" title="Faltes justificades">FJ</th><th class="seg-sub">😊</th><th class="seg-sub">😐</th><th class="seg-sub">😠</th><th class="seg-sub">🔴</th>${LLISTA_UNITATS.map(k => `<th class="seg-sub" title="Qualificació de ${UNITATS[k].nom} (${asAuto(UNITATS[k]) ? 'automàtica' : 'manual: clica per canviar-la'})">AS ${UNITATS[k].nom.slice(0, 3)}.</th>`).join('')}<th class="seg-sub" title="Examen final (informatiu): clica la nota per veure'l">Ex. final</th>`}${cap2}</tr></thead><tbody>
       ${llista.map(([id, a]) => { const r = resumSeg(id);
-        return `<tr><td class="nom" title="${esc(a.nom)}">${esc(a.nom)}</td>
+        return `<tr class="${nouGrup(id)}"><td class="nom" title="${esc(a.nom)}">${boletaNom(id)}${esc(a.nom)}</td>
           ${pR ? '<td class="c-plegat"></td>' : `<td class="seg-r"><b>${r.mitjana == null ? '—' : r.mitjana.toFixed(1).replace('.', ',')}</b></td><td class="seg-r ${r.f ? 'seg-mal' : ''}">${r.f || ''}</td><td class="seg-r">${r.fj || ''}</td><td class="seg-r">${r.a || ''}</td><td class="seg-r">${r.p || ''}</td><td class="seg-r ${r.nn ? 'seg-mal' : ''}">${r.nn || ''}</td><td class="seg-r ${r.i ? 'seg-mal' : ''}">${r.i || ''}</td>${LLISTA_UNITATS.map(k => celaQualif(id, UNITATS[k], true).replace('<td', '<td data-qs="1"')).join('')}${celaExamen(id)}`}
           ${dies.map(d => { const x = S.seg[d]?.a?.[id] || {};
             return ` <td class="seg-t t${x.t || 0}" title="${x.t === 'F' ? 'Falta' : x.t === 'FJ' ? 'Falta justificada' : ''}" data-d="${d}" data-a="${id}" data-c="t">${x.t || ''}</td><td class="seg-p" data-d="${d}" data-a="${id}" data-c="p"><span class="seg-cara">${x.p ? PARTIC[x.p].e : ''}</span><button class="seg-inc ${x.i ? 'on' : ''}" data-d="${d}" data-a="${id}" title="${x.i ? 'Treu l\'incident' : 'Marca un incident (mal comportament)'}"></button></td>`; }).join('')}${pD ? '<td class="c-plegat"></td>' : ''}</tr>`; }).join('')}
@@ -4061,6 +4106,7 @@ function canviaSeg(d, id, camp, v) {
   DB.set(`${ARREL}/seguiment/${d}/a/${id}/${camp}`, v ?? null);
 }
 function enllacaSeg(c) {
+  enllacaGrups(c);
   $$('#l-unitats button', c).forEach(b => b.onclick = () => { S.unitatProfe = b.dataset.u; pintaLlibreta(); });
   const bn = $('#seg-nou', c); if (bn) bn.onclick = () => {
     const m = obreModal(`<h3>Nou dia de seguiment</h3><form id="f-seg" class="formulari"><label for="seg-data">Data</label><input class="camp" type="date" id="seg-data" value="${avuiISO()}" required><p class="missatge-error" id="seg-err"></p>
@@ -4075,6 +4121,7 @@ function enllacaSeg(c) {
   };
 }
 function enllacaBarra(c, u) {
+  enllacaGrups(c);
   $$('#l-unitats button', c).forEach(b => b.onclick = () => { S.unitatProfe = b.dataset.u; pintaLlibreta(); });
   $$('#l-prova button', c).forEach(b => b.onclick = () => DB.update(`${ARREL}/config`, { [u.provaKey]: b.dataset.v === '1' }));
   $$('#l-comp button', c).forEach(b => b.onclick = () => DB.update(`${ARREL}/config`, { [CB_PROVES[u.id]?.PC.provaKey || 'provaC']: b.dataset.v === '1' }));
@@ -4151,7 +4198,8 @@ function pintaAlumnes() {
       <p class="ajuda" style="margin-top:10px">Un alumne per línia: <b>Nom 1234</b>. Si no poses codi, se n'inventa un.</p>
       <textarea class="camp" id="llista-txt" rows="6" placeholder="Aina 4821&#10;Marc 1937&#10;Laia"></textarea>
       <div class="fila-form" style="margin-top:10px"><button class="boto" id="btn-llista">Afegeix la llista</button><span id="llista-msg" style="font-weight:700"></span></div></details>
-    <h3 style="margin-top:18px">Alumnes</h3><div id="llista-al"></div></div>`;
+    <h3 style="margin-top:18px;display:flex;align-items:center;gap:14px;flex-wrap:wrap">Alumnes <span style="font-size:1rem;font-weight:600">Grups A-D: <span class="segment petit" id="g-on"><button data-v="0" class="${grupsOn() ? '' : 'activa'}">Desactivats</button><button data-v="1" class="${grupsOn() ? 'activa' : ''}">Activats</button></span></span></h3>${grupsOn() ? '<p class="ajuda" style="margin-top:-4px">Toca la boleta de cada alumne per canviar-li el grup: · → A → B → C → D. Només ho veus tu.</p>' : ''}<div id="llista-al"></div></div>`;
+  $$('#g-on button').forEach(b => b.onclick = async () => { await DB.update(`${ARREL}/config`, { grups: b.dataset.v === '1' }); pintaAlumnes(); });
   $('#nou-dau').onclick = () => { $('#nou-codi').value = nouCodi(); };
   $('#f-nou').onsubmit = async e => {
     e.preventDefault();
@@ -4181,14 +4229,16 @@ function pintaLlistaAlumnes() {
   if (c.querySelector('input:focus')) return;
   const llista = Object.entries(S.alumnes).sort(ordenaNoms);
   if (!llista.length) { c.innerHTML = '<p style="color:var(--gris)">Encara no n\'hi ha cap.</p>'; return; }
-  c.innerHTML = `<table class="simple"><thead><tr><th>Nom</th><th>Codi</th><th>Nivell</th><th>So</th><th></th></tr></thead><tbody>
+  c.innerHTML = `<table class="simple"><thead><tr><th>Nom</th><th>Codi</th><th>Nivell</th><th>So</th>${grupsOn() ? '<th>Grup</th>' : ''}<th></th></tr></thead><tbody>
     ${llista.map(([id, a]) => `<tr data-id="${id}"><td><input class="camp" value="${esc(a.nom)}" data-camp="nom" maxlength="30"></td><td><input class="camp" value="${esc(a.codi)}" data-camp="codi" maxlength="4" style="width:90px"></td><td><span class="segment petit">${[1, 2, 3].map(n => `<button data-nv="${n}" class="${n === nivellBase(id) ? 'activa' : ''}">${n}</button>`).join('')}</span></td>
       <td><button class="boto-petit" data-so title="${a.sons === false ? 'Silenciat' : 'Amb so'}" style="${a.sons === false ? 'color:var(--ko);border-color:var(--ko)' : ''}">${a.sons === false ? '🔇' : '🔊'}</button></td>
+      ${grupsOn() ? `<td><button class="boto-petit boto-grup" data-grup title="Canvia el grup">${boleta(a.grup) || '<span class="boleta buida">·</span>'}</button></td>` : ''}
       <td style="text-align:right"><button class="boto-petit" data-desa>Desa</button> <button class="boto-petit" data-esborra style="border-color:var(--ko);color:var(--ko)">Esborra</button></td></tr>`).join('')}</tbody></table>`;
   $$('tr[data-id]', c).forEach(tr => {
     const id = tr.dataset.id;
     $$('[data-nv]', tr).forEach(b => b.onclick = () => DB.set(`${ARREL}/alumnes/${id}/nivell`, Number(b.dataset.nv)));
     $('[data-so]', tr).onclick = () => DB.set(`${ARREL}/alumnes/${id}/sons`, S.alumnes[id]?.sons === false ? null : false);
+    const bg = $('[data-grup]', tr); if (bg) bg.onclick = () => { const seq = ['', 'A', 'B', 'C', 'D']; const ara = S.alumnes[id]?.grup || ''; const nou = seq[(seq.indexOf(ara) + 1) % seq.length]; DB.set(`${ARREL}/alumnes/${id}/grup`, nou || null); };
     $('[data-desa]', tr).onclick = async () => {
       const nom = $('[data-camp=nom]', tr).value.trim(), codi = $('[data-camp=codi]', tr).value.trim();
       if (!nom || !/^\d{4}$/.test(codi)) { tr.classList.remove('tremola'); void tr.offsetWidth; tr.classList.add('tremola'); return; }
