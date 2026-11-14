@@ -1,0 +1,465 @@
+<!doctype html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dissenya el teu zoo · FR-4C</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,800&display=swap" rel="stylesheet">
+<style>
+/* Taller de l'app FR-4C · Geometria (àrees, perímetres, cost i fraccions). Es pot obrir sol o dins de l'app (protocol fr4c-zoo-ini/llest/desa/fi/tanca). */
+:root{--taronja:#f26b1d;--tinta:#1b1b1b;--ok:#2c9a58;--ko:#d64242;--fons:#f3f1e8;--blau:#2a6fd6;--verd:#1d9a5a;--lila:#7c5cd6}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;font-family:"Atkinson Hyperlegible",system-ui,sans-serif;background:var(--fons);color:var(--tinta);overflow:hidden;user-select:none}
+#joc{position:relative;width:100%;height:100%;display:grid;grid-template-columns:minmax(0,1.5fr) minmax(320px,1fr);gap:14px;padding:62px 16px 14px}
+.cap{position:absolute;top:10px;left:16px;right:16px;display:flex;align-items:center;gap:14px;z-index:5;font-weight:700}
+.cap .tit{font-family:"Bricolage Grotesque",sans-serif;font-size:1.3rem}
+.cap .compta{font-size:1.05rem;color:#555}
+.cap .diners{margin-left:auto;font-size:1.2rem;background:#fff;border:3px solid var(--tinta);border-radius:12px;padding:3px 10px}
+.cap .punts{font-size:1.7rem;font-family:"Bricolage Grotesque",sans-serif}
+.btn{border:3px solid var(--tinta);background:#fff;color:var(--tinta);border-radius:12px;padding:6px 12px;font:inherit;font-weight:700;cursor:pointer}
+#terreny{width:100%;height:100%;min-height:0;border:4px solid var(--tinta);border-radius:20px;background:#9fd27a;display:block;touch-action:none}
+.panel{display:flex;flex-direction:column;gap:12px;min-height:0;overflow:auto;padding-bottom:4px}
+.targ{background:#fff;border:4px solid var(--tinta);border-radius:20px;padding:12px 16px;box-shadow:0 5px 0 #0002}
+.fitxa{display:flex;gap:12px;align-items:center}
+.fitxa svg{flex:none}
+.fitxa h2{font-family:"Bricolage Grotesque",sans-serif;font-size:1.45rem;margin:0}
+.fitxa ul{margin:2px 0 0;padding-left:18px;font-size:1rem;line-height:1.3}
+.targ p{margin:6px 0;font-size:1.1rem;line-height:1.4}
+.passos{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:6px}
+.passos li{font-size:.95rem;padding:3px 9px;border-radius:10px;background:#f1efe9;color:#999}
+.passos li.ara{color:#fff;background:var(--tinta);font-weight:700}.passos li.fet{color:var(--ok);background:#e3f4e8;font-weight:700}.passos li .r{margin-left:5px;font-family:"Bricolage Grotesque",sans-serif}
+.preg{font-size:1.15rem;font-weight:700;margin:8px 0 4px}
+.entra{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.entra input{font-family:"Bricolage Grotesque",sans-serif;font-size:1.6rem;width:130px;padding:6px 10px;border:4px solid var(--tinta);border-radius:14px;text-align:center}
+.entra .u{font-size:1.3rem;font-weight:700}
+.big{font-family:"Bricolage Grotesque",sans-serif;font-size:1.15rem;border-radius:14px;padding:9px 18px;border:4px solid var(--tinta);cursor:pointer;background:var(--taronja);color:#fff;box-shadow:0 5px 0 #0004}
+.big.sec{background:#fff;color:var(--tinta)}.big:disabled{opacity:.4;cursor:default}
+.fila{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px}
+.pista{background:#f1ecff;border-radius:14px;padding:8px 12px;margin-top:8px;font-size:1.05rem;color:#4a3596}
+.calc{font-family:"Bricolage Grotesque",sans-serif;font-size:1.25rem;line-height:1.45;margin:6px 0 0}
+.msg{font-weight:700;font-size:1.08rem;margin-top:8px}.msg.ok{color:var(--ok)}.msg.ko{color:var(--ko)}
+.compara{border-collapse:collapse;margin-top:8px;font-size:1.05rem}.compara td,.compara th{border:2px solid #ddd;padding:3px 9px;text-align:center}.compara tr.teu{background:#fff1b8;font-weight:700}.compara tr.millor td:last-child{color:var(--ok);font-weight:800}
+.sacseja{animation:sacseja .35s}@keyframes sacseja{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+.pantalla{position:absolute;inset:0;z-index:10;display:flex;align-items:center;justify-content:center;background:#1b1b1b99}
+.panell{background:#fff;border-radius:24px;border:4px solid var(--tinta);padding:20px 26px;max-width:980px;width:94%;box-shadow:0 10px 0 #0006;max-height:94vh;overflow:auto}
+.panell h1{font-family:"Bricolage Grotesque",sans-serif;margin:0 0 6px;font-size:2rem}
+.panell p{font-size:1.12rem;line-height:1.45;margin:8px 0}
+.zones{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:12px 0}
+.zona{border:4px solid var(--tinta);border-radius:18px;padding:8px;text-align:center;background:#f7f7f2;position:relative}
+.zona h3{margin:2px 0 6px;font-family:"Bricolage Grotesque",sans-serif;font-size:1.15rem}
+.zona svg{width:100%;height:auto;border-radius:10px;display:block}
+.zona.tancada{opacity:.55}.zona.tancada::after{content:'🔒';position:absolute;top:44%;left:50%;transform:translate(-50%,-50%);font-size:3rem}
+.zona .info{font-size:.95rem;margin:6px 0}
+.zona .big{font-size:1rem;padding:7px 12px}
+.mini{font-size:.95rem;color:#666}.rec{color:var(--taronja);font-weight:800}
+.resum{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:12px 0}.resum div{background:#f5f3ef;border-radius:14px;padding:10px;text-align:center}.resum b{display:block;font-family:"Bricolage Grotesque",sans-serif;font-size:2rem}
+.fallades{font-size:1.02rem;margin:6px 0 0;padding-left:20px}
+.balla{transform-box:fill-box;transform-origin:50% 100%;animation:balla .45s ease-in-out 3}@keyframes balla{50%{transform:translateY(-10px)}}
+.ona{animation:ona 1.6s ease-in-out infinite alternate}@keyframes ona{to{transform:translateX(4px)}}
+</style>
+</head>
+<body>
+<div id="joc">
+  <div class="cap">
+    <span class="tit">🦒 Dissenya el teu zoo</span><span class="compta" id="compta"></span>
+    <span class="diners" id="diners" style="display:none"></span>
+    <span class="punts" id="punts">0</span>
+    <button class="btn" id="so" title="So">🔊</button><button class="btn" id="surt" title="Surt">✕</button>
+  </div>
+  <svg id="terreny" viewBox="0 0 900 600" preserveAspectRatio="xMidYMid meet" aria-label="Terreny del zoo"></svg>
+  <div class="panel" id="panel"></div>
+</div>
+<div class="pantalla" id="pant" style="display:none"></div>
+<script>
+'use strict';
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const F = v => { const r = Math.round(v * 100) / 100; return String(r).replace('.', ','); };
+const espera = ms => new Promise(r => setTimeout(r, ms));
+const N = '#1b1b1b', T = '#f26b1d';
+const M = { nom: '', nivell: 1, dinsApp: false, so: true, pantalla: 'inici' };
+try { M.so = localStorage.getItem('fr4c_zoo_so') !== '0'; } catch (e) {}
+
+/* ================= SONS ================= */
+const SO = {
+  ctx: null,
+  ac() { if (!M.so) return null; try { this.ctx = this.ctx || new (window.AudioContext || window.webkitAudioContext)(); if (this.ctx.state === 'suspended') this.ctx.resume(); return this.ctx; } catch (e) { return null; } },
+  to(f, d, { ona = 'sine', vol = .06, t0 = 0, f2 = null } = {}) { const ac = this.ac(); if (!ac) return; const t = ac.currentTime + t0, o = ac.createOscillator(), g = ac.createGain(); o.type = ona; o.frequency.setValueAtTime(f, t); if (f2) o.frequency.exponentialRampToValueAtTime(f2, t + d); g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + .02); g.gain.exponentialRampToValueAtTime(.0001, t + d); o.connect(g); g.connect(ac.destination); o.start(t); o.stop(t + d + .05); },
+  clic() { this.to(660, .05, { ona: 'triangle', vol: .03 }); },
+  pas() { this.to(1200, .03, { ona: 'triangle', vol: .02 }); },
+  be() { [523, 659, 784].forEach((f, i) => this.to(f, .2, { ona: 'triangle', vol: .055, t0: i * .1 })); },
+  mal() { this.to(330, .32, { vol: .06, f2: 140 }); },
+  caixa() { this.to(1320, .08, { ona: 'square', vol: .025 }); this.to(1760, .25, { ona: 'triangle', vol: .04, t0: .09 }); },
+  aigua() { for (let i = 0; i < 6; i++) this.to(500 + Math.random() * 500, .12, { vol: .025, t0: i * .07, f2: 300 }); },
+  fi() { [392, 523, 659, 784, 659, 784, 1047].forEach((f, i) => this.to(f, .24, { ona: 'triangle', vol: .055, t0: i * .14 })); },
+  veu(id) { const V = {
+    conill: [[1400, .06], [1500, .06, .1]], tortuga: [[180, .3, 0, 140]], pinguí: [[520, .18, 0, 380, 'sawtooth'], [520, .18, .25, 380, 'sawtooth']], cabra: [[440, .5, 0, 420, 'sawtooth']],
+    zebra: [[900, .5, 0, 500, 'triangle']], cocodril: [[90, .5, 0, 70, 'sawtooth']], mico: [[500, .1], [650, .1, .13], [900, .18, .27]], os: [[120, .6, 0, 80, 'sawtooth']],
+    lleo: [[260, .8, 0, 90, 'sawtooth']], girafa: [[300, .3, 0, 340]], elefant: [[300, .55, 0, 700, 'sawtooth']], rino: [[160, .25, 0, 90, 'sawtooth'], [160, .2, .3, 90, 'sawtooth']] }[id] || [];
+    V.forEach(([f, d, t0 = 0, f2 = null, ona = 'sine']) => this.to(f, d, { t0, f2, ona, vol: ona === 'sawtooth' ? .03 : .06 })); }
+};
+
+/* ================= DIBUIXOS DELS ANIMALS (inventats, peus a y=70, ample ~80) ================= */
+const ull = (x, y, r = 3) => `<circle cx="${x}" cy="${y}" r="${r}" fill="${N}"/><circle cx="${x + r * .35}" cy="${y - r * .35}" r="${r * .35}" fill="#fff"/>`;
+const st = 'stroke="#1b1b1b" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"';
+const potes = (xs, y0, col, h = 14) => xs.map(x => `<rect x="${x}" y="${y0}" width="7" height="${h}" rx="3" fill="${col}" ${st}/>`).join('');
+const ANIMAL = {
+  conill: () => `<ellipse cx="40" cy="55" rx="22" ry="15" fill="#e9e6e0" ${st}/><circle cx="62" cy="54" r="7" fill="#fff" ${st}/><path d="M22 40Q14 6 24 8Q32 10 30 38" fill="#e9e6e0" ${st}/><path d="M34 38Q36 4 46 8Q52 14 40 40" fill="#e9e6e0" ${st}/><path d="M25 34Q21 14 25 13M39 34Q41 14 45 13" stroke="#f3a3b8" stroke-width="4" fill="none"/><circle cx="30" cy="44" r="14" fill="#e9e6e0" ${st}/>${ull(25, 42)}${ull(35, 42)}<circle cx="30" cy="49" r="2.5" fill="#f37b9b"/>`,
+  tortuga: () => `${potes([18, 50], 56, '#a8c87a', 12)}<path d="M8 58Q12 22 40 22Q68 22 72 58Z" fill="#3e9b4f" ${st}/><path d="M24 56L30 36H50L56 56M30 36L40 26L50 36" fill="none" stroke="#2b6e37" stroke-width="2.5"/><circle cx="76" cy="48" r="10" fill="#a8c87a" ${st}/>${ull(78, 45)}<path d="M4 60H76" ${st}/>`,
+  pinguí: () => `<path d="M26 66L20 70H34ZM46 66L40 70H54Z" fill="${T}" ${st}/><ellipse cx="37" cy="44" rx="20" ry="25" fill="#2b2b2b" ${st}/><ellipse cx="37" cy="50" rx="13" ry="18" fill="#fff"/><circle cx="37" cy="24" r="14" fill="#2b2b2b" ${st}/><path d="M28 24Q37 34 46 24Q42 34 37 34Q32 34 28 24" fill="#fff"/>${ull(32, 22)}${ull(42, 22)}<path d="M33 28H41L37 33Z" fill="${T}" ${st}/>`,
+  cabra: () => `${potes([20, 30, 48, 58], 52, '#f2f0ea', 16)}<ellipse cx="42" cy="46" rx="26" ry="14" fill="#f2f0ea" ${st}/><path d="M12 22Q6 6 18 14M22 20Q24 4 32 14" fill="none" stroke="#8a7a62" stroke-width="5" stroke-linecap="round"/><ellipse cx="18" cy="32" rx="11" ry="13" fill="#f2f0ea" ${st}/>${ull(15, 30)}<path d="M14 44Q16 54 20 44" fill="#d8d2c4" ${st}/>`,
+  zebra: () => `${potes([20, 30, 50, 60], 50, '#fff', 18)}<ellipse cx="42" cy="44" rx="26" ry="13" fill="#fff" ${st}/><path d="M28 32V54M36 31V57M44 31V57M52 32V55M60 35V52" stroke="${N}" stroke-width="4"/><path d="M20 40L10 18Q8 12 16 12L26 34" fill="#fff" ${st}/><path d="M12 14L20 10M15 20L23 16M18 26L25 23" stroke="${N}" stroke-width="3"/><path d="M14 12Q22 8 28 22" fill="none" stroke="${N}" stroke-width="5"/>${ull(14, 17, 2.5)}<path d="M68 42Q78 48 74 58" fill="none" ${st}/>`,
+  cocodril: () => `${potes([22, 50], 54, '#5aa04a', 10)}<path d="M4 50Q4 40 20 40H58Q70 40 78 52Q66 58 58 56H20Q4 60 4 50Z" fill="#5aa04a" ${st}/><path d="M4 50H30" ${st}/><path d="M8 50l3 4 3-4 3 4 3-4 3 4 3-4" fill="#fff" stroke="${N}" stroke-width="1.5"/><path d="M30 40l4-6 4 6 4-6 4 6 4-6 4 6" fill="#3f7d34" ${st}/><circle cx="24" cy="40" r="6" fill="#5aa04a" ${st}/>${ull(25, 39, 2.6)}`,
+  mico: () => `<path d="M58 56Q78 52 72 36Q68 30 64 36" fill="none" stroke="#8a5a2b" stroke-width="5" stroke-linecap="round"/><ellipse cx="42" cy="54" rx="16" ry="14" fill="#8a5a2b" ${st}/><circle cx="20" cy="30" r="7" fill="#e8c39e" ${st}/><circle cx="60" cy="30" r="7" fill="#e8c39e" ${st}/><circle cx="40" cy="30" r="17" fill="#8a5a2b" ${st}/><ellipse cx="40" cy="34" rx="12" ry="10" fill="#e8c39e"/>${ull(35, 28)}${ull(45, 28)}<path d="M35 38Q40 42 45 38" fill="none" ${st}/>`,
+  os: () => `${potes([20, 52], 54, '#7a4a28', 14)}<ellipse cx="40" cy="50" rx="27" ry="17" fill="#7a4a28" ${st}/><circle cx="24" cy="18" r="7" fill="#7a4a28" ${st}/><circle cx="52" cy="18" r="7" fill="#7a4a28" ${st}/><circle cx="38" cy="30" r="17" fill="#7a4a28" ${st}/><ellipse cx="38" cy="36" rx="9" ry="7" fill="#c8996a" ${st}/><ellipse cx="38" cy="33" rx="3.5" ry="2.5" fill="${N}"/>${ull(31, 26)}${ull(45, 26)}`,
+  lleo: () => `${potes([22, 32, 52, 62], 52, '#e8b54a', 16)}<ellipse cx="46" cy="46" rx="26" ry="13" fill="#e8b54a" ${st}/><path d="M72 44Q82 40 80 30" fill="none" ${st}/><circle cx="80" cy="29" r="4" fill="#b8661c"/><circle cx="22" cy="32" r="20" fill="#c9701e" ${st}/><circle cx="22" cy="33" r="13" fill="#e8b54a" ${st}/>${ull(17, 30)}${ull(27, 30)}<path d="M19 37H25L22 40Z" fill="${N}"/><path d="M18 42Q22 45 26 42" fill="none" stroke="${N}" stroke-width="2"/>`,
+  girafa: () => `${potes([30, 38, 52, 60], 50, '#f0c35a', 20)}<ellipse cx="46" cy="46" rx="20" ry="11" fill="#f0c35a" ${st}/><path d="M28 42L22 10H32L36 40" fill="#f0c35a" ${st}/><path d="M18 6V0M26 6V0" ${st}/><ellipse cx="22" cy="8" rx="10" ry="6" fill="#f0c35a" ${st}/>${ull(20, 6, 2.2)}<g fill="#b8752a"><circle cx="40" cy="44" r="3.5"/><circle cx="50" cy="40" r="3"/><circle cx="56" cy="48" r="3.5"/><circle cx="27" cy="22" r="2.5"/><circle cx="30" cy="32" r="2.5"/></g>`,
+  elefant: () => `${potes([20, 34, 50, 62], 50, '#9aa3ad', 18)}<ellipse cx="44" cy="42" rx="28" ry="18" fill="#9aa3ad" ${st}/><ellipse cx="22" cy="34" rx="13" ry="15" fill="#b6bec7" ${st}/><circle cx="14" cy="32" r="12" fill="#9aa3ad" ${st}/><path d="M6 36Q0 52 8 62Q12 62 10 56Q8 48 12 40" fill="#9aa3ad" ${st}/>${ull(12, 28)}<path d="M2 42Q-2 46 4 46" fill="none" stroke="#fff" stroke-width="3"/>`,
+  rino: () => `${potes([20, 32, 50, 62], 52, '#8d939b', 16)}<ellipse cx="46" cy="44" rx="28" ry="15" fill="#8d939b" ${st}/><path d="M22 36Q4 36 4 48Q4 56 20 54" fill="#8d939b" ${st}/><path d="M8 40L4 26L14 38Z" fill="#e9e1cf" ${st}/><path d="M18 36L18 28L24 34" fill="#e9e1cf" ${st}/>${ull(20, 42, 2.5)}<path d="M30 28L32 22L36 28" fill="#8d939b" ${st}/>`
+};
+const dibuixaAnimal = (id, mida = 70) => `<svg width="${mida}" height="${mida * .9}" viewBox="-6 -6 92 82">${ANIMAL[id]()}</svg>`;
+const gatPetit = () => `<g transform="translate(-14 -26) scale(.38)"><ellipse cx="40" cy="54" rx="21" ry="18" fill="${T}" stroke="${N}" stroke-width="4"/><path d="M25 20L20 3L35 12Z M55 20L60 3L45 12Z" fill="${T}" stroke="${N}" stroke-width="4" stroke-linejoin="round"/><circle cx="40" cy="27" r="17" fill="${T}" stroke="${N}" stroke-width="4"/><ellipse cx="33.5" cy="26" rx="3" ry="4" fill="${N}"/><ellipse cx="46.5" cy="26" rx="3" ry="4" fill="${N}"/></g>`;
+const robotDirector = () => `<g><rect x="-26" y="-60" width="52" height="44" rx="12" fill="#fff" ${st}/><rect x="-19" y="-53" width="38" height="28" rx="7" fill="${N}"/><circle cx="-8" cy="-40" r="4" fill="${T}"/><circle cx="8" cy="-40" r="4" fill="${T}"/><path d="M-6 -32q6 5 12 0" stroke="${T}" stroke-width="3" fill="none"/>
+  <path d="M-30 -60Q-26 -80 0 -80Q26 -80 30 -60Z" fill="#2a6fd6" ${st}/><path d="M-34 -60H38" ${st}/><rect x="-6" y="-76" width="12" height="9" rx="2" fill="#ffd54a" stroke="${N}" stroke-width="2"/>
+  <rect x="-20" y="-14" width="40" height="14" rx="5" fill="#fff" ${st}/></g>`;
+
+/* ================= ANIMALS I REPTES ================= */
+// tipus: 'dims' (rectangle a×b), 'area' (rectangle d'àrea exacta, mides lliures), 'L' (forma en L d'àrea donada), 'tanca' (rectangle amb perímetre fix, el més gran), 'paret' (rectangle d'àrea donada tocant un recinte)
+const NIVELLS = {
+  1: { nom: 'Granja', titol: 'Cuidador aprenent', cols: 12, fils: 8, cas: 1, pressu: 150, animals: [
+    { id: 'conill', nom: 'Conill', art: 'el', t: 'dims', a: 4, b: 3, mat: 'fusta', preu: 2, frac: [1, 2], terra: 'herba' },
+    { id: 'tortuga', nom: 'Tortuga', art: 'la', t: 'dims', a: 3, b: 3, mat: 'fusta', preu: 2, frac: [1, 3], terra: 'aigua' },
+    { id: 'pinguí', nom: 'Pingüí', art: 'el', t: 'dims', a: 5, b: 2, mat: 'fusta', preu: 3, frac: [1, 2], terra: 'aigua' },
+    { id: 'cabra', nom: 'Cabra', art: 'la', t: 'dims', a: 4, b: 4, mat: 'fusta', preu: 2, frac: [1, 4], terra: 'roques' }] },
+  2: { nom: 'Sabana', titol: 'Dissenyador del zoo', cols: 14, fils: 9, cas: 1, pressu: 400, animals: [
+    { id: 'zebra', nom: 'Zebra', art: 'la', t: 'area', area: 18, mat: 'fusta', preu: 3, frac: [1, 3], terra: 'aigua' },
+    { id: 'cocodril', nom: 'Cocodril', art: 'el', t: 'area', area: 20, mat: 'metall', preu: 5, frac: [1, 2], terra: 'aigua' },
+    { id: 'mico', nom: 'Mico', art: 'el', t: 'area', area: 16, mat: 'fusta', preu: 3, frac: [1, 4], terra: 'arbres' },
+    { id: 'os', nom: 'Ós', art: 'l\'', t: 'area', area: 24, mat: 'metall', preu: 5, frac: [1, 3], terra: 'roques' }] },
+  3: { nom: 'Gran safari', titol: 'Director del zoo', cols: 12, fils: 8, cas: 2, pressu: 1000, animals: [
+    { id: 'girafa', nom: 'Girafa', art: 'la', t: 'area', area: 48, mat: 'metall', preu: 6, frac: [1, 4], terra: 'sorra' },
+    { id: 'elefant', nom: 'Elefant', art: 'l\'', t: 'L', area: 64, mat: 'fusta', preu: 4, frac: [1, 4], terra: 'aigua' },
+    { id: 'lleo', nom: 'Lleó', art: 'el', t: 'tanca', tanca: 24, mat: 'metall', preu: 6, frac: [1, 2], terra: 'sorra' },
+    { id: 'rino', nom: 'Rinoceront', art: 'el', t: 'paret', area: 32, mat: 'fusta', preu: 4, frac: [1, 4], terra: 'aigua' }] }
+};
+const TERRA = { herba: ['#4f9e3a', 'herba'], aigua: ['#5ab4f0', 'aigua'], roques: ['#a39a8c', 'roques'], arbres: ['#2e7d32', 'arbres'], sorra: ['#ffd84d', 'sorra'] };
+const MAT = { fusta: { col: '#a0662f', nom: 'tanca de fusta' }, metall: { col: '#6f7b87', nom: 'tanca de metall' } };
+const FRAC = ([n, d]) => d === 2 ? 'la meitat' : `${n}/${d}`;
+function requisit(a, nv) {
+  const L = NIVELLS[nv];
+  if (a.t === 'dims') return a.a === a.b ? `Un quadrat de ${a.a} m × ${a.b} m` : `Un rectangle de ${a.a} m × ${a.b} m`;
+  if (a.t === 'area') return `Un rectangle de ${a.area} m² (tu tries les mides)`;
+  if (a.t === 'L') return `Un recinte en forma de L de ${a.area} m²`;
+  if (a.t === 'tanca') return `Només tens ${a.tanca} m de tanca: fes el rectangle més gran possible`;
+  if (a.t === 'paret') return `Un rectangle de ${a.area} m² que comparteixi paret amb un altre recinte`;
+}
+
+/* ================= ESTAT DESAT ================= */
+// E = { v:1, max: nivell desbloquejat, z: { 1: { an: [{ id, c: 'x.y …', w: 'x.y …', p }], pts, fet, rec }, … } }
+let E = { v: 1, max: 1, z: {} };
+const zona = nv => (E.z[nv] = E.z[nv] || { an: [], pts: 0, fet: false, rec: 0 });
+const ck = (x, y) => x + '.' + y, dk = k => k.split('.').map(Number);
+function desaLocal() { try { localStorage.setItem('fr4c_zoo_estat', JSON.stringify(E)); } catch (e) {} }
+function carregaLocal() { try { const t = localStorage.getItem('fr4c_zoo_estat'); if (t) E = Object.assign({ v: 1, max: 1, z: {} }, JSON.parse(t)); } catch (e) {} }
+const estatTxt = () => JSON.stringify(E);
+function desa() { desaLocal(); envia({ tipus: 'fr4c-zoo-desa', estat: estatTxt() }); }
+
+/* ================= GEOMETRIA DE LA QUADRÍCULA ================= */
+const veins = k => { const [x, y] = dk(k); return [ck(x + 1, y), ck(x - 1, y), ck(x, y + 1), ck(x, y - 1)]; };
+function connex(set) { if (!set.size) return false; const vist = new Set([set.values().next().value]), cua = [...vist]; while (cua.length) for (const v of veins(cua.pop())) if (set.has(v) && !vist.has(v)) { vist.add(v); cua.push(v); } return vist.size === set.size; }
+function bbox(set) { let x0 = 1e9, y0 = 1e9, x1 = -1, y1 = -1; for (const k of set) { const [x, y] = dk(k); x0 = Math.min(x0, x); y0 = Math.min(y0, y); x1 = Math.max(x1, x); y1 = Math.max(y1, y); } return { x0, y0, x1, y1, w: x1 - x0 + 1, h: y1 - y0 + 1 }; }
+function teForats(set) { const b = bbox(set); const fora = new Set(), cua = []; for (let x = b.x0 - 1; x <= b.x1 + 1; x++) for (let y = b.y0 - 1; y <= b.y1 + 1; y++) if (x === b.x0 - 1 || x === b.x1 + 1 || y === b.y0 - 1 || y === b.y1 + 1) { fora.add(ck(x, y)); cua.push(ck(x, y)); }
+  while (cua.length) for (const v of veins(cua.pop())) { const [x, y] = dk(v); if (x < b.x0 - 1 || x > b.x1 + 1 || y < b.y0 - 1 || y > b.y1 + 1 || set.has(v) || fora.has(v)) continue; fora.add(v); cua.push(v); }
+  return (b.w + 2) * (b.h + 2) - fora.size - set.size > 0; }
+const esRect = set => { const b = bbox(set); return b.w * b.h === set.size; };
+const vores = set => { let p = 0; for (const k of set) for (const v of veins(k)) if (!set.has(v)) p++; return p; };
+const compartides = (set, altres) => { let n = 0; for (const k of set) for (const v of veins(k)) if (altres.has(v)) n++; return n; };
+// arestes de la vora en ordre (per fer caminar en Coma per la tanca)
+function contorn(set) {
+  const ar = [];
+  for (const k of set) { const [x, y] = dk(k);
+    if (!set.has(ck(x, y - 1))) ar.push([[x, y], [x + 1, y]]); if (!set.has(ck(x + 1, y))) ar.push([[x + 1, y], [x + 1, y + 1]]);
+    if (!set.has(ck(x, y + 1))) ar.push([[x + 1, y + 1], [x, y + 1]]); if (!set.has(ck(x - 1, y))) ar.push([[x, y + 1], [x, y]]); }
+  const per = new Map(); ar.forEach(a => per.set(a[0].join(','), a));
+  const cami = [ar[0][0]]; let a = ar[0]; for (let i = 0; i < ar.length; i++) { cami.push(a[1]); a = per.get(a[1].join(',')); if (!a) break; }
+  return cami;
+}
+const cantonades = cami => { let n = 0; for (let i = 1; i < cami.length - 1; i++) { const a = cami[i - 1], b = cami[i], c = cami[i + 1]; if ((b[0] - a[0]) * (c[1] - b[1]) - (b[1] - a[1]) * (c[0] - b[0]) !== 0) n++; } const a = cami[cami.length - 2], b = cami[0], c = cami[1]; if (a && c && (b[0] - a[0]) * (c[1] - b[1]) - (b[1] - a[1]) * (c[0] - b[0]) !== 0) n++; return n; };
+
+/* ================= DIBUIX DEL TERRENY ================= */
+const G = {}; // geometria de la vista: c (px per casella), ox, oy
+function vista(nv, w = 900, h = 600) { const L = NIVELLS[nv]; const c = Math.floor(Math.min((w - 40) / L.cols, (h - 40) / L.fils)); return { c, ox: Math.round((w - c * L.cols) / 2), oy: Math.round((h - c * L.fils) / 2), cols: L.cols, fils: L.fils }; }
+function svgZona(nv, { w = 900, h = 600, mini = false } = {}) {
+  const V = vista(nv, w, h), L = NIVELLS[nv], z = zona(nv);
+  let s = `<rect width="${w}" height="${h}" fill="#9fd27a"/>`;
+  if (!mini) for (let i = 0; i < 14; i++) s += `<circle cx="${(i * 137) % w}" cy="${(i * 89) % h}" r="${6 + i % 5}" fill="#8cc466"/>`;
+  s += `<rect x="${V.ox}" y="${V.oy}" width="${V.c * V.cols}" height="${V.c * V.fils}" fill="#b6df8f" stroke="${N}" stroke-width="${mini ? 2 : 3}"/>`;
+  let quad = ''; for (let x = 1; x < V.cols; x++) quad += `M${V.ox + x * V.c} ${V.oy}v${V.c * V.fils}`; for (let y = 1; y < V.fils; y++) quad += `M${V.ox} ${V.oy + y * V.c}h${V.c * V.cols}`;
+  s += `<path d="${quad}" stroke="#7fb35c" stroke-width="${mini ? 1 : 1.5}"/>`;
+  z.an.forEach(r => s += recinteSvg(nv, r, V, mini));
+  return { s, V };
+}
+function recinteSvg(nv, r, V, mini = false) {
+  const a = NIVELLS[nv].animals.find(x => x.id === r.id); if (!a) return '';
+  const cel = new Set(r.c.split(' ')), aig = new Set((r.w || '').split(' ').filter(Boolean));
+  let s = '';
+  for (const k of cel) { const [x, y] = dk(k); s += `<rect x="${V.ox + x * V.c}" y="${V.oy + y * V.c}" width="${V.c}" height="${V.c}" fill="${aig.has(k) ? TERRA[a.terra][0] : '#e4cf8f'}"/>`; if (aig.has(k) && a.terra === 'aigua' && !mini) s += `<path class="ona" d="M${V.ox + x * V.c + V.c * .2} ${V.oy + y * V.c + V.c * .5}q${V.c * .15} -${V.c * .12} ${V.c * .3} 0t${V.c * .3} 0" stroke="#fff" stroke-width="2" fill="none" opacity=".7"/>`; }
+  s += tancaSvg(cel, V, a.mat, mini);
+  if (r.fet) s += animalAl(cel, a.id, V);
+  return s;
+}
+function tancaSvg(cel, V, mat, mini) {
+  const cami = contorn(cel), col = MAT[mat].col; const pts = cami.map(([x, y]) => `${V.ox + x * V.c},${V.oy + y * V.c}`).join(' ');
+  let s = `<polyline points="${pts}" fill="none" stroke="${col}" stroke-width="${mini ? 3 : 6}" stroke-linejoin="round"/>`;
+  if (!mini) s += cami.slice(0, -1).map(([x, y]) => `<rect x="${V.ox + x * V.c - 4}" y="${V.oy + y * V.c - 4}" width="8" height="8" rx="2" fill="${col}" stroke="${N}" stroke-width="1.5"/>`).join('');
+  return s;
+}
+function animalAl(cel, id, V) { // a la casella més centrada del recinte
+  const b = bbox(cel), cx = (b.x0 + b.x1) / 2, cy = (b.y0 + b.y1) / 2; let mill = null, dm = 1e9;
+  for (const k of cel) { const [x, y] = dk(k); const d = (x - cx) ** 2 + (y - cy) ** 2; if (d < dm) { dm = d; mill = [x, y]; } }
+  const m = Math.min(Math.max(b.w, 1), Math.max(b.h, 1), 3) * V.c * .62; const sc = m / 80;
+  return `<g transform="translate(${V.ox + (mill[0] + .5) * V.c - 40 * sc} ${V.oy + (mill[1] + .5) * V.c - 38 * sc}) scale(${sc})"><g class="balla">${ANIMAL[id]()}</g></g>`;
+}
+
+/* ================= PARTIDA ================= */
+const P = {};
+function pintaCap() {
+  $('#punts').textContent = M.pantalla === 'joc' ? P.punts || 0 : '';
+  $('#compta').textContent = M.pantalla === 'joc' ? `${NIVELLS[P.nv].nom} · animal ${Math.min(P.i + 1, 4)} de 4` : '';
+  const d = $('#diners'); if (M.pantalla === 'joc' && P.nv > 1) { d.style.display = ''; d.textContent = `💶 ${F(P.diners)} €`; } else d.style.display = 'none';
+}
+function comencaNivell(nv, nou = false) {
+  const z = zona(nv); if (nou || z.fet) { z.an = []; z.pts = 0; z.fet = false; }
+  const L = NIVELLS[nv];
+  Object.assign(P, { nv, i: z.an.filter(r => r.fet).length, punts: z.pts || 0, errors: 0, encerts: 0, fallades: [], t0: performance.now(), diners: L.pressu - z.an.reduce((s, r) => s + (r.cost || 0), 0), acabada: false });
+  z.an = z.an.filter(r => r.fet);
+  $('#pant').style.display = 'none'; M.pantalla = 'joc';
+  nouAnimal();
+}
+function nouAnimal() {
+  const L = NIVELLS[P.nv]; if (P.i >= L.animals.length) return acabaNivell();
+  const a = L.animals[P.i];
+  P.a = a; P.sel = new Set(); P.pas = 'construeix'; P.resp = {}; P.intents = 0;
+  P.passos = a.t === 'tanca' ? ['area', 'cost', 'frac'] : a.t === 'paret' ? ['area', 'perim', 'nova', 'cost', 'frac'] : ['area', 'perim', 'cost', 'frac'];
+  pintaCap(); pintaTerreny(); pintaPanel();
+  SO.veu(a.id);
+}
+function pintaTerreny(extra = '') {
+  const { s, V } = svgZona(P.nv); Object.assign(G, V);
+  let sel = ''; for (const k of P.sel) { const [x, y] = dk(k); sel += `<rect x="${V.ox + x * V.c + 1}" y="${V.oy + y * V.c + 1}" width="${V.c - 2}" height="${V.c - 2}" rx="3" fill="${P.pas === 'construeix' ? '#ffb27a' : '#e4cf8f'}" ${P.pas === 'construeix' ? `stroke="${T}" stroke-width="2"` : ''}/>`; }
+  if (P.pas !== 'construeix' && P.aigua) for (const k of P.aigua) { const [x, y] = dk(k); sel += `<rect x="${V.ox + x * V.c}" y="${V.oy + y * V.c}" width="${V.c}" height="${V.c}" fill="${TERRA[P.a.terra][0]}"/>`; }
+  if (P.tancaFeta) sel += tancaSvg(P.sel, V, P.a.mat, false);
+  const escala = NIVELLS[P.nv].cas === 2 ? `<g transform="translate(${V.ox} ${V.oy - 12})"><rect x="0" y="-16" width="${V.c}" height="10" fill="#fff" stroke="${N}" stroke-width="2"/><text x="${V.c + 8}" y="-6" font-size="18" font-weight="800" font-family="Bricolage Grotesque,system-ui">1 casella = 2 m × 2 m</text></g>` : `<g transform="translate(${V.ox} ${V.oy - 12})"><text x="0" y="-6" font-size="18" font-weight="800" font-family="Bricolage Grotesque,system-ui">1 casella = 1 m × 1 m</text></g>`;
+  $('#terreny').innerHTML = s + `<g id="sel">${sel}</g>` + escala + `<g id="extra">${extra}</g>`;
+}
+const ocupades = () => { const o = new Set(); zona(P.nv).an.forEach(r => r.c.split(' ').forEach(k => o.add(k))); return o; };
+// pintar caselles amb el ratolí o el dit (clic o arrossegant)
+(() => {
+  let mode = null; const sv = $('#terreny');
+  const cel = ev => { const pt = sv.createSVGPoint(); pt.x = ev.clientX; pt.y = ev.clientY; const p = pt.matrixTransform(sv.getScreenCTM().inverse()); const x = Math.floor((p.x - G.ox) / G.c), y = Math.floor((p.y - G.oy) / G.c); return x >= 0 && y >= 0 && x < G.cols && y < G.fils ? ck(x, y) : null; };
+  const toca = k => { if (!k || ocupades().has(k)) return; if (mode === 'posa' && !P.sel.has(k)) { P.sel.add(k); SO.clic(); } else if (mode === 'treu' && P.sel.has(k)) P.sel.delete(k); else return; pintaTerreny(); $('#msgC') && ($('#msgC').innerHTML = ''); };
+  sv.addEventListener('pointerdown', ev => { if (M.pantalla !== 'joc' || P.pas !== 'construeix') return; const k = cel(ev); if (!k || ocupades().has(k)) return; mode = P.sel.has(k) ? 'treu' : 'posa'; sv.setPointerCapture(ev.pointerId); toca(k); });
+  sv.addEventListener('pointermove', ev => { if (mode) toca(cel(ev)); });
+  const fi = () => { mode = null; }; sv.addEventListener('pointerup', fi); sv.addEventListener('pointercancel', fi);
+})();
+
+/* ---------- panell ---------- */
+const NOM_PAS = { area: 'Àrea', perim: 'Perímetre', nova: 'Tanca nova', cost: 'Cost', frac: 'Terreny' };
+function fitxaHtml(a) {
+  const L = NIVELLS[P.nv];
+  return `<div class="fitxa">${dibuixaAnimal(a.id, 70)}<div><h2>${a.nom}</h2><ul>
+    <li>${requisit(a, P.nv)}</li><li>${MAT[a.mat].nom.replace(/^./, c => c.toUpperCase())}: ${a.preu} € per metre</li><li>${FRAC(a.frac).replace(/^./, c => c.toUpperCase())} del recinte ha de ser ${TERRA[a.terra][1]}</li></ul></div></div>`;
+}
+function llistaPassos() {
+  return `<ul class="passos"><li class="${P.pas === 'construeix' ? 'ara' : 'fet'}">${P.pas === 'construeix' ? '▸' : '✓'} Recinte</li>${P.passos.map(p => { const fet = P.resp[p] != null, ara = P.pas === p; return `<li class="${ara ? 'ara' : fet ? 'fet' : ''}">${ara ? '▸' : fet ? '✓' : '·'} ${NOM_PAS[p]}<span class="r">${fet ? P.resp[p] : ''}</span></li>`; }).join('')}</ul>`;
+}
+function pintaPanel(cos = null) {
+  const a = P.a;
+  let html = `<div class="targ">${fitxaHtml(a)}${llistaPassos()}</div>`;
+  if (P.pas === 'construeix') {
+    const pist = P.nv === 1 ? `<button class="big sec" id="bpista">💡 Pista</button>` : '';
+    html += `<div class="targ" id="tq"><p class="preg">Pinta les caselles del recinte a la quadrícula.</p><p class="mini">Clica o arrossega. Torna a clicar una casella per esborrar-la.</p>
+      <div class="fila"><button class="big" id="bfet">Fet ✓</button><button class="big sec" id="besb">Esborra</button>${pist}</div><div id="pis"></div><div id="msgC"></div></div>`;
+  } else html += `<div class="targ" id="tq">${cos || ''}</div>`;
+  $('#panel').innerHTML = html;
+  if (P.pas === 'construeix') {
+    $('#bfet').onclick = comprovaConstr; $('#besb').onclick = () => { P.sel.clear(); pintaTerreny(); };
+    const bp = $('#bpista'); if (bp) bp.onclick = () => { $('#pis').innerHTML = `<div class="pista">${a.a} m × ${a.b} m vol dir ${a.a} caselles d'ample i ${a.b} caselles d'alt. Cada casella fa 1 m de costat.</div>`; };
+  }
+}
+function comprovaConstr() {
+  const a = P.a, S = P.sel, L = NIVELLS[P.nv], cs = L.cas; const msg = t => { $('#msgC').innerHTML = `<p class="msg ko">${t}</p>`; SO.mal(); P.errors++; $('#tq').classList.add('sacseja'); setTimeout(() => $('#tq')?.classList.remove('sacseja'), 400); };
+  if (!S.size) return msg('Encara no has pintat cap casella.');
+  if (!connex(S)) return msg('Les caselles han d\'estar unides per un costat: és un sol recinte.');
+  if (teForats(S)) return msg('El recinte no pot tenir forats a dins.');
+  const b = bbox(S), rect = esRect(S), m2 = S.size * cs * cs;
+  if (a.t === 'dims') { if (!rect) return msg('Ha de ser un rectangle.'); if (!((b.w === a.a && b.h === a.b) || (b.w === a.b && b.h === a.a))) return msg(`Has fet un rectangle de ${b.w} × ${b.h}. En demanem un de ${a.a} × ${a.b}.`); }
+  if (a.t === 'area' || a.t === 'paret') { if (!rect) return msg('Ha de ser un rectangle.'); if (m2 !== a.area) return msg(`No té ${a.area} m². Compta bé les caselles${cs === 2 ? ' (recorda: cada casella fa 4 m²)' : ''}.`); }
+  if (a.t === 'L') { if (rect) return msg('Ha de tenir forma de L, no de rectangle.'); if (cantonades(contorn(S)) !== 6) return msg('Ha de ser una L: una figura amb 6 cantonades.'); if (m2 !== a.area) return msg(`No té ${a.area} m². Recorda que cada casella fa 2 m × 2 m = 4 m².`); }
+  if (a.t === 'tanca') { if (!rect) return msg('Ha de ser un rectangle.'); if (vores(S) * cs !== a.tanca) return msg(`Aquest rectangle necessita ${vores(S) * cs} m de tanca i només en tens ${a.tanca} m.`); }
+  if (a.t === 'paret') { const sh = compartides(S, ocupades()); if (sh < 2) return msg('Ha de tocar un altre recinte almenys per dos costats de casella (així s\'aprofita la paret).'); P.compartit = sh * cs; }
+  SO.be(); P.pas = P.passos[0]; P.intents = 0; pintaTerreny(); preguntaPas();
+}
+/* ---------- preguntes ---------- */
+function dadesPas() {
+  const a = P.a, cs = NIVELLS[P.nv].cas, S = P.sel, b = bbox(S), rect = esRect(S);
+  const area = S.size * cs * cs, per = vores(S) * cs, nova = per - (P.compartit || 0), tanca = a.t === 'paret' ? nova : per, cost = tanca * a.preu, frac = area * a.frac[0] / a.frac[1];
+  const W = b.w * cs, H = b.h * cs;
+  return { a, cs, b, rect, area, per, nova, tanca, cost, frac, W, H };
+}
+function preguntaPas() {
+  const D = dadesPas(), p = P.pas, a = D.a;
+  const Q = {
+    area: [`Quina àrea té el recinte?`, 'm²'],
+    perim: [`Quants metres de tanca calen per envoltar-lo?`, 'm'],
+    nova: [`La paret compartida (${F(P.compartit)} m) ja hi és. Quants metres de tanca <b>nova</b> cal posar?`, 'm'],
+    cost: [`La ${MAT[a.mat].nom} costa ${a.preu} € per metre. Quant costarà?`, '€'],
+    frac: [P.nv === 3 ? `${FRAC(a.frac).replace(/^./, c => c.toUpperCase())} del recinte ha de ser ${TERRA[a.terra][1]}. Quants m² són?` : `${FRAC(a.frac).replace(/^./, c => c.toUpperCase())} del recinte ha de ser ${TERRA[a.terra][1]}. Quantes caselles són?`, P.nv === 3 ? 'm²' : 'caselles']
+  }[p];
+  const pista = { area: D.cs === 2 ? 'Cada casella fa 2 m × 2 m, és a dir, 4 m².' : D.rect ? 'Àrea del rectangle = llarg × ample.' : 'Compta les caselles.',
+    perim: D.rect ? 'Suma els quatre costats (o fes 2 × (llarg + ample)).' : `Compta els costats de la vora${D.cs === 2 ? ' i recorda que cada costat fa 2 m' : ''}.`,
+    nova: 'Al perímetre total resta-li la paret que ja hi és.', cost: 'Metres de tanca × preu de cada metre.', frac: `Divideix l'àrea en ${a.frac[1]} parts iguals${a.frac[0] > 1 ? ` i agafa'n ${a.frac[0]}` : ''}.` }[p];
+  pintaPanel(`<p class="preg">${Q[0]}</p><div class="entra"><input id="inp" inputmode="decimal" autocomplete="off" placeholder="?"><span class="u">${Q[1]}</span><button class="big" id="ok">Comprova</button></div>
+    <div class="fila"><button class="big sec" id="bpista">💡 Pista</button></div><div id="pis"></div><div id="msg"></div>`);
+  $('#ok').onclick = () => respon(llegeix($('#inp').value)); $('#inp').focus();
+  $('#bpista').onclick = () => { P.ambPista = true; $('#bpista').disabled = true; $('#pis').innerHTML = `<div class="pista">${pista}</div>`; };
+  P.ambPista = false;
+}
+const llegeix = s => { s = String(s).trim().replace(/\s/g, '').replace(',', '.'); return s === '' || isNaN(+s) ? null : +s; };
+function solucio(p, D) {
+  const a = D.a;
+  if (p === 'area') return D.rect ? [`${F(D.W)} m × ${F(D.H)} m`, `= <b>${F(D.area)} m²</b>`] : D.cs === 2 ? [`${P.sel.size} caselles × 4 m²`, `= <b>${F(D.area)} m²</b>`] : [`${P.sel.size} caselles`, `= <b>${D.area} m²</b>`];
+  if (p === 'perim') return D.rect ? [`2 × (${F(D.W)} + ${F(D.H)})`, `= 2 × ${F(D.W + D.H)}`, `= <b>${F(D.per)} m</b>`] : [`${vores(P.sel)} costats de vora${D.cs === 2 ? ' × 2 m' : ''}`, `= <b>${F(D.per)} m</b>`];
+  if (p === 'nova') return [`${F(D.per)} m − ${F(P.compartit)} m`, `= <b>${F(D.nova)} m</b>`];
+  if (p === 'cost') return [`${F(D.tanca)} m × ${a.preu} €/m`, `= <b>${F(D.cost)} €</b>`];
+  if (p === 'frac') return P.nv === 3 ? [`${F(D.area)} ÷ ${a.frac[1]}${a.frac[0] > 1 ? ` × ${a.frac[0]}` : ''}`, `= <b>${F(D.frac)} m²</b>`] : [`${D.area} ÷ ${a.frac[1]}${a.frac[0] > 1 ? ` × ${a.frac[0]}` : ''}`, `= <b>${F(D.frac)} caselles</b>`];
+}
+function consell(p, v, D) {
+  if (p === 'area' && Math.abs(v - D.per) < .01) return 'Això és el contorn (la tanca), no la superfície.';
+  if (p === 'area' && D.cs === 2 && v === P.sel.size) return 'Has comptat caselles, però cada casella fa 4 m².';
+  if (p === 'area' && D.cs === 2 && v === P.sel.size * 2) return 'Cada casella fa 2 m × 2 m = 4 m², no 2 m².';
+  if (p === 'perim' && Math.abs(v - D.area) < .01) return 'Has calculat l\'àrea. La tanca va per la vora!';
+  if (p === 'perim' && D.rect && Math.abs(v - (D.W + D.H)) < .01) return 'Només has sumat dos costats; en té quatre.';
+  if (p === 'perim' && D.cs === 2 && v === vores(P.sel)) return 'Cada costat de casella fa 2 m.';
+  if (p === 'cost' && Math.abs(v - (D.tanca + D.a.preu)) < .01) return 'Has sumat. Cal multiplicar metres × preu.';
+  if (p === 'cost' && Math.abs(v - D.area * D.a.preu) < .01) return 'Has multiplicat l\'àrea. El preu va per metre de tanca.';
+  if (p === 'nova' && Math.abs(v - D.per) < .01) return 'Aquest és el perímetre total. Resta-li la paret compartida.';
+  return '';
+}
+async function respon(v) {
+  if (P.bloc) return; if (v == null) { $('#inp').classList.add('sacseja'); setTimeout(() => $('#inp')?.classList.remove('sacseja'), 400); return; }
+  const D = dadesPas(), p = P.pas; const bona = { area: D.area, perim: D.per, nova: D.nova, cost: D.cost, frac: D.frac }[p];
+  P.intents++; const ok = Math.abs(v - bona) < .01;
+  const unit = { area: ' m²', perim: ' m', nova: ' m', cost: ' €', frac: P.nv === 3 ? ' m²' : ' cas.' }[p];
+  if (!ok && P.intents === 1) { P.errors++; SO.mal(); const c = consell(p, v, D); $('#msg').innerHTML = `<p class="msg ko">No és correcte. ${c} Torna-ho a provar.</p>`; $('#inp').value = ''; $('#inp').focus(); return; }
+  P.bloc = true; $('#ok').disabled = true; $('#bpista').disabled = true;
+  if (ok) { const pts = P.intents === 1 && !P.ambPista ? 10 : 5; P.punts += pts; P.encerts++; SO.be(); $('#msg').innerHTML = `<p class="msg ok">Correcte! +${pts}</p><div class="calc">${solucio(p, D).join('<br>')}</div>`; }
+  else { P.errors++; SO.mal(); P.fallades.push(`${P.a.nom} · ${NOM_PAS[p].toLowerCase()}: ${F(bona)}${unit} (vas dir ${F(v)})`); $('#msg').innerHTML = `<p class="msg ko">${consell(p, v, D) || 'No és correcte.'} Mira-ho:</p><div class="calc">${solucio(p, D).join('<br>')}</div>`; }
+  P.resp[p] = F(bona) + unit; pintaCap();
+  // efectes a l'escena
+  if (p === 'perim' || (p === 'nova') || (p === 'area' && P.a.t === 'tanca')) { if (!P.tancaFeta) await caminaTanca(D); }
+  if (p === 'cost') { SO.caixa(); P.diners -= D.cost; pintaCap(); }
+  if (p === 'frac') await posaTerra(D);
+  let extra = '';
+  if (p === 'cost' && P.a.t === 'area') extra = comparaArea(D);
+  if (p === 'area' && P.a.t === 'tanca') extra = comparaTanca(D);
+  if (extra) $('#msg').insertAdjacentHTML('beforeend', extra);
+  pintaCap();
+  $('#tq').insertAdjacentHTML('beforeend', `<div class="fila"><button class="big" id="seg">Continua ▸</button></div>`); $('#seg').focus();
+  $('#seg').onclick = () => { P.bloc = false; const i = P.passos.indexOf(p); if (i < P.passos.length - 1) { P.pas = P.passos[i + 1]; P.intents = 0; preguntaPas(); } else animalEntra(); };
+}
+function comparaArea(D) { // mateixa àrea, quina forma necessita menys tanca? (nivell 2 i girafa)
+  const L = NIVELLS[P.nv], cs = L.cas, n = D.area / (cs * cs); const op = [];
+  for (let w = 1; w <= n; w++) if (n % w === 0) { const h = n / w; if (w <= h && ((w <= L.cols && h <= L.fils) || (h <= L.cols && w <= L.fils))) op.push([w * cs, h * cs]); }
+  if (op.length < 2) return '';
+  const minP = Math.min(...op.map(([w, h]) => 2 * (w + h))); const teu = [Math.min(D.W, D.H), Math.max(D.W, D.H)];
+  const bonus = 2 * (teu[0] + teu[1]) === minP; if (bonus) { P.punts += 5; pintaCap(); }
+  return `<p style="margin:10px 0 0"><b>Totes les formes de ${D.area} m² que hi caben:</b></p><table class="compara"><tr><th>Mides</th><th>Tanca</th><th>Cost</th></tr>${op.map(([w, h]) => `<tr class="${w === teu[0] && h === teu[1] ? 'teu' : ''} ${2 * (w + h) === minP ? 'millor' : ''}"><td>${w} × ${h}</td><td>${2 * (w + h)} m</td><td>${2 * (w + h) * P.a.preu} €</td></tr>`).join('')}</table>
+    <p class="msg ${bonus ? 'ok' : ''}">${bonus ? 'Has triat la forma més barata! +5 punts de bonus 🌟' : 'Mateixa àrea, però la forma més «quadrada» necessita menys tanca.'}</p>`;
+}
+function comparaTanca(D) { // amb la mateixa tanca, quin rectangle tanca més àrea?
+  const cs = NIVELLS[P.nv].cas, s = P.a.tanca / cs / 2; const op = []; for (let w = 1; w <= s / 2; w++) op.push([w * cs, (s - w) * cs]);
+  const maxA = Math.max(...op.map(([w, h]) => w * h)); const teu = [Math.min(D.W, D.H), Math.max(D.W, D.H)]; const bonus = teu[0] * teu[1] === maxA; if (bonus) { P.punts += 10; pintaCap(); }
+  return `<p style="margin:10px 0 0"><b>Rectangles amb ${P.a.tanca} m de tanca:</b></p><table class="compara"><tr><th>Mides</th><th>Àrea</th></tr>${op.map(([w, h]) => `<tr class="${w === teu[0] && h === teu[1] ? 'teu' : ''} ${w * h === maxA ? 'millor' : ''}"><td>${w} × ${h}</td><td>${w * h} m²</td></tr>`).join('')}</table>
+    <p class="msg ${bonus ? 'ok' : ''}">${bonus ? 'Has fet el més gran: el quadrat! +10 punts de bonus 🌟' : 'Amb la mateixa tanca, el quadrat és el que tanca més espai.'}</p>`;
+}
+async function caminaTanca(D) {
+  P.tancaFeta = true; const cami = contorn(P.sel), cs = NIVELLS[P.nv].cas; pintaTerreny();
+  const ex = $('#extra'); const pt = ([x, y]) => [G.ox + x * G.c, G.oy + y * G.c];
+  for (let i = 0; i < cami.length; i++) {
+    const [x, y] = pt(cami[i]); const m = i * cs;
+    ex.innerHTML = `<g transform="translate(${x} ${y})">${gatPetit()}</g><g transform="translate(${x + 14} ${y - 30})"><rect x="-4" y="-20" width="${String(m).length * 13 + 30}" height="26" rx="8" fill="#fff" stroke="${N}" stroke-width="2.5"/><text x="4" y="0" font-size="20" font-weight="800" font-family="Bricolage Grotesque,system-ui">${m} m</text></g>`;
+    if (i) SO.pas(); await espera(Math.max(70, 1500 / cami.length));
+  }
+  await espera(400); ex.innerHTML = '';
+}
+async function posaTerra(D) {
+  // pinta n caselles del recinte, començant per una cantonada
+  const n = Math.round(D.frac / (P.nv === 3 ? 4 : 1)); const ord = [...P.sel].sort((p, q) => { const [a, b] = dk(p), [c, d] = dk(q); return (b - d) || (a - c); });
+  P.aigua = new Set(); SO.aigua();
+  for (let i = 0; i < n && i < ord.length; i++) { P.aigua.add(ord[i]); pintaTerreny(); await espera(110); }
+}
+async function animalEntra() {
+  const z = zona(P.nv), D = dadesPas();
+  z.an.push({ id: P.a.id, c: [...P.sel].join(' '), w: [...(P.aigua || [])].join(' '), cost: D.cost, fet: true });
+  z.pts = P.punts; P.aigua = null; P.tancaFeta = false; P.compartit = 0;
+  P.sel = new Set(); P.pas = 'fi'; pintaTerreny(); SO.veu(P.a.id); desa();
+  $('#panel').innerHTML = `<div class="targ">${fitxaHtml(P.a)}<p class="msg ok" style="font-size:1.25rem">${P.a.art === 'l\'' ? 'L\'' : P.a.art.replace(/^./, c => c.toUpperCase()) + ' '}${P.a.nom.toLowerCase()} ja té casa! 🎉</p><div class="fila"><button class="big" id="seg">${P.i < 3 ? 'Següent animal ▸' : 'Acaba ▸'}</button></div></div>`;
+  $('#seg').focus(); $('#seg').onclick = () => { P.i++; nouAnimal(); };
+}
+function acabaNivell() {
+  const z = zona(P.nv), L = NIVELLS[P.nv]; const max = maxPunts(P.nv); const pct = P.punts / max;
+  z.fet = true; z.pts = P.punts; const nouRec = P.punts > (z.rec || 0); z.rec = Math.max(z.rec || 0, P.punts);
+  const desbloqueja = pct >= .7 && P.nv < 3 && E.max <= P.nv; if (pct >= .7) E.max = Math.max(E.max, Math.min(3, P.nv + 1));
+  desa(); M.pantalla = 'fi'; SO.fi();
+  const temps = Math.round((performance.now() - P.t0) / 1000);
+  envia({ tipus: 'fr4c-zoo-fi', punts: P.punts, encerts: P.encerts, errors: P.errors, nivell: P.nv, temps, fallades: P.fallades.slice(0, 12), estat: estatTxt() });
+  const { s } = svgZona(P.nv, { w: 900, h: 600 });
+  pantalla(`<h1>🦒 ${L.nom} completada!</h1><p>${M.nom ? `<b>${esc(M.nom)}</b>, h` : 'H'}as fet <b>${P.punts}</b> punts de ${max} (${Math.round(pct * 100)} %). ${nouRec ? '<span class="rec">🏆 Nou rècord!</span>' : ''}</p>
+    <svg viewBox="0 0 900 600" style="width:100%;max-height:44vh;border-radius:14px;border:3px solid ${N}">${s}</svg>
+    ${desbloqueja ? `<p class="msg ok" style="font-size:1.2rem">🔓 Has desbloquejat la zona «${NIVELLS[P.nv + 1].nom}»!</p>` : pct < .7 && P.nv < 3 && E.max <= P.nv ? `<p class="msg ko">Necessites un 70 % dels punts per obrir la zona següent. Torna-ho a provar!</p>` : ''}
+    ${P.fallades.length ? `<p><b>Repassa:</b></p><ul class="fallades">${P.fallades.map(f => `<li>${esc(f)}</li>`).join('')}</ul>` : ''}
+    <div class="fila"><button class="big" id="bzoo">Veure el meu zoo</button></div>`);
+  $('#bzoo').onclick = inici;
+}
+function maxPunts(nv) { return NIVELLS[nv].animals.reduce((s, a) => s + 10 * (a.t === 'tanca' ? 3 : a.t === 'paret' ? 5 : 4) + (a.t === 'tanca' ? 10 : a.t === 'area' && teComparacio(nv, a) ? 5 : 0), 0); }
+function teComparacio(nv, a) { const L = NIVELLS[nv], n = a.area / (L.cas * L.cas); let k = 0; for (let w = 1; w * w <= n; w++) if (n % w === 0 && Math.max(w, n / w) <= L.cols) k++; return k >= 2; }
+
+/* ================= PANTALLA D'INICI: EL MEU ZOO ================= */
+function inici() {
+  M.pantalla = 'inici'; pintaCap();
+  const obert = nv => nv <= Math.max(E.max, M.nivell);
+  $('#terreny').innerHTML = `<rect width="900" height="600" fill="#9fd27a"/><g transform="translate(450 420) scale(2.2)">${robotDirector()}</g><g transform="translate(560 430) scale(2.4)">${gatPetit()}</g>`;
+  $('#panel').innerHTML = '';
+  const zones = [1, 2, 3].map(nv => { const L = NIVELLS[nv], z = zona(nv), fets = z.an.filter(r => r.fet).length; const { s } = svgZona(nv, { w: 450, h: 300, mini: true });
+    return `<div class="zona ${obert(nv) ? '' : 'tancada'}"><h3>${nv}. ${L.nom}</h3><svg viewBox="0 0 450 300">${s}</svg><p class="info">${L.titol} · ${fets}/4 animals${z.rec ? ` · rècord ${z.rec}` : ''}</p>
+      ${obert(nv) ? `<button class="big ${fets && !z.fet ? '' : z.fet ? 'sec' : ''}" data-nv="${nv}">${z.fet ? 'Torna a començar' : fets ? 'Continua ▸' : 'Construeix ▸'}</button>` : `<p class="mini">Fes un 70 % a la zona anterior</p>`}</div>`; }).join('');
+  pantalla(`<h1>🦒 Dissenya el teu zoo</h1><p>${M.nom ? `Hola, <b>${esc(M.nom)}</b>! ` : ''}En <b>FR-4C</b> és el director del zoo i t'encarrega els recintes. Per a cada animal: el construeixes a la quadrícula, calcules l'àrea, la tanca que cal, quant costa i quina part ha de ser aigua, sorra o herba. En <b>Coma</b> comprovarà la tanca caminant-hi per sobre!</p>
+    <div class="zones">${zones}</div><p class="mini">El teu zoo es guarda: pots parar i continuar un altre dia.</p>`);
+  $$('[data-nv]').forEach(b => b.onclick = () => { const nv = +b.dataset.nv; comencaNivell(nv, zona(nv).fet); });
+}
+function pantalla(html) { const p = $('#pant'); p.innerHTML = `<div class="panell">${html}</div>`; p.style.display = 'flex'; }
+const envia = m => { try { if (window.parent !== window) window.parent.postMessage(m, '*'); } catch (e) {} };
+function surt() { if (M.pantalla === 'joc') desa(); M.pantalla = 'fora'; envia({ tipus: 'fr4c-zoo-tanca' }); if (window.parent === window) inici(); }
+window.addEventListener('message', ev => {
+  const d = ev.data || {}; if (d.tipus !== 'fr4c-zoo-ini') return;
+  M.dinsApp = true; M.nom = d.nom || ''; M.nivell = Math.max(1, Math.min(3, d.nivell || 1));
+  if (typeof d.estat === 'string' && d.estat) { try { E = Object.assign({ v: 1, max: 1, z: {} }, JSON.parse(d.estat)); } catch (e) {} }
+  E.max = Math.max(E.max || 1, M.nivell);
+  if (d.so === false) M.so = false; $('#so').textContent = M.so ? '🔊' : '🔇';
+  if (M.pantalla === 'inici') inici();
+});
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Enter' || M.pantalla !== 'joc') return;
+  const s = $('#seg'); if (s) return s.click(); if (document.activeElement?.id === 'inp') $('#ok')?.click();
+});
+$('#so').onclick = () => { M.so = !M.so; $('#so').textContent = M.so ? '🔊' : '🔇'; try { localStorage.setItem('fr4c_zoo_so', M.so ? '1' : '0'); } catch (e) {} };
+$('#surt').onclick = surt; $('#so').textContent = M.so ? '🔊' : '🔇';
+const qs = new URLSearchParams(location.search); if (qs.get('nivell')) M.nivell = Math.max(1, Math.min(3, +qs.get('nivell')));
+if (window.parent === window) { carregaLocal(); E.max = Math.max(E.max, M.nivell); }
+inici(); envia({ tipus: 'fr4c-zoo-llest' });
+window.__zoo = { P, M, get E() { return E; }, comencaNivell, respon, comprovaConstr, dadesPas, NIVELLS, ck };
+</script>
+</body>
+</html>

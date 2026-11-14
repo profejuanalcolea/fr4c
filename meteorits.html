@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,800&display=swap" rel="stylesheet">
 <style>
-/* Taller de l'app FR-4C · Enters, fraccions i mesura (paquets d'operacions: M.mode). Es pot obrir sol o dins de l'app (l'app li passa l'alumne i el nivell per postMessage). */
+/* Taller de l'app FR-4C · Enters, fraccions, mesura i geometria (paquets d'operacions: M.mode). Es pot obrir sol o dins de l'app (l'app li passa l'alumne i el nivell per postMessage). */
 :root{--taronja:#f26b1d;--blau:#2a6fd6;--tinta:#1b1b1b;--ok:#2c9a58;--ko:#d64242;--cel1:#0b1026;--cel2:#1d1340}
 *{box-sizing:border-box}
 html,body{margin:0;height:100%;font-family:"Atkinson Hyperlegible",system-ui,sans-serif;background:var(--cel1);color:#fff;overflow:hidden;user-select:none}
@@ -104,7 +104,7 @@ const ESCUTS = 3;
 const M = { nivell: 1, nom: '', record: 0, dinsApp: false, so: true, pantalla: 'inici', mode: 'enters' };
 window.__M = M; // per a les proves automàtiques
 try { M.so = localStorage.getItem('fr4c_met_so') !== '0'; } catch (e) {}
-const qs = new URLSearchParams(location.search); if (qs.get('nivell')) M.nivell = Math.max(1, Math.min(3, +qs.get('nivell'))); if (['enters', 'fraccions', 'mesura'].includes(qs.get('mode'))) M.mode = qs.get('mode');
+const qs = new URLSearchParams(location.search); if (qs.get('nivell')) M.nivell = Math.max(1, Math.min(3, +qs.get('nivell'))); if (['enters', 'fraccions', 'mesura', 'geometria'].includes(qs.get('mode'))) M.mode = qs.get('mode');
 const clauRec = () => 'fr4c_met_rec_' + (M.mode === 'enters' ? '' : M.mode + '_') + M.nivell;
 try { M.record = +(localStorage.getItem(clauRec()) || 0); } catch (e) {}
 
@@ -157,7 +157,8 @@ function opFrac() {
 }
 /* ---------- paquet MESURA (moure la coma i canvis d'unitats) ---------- */
 const nr = x => Math.round(x * 1e6) / 1e6;
-const fmtN = x => { const t = dec(nr(x)); const [e, d] = t.split(','); const eg = e.length > 4 ? e.replace(/\B(?=(\d{3})+$)/g, '\u202f') : e; // milers amb un espai fi, mai amb punt return d ? eg + ',' + d : eg; };
+const fmtN = x => { const t = dec(nr(x)); const [e, d] = t.split(','); const eg = e.length > 4 ? e.replace(/\B(?=(\d{3})+$)/g, '\u202f') : e; // milers amb un espai fi, mai amb punt
+  return d ? eg + ',' + d : eg; };
 function opMesura() {
   const L = M.nivell;
   if (L === 1 || Math.random() < .25) { const f = tria([10, 100, 1000]); const per = Math.random() < .5; const x = tria([3.4, 0.7, 25, 4.56, 0.08, 12, 1.5, 7.25, 360, 52]);
@@ -175,10 +176,52 @@ function opMesura() {
   const x = tria([2.5, 3, 0.75, 1.2, 45, 350, 8, 0.6, 12.5, 125]); const v = x * 10 ** (j - i);
   return { html: `${fmtN(x)} ${esc[i]} = ? ${esc[j]}`, r: fmtN(v), mals: [fmtN(x * 10 ** (i - j)), fmtN(v * 10), fmtN(v / 10), fmtN(x * 10 ** (j - i + (j > i ? 1 : -1)))] };
 }
+/* ---------- paquet GEOMETRIA (àrees i perímetres amb una figureta) ---------- */
+const GT = 'font-family="Bricolage Grotesque,sans-serif" font-weight="800" font-size="15"';
+const gTx = (x, y, t, c = '#2a6fd6', a = 'middle') => `<text x="${x}" y="${y}" text-anchor="${a}" ${GT} fill="${c}">${t}</text>`;
+const gSvg = (w, h, cos) => `<svg width="${Math.round(w * 1.4)}" height="${Math.round(h * 1.4)}" viewBox="0 0 ${w} ${h}" style="vertical-align:middle;margin-right:6px">${cos}</svg>`;
+const FIG = {
+  rect: (a, b) => gSvg(98, 62, `<rect x="4" y="6" width="64" height="38" fill="#ffd6b8" stroke="#1b1b1b" stroke-width="2.5"/>${gTx(36, 60, a)}${gTx(72, 30, b, '#1d9a5a', 'start')}`),
+  quad: a => gSvg(80, 62, `<rect x="4" y="4" width="40" height="40" fill="#ffd6b8" stroke="#1b1b1b" stroke-width="2.5"/>${gTx(24, 60, a)}${gTx(48, 29, a, '#2a6fd6', 'start')}`),
+  tri: (b, h) => gSvg(98, 64, `<path d="M4 46H72L48 6Z" fill="#cfe9d8" stroke="#1b1b1b" stroke-width="2.5" stroke-linejoin="round"/><path d="M48 6V46" stroke="#7c5cd6" stroke-width="2" stroke-dasharray="4 3"/>${gTx(38, 62, b)}${gTx(52, 32, h, '#7c5cd6', 'start')}`),
+  trip: (a, b, c) => gSvg(110, 62, `<path d="M4 46H70L44 6Z" fill="#cfe9d8" stroke="#1b1b1b" stroke-width="2.5" stroke-linejoin="round"/>${gTx(37, 62, a)}${gTx(14, 24, b, '#1d9a5a')}${gTx(62, 24, c, '#c0392b', 'start')}`),
+  romb: (D, d) => gSvg(104, 62, `<path d="M4 28L40 6L76 28L40 50Z" fill="#e8dcff" stroke="#1b1b1b" stroke-width="2.5" stroke-linejoin="round"/><path d="M4 28H76M40 6V50" stroke="#7c5cd6" stroke-width="2" stroke-dasharray="4 3"/>${gTx(22, 24, D, '#2a6fd6')}${gTx(44, 61, d, '#1d9a5a', 'start')}`),
+  cerc: r => gSvg(92, 62, `<circle cx="30" cy="30" r="26" fill="#cfe5ff" stroke="#1b1b1b" stroke-width="2.5"/><path d="M30 30H56" stroke="#c0392b" stroke-width="2.5"/><circle cx="30" cy="30" r="3" fill="#1b1b1b"/>${gTx(60, 24, 'r=' + r, '#c0392b', 'start')}`),
+  pita: (a, b) => gSvg(104, 64, `<path d="M8 46H66V8Z" fill="#ffe7a8" stroke="#1b1b1b" stroke-width="2.5" stroke-linejoin="round"/><path d="M58 46V38H66" fill="none" stroke="#1b1b1b" stroke-width="1.6"/>${gTx(37, 62, a)}${gTx(70, 30, b, '#1d9a5a', 'start')}${gTx(28, 22, '?', '#c0392b')}`),
+  cub: a => gSvg(86, 62, `<path d="M6 20H40V54H6Z" fill="#ffd6b8" stroke="#1b1b1b" stroke-width="2.5"/><path d="M6 20L20 8H54L40 20M54 8V42L40 54" fill="#ffe7d6" stroke="#1b1b1b" stroke-width="2.5" stroke-linejoin="round"/>${gTx(23, 49, a, '#2a6fd6')}${gTx(58, 34, a, '#2a6fd6', 'start')}`)
+};
+const qG = (fig, que) => `${fig}<span style="vertical-align:middle">${que}</span>`;
+function opGeom() {
+  const L = M.nivell, u = 'cm', U2 = 'cm²', amb = (v, un) => `${fmtN(v)} ${un}`;
+  const tipus = tria(L === 1 ? ['aR', 'pR', 'aQ', 'pQ'] : L === 2 ? ['aR', 'pR', 'aT', 'aT', 'pT', 'aRo', 'aQ'] : ['aT', 'aRo', 'pita', 'pita', 'lC', 'aC', 'vC', 'aR']);
+  const o = { u: U2 };
+  if (tipus === 'aR' || tipus === 'pR') { const a = rnd(3, 9), b = rnd(2, a - 1); const A = a * b, P = 2 * (a + b);
+    if (tipus === 'aR') Object.assign(o, { html: qG(FIG.rect(a, b), 'Àrea'), r: amb(A, U2), mals: [amb(P, U2), amb(a + b, U2), amb(A + a, U2)] });
+    else Object.assign(o, { u, html: qG(FIG.rect(a, b), 'Perímetre'), r: amb(P, u), mals: [amb(A, u), amb(a + b, u), amb(P + 2, u)] }); }
+  else if (tipus === 'aQ' || tipus === 'pQ') { const a = rnd(2, 9);
+    if (tipus === 'aQ') Object.assign(o, { html: qG(FIG.quad(a), 'Àrea'), r: amb(a * a, U2), mals: [amb(4 * a, U2), amb(2 * a, U2), amb(a * a + a, U2)] });
+    else Object.assign(o, { u, html: qG(FIG.quad(a), 'Perímetre'), r: amb(4 * a, u), mals: [amb(a * a, u), amb(2 * a, u), amb(4 * a + 4, u)] }); }
+  else if (tipus === 'aT') { const b = 2 * rnd(2, 6), h = rnd(3, 9);
+    Object.assign(o, { html: qG(FIG.tri(b, h), 'Àrea'), r: amb(b * h / 2, U2), mals: [amb(b * h, U2), amb(b + h, U2), amb(b * h / 2 + b, U2)] }); }
+  else if (tipus === 'pT') { const a = rnd(5, 9), b = rnd(3, 7), c = rnd(3, 7);
+    Object.assign(o, { u, html: qG(FIG.trip(a, b, c), 'Perímetre'), r: amb(a + b + c, u), mals: [amb(a * b, u), amb(a + b + c + 2, u), amb(a + b, u)] }); }
+  else if (tipus === 'aRo') { const D = 2 * rnd(3, 6), d = rnd(3, 8);
+    Object.assign(o, { html: qG(FIG.romb(D, d), 'Àrea'), r: amb(D * d / 2, U2), mals: [amb(D * d, U2), amb(D + d, U2), amb(2 * (D + d), U2)] }); }
+  else if (tipus === 'pita') { const [a, b, c] = tria([[3, 4, 5], [6, 8, 10], [5, 12, 13], [8, 6, 10], [9, 12, 15], [12, 5, 13], [8, 15, 17]]);
+    Object.assign(o, { u, html: qG(FIG.pita(a, b), 'Hipotenusa'), r: amb(c, u), mals: [amb(a + b, u), amb(a * a + b * b, u), amb(c + 1, u)] }); }
+  else if (tipus === 'lC') { const r = tria([1, 2, 5, 10]);
+    Object.assign(o, { u, html: qG(FIG.cerc(r), 'Longitud<br><small style="font-size:1rem">π ≈ 3,14</small>'), r: amb(2 * 3.14 * r, u), mals: [amb(3.14 * r, u), amb(3.14 * r * r, u), amb(2 * 3.14 * r * 10, u)] }); }
+  else if (tipus === 'aC') { const r = tria([1, 2, 10, 3]);
+    Object.assign(o, { html: qG(FIG.cerc(r), 'Àrea<br><small style="font-size:1rem">π ≈ 3,14</small>'), r: amb(3.14 * r * r, U2), mals: [amb(2 * 3.14 * r, U2), amb(3.14 * 2 * r, U2), amb(3.14 * r * r * 2, U2)] }); }
+  else { const a = rnd(2, 5);
+    Object.assign(o, { u: 'cm³', html: qG(FIG.cub(a), 'Volum'), r: amb(a ** 3, 'cm³'), mals: [amb(a * a, 'cm³'), amb(3 * a, 'cm³'), amb(6 * a * a, 'cm³')] }); }
+  return o;
+}
 function novaOp() {
   let o;
   if (M.mode === 'fraccions') o = opFrac();
   else if (M.mode === 'mesura') o = opMesura();
+  else if (M.mode === 'geometria') o = opGeom();
   else if (M.nivell === 1) o = opSuma(10);
   else if (M.nivell === 2) o = Math.random() < .5 ? opSuma(15) : opProd(10);
   else o = Math.random() < .55 ? opComb() : Math.random() < .5 ? opProd(12) : opSuma(20);
@@ -186,7 +229,7 @@ function novaOp() {
   const canon = m => typeof m === 'string' && /^\d+\/\d+$/.test(m) ? FR(+m.split('/')[0], +m.split('/')[1]) : m; // 4/6 i 2/3 són el mateix valor
   const set = new Set([canon(o.r)]); const ops = [o.r];
   for (const m of barreja(o.mals)) if (!set.has(canon(m)) && ops.length < 3) { set.add(canon(m)); ops.push(m); }
-  let g = 0; while (ops.length < 3 && g++ < 50) { const m = typeof o.r === 'number' ? o.r + tria([-3, -2, -1, 1, 2, 3]) : (M.mode === 'mesura' ? fmtN(parseFloat(o.r.replace(',', '.')) * tria([2, 3, 1000, .5])) : FR(rnd(1, 9), rnd(2, 9))); if (!set.has(m)) { set.add(m); ops.push(m); } }
+  let g = 0; while (ops.length < 3 && g++ < 50) { const m = typeof o.r === 'number' ? o.r + tria([-3, -2, -1, 1, 2, 3]) : (M.mode === 'geometria' ? `${fmtN(parseFloat(o.r.replace(',', '.')) + tria([-4, -2, 2, 4, 6]))} ${o.u}` : M.mode === 'mesura' ? fmtN(parseFloat(o.r.replace(',', '.')) * tria([2, 3, 1000, .5])) : FR(rnd(1, 9), rnd(2, 9))); if (!set.has(m)) { set.add(m); ops.push(m); } }
   o.opcions = barreja(ops); o.fmt = M.mode === 'enters' ? fz : (M.mode === 'fraccions' ? frH : String); return o;
 }
 
@@ -310,10 +353,10 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;',
 function pantalla(html) { const p = $('#pant'); p.innerHTML = `<div class="panell">${html}</div>`; p.style.display = 'flex'; }
 function inici() {
   M.pantalla = 'inici';
-  const TXT = { enters: { 1: 'sumes i restes', 2: 'sumes, restes, multiplicacions i divisions', 3: 'operacions combinades' }, fraccions: { 1: 'fracció d\'una quantitat, sumes i equivalents', 2: 'decimals, sumes i restes', 3: 'diferent denominador i productes' }, mesura: { 1: 'moure la coma (· i : per 10, 100, 1.000)', 2: 'canvis d\'unitats de longitud, massa i capacitat', 3: 'canvis d\'unitats, superfície, volum i temps' } };
+  const TXT = { enters: { 1: 'sumes i restes', 2: 'sumes, restes, multiplicacions i divisions', 3: 'operacions combinades' }, fraccions: { 1: 'fracció d\'una quantitat, sumes i equivalents', 2: 'decimals, sumes i restes', 3: 'diferent denominador i productes' }, mesura: { 1: 'moure la coma (· i : per 10, 100, 1.000)', 2: 'canvis d\'unitats de longitud, massa i capacitat', 3: 'canvis d\'unitats, superfície, volum i temps' }, geometria: { 1: 'àrees i perímetres de rectangles i quadrats', 2: 'també triangles i rombes', 3: 'triangles, rombes, Pitàgores, cercles i cubs' } };
   const txtN = TXT[M.mode];
   pantalla(`<h1>☄️ Defensa la base de Mart</h1>
-    <p>${M.nom ? `Hola, <b>${esc(M.nom)}</b>! ` : ''}Cauen meteorits sobre la base d'en FR-4C. Cada meteorit porta ${M.mode === 'mesura' ? 'una mesura o una operació' : M.mode === 'fraccions' ? 'una operació amb fraccions' : 'una operació'}: <b>toca el resultat correcte</b> (o prem 1, 2 o 3) i el làser el destruirà.</p>
+    <p>${M.nom ? `Hola, <b>${esc(M.nom)}</b>! ` : ''}Cauen meteorits sobre la base d'en FR-4C. Cada meteorit porta ${M.mode === 'geometria' ? 'una figura i una pregunta' : M.mode === 'mesura' ? 'una mesura o una operació' : M.mode === 'fraccions' ? 'una operació amb fraccions' : 'una operació'}: <b>toca el resultat correcte</b> (o prem 1, 2 o 3) i el làser el destruirà.</p>
     <p>Tens <b>3 escuts</b> 🛡️🛡️🛡️: cada error o cada meteorit que toca terra en treu un. La partida dura com a màxim 2 minuts. Si n'encadenes 3 de seguits, <b>combo ×2</b>; si en són 6, <b>×3</b>!</p>
     <p class="mini">Nivell ${M.nivell}: ${txtN[M.nivell]}.${M.record ? ` El teu rècord: <b>${M.record}</b> punts.` : ''}</p>
     ${!M.dinsApp ? `<div class="fila"><b>Nivell:</b><span class="seg" id="nv">${[1, 2, 3].map(n => `<button data-n="${n}" class="${n === M.nivell ? 'on' : ''}">${n}</button>`).join('')}</span></div>` : ''}
@@ -326,7 +369,7 @@ const envia = m => { try { if (window.parent !== window) window.parent.postMessa
 function surt() { M.pantalla = 'fora'; envia({ tipus: 'fr4c-met-tanca' }); if (window.parent === window) inici(); }
 window.addEventListener('message', ev => {
   const d = ev.data || {}; if (d.tipus !== 'fr4c-met-ini') return;
-  M.dinsApp = true; M.nom = d.nom || ''; if (['enters', 'fraccions', 'mesura'].includes(d.mode)) M.mode = d.mode; M.nivell = Math.max(1, Math.min(3, d.nivell || 1)); M.record = Math.max(d.record || 0, 0);
+  M.dinsApp = true; M.nom = d.nom || ''; if (['enters', 'fraccions', 'mesura', 'geometria'].includes(d.mode)) M.mode = d.mode; M.nivell = Math.max(1, Math.min(3, d.nivell || 1)); M.record = Math.max(d.record || 0, 0);
   if (d.so === false) M.so = false; $('#so').textContent = M.so ? '🔊' : '🔇';
   if (M.pantalla === 'inici') inici();
 });

@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>La gran final de FR-4C</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,800&display=swap" rel="stylesheet">
+<style>
+/* Taller final de l'app FR-4C: concurs de la tele per equips, amb preguntes de totes les unitats. Per a la pissarra; no desa res. */
+:root{--taronja:#f26b1d;--tinta:#1b1b1b;--ok:#2fbf71;--ko:#ff5a5a;--or:#ffd23f;--fons:#1a1240}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;font-family:"Atkinson Hyperlegible",system-ui,sans-serif;background:var(--fons);color:#fff;overflow:hidden;user-select:none}
+.estudi{position:fixed;inset:0;background:radial-gradient(ellipse at 50% 120%,#5b2bb5 0%,#2a176b 45%,#120b30 100%)}
+.focus{position:absolute;top:-10%;width:30%;height:120%;background:linear-gradient(180deg,#ffffff22,#ffffff00 70%);clip-path:polygon(40% 0,60% 0,100% 100%,0 100%);animation:focus 6s ease-in-out infinite alternate;transform-origin:50% 0}
+.focus.f1{left:5%}.focus.f2{right:5%;animation-delay:-3s}
+@keyframes focus{from{transform:rotate(-12deg)}to{transform:rotate(12deg)}}
+.llums{position:absolute;left:0;right:0;bottom:0;height:16px;background:repeating-linear-gradient(90deg,var(--or) 0 10px,transparent 10px 34px);opacity:.6;animation:llums 1s steps(2) infinite}
+@keyframes llums{50%{opacity:.25}}
+#app{position:relative;z-index:2;height:100%;display:grid;grid-template-rows:auto 1fr auto;padding:12px 18px}
+.logo{display:flex;align-items:center;gap:14px}
+.logo h1{margin:0;font-family:"Bricolage Grotesque",sans-serif;font-size:2.2rem;letter-spacing:1px;color:#fff;text-shadow:0 0 8px #ff4fd8,0 0 18px #ff4fd8,0 0 30px #7a5cff}
+.logo h1 span{color:var(--or);text-shadow:0 0 8px #ffb000,0 0 20px #ff7a00}
+.logo .info{margin-left:auto;font-size:1.2rem;font-weight:700;background:#ffffff1a;border-radius:14px;padding:6px 14px}
+.btn{border:3px solid #fff;background:transparent;color:#fff;border-radius:12px;padding:6px 12px;font:inherit;font-weight:700;cursor:pointer}
+.mig{display:grid;grid-template-columns:minmax(220px,22%) 1fr;gap:14px;min-height:0;align-items:center}
+.presentador{position:relative;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center}
+.presentador svg{width:96%;height:auto;max-height:58vh}
+.bafarada{background:#fff;color:var(--tinta);border-radius:18px;padding:10px 14px;font-weight:700;font-size:1.2rem;line-height:1.3;position:relative;margin-bottom:10px;max-width:100%;box-shadow:0 6px 0 #0005;text-align:center;min-height:2.6em}
+.bafarada::after{content:'';position:absolute;left:50%;bottom:-14px;border:10px solid transparent;border-top-color:#fff;transform:translateX(-50%)}
+.escenari{height:100%;min-height:0;display:flex;align-items:center;justify-content:safe center;flex-direction:column;gap:12px;overflow:auto;padding:8px 4px}
+.targeta{background:#fff;color:var(--tinta);border-radius:26px;padding:18px 26px;width:100%;max-width:1000px;box-shadow:0 10px 0 #0006,0 0 0 6px var(--or)}
+.targeta .uni{display:inline-block;border-radius:12px;padding:4px 12px;color:#fff;font-weight:800;font-size:1.05rem}
+.targeta .preg{font-family:"Bricolage Grotesque",sans-serif;font-size:2.1rem;margin:10px 0 6px;line-height:1.25;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.opcions{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px}
+.opc{display:flex;align-items:center;gap:14px;font-family:"Bricolage Grotesque",sans-serif;font-size:1.9rem;padding:10px 16px;border-radius:18px;border:4px solid var(--tinta);background:#f5f3ff;cursor:pointer;text-align:left;color:var(--tinta);box-shadow:0 5px 0 #0003}
+.opc b{display:inline-flex;align-items:center;justify-content:center;width:46px;height:46px;border-radius:50%;background:var(--tinta);color:#fff;font-size:1.4rem;flex:none}
+.opc:hover:not(:disabled){background:#fff1b8}
+.opc:disabled{cursor:default}.opc.amagada{visibility:hidden}
+.opc.be{background:var(--ok);color:#fff;border-color:#1c7d48}.opc.be b{background:#fff;color:#1c7d48}
+.opc.mal{background:var(--ko);color:#fff;border-color:#a02020}
+.expl{margin-top:12px;background:#f1ecff;border-radius:16px;padding:10px 16px;font-family:"Bricolage Grotesque",sans-serif;font-size:1.45rem;line-height:1.45;color:#3b2a85}
+.temps{height:12px;border-radius:6px;background:#0002;margin-top:12px;overflow:hidden}.temps i{display:block;height:100%;background:var(--taronja);transform-origin:left}
+.accions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.big{font-family:"Bricolage Grotesque",sans-serif;font-size:1.5rem;border-radius:18px;padding:12px 26px;border:4px solid #fff;cursor:pointer;background:var(--taronja);color:#fff;box-shadow:0 6px 0 #0006}
+.big.sec{background:transparent}.big:disabled{opacity:.35;cursor:default}
+.comodins{display:flex;gap:10px;justify-content:center;margin-top:12px;flex-wrap:wrap}
+.com{font-size:1.1rem;font-weight:800;border-radius:14px;padding:8px 14px;border:3px solid var(--tinta);background:var(--or);color:var(--tinta);cursor:pointer}
+.com:disabled{opacity:.3;cursor:default}
+.marcador{display:flex;gap:12px;justify-content:center;padding-top:8px}
+.equip{min-width:130px;border-radius:18px;padding:8px 14px;text-align:center;border:4px solid #ffffff55;background:#ffffff14;transition:transform .2s}
+.equip.torn{transform:translateY(-8px);border-color:#fff;box-shadow:0 0 22px #fff8}
+.equip .n{font-weight:800;font-size:1.1rem}.equip .p{font-family:"Bricolage Grotesque",sans-serif;font-size:2.1rem;line-height:1.1}
+.equip .c{font-size:.95rem;opacity:.9;letter-spacing:2px}
+.fr{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1;margin:0 3px}
+.fr i{font-style:normal;padding:0 4px}.fr i:first-child{border-bottom:3px solid currentColor;padding-bottom:2px}.fr i:last-child{padding-top:2px}
+.config{background:#fff;color:var(--tinta);border-radius:26px;padding:20px 26px;max-width:900px;width:100%;box-shadow:0 10px 0 #0006}
+.config h2{font-family:"Bricolage Grotesque",sans-serif;margin:0 0 8px;font-size:1.8rem}
+.config .fila{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:10px 0}
+.config label{font-weight:700;font-size:1.1rem}
+.seg{display:inline-flex;border:3px solid var(--tinta);border-radius:12px;overflow:hidden}.seg button{border:0;background:#fff;padding:8px 14px;font:inherit;font-weight:700;cursor:pointer;font-size:1.05rem}.seg button.on{background:var(--tinta);color:#fff}
+.xip{border:3px solid var(--tinta);border-radius:12px;padding:6px 10px;font-weight:700;cursor:pointer;background:#fff;font-size:1rem}.xip.on{color:#fff}
+.noms{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.noms input{font:inherit;font-size:1.05rem;padding:6px 10px;border-radius:10px;border:3px solid;font-weight:700}
+.ruleta{position:relative;width:min(56vh,520px);aspect-ratio:1}
+.ruleta svg{width:100%;height:100%}
+.ruleta .agulla{position:absolute;top:-6px;left:50%;transform:translateX(-50%);width:0;height:0;border:22px solid transparent;border-top:40px solid var(--or);filter:drop-shadow(0 4px 0 #0007)}
+.podi{display:flex;align-items:flex-end;gap:18px;justify-content:center}
+.podi .pl{display:flex;flex-direction:column;align-items:center;gap:6px}
+.podi .bloc{width:170px;border-radius:14px 14px 0 0;display:flex;align-items:flex-start;justify-content:center;font-family:"Bricolage Grotesque",sans-serif;font-size:3rem;padding-top:8px;color:#fff;border:4px solid #fff}
+.podi .nom{font-weight:800;font-size:1.3rem}.podi .pts{font-family:"Bricolage Grotesque",sans-serif;font-size:1.6rem}
+.confeti{position:fixed;top:-20px;width:12px;height:18px;z-index:20;animation:cau linear forwards}
+@keyframes cau{to{transform:translateY(110vh) rotate(720deg)}}
+.salta{animation:salta .5s ease-in-out infinite alternate;transform-box:fill-box;transform-origin:50% 100%}
+@keyframes salta{to{transform:translateY(-8px)}}
+.parla{animation:parla .25s ease-in-out infinite alternate;transform-box:fill-box;transform-origin:50% 50%}
+@keyframes parla{to{transform:scaleY(.5)}}
+.gran{font-size:1.25rem}
+.amb-fig .cos{display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:center}
+.amb-fig .preg{flex-direction:column;align-items:flex-start;font-size:1.7rem}
+.amb-fig .opcions{grid-template-columns:1fr 1fr}
+</style>
+</head>
+<body>
+<div class="estudi"><div class="focus f1"></div><div class="focus f2"></div><div class="llums"></div></div>
+<div id="app">
+  <div class="logo"><h1>LA GRAN FINAL <span>de FR-4C</span></h1><span class="info" id="info"></span><button class="btn" id="so" title="So">🔊</button><button class="btn" id="pc" title="Pantalla completa">⛶</button><button class="btn" id="surt" title="Surt">✕</button></div>
+  <div class="mig"><div class="presentador"><div class="bafarada" id="baf">Benvinguts!</div><div id="pres"></div></div><div class="escenari" id="esc"></div></div>
+  <div class="marcador" id="marc"></div>
+</div>
+<script>
+'use strict';
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const rnd = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+const tria = a => a[Math.floor(Math.random() * a.length)];
+const barreja = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const espera = ms => new Promise(r => setTimeout(r, ms));
+const N = '#1b1b1b', T = '#f26b1d';
+const M = { so: true };
+try { M.so = localStorage.getItem('fr4c_final_so') !== '0'; } catch (e) {}
+
+/* ================= SONS ================= */
+const SO = {
+  ctx: null,
+  ac() { if (!M.so) return null; try { this.ctx = this.ctx || new (window.AudioContext || window.webkitAudioContext)(); if (this.ctx.state === 'suspended') this.ctx.resume(); return this.ctx; } catch (e) { return null; } },
+  to(f, d, { ona = 'triangle', vol = .06, t0 = 0, f2 = null } = {}) { const ac = this.ac(); if (!ac) return; const t = ac.currentTime + t0, o = ac.createOscillator(), g = ac.createGain(); o.type = ona; o.frequency.setValueAtTime(f, t); if (f2) o.frequency.exponentialRampToValueAtTime(f2, t + d); g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + .02); g.gain.exponentialRampToValueAtTime(.0001, t + d); o.connect(g); g.connect(ac.destination); o.start(t); o.stop(t + d + .05); },
+  soroll(d, { vol = .08, t0 = 0, freq = 1500 } = {}) { const ac = this.ac(); if (!ac) return; const n = Math.floor(ac.sampleRate * d), buf = ac.createBuffer(1, n, ac.sampleRate), x = buf.getChannelData(0); for (let i = 0; i < n; i++) x[i] = (Math.random() * 2 - 1);
+    const s = ac.createBufferSource(), f = ac.createBiquadFilter(), g = ac.createGain(), t = ac.currentTime + t0; s.buffer = buf; f.type = 'bandpass'; f.frequency.value = freq; f.Q.value = .7; g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + .05); g.gain.exponentialRampToValueAtTime(.0001, t + d); s.connect(f); f.connect(g); g.connect(ac.destination); s.start(t); s.stop(t + d + .05); },
+  sintonia() { [[523, .15], [659, .15], [784, .15], [1047, .35], [988, .15], [1047, .5]].reduce((t, [f, d]) => { this.to(f, d * 1.1, { t0: t, vol: .07 }); this.to(f / 2, d, { t0: t, vol: .04, ona: 'sine' }); return t + d; }, 0); },
+  aplaudiment(d = 2) { for (let i = 0; i < d * 14; i++) this.soroll(.06, { vol: .05 + Math.random() * .05, t0: i / 14 + Math.random() * .05, freq: 1200 + Math.random() * 2000 }); },
+  tambor(d = 2.6) { for (let i = 0; i < d * 16; i++) this.to(110 + Math.random() * 20, .05, { ona: 'square', vol: .02 + i / (d * 16) * .03, t0: i / 16 }); },
+  tic() { this.to(1400, .03, { ona: 'square', vol: .015 }); },
+  be() { [659, 784, 1047, 1319].forEach((f, i) => this.to(f, .2, { t0: i * .09, vol: .07 })); setTimeout(() => this.aplaudiment(1.6), 350); },
+  mal() { this.to(160, .55, { ona: 'sawtooth', vol: .05 }); this.to(150, .55, { ona: 'square', vol: .03 }); },
+  clic() { this.to(900, .04, { vol: .03 }); },
+  fi() { [523, 659, 784, 1047, 784, 1047, 1319].forEach((f, i) => this.to(f, .3, { t0: i * .15, vol: .07 })); setTimeout(() => this.aplaudiment(3), 900); }
+};
+
+/* ================= PERSONATGES ================= */
+// FR-4C presentador: pajarita i armilla, amb micròfon
+const presentador = (parla = false) => `<svg viewBox="0 0 150 168" aria-label="FR-4C presentador" style="overflow:visible">
+  <ellipse cx="72" cy="163" rx="46" ry="5" fill="#0005"/>
+  <line x1="70" y1="34" x2="70" y2="19" stroke="${N}" stroke-width="5"/><circle cx="70" cy="13" r="8" fill="${T}" stroke="${N}" stroke-width="4"/>
+  <line x1="48" y1="134" x2="31" y2="149" stroke="${N}" stroke-width="5" stroke-linecap="round"/><circle cx="27" cy="152" r="7" fill="${T}" stroke="${N}" stroke-width="4"/>
+  <rect x="14" y="56" width="14" height="32" rx="6" fill="#fff" stroke="${N}" stroke-width="4"/><rect x="112" y="56" width="14" height="32" rx="6" fill="#fff" stroke="${N}" stroke-width="4"/>
+  <rect x="24" y="34" width="92" height="78" rx="22" fill="#fff" stroke="${N}" stroke-width="7"/>
+  <rect x="36" y="46" width="68" height="52" rx="12" fill="${N}"/>
+  <circle cx="55" cy="66" r="7.5" fill="${T}"/><circle cx="85" cy="66" r="7.5" fill="${T}"/>
+  <g class="${parla ? 'parla' : ''}"><path d="M60 81 q10 8 20 0" stroke="${T}" stroke-width="5" fill="none" stroke-linecap="round"/></g>
+  <rect x="46" y="114" width="48" height="40" rx="10" fill="#fff" stroke="${N}" stroke-width="5"/>
+  <path d="M48.5 124 Q48.5 116.5 56 116.5 H62 L70 140 L78 116.5 H84 Q91.5 116.5 91.5 124 V142 Q91.5 151.5 82 151.5 H58 Q48.5 151.5 48.5 142Z" fill="#c0392b"/>
+  <path d="M62 116.5 L70 140 L78 116.5" fill="none" stroke="${N}" stroke-width="3" stroke-linejoin="round"/>
+  <circle cx="70" cy="145" r="2.6" fill="${N}"/>
+  <rect x="46" y="114" width="48" height="40" rx="10" fill="none" stroke="${N}" stroke-width="5"/>
+  <path d="M56 112 L68 118 L56 124Z M84 112 L72 118 L84 124Z" fill="${T}" stroke="${N}" stroke-width="3.5" stroke-linejoin="round"/><circle cx="70" cy="118" r="4.5" fill="${T}" stroke="${N}" stroke-width="3.5"/>
+  <path d="M92 128 L120 122 L132 106" fill="none" stroke="${N}" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="127" y="78" width="11" height="22" rx="4" fill="#555" stroke="${N}" stroke-width="3"/><circle cx="132.5" cy="74" r="9" fill="#888" stroke="${N}" stroke-width="3"/><path d="M126 72h13M126 76h13" stroke="#666" stroke-width="1.5"/>
+  <circle cx="133" cy="102" r="7" fill="${T}" stroke="${N}" stroke-width="4"/>
+</svg>`;
+// en Coma, ajudant amb una targeta
+const coma = () => `<svg viewBox="0 0 90 100" width="90" aria-label="En Coma"><g transform="translate(5 18)"><ellipse cx="40" cy="54" rx="21" ry="18" fill="${T}" stroke="${N}" stroke-width="3"/><ellipse cx="40" cy="60" rx="10" ry="10" fill="#fff"/><path d="M25 20L20 3L35 12Z M55 20L60 3L45 12Z" fill="${T}" stroke="${N}" stroke-width="3" stroke-linejoin="round"/><circle cx="40" cy="27" r="17" fill="${T}" stroke="${N}" stroke-width="3"/><ellipse cx="33.5" cy="26" rx="2.6" ry="3.6" fill="${N}"/><ellipse cx="46.5" cy="26" rx="2.6" ry="3.6" fill="${N}"/><path d="M38 31h4l-2 2.6Z" fill="${N}"/><path d="M28 38L22 36L26 45Z M52 38L58 36L54 45Z" fill="#1b1b1b"/><circle cx="40" cy="40" r="2.5" fill="#1b1b1b"/></g><rect x="56" y="34" width="30" height="40" rx="4" fill="#ffd23f" stroke="${N}" stroke-width="3" transform="rotate(12 71 54)"/><text x="72" y="62" font-size="20" font-weight="900" text-anchor="middle" transform="rotate(12 71 54)" font-family="system-ui">?</text></svg>`;
+let parlaTm = null;
+function diu(t, ms = 1800) { $('#baf').innerHTML = t; $('#pres').innerHTML = presentador(true); clearTimeout(parlaTm); parlaTm = setTimeout(() => { $('#pres').innerHTML = presentador(false); }, ms); }
+
+/* ================= PREGUNTES ================= */
+const fr = (n, d) => `<span class="fr"><i>${n}</i><i>${d}</i></span>`;
+const mcd = (a, b) => b ? mcd(b, a % b) : Math.abs(a);
+const simp = (n, d) => { const g = mcd(n, d); return [n / g, d / g]; };
+const frT = (n, d) => { [n, d] = simp(n, d); return d === 1 ? String(n) : `${n}/${d}`; };
+const frH = t => /^-?\d+\/\d+$/.test(t) ? fr(...t.split('/')) : t;
+const z = n => n < 0 ? `(−${-n})` : String(n), zs = n => n < 0 ? `−${-n}` : String(n);
+const dec = v => String(Math.round(v * 1e6) / 1e6).replace('.', ',');
+const UNITATS = {
+  f: { nom: 'Fraccions', col: '#e85d75' }, e: { nom: 'Enters', col: '#2a6fd6' }, p: { nom: 'Potències', col: '#8e44ad' }, q: { nom: 'Equacions', col: '#16a085' },
+  m: { nom: 'Mesura', col: '#d35400' }, r: { nom: 'Gràfiques', col: '#2c9a58' }, g: { nom: 'Geometria', col: '#c0392b' }
+};
+// cada generador torna { q (html), r (text), mals [text], fmt (opcional), ex [línies] }
+const GEN = {
+  f(L) {
+    const t = rnd(0, L === 1 ? 2 : L === 2 ? 4 : 5);
+    if (t === 0) { const d = tria([2, 3, 4, 5]), k = rnd(2, 8), n = rnd(1, d - 1), q = d * k; return { q: `${fr(n, d)} de ${q}`, r: String(n * k), mals: [String(q / n | 0), String(n * k + d), String(k), String(q - n * k)], ex: [`${q} : ${d} = ${k}`, `${k} · ${n} = <b>${n * k}</b>`] }; }
+    if (t === 1) { const d = tria([2, 3, 4, 5]), n = rnd(1, d - 1), k = rnd(2, 4); return { q: `${fr(n, d)} = ${fr('?', d * k)}`, r: String(n * k), mals: [String(n + k), String(n * k + 1), String(d * k - n)], ex: [`${d} · ${k} = ${d * k}`, `${n} · ${k} = <b>${n * k}</b>`] }; }
+    if (t === 2) { const d = tria([5, 6, 7, 8, 9]), a = rnd(1, d - 3), b = rnd(1, d - a - 1); return { q: `${fr(a, d)} + ${fr(b, d)}`, r: `${a + b}/${d}`, mals: [`${a + b}/${2 * d}`, `${a * b}/${d}`, `${a + b + 1}/${d}`], ex: ['Mateix denominador: sumem els de dalt', `${a} + ${b} = ${a + b}`, `= <b>${fr(a + b, d)}</b>`] }; }
+    if (t === 3) { const [f, v] = tria([['1/2', '0,5'], ['1/4', '0,25'], ['3/4', '0,75'], ['1/5', '0,2'], ['3/10', '0,3'], ['2/5', '0,4']]); const [n, d] = f.split('/'); return { q: `${fr(n, d)} en decimal`, r: v, mals: [`0,${n}${d}`, `${n},${d}`, `0,${d}`], ex: [`${n} : ${d} = <b>${v}</b>`] }; }
+    if (t === 4) { const [a, b] = tria([[6, 8], [4, 10], [9, 12], [10, 15], [8, 12], [6, 9]]); const g = mcd(a, b); return { q: `Simplifica ${fr(a, b)}`, r: `${a / g}/${b / g}`, mals: [`${a / 2 | 0}/${b / 2 | 0}`.replace(/\/0$/, '/1'), `${a - 2}/${b - 2}`, `${b / g}/${a / g}`], ex: [`Dividim dalt i baix per ${g}`, `${a} : ${g} = ${a / g}`, `${b} : ${g} = ${b / g}`] }; }
+    const [x, y] = tria([[2, 4], [3, 6], [2, 6], [4, 8], [3, 9]]); const b = rnd(1, y - 1); const n = y / x + b;
+    return { q: `${fr(1, x)} + ${fr(b, y)}`, r: frT(n, y), mals: [frT(1 + b, x + y), frT(1 + b, y), frT(n + 1, y)], ex: [`${fr(1, x)} = ${fr(y / x, y)}`, `${fr(y / x, y)} + ${fr(b, y)} = ${fr(n, y)}`, frT(n, y) !== `${n}/${y}` ? `= <b>${frH(frT(n, y))}</b>` : ''].filter(Boolean) };
+  },
+  e(L) {
+    if (L === 1) { const a = rnd(-9, 9), b = rnd(-9, 9); const t = rnd(0, 2);
+      if (t === 2) { const T0 = rnd(-5, 4), dT = rnd(3, 9); return { q: `Fa ${zs(T0)} °C i la temperatura baixa ${dT} graus. Quina temperatura fa?`, r: `${zs(T0 - dT)} °C`, mals: [`${zs(T0 + dT)} °C`, `${zs(dT - T0)} °C`, `${zs(-(T0 - dT) )} °C`], ex: [`${zs(T0)} − ${dT} = <b>${zs(T0 - dT)}</b>`] }; }
+      const r = a + b; return { q: `${zs(a)} + ${z(b)}`, r: zs(r), mals: [zs(a - b), zs(-r), zs(r + 1)], ex: [`${zs(a)} + ${z(b)} = <b>${zs(r)}</b>`] }; }
+    if (L === 2) { const t = rnd(0, 1); const a = rnd(-9, 9) || 3, b = (rnd(1, 9)) * tria([1, -1]);
+      if (t === 0) return { q: `${z(a)} · ${z(b)}`, r: zs(a * b), mals: [zs(-a * b), zs(a + b), zs(a * b + 2)], ex: [a * b >= 0 ? 'Signes iguals: positiu' : 'Signes diferents: negatiu', `${Math.abs(a)} · ${Math.abs(b)} = ${Math.abs(a * b)}`, `Resultat <b>${zs(a * b)}</b>`] };
+      const c = a * b; return { q: `${z(c)} : ${z(b)}`, r: zs(a), mals: [zs(-a), zs(c - b), zs(a + 1)], ex: [`${Math.abs(c)} : ${Math.abs(b)} = ${Math.abs(a)}`, c * b >= 0 ? 'Signes iguals: positiu' : 'Signes diferents: negatiu', `Resultat <b>${zs(a)}</b>`].filter(Boolean) }; }
+    const a = rnd(2, 9), b = rnd(2, 5), c = rnd(-5, -2); const r = a - b * c;
+    return { q: `${a} − ${b} · ${z(c)}`, r: zs(r), mals: [zs((a - b) * c), zs(a + b * c), zs(-r)], ex: ['Primer la multiplicació', `${b} · ${z(c)} = ${zs(b * c)}`, `${a} − ${z(b * c)} = <b>${zs(r)}</b>`] };
+  },
+  p(L) {
+    if (L === 1) { const t = rnd(0, 1);
+      if (t === 0) { const [b, e] = tria([[2, 3], [3, 2], [5, 2], [2, 4], [10, 3], [4, 2], [3, 3]]); const r = b ** e; return { q: `${b}<sup>${e}</sup>`, r: String(r), mals: [String(b * e), String(b + e), String(r * b)], ex: [`${Array(e).fill(b).join(' · ')}`, `= <b>${r}</b>`] }; }
+      const b = rnd(2, 6), n = rnd(3, 5); return { q: `${Array(n).fill(b).join(' · ')} = ${b}<sup>?</sup>`, r: String(n), mals: [String(b * n), String(n - 1), String(b)], ex: [`El ${b} es multiplica ${n} vegades`, `Exponent <b>${n}</b>`] }; }
+    if (L === 2) { const b = rnd(2, 7), m = rnd(2, 6), n = rnd(2, 5), t = rnd(0, 2);
+      if (t === 0) return { q: `${b}<sup>${m}</sup> · ${b}<sup>${n}</sup>`, r: `${b}^${m + n}`, mals: [`${b}^${m * n}`, `${b * b}^${m + n}`, `${b}^${Math.abs(m - n) || 1}`], fmt: 'pot', ex: ['Mateixa base: sumem exponents', `${m} + ${n} = ${m + n}`, `<b>${b}<sup>${m + n}</sup></b>`] };
+      if (t === 1) { const M2 = m + n; return { q: `${b}<sup>${M2}</sup> : ${b}<sup>${n}</sup>`, r: `${b}^${m}`, mals: [`${b}^${M2 + n}`, `1^${m}`, `${b}^${M2 * n}`], fmt: 'pot', ex: ['Mateixa base: restem exponents', `${M2} − ${n} = ${m}`, `<b>${b}<sup>${m}</sup></b>`] }; }
+      return { q: `(${b}<sup>${m}</sup>)<sup>${n}</sup>`, r: `${b}^${m * n}`, mals: [`${b}^${m + n}`, `${b * n}^${m}`, `${b}^${m * n + 1}`], fmt: 'pot', ex: ['Potència d\'una potència: multipliquem exponents', `${m} · ${n} = ${m * n}`, `<b>${b}<sup>${m * n}</sup></b>`] }; }
+    const t = rnd(0, 2);
+    if (t === 0) { const b = rnd(2, 4), e = tria([2, 3]); const r = (-b) ** e; return { q: `(−${b})<sup>${e}</sup>`, r: zs(r), mals: [zs(-r), zs(-b * e), zs(b * e)], ex: [`(−${b}) · `.repeat(e).slice(0, -3), e % 2 ? 'Exponent senar: negatiu' : 'Exponent parell: positiu', `= <b>${zs(r)}</b>`] }; }
+    if (t === 1) { const b = rnd(2, 99); return { q: `${b}<sup>0</sup>`, r: '1', mals: ['0', String(b), String(b * 10)], ex: ['Tot nombre (no zero) elevat a 0 dona 1', `${b}<sup>0</sup> = <b>1</b>`] }; }
+    const a = rnd(2, 9), e = rnd(3, 5); const r = a * 10 ** e; const fm = v => String(v).replace(/\B(?=(\d{3})+$)/g, '.'); return { q: `${a} · 10<sup>${e}</sup>`, r: fm(r), mals: [fm(a * 10 ** (e - 1)), fm(a * 10 ** (e + 1)), String(a * e * 10)], ex: [`${a} seguit de ${e} zeros`, `= <b>${fm(r)}</b>`] };
+  },
+  q(L) {
+    if (L === 1) { const x = rnd(2, 15), t = rnd(0, 2);
+      if (t === 0) { const a = rnd(2, 12); return { q: `x + ${a} = ${x + a}`, r: String(x), mals: [String(x + 2 * a), String(a), String(x + 1)], ex: [`x = ${x + a} − ${a}`, `x = <b>${x}</b>`] }; }
+      if (t === 1) { const a = rnd(2, 9); return { q: `x − ${a} = ${x}`, r: String(x + a), mals: [String(x - a), String(x), String(x + a + 1)], ex: [`x = ${x} + ${a}`, `x = <b>${x + a}</b>`] }; }
+      const a = rnd(2, 6); return { q: `${a}x = ${a * x}`, r: String(x), mals: [String(a * x - a), String(a * x * a), String(x + 1)], ex: [`x = ${a * x} : ${a}`, `x = <b>${x}</b>`] }; }
+    if (L === 2) { const x = rnd(1, 9), a = rnd(2, 6), b = rnd(1, 9); return { q: `${a}x + ${b} = ${a * x + b}`, r: String(x), mals: [String((a * x + 2 * b) / a | 0), String(a * x), String(x + 2)], ex: [`${a}x = ${a * x + b} − ${b}`, `${a}x = ${a * x}`, `x = ${a * x} : ${a}`, `x = <b>${x}</b>`] }; }
+    const x = rnd(2, 8), a = rnd(3, 6), c = rnd(1, a - 1), b = rnd(1, 9), d = (a - c) * x + b;
+    return { q: `${a}x + ${b} = ${c === 1 ? '' : c}x + ${d}`, r: String(x), mals: [String(x + 1), String(d - b), String((d + b) / (a - c) | 0)], ex: [`${a}x − ${c === 1 ? '' : c}x = ${d} − ${b}`, `${a - c}x = ${d - b}`, `x = ${d - b} : ${a - c}`, `x = <b>${x}</b>`] };
+  },
+  m(L) {
+    if (L === 1) { const f = tria([10, 100, 1000]), per = Math.random() < .5, x = tria([3.4, 0.7, 25, 4.56, 12, 1.5]); const v = per ? x * f : x / f;
+      return { q: `${dec(x)} ${per ? '·' : ':'} ${String(f).replace(/\B(?=(\d{3})+$)/g, '.')}`, r: dec(v), mals: [dec(per ? v * 10 : v / 10), dec(per ? v / 10 : v * 10), dec(per ? x / f : x * f)], ex: [per ? `La coma es mou ${String(f).length - 1} llocs a la dreta` : `La coma es mou ${String(f).length - 1} llocs a l'esquerra`, `= <b>${dec(v)}</b>`] }; }
+    if (L === 2) { const ESC = tria([['km', 'hm', 'dam', 'm', 'dm', 'cm', 'mm'], ['kg', 'hg', 'dag', 'g', 'dg', 'cg', 'mg'], ['kL', 'hL', 'daL', 'L', 'dL', 'cL', 'mL']]); let i, j; do { i = rnd(0, 6); j = rnd(0, 6); } while (i === j || Math.abs(i - j) > 3);
+      const x = tria([2.5, 3, 0.75, 1.2, 45, 350, 8]); const v = x * 10 ** (j - i); return { q: `${dec(x)} ${ESC[i]} = ? ${ESC[j]}`, r: dec(v), mals: [dec(x * 10 ** (i - j)), dec(v * 10), dec(v / 10)], ex: [`De ${ESC[i]} a ${ESC[j]} hi ha ${Math.abs(j - i)} ${Math.abs(j - i) === 1 ? 'salt' : 'salts'}`, j > i ? `${dec(x)} · ${10 ** (j - i)}` : `${dec(x)} : ${10 ** (i - j)}`, `= <b>${dec(v)} ${ESC[j]}</b>`] }; }
+    const t = rnd(0, 2);
+    if (t === 0) { const x = tria([1.5, 2, 0.5, 2.25, 3]); return { q: `${dec(x)} h = ? min`, r: dec(x * 60), mals: [dec(x * 100), dec(x * 60 + 10), dec(Math.floor(x) * 60 + (x % 1) * 10)], ex: ['1 h = 60 min', `${dec(x)} · 60 = <b>${dec(x * 60)} min</b>`] }; }
+    if (t === 1) { const x = tria([2, 3.5, 0.4, 1.2]); return { q: `${dec(x)} m² = ? dm²`, r: dec(x * 100), mals: [dec(x * 10), dec(x * 1000), dec(x / 100)], ex: ['En superfície, cada salt és × 100', `${dec(x)} · 100 = <b>${dec(x * 100)} dm²</b>`] }; }
+    const x = tria([2, 5, 0.5, 1.5]); return { q: `${dec(x)} dm³ = ? L`, r: dec(x), mals: [dec(x * 10), dec(x * 1000), dec(x / 10)], ex: ['1 dm³ = 1 L', `= <b>${dec(x)} L</b>`] };
+  },
+  r(L) {
+    const R = L === 1 ? 4 : 5;
+    if (L <= 2 && Math.random() < .6) { let x, y; do { x = rnd(-R, R); y = rnd(-R, R); } while (!x || !y);
+      const c = 26, w = (2 * R + 2) * c, o = w / 2; let g = ''; for (let i = -R; i <= R; i++) g += `<path d="M${o + i * c} ${c / 2}V${w - c / 2}M${c / 2} ${o + i * c}H${w - c / 2}" stroke="#ddd" stroke-width="1.5"/>`;
+      g += `<path d="M${o} 6V${w - 6}M6 ${o}H${w - 6}" stroke="${N}" stroke-width="3"/><circle cx="${o + x * c}" cy="${o - y * c}" r="9" fill="${T}" stroke="${N}" stroke-width="3"/>`;
+      for (let i = -R; i <= R; i++) if (i) g += `<text x="${o + i * c}" y="${o + 18}" font-size="13" text-anchor="middle" fill="#555">${i}</text><text x="${o - 8}" y="${o - i * c + 5}" font-size="13" text-anchor="end" fill="#555">${i}</text>`;
+      const svg = `<svg viewBox="0 0 ${w} ${w}" style="height:30vh">${g}</svg>`;
+      return { q: `${svg}<span>Quines coordenades té el punt?</span>`, r: `(${zs(x)}, ${zs(y)})`, mals: [`(${zs(y)}, ${zs(x)})`, `(${zs(-x)}, ${zs(y)})`, `(${zs(x)}, ${zs(-y)})`], ex: [`Primer la x (horitzontal) = ${zs(x)}`, `Després la y (vertical) = ${zs(y)}`] }; }
+    if (L <= 2) { let x, y; do { x = rnd(-6, 6); y = rnd(-6, 6); } while (!x || !y); const q = x > 0 ? (y > 0 ? 'Primer' : 'Quart') : (y > 0 ? 'Segon' : 'Tercer');
+      return { q: `En quin quadrant és el punt (${zs(x)}, ${zs(y)})?`, r: q, mals: barreja(['Primer', 'Segon', 'Tercer', 'Quart'].filter(v => v !== q)), ex: [`x ${x > 0 ? 'positiva' : 'negativa'}, y ${y > 0 ? 'positiva' : 'negativa'}`, `Quadrant <b>${q.toLowerCase()}</b>`] }; }
+    const a = rnd(2, 4), b = rnd(-3, 3), x = rnd(-3, 4), y = a * x + b; const bs = b === 0 ? '' : b > 0 ? ` + ${b}` : ` − ${-b}`;
+    if (Math.random() < .5) return { q: `y = ${a}x${bs}. Quant val y si x = ${zs(x)}?`, r: zs(y), mals: [zs(a * x - b), zs(a + x + b), zs(y + a)], ex: [`y = ${a} · ${z(x)}${bs}`, `y = ${zs(a * x)}${bs}`, `y = <b>${zs(y)}</b>`] };
+    return { q: `Quin punt és de la recta y = ${a}x${bs}?`, r: `(${zs(x)}, ${zs(y)})`, mals: [`(${zs(x)}, ${zs(y + 1)})`, `(${zs(y)}, ${zs(x)})`, `(${zs(x + 1)}, ${zs(y - 1)})`], ex: [`y = ${a} · ${z(x)}${bs}`, `y = <b>${zs(y)}</b>`] };
+  },
+  g(L) {
+    const t = tria(L === 1 ? ['aR', 'pR', 'aQ'] : L === 2 ? ['aT', 'pR', 'aRo', 'aR'] : ['pita', 'lC', 'aC', 'vC', 'aT']);
+    if (t === 'aR' || t === 'pR') { const a = rnd(3, 9), b = rnd(2, a - 1); return t === 'aR' ? { q: `Àrea d'un rectangle de ${a} cm × ${b} cm`, r: `${a * b} cm²`, mals: [`${2 * (a + b)} cm²`, `${a + b} cm²`, `${a * b + a} cm²`], ex: [`${a} · ${b} = <b>${a * b} cm²</b>`] } : { q: `Perímetre d'un rectangle de ${a} cm × ${b} cm`, r: `${2 * (a + b)} cm`, mals: [`${a * b} cm`, `${a + b} cm`, `${2 * (a + b) + 2} cm`], ex: [`${a} + ${b} + ${a} + ${b}`, `= <b>${2 * (a + b)} cm</b>`] }; }
+    if (t === 'aQ') { const a = rnd(2, 9); return { q: `Àrea d'un quadrat de costat ${a} m`, r: `${a * a} m²`, mals: [`${4 * a} m²`, `${2 * a} m²`, `${a * a + a} m²`], ex: [`${a} · ${a} = <b>${a * a} m²</b>`] }; }
+    if (t === 'aT') { const b = 2 * rnd(2, 6), h = rnd(3, 9); return { q: `Àrea d'un triangle de base ${b} cm i altura ${h} cm`, r: `${b * h / 2} cm²`, mals: [`${b * h} cm²`, `${b + h} cm²`, `${b * h / 2 + b} cm²`], ex: [`${b} · ${h} : 2`, `= ${b * h} : 2`, `= <b>${b * h / 2} cm²</b>`] }; }
+    if (t === 'aRo') { const D = 2 * rnd(3, 6), d = rnd(3, 8); return { q: `Àrea d'un rombe de diagonals ${D} cm i ${d} cm`, r: `${D * d / 2} cm²`, mals: [`${D * d} cm²`, `${D + d} cm²`, `${2 * (D + d)} cm²`], ex: [`${D} · ${d} : 2`, `= <b>${D * d / 2} cm²</b>`] }; }
+    if (t === 'pita') { const [a, b, c] = tria([[3, 4, 5], [6, 8, 10], [5, 12, 13], [9, 12, 15], [8, 15, 17]]); return { q: `Hipotenusa d'un triangle rectangle de catets ${a} m i ${b} m`, r: `${c} m`, mals: [`${a + b} m`, `${a * a + b * b} m`, `${c + 1} m`], ex: [`${a}² + ${b}² = ${a * a} + ${b * b}`, `= ${c * c}`, `√${c * c} = <b>${c} m</b>`] }; }
+    if (t === 'lC') { const r = tria([1, 5, 10]); return { q: `Longitud d'una circumferència de radi ${r} cm (π ≈ 3,14)`, r: `${dec(2 * 3.14 * r)} cm`, mals: [`${dec(3.14 * r)} cm`, `${dec(3.14 * r * r)} cm`, `${dec(2 * 3.14 * r * 10)} cm`].filter(v => v !== `${dec(2 * 3.14 * r)} cm`), ex: [`2 · 3,14 · ${r}`, `= <b>${dec(2 * 3.14 * r)} cm</b>`] }; }
+    if (t === 'aC') { const r = tria([1, 2, 10]); return { q: `Àrea d'un cercle de radi ${r} m (π ≈ 3,14)`, r: `${dec(3.14 * r * r)} m²`, mals: [`${dec(2 * 3.14 * r)} m²`, `${dec(3.14 * 2 * r * 2)} m²`, `${dec(3.14 * r * r * 2)} m²`].filter(v => v !== `${dec(3.14 * r * r)} m²`), ex: [`3,14 · ${r} · ${r}`, `= <b>${dec(3.14 * r * r)} m²</b>`] }; }
+    const a = rnd(2, 5); return { q: `Volum d'un cub d'aresta ${a} cm`, r: `${a ** 3} cm³`, mals: [`${a * a} cm³`, `${3 * a} cm³`, `${6 * a * a} cm³`], ex: [`${a} · ${a} · ${a}`, `= <b>${a ** 3} cm³</b>`] };
+  }
+};
+function pregunta(u, L) {
+  for (let k = 0; k < 30; k++) {
+    const p = GEN[u](L); const set = new Set([p.r]), op = [p.r];
+    for (const m of barreja(p.mals)) if (m && !set.has(m) && op.length < 4) { set.add(m); op.push(m); }
+    if (op.length < 3) continue;
+    p.opcions = barreja(op); p.u = u; return p;
+  }
+}
+const mostra = (v, p) => p.fmt === 'pot' ? v.replace(/\^(\d+)/, '<sup>$1</sup>') : frH(v);
+
+/* ================= JOC ================= */
+const COLS = [['Vermell', '#e74c3c'], ['Blau', '#2e86de'], ['Verd', '#27ae60'], ['Groc', '#e1b000'], ['Lila', '#8e44ad'], ['Taronja', '#e67e22']];
+const C = { nEquips: 4, rondes: 3, nivell: 2, unitats: new Set(Object.keys(UNITATS)), temps: 40, noms: COLS.map(c => 'Equip ' + c[0]) };
+const J = {};
+function pintaMarcador() {
+  if (!J.equips) { $('#marc').innerHTML = ''; return; }
+  $('#marc').innerHTML = J.equips.map((e, i) => `<div class="equip ${i === J.torn && J.estat !== 'fi' ? 'torn' : ''}" style="background:${e.col}33;border-color:${i === J.torn ? '#fff' : e.col}"><div class="n" style="color:#fff">${esc(e.nom)}</div><div class="p">${e.punts}</div><div class="c" title="Comodins">${e.c50 ? '½' : '·'} ${e.cpista ? '🐱' : '·'} ${e.cx2 ? '×2' : '·'}</div></div>`).join('');
+  $('#info').textContent = J.estat === 'fi' ? 'Final' : `Pregunta ${Math.min(J.n + 1, J.total)} de ${J.total}${J.n >= J.total - J.equips.length ? ' · RONDA FINAL ×2' : ''}`;
+}
+function configura() {
+  J.estat = 'config'; J.equips = null; pintaMarcador(); $('#info').textContent = '';
+  $('#pres').innerHTML = presentador(); $('#baf').innerHTML = 'Prepara els equips!';
+  $('#esc').innerHTML = `<div class="config"><h2>📺 Prepara el concurs</h2>
+    <div class="fila"><label>Equips:</label><span class="seg" id="c-n">${[2, 3, 4, 5, 6].map(n => `<button data-v="${n}" class="${n === C.nEquips ? 'on' : ''}">${n}</button>`).join('')}</span>
+      <label style="margin-left:14px">Preguntes per equip:</label><span class="seg" id="c-r">${[2, 3, 4, 5].map(n => `<button data-v="${n}" class="${n === C.rondes ? 'on' : ''}">${n}</button>`).join('')}</span></div>
+    <div class="fila"><label>Nivell:</label><span class="seg" id="c-l">${[1, 2, 3].map(n => `<button data-v="${n}" class="${n === C.nivell ? 'on' : ''}">${n}</button>`).join('')}</span>
+      <label style="margin-left:14px">Temps per pregunta:</label><span class="seg" id="c-t">${[[0, 'sense'], [30, '30 s'], [40, '40 s'], [60, '60 s']].map(([v, t]) => `<button data-v="${v}" class="${v === C.temps ? 'on' : ''}">${t}</button>`).join('')}</span></div>
+    <div class="fila"><label>Unitats:</label>${Object.entries(UNITATS).map(([k, u]) => `<button class="xip ${C.unitats.has(k) ? 'on' : ''}" data-u="${k}" style="${C.unitats.has(k) ? `background:${u.col};border-color:${u.col}` : `border-color:${u.col};color:${u.col}`}">${u.nom}</button>`).join('')}</div>
+    <div class="noms">${Array.from({ length: C.nEquips }, (_, i) => `<input data-i="${i}" maxlength="22" value="${esc(C.noms[i])}" style="border-color:${COLS[i][1]};color:${COLS[i][1]}">`).join('')}</div>
+    <div class="fila" style="justify-content:center;margin-top:16px"><button class="big" id="c-go">🎬 Comença el programa!</button></div></div>`;
+  const seg = (id, k) => $$(`#${id} button`).forEach(b => b.onclick = () => { C[k] = +b.dataset.v; configura(); });
+  seg('c-n', 'nEquips'); seg('c-r', 'rondes'); seg('c-l', 'nivell'); seg('c-t', 'temps');
+  $$('[data-u]').forEach(b => b.onclick = () => { const k = b.dataset.u; if (C.unitats.has(k)) { if (C.unitats.size > 1) C.unitats.delete(k); } else C.unitats.add(k); configura(); });
+  $$('.noms input').forEach(inp => inp.oninput = () => { C.noms[+inp.dataset.i] = inp.value || 'Equip ' + COLS[+inp.dataset.i][0]; });
+  $('#c-go').onclick = comenca;
+}
+async function comenca() {
+  Object.assign(J, { estat: 'intro', torn: 0, n: 0, total: C.nEquips * C.rondes, equips: Array.from({ length: C.nEquips }, (_, i) => ({ nom: C.noms[i], col: COLS[i][1], punts: 0, encerts: 0, c50: true, cpista: true, cx2: true })), usades: {} });
+  pintaMarcador(); $('#esc').innerHTML = `<div style="font-family:Bricolage Grotesque,sans-serif;font-size:4rem;text-shadow:0 0 18px #ff4fd8;text-align:center">✨ LA GRAN FINAL ✨</div>`;
+  SO.sintonia(); diu('Bona tarda i benvinguts a <b>La gran final</b>!', 2400); await espera(2600);
+  SO.aplaudiment(1.5); diu(`Avui competeixen ${J.equips.length} equips. Que guanyi qui més sàpiga!`, 2600); await espera(2600);
+  tornEquip();
+}
+function tornEquip() {
+  J.estat = 'ruleta'; pintaMarcador(); const e = J.equips[J.torn]; const final = J.n >= J.total - J.equips.length;
+  diu(`${final ? '<b>Ronda final: punts dobles!</b><br>' : ''}Torn de l'<b style="color:${e.col}">${esc(e.nom)}</b>. Gira la ruleta!`, 2200);
+  $('#esc').innerHTML = `${ruletaSvg(0)}<div class="accions"><button class="big" id="gira">🎡 Gira la ruleta</button></div>`;
+  $('#gira').onclick = gira; $('#gira').focus();
+}
+function ruletaSvg(rot) {
+  const us = [...C.unitats], n = us.length, R = 200; let s = '';
+  us.forEach((k, i) => { const a0 = (i / n) * 2 * Math.PI - Math.PI / 2, a1 = ((i + 1) / n) * 2 * Math.PI - Math.PI / 2, am = (a0 + a1) / 2;
+    const p = a => `${R + R * Math.cos(a)} ${R + R * Math.sin(a)}`;
+    s += n === 1 ? `<circle cx="${R}" cy="${R}" r="${R}" fill="${UNITATS[k].col}"/>` : `<path d="M${R} ${R} L${p(a0)} A${R} ${R} 0 ${a1 - a0 > Math.PI ? 1 : 0} 1 ${p(a1)}Z" fill="${UNITATS[k].col}" stroke="#fff" stroke-width="4"/>`;
+    s += `<text x="${R + R * .62 * Math.cos(am)}" y="${R + R * .62 * Math.sin(am) + 7}" text-anchor="middle" font-size="${n > 5 ? 19 : 22}" font-weight="800" fill="#fff" font-family="Bricolage Grotesque,system-ui" transform="rotate(${am * 180 / Math.PI + 90} ${R + R * .62 * Math.cos(am)} ${R + R * .62 * Math.sin(am)})">${UNITATS[k].nom}</text>`; });
+  return `<div class="ruleta"><svg viewBox="-10 -10 420 420"><circle cx="200" cy="200" r="206" fill="${N}"/><g id="roda" style="transform-origin:200px 200px;transform:rotate(${rot}deg)">${s}</g><circle cx="200" cy="200" r="30" fill="#fff" stroke="${N}" stroke-width="5"/><text x="200" y="208" text-anchor="middle" font-size="20" font-weight="900" font-family="Bricolage Grotesque,system-ui">FR</text></svg><div class="agulla"></div></div>`;
+}
+async function gira() {
+  if (J.estat !== 'ruleta') return; J.estat = 'girant'; $('#gira').disabled = true;
+  const us = [...C.unitats], n = us.length;
+  // evita repetir massa la mateixa unitat
+  const pes = us.map(k => 1 / (1 + (J.usades[k] || 0))); let x = Math.random() * pes.reduce((a, b) => a + b), idx = 0; while ((x -= pes[idx]) > 0 && idx < n - 1) idx++;
+  const centre = (idx + .5) / n * 360; const fi = 360 * 5 + (360 - centre) + (Math.random() - .5) * (300 / n);
+  SO.tambor(2.8); const roda = $('#roda'); const t0 = performance.now(), dur = 2900;
+  await new Promise(res => { const pas = t => { const u = Math.min(1, (t - t0) / dur), e = 1 - (1 - u) ** 3; roda.style.transform = `rotate(${fi * e}deg)`; if (u < 1) requestAnimationFrame(pas); else res(); }; requestAnimationFrame(pas); });
+  const u = us[idx]; J.usades[u] = (J.usades[u] || 0) + 1; SO.to(1047, .3, { vol: .07 }); diu(`<b style="color:${UNITATS[u].col}">${UNITATS[u].nom}</b>!`, 1200);
+  await espera(900); mostraPregunta(u);
+}
+function mostraPregunta(u) {
+  J.estat = 'pregunta'; const e = J.equips[J.torn]; J.p = pregunta(u, C.nivell); J.x2 = false; J.amagades = new Set();
+  const final = J.n >= J.total - J.equips.length; J.valor = 100 * (final ? 2 : 1);
+  pintaPregunta(); diu(`Per a l'<b style="color:${e.col}">${esc(e.nom)}</b>, per ${J.valor} punts…`, 1800);
+  if (C.temps) { J.t0 = performance.now(); clearInterval(J.tm); J.tm = setInterval(() => { const r = 1 - (performance.now() - J.t0) / (C.temps * 1000); const b = $('.temps i'); if (b) b.style.transform = `scaleX(${Math.max(0, r)})`; if (r < .25 && r > 0) SO.tic(); if (r <= 0) { clearInterval(J.tm); temps(); } }, 500); }
+}
+function pintaPregunta(revelat = null) {
+  const p = J.p, e = J.equips[J.torn], U = UNITATS[p.u];
+  $('#esc').innerHTML = `<div class="targeta ${p.q.includes('<svg') ? 'amb-fig' : ''}"><span class="uni" style="background:${U.col}">${U.nom}</span> <span class="uni" style="background:${e.col}">${esc(e.nom)} · ${J.valor * (J.x2 ? 2 : 1)} punts${J.x2 ? ' (×2)' : ''}</span>
+    <div class="cos"><div class="preg">${p.q}</div>
+    <div class="opcions">${p.opcions.map((o, i) => { const cls = revelat ? (o === p.r ? 'be' : o === revelat ? 'mal' : '') : ''; return `<button class="opc ${cls} ${J.amagades.has(o) ? 'amagada' : ''}" data-i="${i}" ${revelat ? 'disabled' : ''}><b>${'ABCD'[i]}</b><span>${mostra(o, p)}</span></button>`; }).join('')}</div></div>
+    ${revelat ? `<div class="expl">${p.ex.join('<br>')}</div>` : C.temps ? '<div class="temps"><i></i></div>' : ''}
+    ${!revelat ? `<div class="comodins"><button class="com" id="k50" ${e.c50 && p.opcions.length > 2 ? '' : 'disabled'}>½ 50 %</button><button class="com" id="kp" ${e.cpista ? '' : 'disabled'}>🐱 Pregunta a en Coma</button><button class="com" id="kx" ${e.cx2 && !J.x2 ? '' : 'disabled'}>×2 Doble o res</button></div>` : ''}</div>
+    ${revelat ? `<div class="accions"><button class="big" id="seg">${J.n + 1 >= J.total ? '🏆 Resultats' : 'Següent ▸'}</button></div>` : ''}`;
+  if (!revelat) {
+    $$('.opc').forEach(b => b.onclick = () => respon(p.opcions[+b.dataset.i]));
+    $('#k50').onclick = () => { e.c50 = false; const mals = barreja(p.opcions.filter(o => o !== p.r)); mals.slice(0, p.opcions.length - 2).forEach(o => J.amagades.add(o)); SO.clic(); diu('Fora dues respostes!'); pintaMarcador(); pintaPregunta(); };
+    $('#kp').onclick = () => { e.cpista = false; SO.to(700, .15, { vol: .06 }); SO.to(1000, .3, { t0: .15, vol: .06 }); $('#baf').innerHTML = `<div style="display:flex;align-items:center;gap:8px">${coma()}<span>Miau! Pista d'en Coma:<br>${p.ex[0].replace(/<b>|<\/b>/g, '').replace(/= .*$/, '…')}</span></div>`; pintaMarcador(); $('#kp').disabled = true; };
+    $('#kx').onclick = () => { e.cx2 = false; J.x2 = true; SO.to(523, .15, { vol: .07 }); SO.to(1047, .3, { t0: .15, vol: .07 }); diu('Doble o res! Si falla, perd els punts.'); pintaMarcador(); pintaPregunta(); };
+  } else { $('#seg').onclick = seguent; $('#seg').focus(); }
+}
+function respon(v) {
+  if (J.estat !== 'pregunta') return; J.estat = 'revelat'; clearInterval(J.tm);
+  const p = J.p, e = J.equips[J.torn], ok = v === p.r, pts = J.valor * (J.x2 ? 2 : 1);
+  if (ok) { e.punts += pts; e.encerts++; SO.be(); diu(`${tria(['Correcte!', 'Molt bé!', 'Exacte!', 'Fantàstic!'])} +${pts} punts per a l'<b>${esc(e.nom)}</b>!`, 2400); confeti(30, e.col); }
+  else { if (J.x2) e.punts = Math.max(0, e.punts - J.valor); SO.mal(); diu(`Oh! No és correcte.${J.x2 ? ` Perden ${J.valor} punts.` : ''} La bona era la <b>${'ABCD'[p.opcions.indexOf(p.r)]}</b>.`, 2600); }
+  pintaMarcador(); pintaPregunta(v ?? '—');
+}
+function temps() { if (J.estat !== 'pregunta') return; diu('S\'ha acabat el temps!'); respon(null); }
+function seguent() { J.n++; if (J.n >= J.total) return final(); J.torn = (J.torn + 1) % J.equips.length; tornEquip(); }
+async function final() {
+  J.estat = 'fi'; pintaMarcador(); clearInterval(J.tm);
+  const ord = J.equips.slice().sort((a, b) => b.punts - a.punts); const empat = ord.length > 1 && ord[0].punts === ord[1].punts;
+  $('#esc').innerHTML = `<div style="font-family:Bricolage Grotesque,sans-serif;font-size:3rem;text-shadow:0 0 18px #ff4fd8">🥁 I l'equip guanyador és…</div>`;
+  SO.tambor(2.4); diu('Rodoble de tambors…', 2400); await espera(2600);
+  const altures = [230, 170, 120]; const pos = ord.slice(0, 3); const ordreVis = pos.length === 3 ? [pos[1], pos[0], pos[2]] : pos.length === 2 ? [pos[1], pos[0]] : pos;
+  $('#esc').innerHTML = `<div class="podi">${ordreVis.map(e => { const k = Math.min(2, ord.findIndex(x => x.punts === e.punts)); return `<div class="pl"><div class="nom">${esc(e.nom)}</div><div class="pts">${e.punts} punts</div><div class="bloc" style="height:${altures[k]}px;background:${e.col}">${['🥇', '🥈', '🥉'][k]}</div></div>`; }).join('')}</div>
+    ${ord.length > 3 ? `<p class="gran" style="text-align:center">${ord.slice(3).map((e, i) => `${ord.findIndex(x => x.punts === e.punts) + 1}. ${esc(e.nom)} · ${e.punts}`).join(' &nbsp; ')}</p>` : ''}
+    <div class="accions"><button class="big sec" id="otra">🔁 Un altre programa</button></div>`;
+  SO.fi(); confeti(140); diu(empat ? 'Empat a dalt de tot! Tots sou campions!' : `Felicitats, <b style="color:${ord[0].col}">${esc(ord[0].nom)}</b>! Sou els campions de <b>La gran final</b>!`, 4000);
+  $('#otra').onclick = configura;
+}
+function confeti(n, col = null) { const cols = ['#ffd23f', '#ff4fd8', '#2fbf71', '#2e86de', '#ff5a5a', '#fff']; for (let i = 0; i < n; i++) { const d = document.createElement('div'); d.className = 'confeti'; d.style.left = Math.random() * 100 + 'vw'; d.style.background = col && Math.random() < .5 ? col : tria(cols); d.style.animationDuration = 2 + Math.random() * 2.5 + 's'; d.style.animationDelay = Math.random() * .8 + 's'; document.body.appendChild(d); setTimeout(() => d.remove(), 5500); } }
+
+document.addEventListener('keydown', ev => {
+  if (ev.target.tagName === 'INPUT') return;
+  const k = ev.key.toUpperCase();
+  if (J.estat === 'pregunta' && 'ABCD1234'.includes(k) && k) { const i = 'ABCD'.includes(k) ? 'ABCD'.indexOf(k) : +k - 1; const o = J.p.opcions[i]; if (o != null && !J.amagades.has(o)) respon(o); }
+  else if ((k === ' ' || k === 'ENTER') && J.estat === 'ruleta') { ev.preventDefault(); gira(); }
+});
+$('#so').onclick = () => { M.so = !M.so; $('#so').textContent = M.so ? '🔊' : '🔇'; try { localStorage.setItem('fr4c_final_so', M.so ? '1' : '0'); } catch (e) {} };
+$('#so').textContent = M.so ? '🔊' : '🔇';
+$('#pc').onclick = () => { try { document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen(); } catch (e) {} };
+$('#surt').onclick = () => { try { if (window.parent !== window) window.parent.postMessage({ tipus: 'fr4c-final-tanca' }, '*'); } catch (e) {} configura(); };
+configura();
+window.__final = { J, C, pregunta, GEN, respon, gira, mostraPregunta };
+</script>
+</body>
+</html>

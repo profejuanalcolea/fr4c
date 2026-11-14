@@ -429,6 +429,7 @@ button.tsg-fila{background:transparent;color:inherit}
 .apps-extra{display:flex;align-items:center;gap:14px;margin-top:18px;border:2px solid #7c5cd6;background:#f2edfd;border-radius:14px;padding:12px 16px}.apps-extra .ae-ic{font-size:2rem}.apps-extra div{flex:1}.apps-extra small{color:var(--gris)}
 .plega{border:0;background:rgba(255,255,255,.25);color:#fff;border-radius:6px;font-weight:800;cursor:pointer;padding:0 6px;line-height:1.3}
 .th-taller.plegat{width:30px;min-width:30px;padding:4px 2px!important}.th-taller.plegat .plega{padding:4px 3px}
+.seguiment .seg-dia .plega{font-size:.8rem}
 .c-plegat{background:#f5f1fd;width:30px;min-width:30px;padding:0!important}
 #e-fs.activa{background:var(--tinta);color:#fff}
 .llibreta.seguiment{width:auto;min-width:480px}
@@ -1035,7 +1036,7 @@ const enllacaQualif = c => $$('.q-man', c).forEach(td => td.onclick = () => canv
 const unitatCompleta = u => u.obj.every(o => !o.properament);
 /* ---------- Fitxers a part: cada unitat i cada joc es carrega quan cal ----------
    Són scripts clàssics (funcionen a GitHub Pages i també obrint l'index des de l'ordinador). */
-const V_FITXERS = '5.13';
+const V_FITXERS = '5.14';
 const FITXERS_UNITAT = { f: 'fraccions.js', e: 'enters.js', p: 'potencies.js', q: 'equacions.js', m: 'mesura.js', r: 'grafica.js', g: 'geometria.js' };
 const FITXERS_JOC = { tcx: 'joc-caixa.js', tesc: 'joc-escape.js', tpz: 'joc-pizzeria.js', dimp: 'joc-impropies.js' };
 const CARREGUES = {};
@@ -1590,6 +1591,9 @@ const TALLERS = {
   tmetm: { id: 'tmetm', unitat: 'm', ic: '☄️', curt: 'Meteorits', titol: 'Defensa la base de Mart', sub: 'Joc individual · canvis d\'unitat de cap', defecte: false, esJoc: true, obre: () => obreJocExt('tmetm'), resum: r => resumJocExt(r, 'Meteorits destruïts') },
   trel: { id: 'trel', unitat: 'm', ic: '🕓', curt: 'Rellotge', titol: 'Quina hora és?', sub: 'Taller individual · el rellotge d\'agulles i les hores en català (els quarts)', defecte: false, esJoc: true, obre: () => obreJocExt('trel'), resum: r => resumJocExt(r, 'Hores encertades') },
   tbat: { id: 'tbat', unitat: 'r', ic: '⚓', curt: 'Batalla naval', titol: 'Batalla naval de coordenades', sub: 'Taller individual o en parella (cadascú al seu ordinador) · enfonsa la flota dient punts (x, y)', defecte: false, esJoc: true, obre: () => obreJocExt('tbat'), resum: r => resumJocExt(r, 'Encerts') },
+  tmetg: { id: 'tmetg', unitat: 'g', ic: '☄️', curt: 'Meteorits', titol: 'Defensa la base de Mart', sub: 'Joc individual · àrees i perímetres de cap', defecte: false, esJoc: true, obre: () => obreJocExt('tmetg'), resum: r => resumJocExt(r, 'Meteorits destruïts') },
+  tzoo: { id: 'tzoo', unitat: 'g', ic: '🦒', curt: 'Zoo', titol: 'Dissenya el teu zoo', sub: 'Taller individual · àrees, perímetres, cost i fraccions: construeix els recintes del zoo', defecte: false, esJoc: true, obre: () => obreJocExt('tzoo'), resum: r => resumJocExt(r, 'Respostes encertades') },
+  tfin: { id: 'tfin', unitat: 'g', senseDades: true, natiu: true, ic: '📺', curt: 'Gran final', titol: 'La gran final de FR-4C', sub: 'Concurs de la tele per equips · repàs de totes les unitats', txt: 'Per equips · no compta per a res →', defecte: false, obre: () => obreFinal() },
   tbom: { id: 'tbom', unitat: 'g', ic: '🚒', curt: 'Bombers', titol: 'El rescat dels bombers', sub: 'Taller individual · teorema de Pitàgores: calcula l\'escala justa per rescatar en Coma', defecte: false, esJoc: true, obre: () => obreJocExt('tbom'), resum: r => resumJocExt(r, 'Rescats') },
   timp: { id: 'timp', unitat: 'f', senseDades: true, natiu: true, ic: '🍉', curt: 'Impròpies', titol: 'Fraccions impròpies per equips', sub: 'Joc per a tota la classe, per equips de fruites · fraccions més grans que 1', txt: 'Per equips · no compta per a res →', defecte: false, obre: () => obreAppDemo('dimp') },
   tasc: { id: 'tasc', unitat: 'e', natiu: true, senseDades: true, ic: '🛗', curt: 'Ascensor', titol: "L'ascensor boig", sub: 'Joc per parelles · sumes i restes amb l\'ascensor', defecte: false }
@@ -1606,7 +1610,7 @@ function resumJocExt(r, nomEncerts) {
           <table class="taula-mini"><tr><th>Nivell</th><th>Partides</th><th>Rècord</th></tr>${[1, 2, 3].map(n => `<tr><td>Nivell ${n}</td><td>${nv[n]?.partides || 0}</td><td>${nv[n]?.record || 0}</td></tr>`).join('')}</table>
           ${darreres.length ? `<p style="margin:8px 0 2px;font-weight:700">Darreres partides</p><table class="taula-mini"><tr><th>Data</th><th>Nivell</th><th>Punts</th><th>Encerts</th><th>Errors</th><th>Ha fallat</th></tr>${darreres.map(([t, h]) => `<tr><td>${dataCurta(+t)}</td><td>${h.nivell}</td><td>${h.punts}</td><td>${h.encerts}</td><td>${h.errors}</td><td style="text-align:left;font-size:.85rem">${(h.fallades || []).slice(0, 4).map(esc).join(' · ')}</td></tr>`).join('')}</table>` : ''}` };
     }
-const ORDRE_TALLERS = ['t5b', 'tesc', 'tpz', 'tcx', 'tmetf', 'timp', 'tre', 'tmet', 'tasc', 'tbac', 'ttor', 'tbal', 'tzom', 'tmetm', 'trel', 'tbat', 'tbom'];
+const ORDRE_TALLERS = ['t5b', 'tesc', 'tpz', 'tcx', 'tmetf', 'timp', 'tre', 'tmet', 'tasc', 'tbac', 'ttor', 'tbal', 'tzom', 'tmetm', 'trel', 'tbat', 'tmetg', 'tbom', 'tzoo', 'tfin'];
 /* «Fet» dels tallers al seguiment: resultats/{alumne}/diesTallers/{AAAA-MM-DD}/{taller} = 2 (fet: acabat o partida sencera) · 1 (hi ha treballat) */
 function marcaDiaTaller(id, tid, fet) {
   if (!id || !tid) return; const d = avuiISO(); const v = fet ? 2 : 1;
@@ -1714,23 +1718,25 @@ function targetaTaller(u, res) {
    ===================================================================== */
 /* Jocs en fitxer a part (meteorits, bacteris, torre): mateix protocol fr4c-<prefix>-ini/llest/fi/tanca */
 const JOCS_EXT = {
-  tmet: { fitxer: 'meteorits.html?v=3', pref: 'fr4c-met', titol: 'Defensa la base de Mart', mode: 'enters' },
-  tmetf: { fitxer: 'meteorits.html?v=3', pref: 'fr4c-met', titol: 'Defensa la base de Mart · fraccions', mode: 'fraccions' },
+  tmet: { fitxer: 'meteorits.html?v=4', pref: 'fr4c-met', titol: 'Defensa la base de Mart', mode: 'enters' },
+  tmetf: { fitxer: 'meteorits.html?v=4', pref: 'fr4c-met', titol: 'Defensa la base de Mart · fraccions', mode: 'fraccions' },
   tbac: { fitxer: 'bacteris.html?v=1', pref: 'fr4c-bac', titol: 'Brot de bacteris' },
   ttor: { fitxer: 'torre.html?v=1', pref: 'fr4c-tor', titol: 'Torre de potències' },
   tbal: { fitxer: 'balanca.html?v=2', pref: 'fr4c-bal', titol: 'La balança' },
   tzom: { fitxer: 'zombis.html?v=2', pref: 'fr4c-zom', titol: 'Zombis a l\'institut' },
-  tmetm: { fitxer: 'meteorits.html?v=3', pref: 'fr4c-met', titol: 'Defensa la base de Mart · mesura', mode: 'mesura' },
+  tmetm: { fitxer: 'meteorits.html?v=4', pref: 'fr4c-met', titol: 'Defensa la base de Mart · mesura', mode: 'mesura' },
+  tmetg: { fitxer: 'meteorits.html?v=4', pref: 'fr4c-met', titol: 'Defensa la base de Mart · geometria', mode: 'geometria' },
   trel: { fitxer: 'rellotge.html?v=1', pref: 'fr4c-rel', titol: 'Quina hora és?' },
   tbat: { fitxer: 'batalla.html?v=2', pref: 'fr4c-bat', titol: 'Batalla naval de coordenades' },
-  tbom: { fitxer: 'rescat.html?v=1', pref: 'fr4c-res', titol: 'El rescat dels bombers' } };
+  tbom: { fitxer: 'rescat.html?v=1', pref: 'fr4c-res', titol: 'El rescat dels bombers' },
+  tzoo: { fitxer: 'zoo.html?v=1', pref: 'fr4c-zoo', titol: 'Dissenya el teu zoo' } };
 let MET = null;
 function obreJocExt(tid, nivellProva = null) {
   tancaJoc(true);
   const J = JOCS_EXT[tid]; const id = S.alumne, a = id ? S.alumnes[id] : null;
   const r = (id && S.resMeu?.[tid]) || {};
   const nivell = nivellProva || (id ? nivellBase(id) : 2);
-  MET = { tid, J, id, nom: a?.nom || '', nivell, record: r.nivells?.[nivell]?.record || 0, prova: !id };
+  MET = { tid, J, id, nom: a?.nom || '', nivell, record: r.nivells?.[nivell]?.record || 0, prova: !id, estat: typeof r.estat === 'string' ? r.estat : '' };
   document.body.insertAdjacentHTML('beforeend', `<div id="joc-capa"><iframe title="${esc(J.titol)}" allow="autoplay" src="${J.fitxer}"></iframe><button id="joc-tanca" title="Torna al mapa de FR-4C">✕ Surt del taller</button></div>`);
   $('#joc-tanca').onclick = tancaMeteorits;
   const ifr = $('#joc-capa iframe');
@@ -1738,7 +1744,7 @@ function obreJocExt(tid, nivellProva = null) {
   MET.timeout = setTimeout(() => { if (MET && !MET.llest) { const c = $('#joc-capa'); if (c) c.insertAdjacentHTML('beforeend', `<div class="met-err">No s'ha pogut carregar el joc (<b>${J.fitxer.split('?')[0]}</b>). Comprova que el fitxer està pujat a GitHub al costat de l'app.</div>`); } }, 8000);
 }
 const obreMeteorits = (n = null) => obreJocExt('tmet', n);
-function enviaMet() { const f = $('#joc-capa iframe'); if (!f || !MET) return; try { f.contentWindow.postMessage({ tipus: MET.J.pref + '-ini', mode: MET.J.mode, nom: MET.nom, nivell: MET.nivell, record: MET.record, so: soActiu() }, '*'); } catch (e) { } }
+function enviaMet() { const f = $('#joc-capa iframe'); if (!f || !MET) return; try { f.contentWindow.postMessage({ tipus: MET.J.pref + '-ini', mode: MET.J.mode, nom: MET.nom, nivell: MET.nivell, record: MET.record, estat: MET.estat || '', so: soActiu() }, '*'); } catch (e) { } }
 function tancaMeteorits() { if (MET?.timeout) clearTimeout(MET.timeout); batMusica(false); if (BAT) batNet({ op: 'surt' }); MET = null; tancaJoc(); }
 async function desaMeteorits(d) {
   if (!MET || MET.prova || !MET.id) return;
@@ -1749,8 +1755,14 @@ async function desaMeteorits(d) {
     [`historial/${Date.now()}`]: { punts: d.punts || 0, encerts: d.encerts || 0, errors: d.errors || 0, nivell: +nv, temps: d.temps || 0, fallades: (d.fallades || []).slice(0, 12) }
   };
   MET.record = Math.max(MET.record, d.punts || 0);
+  if (typeof d.estat === 'string' && d.estat.length < 8000) { upd.estat = d.estat; MET.estat = d.estat; } // jocs que es guarden entre sessions (zoo)
   try { await DB.update(`${ARREL}/resultats/${MET.id}/${tid}`, upd); } catch (e) { console.error(e); }
   marcaDiaTaller(MET.id, tid, true);
+}
+async function desaEstatJoc(d) { // desa a mitja partida (sense comptar cap partida)
+  if (!MET || typeof d.estat !== 'string' || d.estat.length >= 8000) return; MET.estat = d.estat;
+  if (MET.prova || !MET.id) return;
+  try { await DB.update(`${ARREL}/resultats/${MET.id}/${MET.tid}`, { estat: d.estat }); } catch (e) { console.error(e); }
 }
 window.addEventListener('message', ev => {
   const d = ev.data || {}; if (!MET || typeof d.tipus !== 'string' || !d.tipus.startsWith(MET.J.pref + '-')) return;
@@ -1758,6 +1770,7 @@ window.addEventListener('message', ev => {
   const t = d.tipus.slice(MET.J.pref.length + 1);
   if (t === 'llest') { MET.llest = true; enviaMet(); }
   else if (t === 'fi') desaMeteorits(d);
+  else if (t === 'desa') desaEstatJoc(d);
   else if (t === 'tanca') tancaMeteorits();
   else if (t === 'net') batNet(d);
   else if (t === 'mus') batMusica(!!d.on);
@@ -2199,6 +2212,13 @@ function obreAppDemo(id) {
   $('#joc-tanca').onclick = () => tancaJoc(true);
   try { const cp = $('#joc-capa'); cp.requestFullscreen && cp.requestFullscreen().catch(() => { }); } catch (e) { }
 }
+function obreFinal() { // concurs per equips a la pissarra: fitxer a part, no desa res
+  tancaJoc(true);
+  document.body.insertAdjacentHTML('beforeend', `<div id="joc-capa"><iframe title="La gran final de FR-4C" allow="autoplay; fullscreen" allowfullscreen src="final.html?v=1"></iframe><button id="joc-tanca" class="dreta" title="Tanca el concurs">✕ Tanca</button></div>`);
+  $('#joc-tanca').onclick = () => tancaJoc(true);
+  try { const cp = $('#joc-capa'); cp.requestFullscreen && cp.requestFullscreen().catch(() => { }); } catch (e) { }
+}
+window.addEventListener('message', ev => { if (ev.data?.tipus === 'fr4c-final-tanca' && ev.source === $('#joc-capa iframe')?.contentWindow) tancaJoc(true); });
 function tancaJoc(nomesCapa) {
   if (document.fullscreenElement && document.fullscreenElement.id === 'joc-capa') { try { document.exitFullscreen(); } catch (e) { } }
   $('#joc-capa')?.remove(); $('#joc-tanca')?.remove();
@@ -2898,7 +2918,7 @@ function mostraCredits() {
     <p style="font-size:1.1rem"><b>Ins Júlia Minguell</b> · Matemàtiques 4t ESO · Grup Flexible</p>
     <p style="margin-top:14px">Ideat per <b>J. Alcolea</b></p>
     <p style="color:var(--gris)">Desenvolupat amb Claude</p>
-    <p style="color:var(--gris);margin-top:10px">Versió 5.13</p>
+    <p style="color:var(--gris);margin-top:10px">Versió 5.14</p>
     <div class="accions"><button class="boto" data-tanca-modal>D'acord</button></div>`);
 }
 function entraAlumne(id) {
@@ -3777,25 +3797,31 @@ function resumSeg(id) {
   for (const d of diesSeg()) { const x = S.seg[d]?.a?.[id]; if (!x) continue; if (typeof x.t === 'number') { r.n++; r.suma += x.t; } if (x.t === 'F') r.f++; if (x.t === 'FJ') r.fj++; if (x.p === 'a') r.a++; if (x.p === 'p') r.p++; if (x.p === 'n') r.nn++; if (x.i) r.i++; }
   r.mitjana = r.n ? r.suma / r.n : null; return r;
 }
+const segPlegat = k => { try { return localStorage.getItem('fr4c_seg_' + k) === '1'; } catch (e) { return !!S['segP_' + k]; } };
+const segPlega = k => { try { localStorage.setItem('fr4c_seg_' + k, segPlegat(k) ? '0' : '1'); } catch (e) { S['segP_' + k] = !S['segP_' + k]; } pintaLlibreta(); };
 function pintaSeguiment(c) {
   if (!DB.local && !DB.esProfe()) { c.innerHTML = `<div class="fila-form llib-barra">${segmentLlibreta('seg')}</div><div class="seccio"><h3>Cal entrar com a professor</h3><p class="ajuda">El seguiment només es pot veure amb l'usuari del professor.</p></div>`; enllacaSeg(c); return; }
-  const llista = Object.entries(S.alumnes).sort(ordenaNoms); const dies = diesSeg();
+  const llista = Object.entries(S.alumnes).sort(ordenaNoms); const totsDies = diesSeg();
+  const pR = segPlegat('resum'), pD = segPlegat('dies') && totsDies.length > 1, dies = pD ? totsDies.slice(0, 1) : totsDies, amagats = totsDies.length - dies.length;
   const barra = `<div class="fila-form llib-barra">${segmentLlibreta('seg')}<span class="grup-barra"><button class="boto taronja" id="seg-nou">＋ Nou dia</button></span>
     <span style="margin-left:auto;color:var(--gris);font-size:.9rem">Toca una casella per canviar-la · Treball: 1 → 2 → 3 → F → FJ → buit · Participació: 😊 → 😐 → 😠 → buit · 🔴 incident</span></div>`;
   if (!llista.length) { c.innerHTML = barra + `<div class="seccio"><h3>Encara no hi ha alumnes</h3></div>`; enllacaSeg(c); return; }
-  const cap1 = dies.map(d => { const f = dataSeg(d); return `<th colspan="2" class="seg-dia" data-dia="${d}" title="${f.llarg} · clica per esborrar el dia">${f.dia} ${f.num}</th>`; }).join('');
+  const plegaDies = totsDies.length > 1 ? (pD ? `<th rowspan="2" class="th-taller plegat seg-dies-pl"><button class="plega" id="seg-pd" title="Mostra tots els dies (${amagats} amagats)">+${amagats}<br>▸</button></th>` : '') : '';
+  const cap1 = dies.map((d, k) => { const f = dataSeg(d); return `<th colspan="2" class="seg-dia" data-dia="${d}" title="${f.llarg} · clica per esborrar el dia">${f.dia} ${f.num}${k === 0 && totsDies.length > 1 && !pD ? ` <button class="plega" id="seg-pd" title="Mostra només l'últim dia">◂</button>` : ''}</th>`; }).join('') + plegaDies;
   const cap2 = dies.map(() => `<th class="seg-sub">Treb.</th><th class="seg-sub">Part.</th>`).join('');
   c.innerHTML = barra + `<div class="taula-caixa"><table class="llibreta seguiment"><thead>
-      <tr><th class="nom" rowspan="2">Alumne</th><th colspan="${7 + LLISTA_UNITATS.length}" class="seg-resum">Resum</th>${cap1 || '<th rowspan="2" class="seg-buit">Clica «＋ Nou dia» per començar</th>'}</tr>
-      <tr><th class="seg-sub" title="Mitjana de treball (sense comptar les faltes)">Treb.</th><th class="seg-sub" title="Faltes">F</th><th class="seg-sub" title="Faltes justificades">FJ</th><th class="seg-sub">😊</th><th class="seg-sub">😐</th><th class="seg-sub">😠</th><th class="seg-sub">🔴</th>${LLISTA_UNITATS.map(k => `<th class="seg-sub" title="Qualificació de ${UNITATS[k].nom} (${asAuto(UNITATS[k]) ? 'automàtica' : 'manual: clica per canviar-la'})">AS ${UNITATS[k].nom.slice(0, 3)}.</th>`).join('')}${cap2}</tr></thead><tbody>
+      <tr><th class="nom" rowspan="2">Alumne</th>${pR ? `<th rowspan="2" class="seg-resum th-taller plegat"><button class="plega" id="seg-pr" title="Mostra el resum">Σ<br>▸</button></th>` : `<th colspan="${7 + LLISTA_UNITATS.length}" class="seg-resum">Resum <button class="plega" id="seg-pr" title="Amaga el resum">◂</button></th>`}${cap1 || '<th rowspan="2" class="seg-buit">Clica «＋ Nou dia» per començar</th>'}</tr>
+      <tr>${pR ? '' : `<th class="seg-sub" title="Mitjana de treball (sense comptar les faltes)">Treb.</th><th class="seg-sub" title="Faltes">F</th><th class="seg-sub" title="Faltes justificades">FJ</th><th class="seg-sub">😊</th><th class="seg-sub">😐</th><th class="seg-sub">😠</th><th class="seg-sub">🔴</th>${LLISTA_UNITATS.map(k => `<th class="seg-sub" title="Qualificació de ${UNITATS[k].nom} (${asAuto(UNITATS[k]) ? 'automàtica' : 'manual: clica per canviar-la'})">AS ${UNITATS[k].nom.slice(0, 3)}.</th>`).join('')}`}${cap2}</tr></thead><tbody>
       ${llista.map(([id, a]) => { const r = resumSeg(id);
         return `<tr><td class="nom" title="${esc(a.nom)}">${esc(a.nom)}</td>
-          <td class="seg-r"><b>${r.mitjana == null ? '—' : r.mitjana.toFixed(1).replace('.', ',')}</b></td><td class="seg-r ${r.f ? 'seg-mal' : ''}">${r.f || ''}</td><td class="seg-r">${r.fj || ''}</td><td class="seg-r">${r.a || ''}</td><td class="seg-r">${r.p || ''}</td><td class="seg-r ${r.nn ? 'seg-mal' : ''}">${r.nn || ''}</td><td class="seg-r ${r.i ? 'seg-mal' : ''}">${r.i || ''}</td>${LLISTA_UNITATS.map(k => celaQualif(id, UNITATS[k], true).replace('<td', '<td data-qs="1"')).join('')}
+          ${pR ? '<td class="c-plegat"></td>' : `<td class="seg-r"><b>${r.mitjana == null ? '—' : r.mitjana.toFixed(1).replace('.', ',')}</b></td><td class="seg-r ${r.f ? 'seg-mal' : ''}">${r.f || ''}</td><td class="seg-r">${r.fj || ''}</td><td class="seg-r">${r.a || ''}</td><td class="seg-r">${r.p || ''}</td><td class="seg-r ${r.nn ? 'seg-mal' : ''}">${r.nn || ''}</td><td class="seg-r ${r.i ? 'seg-mal' : ''}">${r.i || ''}</td>${LLISTA_UNITATS.map(k => celaQualif(id, UNITATS[k], true).replace('<td', '<td data-qs="1"')).join('')}`}
           ${dies.map(d => { const x = S.seg[d]?.a?.[id] || {};
-            return ` <td class="seg-t t${x.t || 0}" title="${x.t === 'F' ? 'Falta' : x.t === 'FJ' ? 'Falta justificada' : ''}" data-d="${d}" data-a="${id}" data-c="t">${x.t || ''}</td><td class="seg-p" data-d="${d}" data-a="${id}" data-c="p"><span class="seg-cara">${x.p ? PARTIC[x.p].e : ''}</span><button class="seg-inc ${x.i ? 'on' : ''}" data-d="${d}" data-a="${id}" title="${x.i ? 'Treu l\'incident' : 'Marca un incident (mal comportament)'}"></button></td>`; }).join('')}</tr>`; }).join('')}
+            return ` <td class="seg-t t${x.t || 0}" title="${x.t === 'F' ? 'Falta' : x.t === 'FJ' ? 'Falta justificada' : ''}" data-d="${d}" data-a="${id}" data-c="t">${x.t || ''}</td><td class="seg-p" data-d="${d}" data-a="${id}" data-c="p"><span class="seg-cara">${x.p ? PARTIC[x.p].e : ''}</span><button class="seg-inc ${x.i ? 'on' : ''}" data-d="${d}" data-a="${id}" title="${x.i ? 'Treu l\'incident' : 'Marca un incident (mal comportament)'}"></button></td>`; }).join('')}${pD ? '<td class="c-plegat"></td>' : ''}</tr>`; }).join('')}
     </tbody></table></div>
     <p class="ajuda" style="margin-top:8px">El seguiment no compta per a cap nota de l'app i només el veu el professor.</p>`;
   enllacaSeg(c);
+  const bpr = $('#seg-pr', c); if (bpr) bpr.onclick = e => { e.stopPropagation(); segPlega('resum'); };
+  const bpd = $('#seg-pd', c); if (bpd) bpd.onclick = e => { e.stopPropagation(); segPlega('dies'); };
   $$('td[data-c]', c).forEach(td => td.onclick = e => {
     if (e.target.closest('.seg-inc')) return;
     const { d, a: id, c: camp } = td.dataset; const x = S.seg[d]?.a?.[id] || {};
@@ -4117,7 +4143,7 @@ const TALLERS_DEMO = {
   q: [['d-bal', '⚖️ Balança', 'La balança, al nivell triat'], ['d-zom', '🧟 Zombis', 'Zombis a l\'institut, al nivell triat']],
   m: [['d-metm', '☄️ Meteorits', 'Meteorits amb canvis d\'unitat, al nivell triat'], ['d-rel', '🕓 Rellotge', 'Quina hora és?, al nivell triat']],
   r: [['d-bat', '⚓ Batalla naval', 'Batalla naval de coordenades, al nivell triat']],
-  g: [['d-bom', '🚒 Rescat dels bombers', 'El rescat dels bombers (Pitàgores), al nivell triat']]
+  g: [['d-metg', '☄️ Meteorits', 'Meteorits amb àrees i perímetres, al nivell triat'], ['d-bom', '🚒 Rescat dels bombers', 'El rescat dels bombers (Pitàgores), al nivell triat'], ['d-zoo', '🦒 Zoo', 'Dissenya el teu zoo, al nivell triat'], ['d-final', '📺 La gran final', 'Concurs per equips amb preguntes de totes les unitats (per a la pissarra)']]
 };
 function pintaDemo() {
   const c = $('#panell-cos');
@@ -4164,7 +4190,10 @@ function pintaDemo() {
   const dmm = $('#d-metm'); if (dmm) dmm.onclick = () => obreJocExt('tmetm', st.nivell);
   const drl = $('#d-rel'); if (drl) drl.onclick = () => obreJocExt('trel', st.nivell);
   const dbt = $('#d-bat'); if (dbt) dbt.onclick = () => obreJocExt('tbat', st.nivell);
+  const dmg = $('#d-metg'); if (dmg) dmg.onclick = () => obreJocExt('tmetg', st.nivell);
   const dbm = $('#d-bom'); if (dbm) dbm.onclick = () => obreJocExt('tbom', st.nivell);
+  const dzo = $('#d-zoo'); if (dzo) dzo.onclick = () => obreJocExt('tzoo', st.nivell);
+  const dfi = $('#d-final'); if (dfi) dfi.onclick = () => obreFinal();
 }
 
 /* =====================================================================
