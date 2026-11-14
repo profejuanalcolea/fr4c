@@ -977,15 +977,26 @@ const OBJ_GRAFICA = [
   { id: 'r7', num: '7', titol: 'El gràfic de temperatures', curt: 'Temperatures' },
   { id: 'r8', num: '8', titol: 'El climograma', curt: 'Climograma' }
 ];
+const OBJ_GEOMETRIA = [
+  { id: 'g1', num: '1', titol: 'Les figures i les seves mesures', curt: 'Figures' },
+  { id: 'g2', num: '2', titol: 'El perímetre', curt: 'Perímetre' },
+  { id: 'g3', num: '3', titol: 'Àrea del rectangle, el quadrat i el romboide', curt: 'Rectangles' },
+  { id: 'g4', num: '4', titol: 'Àrea del triangle, el rombe i el trapezi', curt: 'Triangles' },
+  { id: 'g5', num: '5', titol: 'El cercle', curt: 'Cercle' },
+  { id: 'g6', num: '6', titol: 'Figures compostes', curt: 'Compostes' },
+  { id: 'g7', num: '7', titol: 'El teorema de Pitàgores', curt: 'Pitàgores' },
+  { id: 'g8', num: '8', titol: 'Volum del prisma i del cilindre', curt: 'Volum' }
+];
 const UNITATS = {
   f: { id: 'f', nom: 'Fraccions', obj: OBJ_FRACCIONS, prova: 'pf', minimKey: 'minimAS', minimDef: 6, provaKey: 'provaF' },
   e: { id: 'e', nom: 'Enters', obj: OBJ_ENTERS, prova: 'pe', minimKey: 'minimASe', minimDef: 6, provaKey: 'provaE' },
   p: { id: 'p', nom: 'Potències', obj: OBJ_POTENCIES, prova: 'pw', minimKey: 'minimASp', minimDef: 6, provaKey: 'provaP' },
   q: { id: 'q', nom: 'Equacions', obj: OBJ_EQUACIONS, prova: 'pq', minimKey: 'minimASq', minimDef: 6, provaKey: 'provaQ' },
   m: { id: 'm', nom: 'Mesura', obj: OBJ_MESURA, prova: 'pm', minimKey: 'minimASm', minimDef: 5, provaKey: 'provaM', tancatDefecte: true }, // tancada fins que el professor l'obri
-  r: { id: 'r', nom: 'Gràfiques', obj: OBJ_GRAFICA, prova: 'pr', minimKey: 'minimASr', minimDef: 6, provaKey: 'provaR', tancatDefecte: true }
+  r: { id: 'r', nom: 'Gràfiques', obj: OBJ_GRAFICA, prova: 'pr', minimKey: 'minimASr', minimDef: 6, provaKey: 'provaR', tancatDefecte: true },
+  g: { id: 'g', nom: 'Geometria', obj: OBJ_GEOMETRIA, prova: 'pg', minimKey: 'minimASg', minimDef: 6, provaKey: 'provaG', tancatDefecte: true }
 };
-const LLISTA_UNITATS = ['f', 'e', 'p', 'q', 'm', 'r'];
+const LLISTA_UNITATS = ['f', 'e', 'p', 'q', 'm', 'r', 'g'];
 const unitatDe = oId => UNITATS[LLISTA_UNITATS.find(k => UNITATS[k].obj.some(o => o.id === oId) || UNITATS[k].prova === oId) || 'f'];
 const objPerId = id => { for (const k of LLISTA_UNITATS) { const o = UNITATS[k].obj.find(x => x.id === id); if (o) return o; } return null; };
 const minimDe = u => S.config?.[u.minimKey] || u.minimDef;
@@ -1024,8 +1035,8 @@ const enllacaQualif = c => $$('.q-man', c).forEach(td => td.onclick = () => canv
 const unitatCompleta = u => u.obj.every(o => !o.properament);
 /* ---------- Fitxers a part: cada unitat i cada joc es carrega quan cal ----------
    Són scripts clàssics (funcionen a GitHub Pages i també obrint l'index des de l'ordinador). */
-const V_FITXERS = '5.11';
-const FITXERS_UNITAT = { f: 'fraccions.js', e: 'enters.js', p: 'potencies.js', q: 'equacions.js', m: 'mesura.js', r: 'grafica.js' };
+const V_FITXERS = '5.12';
+const FITXERS_UNITAT = { f: 'fraccions.js', e: 'enters.js', p: 'potencies.js', q: 'equacions.js', m: 'mesura.js', r: 'grafica.js', g: 'geometria.js' };
 const FITXERS_JOC = { tcx: 'joc-caixa.js', tesc: 'joc-escape.js', tpz: 'joc-pizzeria.js', dimp: 'joc-impropies.js' };
 const CARREGUES = {};
 function carregaScript(fitxer) {
@@ -1358,7 +1369,7 @@ function apOk(it, st) {
   if (it.tipus === 'ordena') { const o = ordenats(it); return st.seq.every((i, p) => it.nums[i] === o[p]); }
   if (it.tipus === 'marca') return st.sel.size === it.bons.length && it.bons.every(i => st.sel.has(i));
   if (it.tipus === 'num') return Number(st.n) === it.valor;
-  if (it.tipus === 'dec') return decIgual(llegeixDec(st.n), it.valor);
+  if (it.tipus === 'dec') return it.tol ? (x => x != null && Math.abs(x - it.valor) <= it.tol + 1e-9)(llegeixDec(st.n)) : decIgual(llegeixDec(st.n), it.valor);
   if (it.tipus === 'pot') return Number(st.b) === it.base && Number(st.e) === it.exp;
   if (it.tipus === 'lin') return linVal(st.a) === it.a && linVal(st.b) === it.b;
   if (it.tipus === 'factors') return st.seq.length === it.exp && st.seq.every(v => v === it.base);
@@ -2885,7 +2896,7 @@ function mostraCredits() {
     <p style="font-size:1.1rem"><b>Ins Júlia Minguell</b> · Matemàtiques 4t ESO · Grup Flexible</p>
     <p style="margin-top:14px">Ideat per <b>J. Alcolea</b></p>
     <p style="color:var(--gris)">Desenvolupat amb Claude</p>
-    <p style="color:var(--gris);margin-top:10px">Versió 5.11</p>
+    <p style="color:var(--gris);margin-top:10px">Versió 5.12</p>
     <div class="accions"><button class="boto" data-tanca-modal>D'acord</button></div>`);
 }
 function entraAlumne(id) {
