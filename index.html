@@ -1060,7 +1060,7 @@ const enllacaQualif = c => $$('.q-man', c).forEach(td => td.onclick = () => canv
 const unitatCompleta = u => u.obj.every(o => !o.properament);
 /* ---------- Fitxers a part: cada unitat i cada joc es carrega quan cal ----------
    Són scripts clàssics (funcionen a GitHub Pages i també obrint l'index des de l'ordinador). */
-const V_FITXERS = '5.18';
+const V_FITXERS = '5.19';
 const FITXERS_UNITAT = { f: 'fraccions.js', e: 'enters.js', p: 'potencies.js', q: 'equacions.js', m: 'mesura.js', r: 'grafica.js', g: 'geometria.js' };
 const FITXERS_JOC = { tcx: 'joc-caixa.js', tesc: 'joc-escape.js', tpz: 'joc-pizzeria.js', dimp: 'joc-impropies.js' };
 const CARREGUES = {};
@@ -1596,16 +1596,7 @@ const TALLERS = {
           <p style="margin:8px 0 2px;font-weight:700">Errors per tipus d'exercici</p>
           <table class="taula-mini"><tr>${TIPUS_PZ.map(t => `<th>${t}</th>`).join('')}</tr><tr>${TIPUS_PZ.map((_, k) => `<td>${te[k] || 0}</td>`).join('')}</tr></table>` };
     } },
-  tre: { id: 'tre', unitat: 'e', ic: '🔁', curt: 'Repàs', titol: "Repàs d'operacions amb enters", sub: 'Sumes, restes, multiplicacions i divisions', defecte: false, obre: () => obreRepas(),
-    resum: r => {
-      const est = r.est || {}; const n = EST_RE.filter(e => est[e.k]?.acabada).length;
-      const sum = c => EST_RE.reduce((a, e) => a + (est[e.k]?.[c] || 0), 0);
-      return { fet: r.estat === 'fet', prog: `${n}/4`, errors: sum('errSigne') + sum('errNum'), ultima: r.darrer,
-        carta: r.estat === 'fet' ? '✓ Fet · el pots repetir quan vulguis' : n ? `Continua · ${n} de 4 estacions` : 'Opcional · 4 estacions per repassar →',
-        detall: `<table class="taula-mini"><tr><th>Estació</th><th>Estat</th><th>Exercicis fets</th><th>Bé a la primera</th><th>Errors de signe</th><th>Errors de càlcul</th></tr>${EST_RE.map((e, i) => { const x = est[e.k] || {};
-          return `<tr><td>${i + 1}. ${e.ic} ${e.titol}</td><td>${x.acabada ? '<span class="marca-ok">Feta</span>' : x.fets ? 'En curs' : '—'}</td><td>${x.fets || 0}</td><td>${x.primera || 0}</td><td>${x.errSigne || 0}</td><td>${x.errNum || 0}</td></tr>`; }).join('')}</table>
-          <p class="ajuda" style="margin:6px 0 0">Si els errors de <b>signe</b> són molts més que els de càlcul, l'alumne sap calcular però no aplica bé la norma.</p>` };
-    } },
+  tre: { id: 'tre', unitat: 'e', ic: '🔁', curt: 'Repàs', titol: "Repàs d'operacions amb enters", sub: 'Pas a pas amb l\'ascensor i la recta · sumes i restes, multiplicacions i divisions, combinades', defecte: false, esJoc: true, obre: () => obreJocExt('tre'), resum: r => resumJocExt(r, 'Exercicis a la primera') },
   tmet: { id: 'tmet', unitat: 'e', ic: '☄️', curt: 'Meteorits', titol: 'Defensa la base de Mart', sub: 'Joc individual · operacions amb enters', defecte: false, esJoc: true, obre: () => obreMeteorits(), resum: r => resumJocExt(r, 'Meteorits destruïts') },
   tmetf: { id: 'tmetf', unitat: 'f', ic: '☄️', curt: 'Meteorits', titol: 'Defensa la base de Mart', sub: 'Joc individual · càlcul mental amb fraccions', defecte: false, esJoc: true, obre: () => obreJocExt('tmetf'), resum: r => resumJocExt(r, 'Meteorits destruïts') },
   tbal: { id: 'tbal', unitat: 'q', ic: '⚖️', curt: 'Balança', titol: 'La balança', sub: 'Taller individual · resoldre equacions traient el mateix dels dos plats', defecte: false, esJoc: true, obre: () => obreJocExt('tbal'), resum: r => resumJocExt(r, 'Equacions resoltes') },
@@ -1759,7 +1750,8 @@ const JOCS_EXT = {
   tzoo: { fitxer: 'zoo.html?v=1', pref: 'fr4c-zoo', titol: 'Dissenya el teu zoo' },
   tzm: { fitxer: 'zoom.html?v=3', pref: 'fr4c-zoom', titol: 'El zoom de FR-4C' },
   teng: { fitxer: 'engranatges.html?v=1', pref: 'fr4c-eng', titol: 'La màquina d\'en Don Salvatore' },
-  tdib: { fitxer: 'dibuixa.html?v=2', pref: 'fr4c-dib', titol: 'Dibuixa gràfiques (ampliació)' } };
+  tdib: { fitxer: 'dibuixa.html?v=2', pref: 'fr4c-dib', titol: 'Dibuixa gràfiques (ampliació)' },
+  tre: { fitxer: 'repas.html?v=1', pref: 'fr4c-rep', titol: "Repàs d'operacions amb enters" } };
 let MET = null;
 function obreJocExt(tid, nivellProva = null) {
   tancaJoc(true);
@@ -2957,7 +2949,7 @@ function mostraCredits() {
     <p style="font-size:1.1rem"><b>Ins Júlia Minguell</b> · Matemàtiques 4t ESO</p>
     <p style="margin-top:14px">Ideat per <b>J. Alcolea</b></p>
     <p style="color:var(--gris)">Desenvolupat amb Claude</p>
-    <p style="color:var(--gris);margin-top:10px">Versió 5.18</p>
+    <p style="color:var(--gris);margin-top:10px">Versió 5.19</p>
     <div class="accions"><button class="boto" data-tanca-modal>D'acord</button></div>`);
 }
 function entraAlumne(id) {
@@ -3067,7 +3059,7 @@ function pantallaLliure() {
   $$('.ll-obj[data-t]').forEach(b => b.onclick = () => obreTallerLliure(b.dataset.t, L.nivell));
 }
 // tallers que es poden fer en mode lliure (activats a Configuració i que no necessiten un alumne per desar)
-const LLIURE_NATIUS = { tre: n => carregaUnitat('e').then(() => obreRepas(n)), timp: () => obreAppDemo('dimp'), tfin: () => obreFinal() };
+const LLIURE_NATIUS = { timp: () => obreAppDemo('dimp'), tfin: () => obreFinal() };
 const tallersLliure = (u, nivell) => ORDRE_TALLERS.map(t => TALLERS[t]).filter(t => t && t.unitat === u && tallerObert(t) && (JOCS_EXT[t.id] || LLIURE_NATIUS[t.id]) && (!t.nomesN3 || nivell === 3));
 function obreTallerLliure(tid, nivell) {
   if (!lliureActiu() || !tallerObert(TALLERS[tid] || {})) { S.vista = 'lliure'; return render(); }
@@ -4463,7 +4455,7 @@ function pintaDemo() {
   $('#d-previ').onclick = () => previsualitza(st.o, st.nivell);
   $('#d-exf').onclick = () => iniciaExamen(true, st.nivell);
   const dcb = $('#d-cb'); if (dcb) dcb.onclick = () => previsualitzaComp(dcb.dataset.u, st.nivell);
-  const dr = $('#d-repas'); if (dr) dr.onclick = () => obreRepas(st.nivell);
+  const dr = $('#d-repas'); if (dr) dr.onclick = () => obreJocExt('tre', st.nivell);
   const dm = $('#d-met'); if (dm) dm.onclick = () => obreMeteorits(st.nivell);
   const dmf = $('#d-metf'); if (dmf) dmf.onclick = () => obreJocExt('tmetf', st.nivell);
   const dbl = $('#d-bal'); if (dbl) dbl.onclick = () => obreJocExt('tbal', st.nivell);
